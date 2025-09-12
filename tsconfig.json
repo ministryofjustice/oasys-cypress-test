@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "target": "es2021",
+        "lib": [
+            "es2021",
+            "dom"
+        ],
+        "types": [
+            "cypress",
+            "node",
+            "./cypress/support/index.d.ts"
+        ],
+        "rootDir": ".",
+        "baseUrl": "oasys",
+        "moduleResolution": "node"
+    },
+    "include": [
+        "**/*.ts",
+        "cypress/support/commands.js"
+    ],
+    "exclude": [],
+}
