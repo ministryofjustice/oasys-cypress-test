@@ -21,7 +21,7 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@badgateway/oauth2-client": "^2.2.3",
+    "@badgateway/oauth2-client": "^3.3.1",
     "@types/flat": "^5.0.5",
     "axios": "^1.6.2",
     "flat": "^5.0.2"
