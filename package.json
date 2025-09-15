@@ -24,6 +24,6 @@
     "@badgateway/oauth2-client": "^2.2.3",
     "@types/flat": "^5.0.5",
     "axios": "^1.6.2",
-    "flat": "^5.0.2"
+    "flat": "^6.0.1"
   }
 }
