@@ -7,6 +7,8 @@ import { DbOffenderWithAssessments } from 'restApi/dbClasses'
 import * as fs from 'fs-extra'
 import * as pdf from './cypress/support/pdf'
 import { getLatestElogAndUnprocEventTime } from './cypress/support/oasysDb'
+import { noDatabaseConnection } from './localSettings'
+import { ogrsTest } from './cypress/support/ogrs/orgsTest'
 
 const reportFolder = 'report'
 const persistedData = {}
@@ -192,19 +194,31 @@ module.exports = defineConfig({
           return new Promise((resolve) => {
             resolve(persistedData[key] ?? null)
           })
+        },
+
+        ogrsAssessmentCalcTest(parameters: OgrsTestParameters): Promise<OgrsTestResult> {
+          return new Promise((resolve) => {
+            ogrsTest(parameters).then((response) => {
+              resolve(response)
+            })
+          })
         }
 
       })
 
       on('before:run', (details) => {
-        getLatestElogAndUnprocEventTime('store')
+        if (!noDatabaseConnection) {
+          getLatestElogAndUnprocEventTime('store')
+        }
         fs.remove(reportFolder)
       })
 
       on('after:run', (results) => {
-        getLatestElogAndUnprocEventTime('check').then(() => {
-          oasysDb.closeConnection()
-        })
+        if (!noDatabaseConnection) {
+          getLatestElogAndUnprocEventTime('check').then(() => {
+            oasysDb.closeConnection()
+          })
+        }
       })
 
       on('before:browser:launch', (browser, launchOptions) => {

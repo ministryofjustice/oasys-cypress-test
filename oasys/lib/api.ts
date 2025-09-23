@@ -282,7 +282,7 @@ function addAssessment(endpoints: Endpoint[], parameters: EndpointParams[], crn:
  */
 export function getAPIResponses(parameters: EndpointParams[], resultAlias: string) {
 
-    cy.task('getMultipleRestData', parameters).then((response: RestResponse[]) => {
+    cy.task('ç', parameters).then((response: RestResponse[]) => {
         cy.wrap(response).as(resultAlias)
     })
 }

@@ -14,20 +14,26 @@
 // ***********************************************************
 
 import './commands'
-import {testEnvironment} from '../../localSettings'
+import { testEnvironment, noDatabaseConnection, noOasys } from '../../localSettings'
 
 beforeEach(() => {
-    
-    cy.task('getAppVersion').then((result: DbResponse) => {
-        if (result.error != null) {
-            throw new Error(result.error)
-        }
-        const version = result.data as string
-        cy.wrap(version).as('appVersion')
 
-        cy.log(`OASys ${version} (${testEnvironment.name}), ${Cypress.browser.name.toUpperCase()} (v${Cypress.browser.majorVersion}). Script: ${Cypress.spec.relative}`)
-        cy.task('consoleLog', `OASys version ${version} in ${testEnvironment.name}`)
+    if (noDatabaseConnection) {
+        cy.wrap('No database connection').as('appVersion')
+        cy.log(`Script: ${Cypress.spec.relative}`)
 
-        cy.visit(testEnvironment.url)
-    })
+    } else {
+        cy.task('getAppVersion').then((result: DbResponse) => {
+            if (result.error != null) {
+                throw new Error(result.error)
+            }
+            const version = result.data as string
+            cy.wrap(version).as('appVersion')
+
+            cy.log(`OASys ${version} (${testEnvironment.name}), ${Cypress.browser.name.toUpperCase()} (v${Cypress.browser.majorVersion}). Script: ${Cypress.spec.relative}`)
+            cy.task('consoleLog', `OASys version ${version} in ${testEnvironment.name}`)
+
+            cy.visit(testEnvironment.url)
+        })
+    }
 })
