@@ -1,131 +1,93 @@
 import { Decimal } from 'decimal.js'
-import * as dayjs from 'dayjs'
 
-import { snsvBCalc } from './snsvB'
-import { snsvECalc } from './snsvE'
-import { ogrs4GCalc } from './ogrs4G'
-import { ogrs4VCalc } from './ogrs4V'
-import { ogp2Calc } from './ogp2'
-import { ovp2Calc } from './ovp2'
+import { TestCaseParameters, ScoreResult, TestCaseResult, ExpectedScores } from './orgsTest'
+import { calculate } from './calculateScore'
+
 import { ospCCalc, ospICalc } from './osp'
 
-const dateFormat = 'DD-MMM-YYYY'
+export type ScoreType = 'serious_violence_brief' | 'serious_violence_extended' | 'general_brief' | 'violence_brief' | 'general_extended' | 'violence_extended' | 'osp_c' | 'osp_i'
 
-export function calculateAssessment(inputs: AssessmentCalcInputs, toleranceParam: string, testCaseRef: string): AssessmentCalcResult {
+export function calculateAssessment(params: TestCaseParameters, expectedValues: ExpectedScores, toleranceParam: string, testCaseRef: string): TestCaseResult {
 
     Decimal.set({ precision: 40 })
 
-    const assessmentResult = {
-        assessmentScores: [],
+    const results: TestCaseResult = {
         logText: [],
         failed: false,
     }
-
-    const today = dayjs()
-    const dob = dayjs(inputs.dob, dateFormat)
-
-    // TODO add offence category lookup from offence code
-    const calculatedInputs: CalculatedInputs = {
-        age: today.diff(dob, 'year'),
-        ageAtFirstSanction: dayjs(inputs.dateOfFirstSanction, dateFormat).diff(dob, 'year'),
-        ageAtLastSanction: dayjs(inputs.dateOfLastSanction, dateFormat).diff(dob, 'year'),
-        ageAtLastSanctionSexual: dayjs(inputs.dateOfLastSanctionSexual, dateFormat).diff(dob, 'year'),
-        yearsBetweenFirstTwoSanctions: (dayjs(inputs.dateOfLastSanction, dateFormat).diff(dayjs(inputs.dateOfFirstSanction), 'year')),
-        ofm: today.diff(dayjs(inputs.communityDate, dateFormat), 'month'),
-    }
-
     const tolerance = new Decimal(toleranceParam)
 
-    assessmentResult.logText.push('')
-    assessmentResult.logText.push(`Test case ${testCaseRef}`)
-    assessmentResult.logText.push(`    Inputs: ${JSON.stringify(inputs)}`)
-    assessmentResult.logText.push(`    Calculated inputs: ${JSON.stringify(calculatedInputs)}`)
-    assessmentResult.logText.push('')
+    results.logText.push('')
+    results.logText.push(`Test case ${testCaseRef}`)
+    results.logText.push(`    Parameters: ${JSON.stringify(params)}`)
+    results.logText.push('')
 
-    compareAndAddLog('snsvB', inputs, calculatedInputs, snsvBCalc(inputs, calculatedInputs, tolerance), assessmentResult)
-    compareAndAddLog('snsvE', inputs, calculatedInputs, snsvECalc(inputs, calculatedInputs, tolerance), assessmentResult)
-    compareAndAddLog('ogrs4G', inputs, calculatedInputs, ogrs4GCalc(inputs, calculatedInputs, tolerance), assessmentResult)
-    compareAndAddLog('ogrs4V', inputs, calculatedInputs, ogrs4VCalc(inputs, calculatedInputs, tolerance), assessmentResult)
-    compareAndAddLog('ogp2', inputs, calculatedInputs, ogp2Calc(inputs, calculatedInputs, tolerance), assessmentResult)
-    compareAndAddLog('ovp2', inputs, calculatedInputs, ovp2Calc(inputs, calculatedInputs, tolerance), assessmentResult)
-    compareAndAddLog('ospC', inputs, calculatedInputs, ospCCalc(inputs, calculatedInputs, tolerance), assessmentResult)
-    compareAndAddLog('ospI', inputs, calculatedInputs, ospICalc(inputs, calculatedInputs, tolerance), assessmentResult)
+    // TODO RSR score, rankings, OSP adjustments
+    // TODO import and compare intermediate scores?
 
+    const snsvEResult = calculate('serious_violence_extended', params)
+    compareAndAddLog('serious_violence_extended', snsvEResult, results, expectedValues, tolerance)
 
-    assessmentResult.logText.push('')
-    assessmentResult.logText.push(`    Total assessment calc time (ms): ${dayjs().diff(today)}`)
+    const generalEResult = calculate('general_extended', params)
+    compareAndAddLog('general_extended', generalEResult, results, expectedValues, tolerance)
 
-    return assessmentResult
+    const violenceEResult = calculate('violence_extended', params)
+    compareAndAddLog('violence_extended', violenceEResult, results, expectedValues, tolerance)
+
+    const snsvBResult: ScoreResult = snsvEResult.zScore == null ? calculate('serious_violence_brief', params)
+        : { zScore: null, probability: null, band: null, logText: ['Not calulcated - extended score is available'] }
+    compareAndAddLog('serious_violence_brief', snsvBResult, results, expectedValues, tolerance)
+
+    const generalBResult: ScoreResult = generalEResult.zScore == null ? calculate('general_brief', params)
+        : { zScore: null, probability: null, band: null, logText: ['Not calulcated - extended score is available'] }
+    compareAndAddLog('general_brief', generalBResult, results, expectedValues, tolerance)
+
+    const violenceBResult: ScoreResult = violenceEResult.zScore == null ? calculate('violence_brief', params)
+        : { zScore: null, probability: null, band: null, logText: ['Not calulcated - extended score is available'] }
+    compareAndAddLog('violence_brief', violenceBResult, results, expectedValues, tolerance)
+
+    compareAndAddLog('osp_c', ospCCalc(params), results, expectedValues, tolerance)
+    compareAndAddLog('osp_i', ospICalc(params), results, expectedValues, tolerance)
+
+    return results
 }
 
 
-function compareAndAddLog(scoreType: ScoreType, inputs: AssessmentCalcInputs, calculatedInputs: CalculatedInputs, actualResult: IndividualCalcResult, assessmentResult: AssessmentCalcResult) {
+function compareAndAddLog(scoreType: ScoreType, calculationResult: ScoreResult, testCaseResults: TestCaseResult, expectedScores: ExpectedScores, tolerance: Decimal) {
 
-    const expectedResultYear1 = inputs.expectedResults[`${scoreType}Year1`]
-    const expectedResultYear2 = inputs.expectedResults[`${scoreType}Year2`]
+    calculationResult.failed = true
+    const expectedScore = expectedScores[scoreType]
 
-    assessmentResult.assessmentScores.push({ type: scoreType, resultYear1: actualResult.resultYear1, resultYear2: actualResult.resultYear2 })
-
-    if (actualResult.pass) {
-        assessmentResult.logText.push(`    ${scoreType} Year 1 expected: ${expectedResultYear1}, actual: ${actualResult.resultYear1}, difference: ${actualResult.diffYear1}`)
-        assessmentResult.logText.push(`    ${scoreType} Year 2 expected: ${expectedResultYear2}, actual: ${actualResult.resultYear2}, difference: ${actualResult.diffYear2}`)
-
+    if (calculationResult.zScore == null) {
+        testCaseResults[scoreType] = null
+        testCaseResults.logText.push()
+        calculationResult.failed = expectedScore.zScore != null
+        calculationResult.diff = null
     } else {
-        assessmentResult.logText.push('')
-        assessmentResult.logText.push(`    FAIL: ${scoreType} Year 1 expected: ${expectedResultYear1}, actual: ${actualResult.resultYear1}, difference: ${actualResult.diffYear1}`)
-        assessmentResult.logText.push(`    FAIL: ${scoreType} Year 2 expected: ${expectedResultYear2}, actual: ${actualResult.resultYear2}, difference: ${actualResult.diffYear2}`)
+        if (expectedScore.zScore == null) {
+            calculationResult.diff = null
+            calculationResult.failed = true
+        } else {
+            calculationResult.diff = expectedScore.zScore.minus(calculationResult.zScore).abs()
+            calculationResult.failed = calculationResult.diff.greaterThan(tolerance)
+            // if (expectedScore.probability.minus(calculationResult.probability).abs().greaterThan(tolerance)) {
+            //     calculationResult.failed = true
+            // }
+        }
+        testCaseResults[scoreType] = calculationResult
+    }
 
-        assessmentResult.logText.push('')
-        actualResult.logText.forEach((log) => {
-            assessmentResult.logText.push(`        ${log}`)
+    if (calculationResult.failed) {
+        testCaseResults.logText.push('')
+        testCaseResults.logText.push(`    FAIL: ${scoreType} Expected: ${expectedScore.zScore}, actual: ${testCaseResults[scoreType]}, difference: ${calculationResult.diff}`)
+
+        testCaseResults.logText.push('')
+        calculationResult.logText.forEach((log) => {
+            testCaseResults.logText.push(`        ${log}`)
         })
-        assessmentResult.logText.push('')
-        assessmentResult.failed = true
+        testCaseResults.logText.push('')
+        testCaseResults.failed = true
+    } else {
+        testCaseResults.logText.push(`    ${scoreType} Expected: ${expectedScore.zScore}, actual: ${testCaseResults[scoreType]}, difference: ${calculationResult.diff}`)
     }
-}
-
-export function addAndReportPolynomial4(description: string, input: number, coef1: Decimal, coef2: Decimal, coef3: Decimal, coef4: Decimal, runningTotal: Decimal, logText: string[]): Decimal {
-
-    let result = new Decimal(0)
-    const param = new Decimal(input)
-
-    result = result.add(param.times(coef1))
-    result = result.add(param.pow(2).times(coef2))
-    result = result.add(param.pow(3).times(coef3))
-    result = result.add(param.pow(4).times(coef4))
-
-    return addAndReport(description, result, runningTotal, logText)
-}
-
-export function addAndReportPolynomial2(description: string, input: number, coef1: Decimal, coef2: Decimal, runningTotal: Decimal, logText: string[]): Decimal {
-
-    let result = new Decimal(0)
-    const param = new Decimal(input)
-
-    result = result.add(param.times(coef1))
-    result = result.add(param.pow(2).times(coef2))
-
-    return addAndReport(description, result, runningTotal, logText)
-}
-
-export function addAndReportCopas(type: 'general' | 'vGeneral' | 'violent' | 'generalSquared',
-    inputs: AssessmentCalcInputs, calculatedInputs: CalculatedInputs, coef: Decimal, runningTotal: Decimal, logText: string[]): Decimal {
-
-    const boost = type == 'vGeneral' ? 12 : type == 'violent' ? 30 : 26
-    const count = type == 'violent' ? inputs.violenceSanctionCount : inputs.sanctionCount
-
-    let result = new Decimal(count).div(boost + calculatedInputs.ageAtLastSanction - calculatedInputs.ageAtFirstSanction)
-    result = result.ln()
-    if (type == 'generalSquared') {
-        result = result.pow(2)
-    }
-    result = result.times(coef)
-
-    return addAndReport(`Copas ${type}`, result, runningTotal, logText)
-}
-
-export function addAndReport(description: string, value: Decimal, runningTotal: Decimal, logText: string[]): Decimal {
-
-    logText.push(`${description}: ${value}`)
-    return runningTotal.add(value)
 }

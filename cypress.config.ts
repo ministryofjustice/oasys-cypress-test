@@ -8,7 +8,7 @@ import * as fs from 'fs-extra'
 import * as pdf from './cypress/support/pdf'
 import { getLatestElogAndUnprocEventTime } from './cypress/support/oasysDb'
 import { noDatabaseConnection } from './localSettings'
-import { ogrsTest } from './cypress/support/ogrs/orgsTest'
+import { ogrsTest, OgrsTestParameters, OgrsTestScriptResult } from './cypress/support/ogrs/orgsTest'
 
 const reportFolder = 'report'
 const persistedData = {}
@@ -196,7 +196,7 @@ module.exports = defineConfig({
           })
         },
 
-        ogrsAssessmentCalcTest(parameters: OgrsTestParameters): Promise<OgrsTestResult> {
+        ogrsAssessmentCalcTest(parameters: OgrsTestParameters): Promise<OgrsTestScriptResult> {
           return new Promise((resolve) => {
             ogrsTest(parameters).then((response) => {
               resolve(response)
