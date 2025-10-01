@@ -8,7 +8,8 @@ import * as fs from 'fs-extra'
 import * as pdf from './cypress/support/pdf'
 import { getLatestElogAndUnprocEventTime } from './cypress/support/oasysDb'
 import { noDatabaseConnection } from './localSettings'
-import { ogrsTest, OgrsTestParameters, OgrsTestScriptResult } from './cypress/support/ogrs/orgsTest'
+import { ogrsTest } from './cypress/support/ogrs/orgsTest'
+import { OgrsTestParameters, OgrsTestScriptResult } from './cypress/support/ogrs/types'
 
 const reportFolder = 'report'
 const persistedData = {}

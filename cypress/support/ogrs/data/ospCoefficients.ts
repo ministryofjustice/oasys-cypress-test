@@ -6,6 +6,7 @@ export const ospCoefficients = {
         OSPCYear2Intercept: new Decimal(-8.216503478),
         OSPCYear1Factor: new Decimal(0.2545385404),
         OSPCYear2Factor: new Decimal(0.2545385404),
+        ospFemale: new Decimal(1).div(261),
     },
     osp_i: {
         OSPI1Female: new Decimal(0),

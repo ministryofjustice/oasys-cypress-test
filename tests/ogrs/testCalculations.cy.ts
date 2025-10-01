@@ -1,4 +1,4 @@
-import { OgrsTestScriptResult } from '../../cypress/support/ogrs/orgsTest'
+import { OgrsTestScriptResult } from '../../cypress/support/ogrs/types'
 
 const tolerance = '1E-09'
 

@@ -1,6 +1,6 @@
-export type OrgsOffenceCat = { cat: string, addVatpFlag: boolean }
+import { OgrsOffenceCat } from '../types'
 
-export const offenceCats: { [keys: string]: OrgsOffenceCat } = {
+export const offenceCats: { [keys: string]: OgrsOffenceCat } = {
 
     'Absconding/bail': { cat: 'absconding_bail', addVatpFlag: false },
     'Acquisitive violence': { cat: 'robbery', addVatpFlag: false },
