@@ -1,4 +1,4 @@
-import { OgrsTestParameters, OgrsTestScriptResult } from '../../cypress/support/ogrs/types'
+import { OgrsTestParameters, OgrsTestScriptResult, OutputParameters } from '../../cypress/support/ogrs/types'
 
 describe('OGRS calculator test', () => {
 
@@ -11,12 +11,13 @@ describe('OGRS calculator test', () => {
 
         const ogrsTestParams: OgrsTestParameters = {
             dataFile: 'ogrsTestData',
-            resultsFile: 'expectedTestResults',
+            expectedResultsFile: 'output',
+            outputFile: '',
             headers: true,
             dateFormat: 'DD-MMM-YYYY',
             tolerance: tolerance,
             precision: precision,
-            reportMode: 'verbose',
+            reportMode: 'normal',
         }
 
         cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
@@ -33,13 +34,44 @@ describe('OGRS calculator test', () => {
 
 function report(testParams: OgrsTestParameters, result: OgrsTestScriptResult) {
 
-    cy.groupedLogStart(`Test data file: ${testParams.dataFile}, expected results file: ${testParams.resultsFile}, tolerance: ${testParams.tolerance}, precisison: ${testParams.precision}`)
+    cy.groupedLogStart(`Test data file: ${testParams.dataFile}, expected results file: ${testParams.expectedResultsFile}, tolerance: ${testParams.tolerance}, precisison: ${testParams.precision}`)
 
-    result.testCaseResults.forEach((assessment) => {
+    let outputData = ''
+    if (testParams.dataFile != '' && testParams.headers) {
+        outputData = `${createHeaderLine(result.testCaseResults[0].outputParams)}\n`
+    }
 
-        assessment.logText.forEach((log) => {
+    result.testCaseResults.forEach((testCase) => {
+
+        testCase.logText.forEach((log) => {
             cy.groupedLog(log)
         })
+        if (testParams.outputFile != '') {
+            outputData = `${outputData}${createOutputCsvLine(testCase.outputParams)}\n`
+        }
     })
     cy.groupedLogEnd()
+
+    if (testParams.outputFile != '') {
+        cy.writeFile(`./cypress/downloads/${testParams.outputFile}.csv`, outputData.slice(0, -1), { encoding: null })
+    }
+}
+
+function createOutputCsvLine(outputParams: OutputParameters): string {
+
+    let line = ''
+    Object.keys(outputParams).forEach((key) => {
+        const value = outputParams[key]
+        line = `${line}${value ?? ''},`
+    })
+    return line.slice(0, -1) // remove last comma
+}
+
+function createHeaderLine(outputParams: OutputParameters): string {
+
+    let line = ''
+    Object.keys(outputParams).forEach((key) => {
+        line = `${line}${key},`
+    })
+    return line.slice(0, -1)
 }

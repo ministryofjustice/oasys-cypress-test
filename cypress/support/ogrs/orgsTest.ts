@@ -12,7 +12,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
     dateFormat = testParams.dateFormat
 
     const inputParameterFile = await fs.readFile(`${dataFilePath}${testParams.dataFile}.csv`, 'utf8')
-    const expectedResultsFile = await fs.readFile(`${dataFilePath}${testParams.resultsFile}.csv`, 'utf8')
+    const expectedResultsFile = await fs.readFile(`${dataFilePath}${testParams.expectedResultsFile}.csv`, 'utf8')
 
     const inputParameters = inputParameterFile.split('\r\n')
     const expectedResults = expectedResultsFile.split('\r\n')

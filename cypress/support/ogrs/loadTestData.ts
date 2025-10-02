@@ -29,7 +29,7 @@ export function loadParameterSet(parameterLine: string): TestCaseParameters {
         INDECENT_IMAGE_SANCTIONS: getInteger(parameters[i++]),
         PARAPHILIA_SANCTIONS: getInteger(parameters[i++]),
         STRANGER_VICTIM: getString(parameters[i++]),
-        FIRST_SANCTION_DATE: getDate(parameters[i++]),
+        AGE_AT_FIRST_SANCTION: getInteger(parameters[i++]),
         LAST_SANCTION_DATE: getDate(parameters[i++]),
         DATE_RECENT_SEXUAL_OFFENCE: getDate(parameters[i++]),
         MOST_RECENT_OFFENCE: getDate(parameters[i++]),
@@ -84,14 +84,13 @@ export function loadParameterSet(parameterLine: string): TestCaseParameters {
     }
 
     p.age = getDateDiff(p.DOB, p.COMMUNITY_DATE, 'year')
-    p.ageAtFirstSanction = getDateDiff(p.DOB, p.FIRST_SANCTION_DATE, 'year')
     p.ageAtLastSanction = getDateDiff(p.DOB, p.LAST_SANCTION_DATE, 'year')
     p.ageAtLastSanctionSexual = getDateDiff(p.DOB, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
     p.ofm = getDateDiff(p.COMMUNITY_DATE, today, 'month', true)
     p.offenceCat = getOffenceCat(p.OFFENCE_CODE)
     p.firstSanction = p.TOTAL_SANCTIONS_COUNT == 1
     p.secondSanction = p.TOTAL_SANCTIONS_COUNT == 2
-    p.yearsBetweenFirstTwoSanctions = p.secondSanction ? getDateDiff(p.FIRST_SANCTION_DATE, p.LAST_SANCTION_DATE, 'year') : 0
+    p.yearsBetweenFirstTwoSanctions = p.secondSanction ? p.ageAtLastSanction - p.AGE_AT_FIRST_SANCTION : 0
     p.neverSanctionedViolence = p.TOTAL_VIOLENT_SANCTIONS == 0
     p.onceViolent = p.TOTAL_VIOLENT_SANCTIONS == 1
     p.male = p.GENDER == 'M'

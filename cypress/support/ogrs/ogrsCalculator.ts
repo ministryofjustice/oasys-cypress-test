@@ -13,33 +13,32 @@ export function calculateTestCase(testCaseParams: TestCaseParameters, expectedRe
     const testCaseResult: TestCaseResult = {
         logText: [],
         failed: false,
+        outputParams: createOutputObject(),
     }
-
-    const actualResults = createOutputObject()
 
     // Calculate individual scores.  Save the unrounded SNSV probabilities for use in RSR
     // Extended versions for SNSV, OGP and OVP if possible
-    const snsvEProbability = calculate('serious_violence_extended', testCaseParams, actualResults)
-    calculate('general_extended', testCaseParams, actualResults)
-    calculate('violence_extended', testCaseParams, actualResults)
+    const snsvEProbability = calculate('serious_violence_extended', testCaseParams, testCaseResult.outputParams)
+    calculate('general_extended', testCaseParams, testCaseResult.outputParams)
+    calculate('violence_extended', testCaseParams, testCaseResult.outputParams)
 
     // Attempt brief versions for SNSV, OGRS4G, OGRS4V if no results from the extended ones.
-    const snsvBProbability = calculate('serious_violence_brief', testCaseParams, actualResults, actualResults.SNSV_CALCULATED_DYNAMIC == 'Y')
-    calculate('general_brief', testCaseParams, actualResults, actualResults.OGP2_CALCULATED == 'Y')
-    calculate('violence_brief', testCaseParams, actualResults, actualResults.OVP2_CALCULATED == 'Y')
+    const snsvBProbability = calculate('serious_violence_brief', testCaseParams, testCaseResult.outputParams, testCaseResult.outputParams.SNSV_CALCULATED_DYNAMIC == 'Y')
+    calculate('general_brief', testCaseParams, testCaseResult.outputParams, testCaseResult.outputParams.OGP2_CALCULATED == 'Y')
+    calculate('violence_brief', testCaseParams, testCaseResult.outputParams, testCaseResult.outputParams.OVP2_CALCULATED == 'Y')
 
     // OSP and RSR
-    ospRsrCalc(testCaseParams, actualResults, snsvBProbability, snsvEProbability)
+    ospRsrCalc(testCaseParams, testCaseResult.outputParams, snsvBProbability, snsvEProbability)
 
     // Compare and report results
     const logText: string[] = []
-    testCaseResult.failed = checkResults(expectedResults, actualResults, testParams, logText)
+    testCaseResult.failed = checkResults(expectedResults, testCaseResult.outputParams, testParams, logText)
 
     testCaseResult.logText.push('')
-    testCaseResult.logText.push(`Test case ${testCaseRef} ${testCaseResult.failed ? ' FAILED' : ''}`)
+    testCaseResult.logText.push(`Test case ${testCaseRef} ${testCaseResult.failed ? ' FAILED' : ' PASSED'}`)
     testCaseResult.logText.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
     testCaseResult.logText.push(`    Expected result:  ${JSON.stringify(expectedResults)}`)
-    testCaseResult.logText.push(`    Actual result:    ${JSON.stringify(actualResults)}`)
+    testCaseResult.logText.push(`    Actual result:    ${JSON.stringify(testCaseResult.outputParams)}`)
     if (testCaseResult.failed || testParams.reportMode == 'verbose') {
         testCaseResult.logText.push('')
         testCaseResult.logText.push(...logText)

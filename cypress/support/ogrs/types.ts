@@ -3,7 +3,8 @@ import * as dayjs from 'dayjs'
 
 export type OgrsTestParameters = {
     dataFile: string,
-    resultsFile: string,
+    expectedResultsFile: string,
+    outputFile: string,
     headers: boolean,
     dateFormat: string,
     tolerance: string,
@@ -18,11 +19,12 @@ export type OgrsTestScriptResult = {
 
 export type TestCaseResult = {
     logText: string[],
+    outputParams: OutputParameters,
     failed: boolean,
 }
 
 export type ScoreType = 'serious_violence_brief' | 'serious_violence_extended' | 'general_brief' | 'violence_brief' | 'general_extended' | 'violence_extended' | 'osp_c' | 'osp_i' | 'rsr'
-export type ScoreBand = 'Low' | 'Medium' | 'High' | 'Very High' | 'N/A'
+export type ScoreBand = 'L' | 'M' | 'H' | 'V' | 'NA'
 
 export type OgrsOffenceCat = { cat: string, addVatpFlag: boolean }
 
@@ -38,7 +40,7 @@ export type TestCaseParameters = {
     INDECENT_IMAGE_SANCTIONS: number,
     PARAPHILIA_SANCTIONS: number,
     STRANGER_VICTIM: string,
-    FIRST_SANCTION_DATE: dayjs.Dayjs,
+    AGE_AT_FIRST_SANCTION: number,
     LAST_SANCTION_DATE: dayjs.Dayjs,
     DATE_RECENT_SEXUAL_OFFENCE: dayjs.Dayjs,
     MOST_RECENT_OFFENCE: dayjs.Dayjs,
@@ -91,7 +93,6 @@ export type TestCaseParameters = {
     WEAPONS_NOT_FIREARMS: number,
     CUSTODY_IND: string,
     age?: number,
-    ageAtFirstSanction?: number,
     ageAtLastSanction?: number,
     ageAtLastSanctionSexual?: number,
     yearsBetweenFirstTwoSanctions?: number,

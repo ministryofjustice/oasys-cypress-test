@@ -174,7 +174,7 @@ function calculateCopas(scoreType: ScoreType, coefs: object, type: 'g' | 'v' | '
         const coef = coefs[coefName]
 
         if (coef != null) {
-            result = new Decimal(count).div(boost + params.ageAtLastSanction - params.ageAtFirstSanction)
+            result = new Decimal(count).div(boost + params.ageAtLastSanction - params.AGE_AT_FIRST_SANCTION)
             result = result.ln()
             if (type == 'squared') {
                 result = result.pow(2)
@@ -250,14 +250,14 @@ export function calculateBand(scoreType: ScoreType, probability: Decimal): Score
         case 'rsr':
         case 'serious_violence_brief':
         case 'serious_violence_extended':
-            return probability.greaterThanOrEqualTo(6.9) ? 'High' : probability.greaterThanOrEqualTo(3) ? 'Medium' : 'Low'
+            return probability.greaterThanOrEqualTo(6.9) ? 'H' : probability.greaterThanOrEqualTo(3) ? 'M' : 'L'
         case 'general_brief':
         case 'violence_brief':
-            return probability.greaterThanOrEqualTo(90) ? 'Very High' : probability.greaterThanOrEqualTo(75) ? 'High' : probability.greaterThanOrEqualTo(50) ? 'Medium' : 'Low'
+            return probability.greaterThanOrEqualTo(90) ? 'V' : probability.greaterThanOrEqualTo(75) ? 'H' : probability.greaterThanOrEqualTo(50) ? 'M' : 'L'
         case 'general_extended':
-            return probability.greaterThanOrEqualTo(78) ? 'Very High' : probability.greaterThanOrEqualTo(62) ? 'High' : probability.greaterThanOrEqualTo(39) ? 'Medium' : 'Low'
+            return probability.greaterThanOrEqualTo(78) ? 'V' : probability.greaterThanOrEqualTo(62) ? 'H' : probability.greaterThanOrEqualTo(39) ? 'M' : 'L'
         case 'violence_extended':
-            return probability.greaterThanOrEqualTo(73) ? 'Very High' : probability.greaterThanOrEqualTo(60) ? 'High' : probability.greaterThanOrEqualTo(42) ? 'Medium' : 'Low'
+            return probability.greaterThanOrEqualTo(73) ? 'V' : probability.greaterThanOrEqualTo(60) ? 'H' : probability.greaterThanOrEqualTo(42) ? 'M' : 'L'
     }
     return null
 }
@@ -271,7 +271,7 @@ export const requiredParams = {
         'OFFENCE_CODE',
         'TOTAL_SANCTIONS_COUNT',
         'TOTAL_VIOLENT_SANCTIONS',
-        'FIRST_SANCTION_DATE',
+        'AGE_AT_FIRST_SANCTION',
         'LAST_SANCTION_DATE',
         'COMMUNITY_DATE',
         'offenceCat',
@@ -282,7 +282,7 @@ export const requiredParams = {
         'OFFENCE_CODE',
         'TOTAL_SANCTIONS_COUNT',
         'TOTAL_VIOLENT_SANCTIONS',
-        'FIRST_SANCTION_DATE',
+        'AGE_AT_FIRST_SANCTION',
         'LAST_SANCTION_DATE',
         'COMMUNITY_DATE',
         'TWO_POINT_TWO',
@@ -311,7 +311,7 @@ export const requiredParams = {
         'GENDER',
         'OFFENCE_CODE',
         'TOTAL_SANCTIONS_COUNT',
-        'FIRST_SANCTION_DATE',
+        'AGE_AT_FIRST_SANCTION',
         'LAST_SANCTION_DATE',
         'COMMUNITY_DATE',
         'offenceCat',
@@ -322,7 +322,7 @@ export const requiredParams = {
         'OFFENCE_CODE',
         'TOTAL_SANCTIONS_COUNT',
         'TOTAL_VIOLENT_SANCTIONS',
-        'FIRST_SANCTION_DATE',
+        'AGE_AT_FIRST_SANCTION',
         'LAST_SANCTION_DATE',
         'COMMUNITY_DATE',
         'offenceCat',
@@ -332,7 +332,7 @@ export const requiredParams = {
         'GENDER',
         'OFFENCE_CODE',
         'TOTAL_SANCTIONS_COUNT',
-        'FIRST_SANCTION_DATE',
+        'AGE_AT_FIRST_SANCTION',
         'LAST_SANCTION_DATE',
         'COMMUNITY_DATE',
         'THREE_POINT_FOUR',
@@ -370,7 +370,7 @@ export const requiredParams = {
         'OFFENCE_CODE',
         'TOTAL_SANCTIONS_COUNT',
         'TOTAL_VIOLENT_SANCTIONS',
-        'FIRST_SANCTION_DATE',
+        'AGE_AT_FIRST_SANCTION',
         'LAST_SANCTION_DATE',
         'COMMUNITY_DATE',
         'TWO_POINT_TWO',
