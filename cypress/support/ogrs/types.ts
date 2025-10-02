@@ -1,66 +1,28 @@
 import { Decimal } from 'decimal.js'
 import * as dayjs from 'dayjs'
 
-export type OgrsTestParameters = { dataFile: string, resultsFile: string, tolerance: string }
-
-export type ScoreType = 'serious_violence_brief' | 'serious_violence_extended' | 'general_brief' | 'violence_brief' | 'general_extended' | 'violence_extended' | 'osp_c' | 'osp_i' | 'rsr'
-export type ScoreBand = 'Low' | 'Medium' | 'High' | 'Very High' | 'N/A'
+export type OgrsTestParameters = {
+    dataFile: string,
+    resultsFile: string,
+    headers: boolean,
+    dateFormat: string,
+    tolerance: string,
+    precision: number,
+    reportMode: 'verbose' | 'normal' | 'minimal',
+}
 
 export type OgrsTestScriptResult = {
-    assessmentResults: TestCaseResult[],
+    testCaseResults: TestCaseResult[],
     failed: boolean,
 }
 
 export type TestCaseResult = {
-    serious_violence_brief?: ScoreResult,
-    serious_violence_extended?: ScoreResult,
-    general_brief?: ScoreResult,
-    violence_brief?: ScoreResult,
-    general_extended?: ScoreResult,
-    violence_extended?: ScoreResult,
-    osp_c?: ScoreResult,
-    osp_i?: ScoreResult,
-    rsr?: ScoreResult,
     logText: string[],
     failed: boolean,
-    outputParams: OutputParameters
 }
 
-export type ScoreResult = {
-    zScore: Decimal,
-    probability: number,
-    band: ScoreBand,
-    logText: string[],
-    zDiff: Decimal,
-    pDiff: number,
-    failed: boolean,
-}
-
-export type CalculationResult = {
-    zScore: Decimal,
-    probability: number,
-    band: ScoreBand,
-    status: ScoreStatus,
-}
-
-export type ExpectedScoreValues = {
-    zScore: Decimal,
-    probability: number,
-    band: ScoreBand,
-}
-
-export type ExpectedScores = {
-    outputParameters: OutputParameters,
-    serious_violence_brief: ExpectedScoreValues,
-    serious_violence_extended: ExpectedScoreValues,
-    general_brief: ExpectedScoreValues,
-    violence_brief: ExpectedScoreValues,
-    general_extended: ExpectedScoreValues,
-    violence_extended: ExpectedScoreValues,
-    osp_c: ExpectedScoreValues,
-    osp_i: ExpectedScoreValues,
-    rsr: ExpectedScoreValues,
-}
+export type ScoreType = 'serious_violence_brief' | 'serious_violence_extended' | 'general_brief' | 'violence_brief' | 'general_extended' | 'violence_extended' | 'osp_c' | 'osp_i' | 'rsr'
+export type ScoreBand = 'Low' | 'Medium' | 'High' | 'Very High' | 'N/A'
 
 export type OgrsOffenceCat = { cat: string, addVatpFlag: boolean }
 
@@ -199,7 +161,7 @@ export type OutputParameters = {
     SNSV_ONCE_VIOLENT_STATIC: Decimal,
     SNSV_TOTAL_VIOLENT_SANCTIONS_STATIC: Decimal,
     SNSV_COPAS_VIOLENT_STATIC: Decimal,
-    SNSV_TOTAL_SCORE_STATIC: Decimal,
+    SNSV_SCORE_STATIC: Decimal,
     SNSV_PERCENTAGE_STATIC: Decimal,
     SNSV_MISSING_QUESTIONS_STATIC: Decimal,
     SNSV_MISSING_COUNT_STATIC: Decimal,
@@ -240,7 +202,7 @@ export type OutputParameters = {
     OGP2_CANNABIS: Decimal,
     OGP2_STEROIDS: Decimal,
     OGP2_OTHER_DRUGS: Decimal,
-    OGP2_TOTAL_SCORE: Decimal,
+    OGP2_SCORE: Decimal,
     OGP2_PERCENTAGE: Decimal,
     OGP2_MISSING_QUESTIONS: string,
     OGP2_MISSING_COUNT: number,
@@ -281,7 +243,7 @@ export type OutputParameters = {
     OVP2_ECSTASY: Decimal,
     OVP2_CANNABIS: Decimal,
     OVP2_STEROIDS: Decimal,
-    OVP2_TOTAL_SCORE: Decimal,
+    OVP2_SCORE: Decimal,
     OVP2_PERCENTAGE: Decimal,
     OVP2_MISSING_QUESTIONS: string,
     OVP2_MISSING_COUNT: number,
@@ -319,7 +281,7 @@ export type OutputParameters = {
     SNSV_WEAPONS_NOT_FIREARMS_DYNAMIC: Decimal,
     SNSV_CRIMINAL_DAMAGE_LIFE_DYNAMIC: Decimal,
     SNSV_ARSON_DYNAMIC: Decimal,
-    SNSV_TOTAL_SCORE_DYNAMIC: Decimal,
+    SNSV_SCORE_DYNAMIC: Decimal,
     SNSV_PERCENTAGE_DYNAMIC: Decimal,
     SNSV_MISSING_QUESTIONS_DYNAMIC: Decimal,
     SNSV_MISSING_COUNT_DYNAMIC: Decimal,
@@ -329,7 +291,6 @@ export type OutputParameters = {
     OSP_DC_BAND: string,
     OSP_DC_RISK_REDUCTION: Decimal,
     OSP_IIC_CALCULATED: ScoreStatus,
-    OSP_IIC_SCORE: Decimal,
     OSP_IIC_PERCENTAGE: Decimal,
     OSP_IIC_BAND: string,
     RSR_PERCENTAGE: Decimal,

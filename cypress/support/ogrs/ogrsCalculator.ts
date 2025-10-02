@@ -1,257 +1,109 @@
 import { Decimal } from 'decimal.js'
 
-import { TestCaseParameters, TestCaseResult, ExpectedScores, CalculationResult, ScoreType, OutputParameters } from './types'
+import { TestCaseParameters, TestCaseResult, OutputParameters, OgrsTestParameters } from './types'
 import { calculate } from './calculateScore'
-import { ospCCalc, ospICalc } from './osp'
-import { rsrCalc } from './rsr'
+import { ospRsrCalc } from './ospRsr'
 import { createOutputObject } from './createOutput'
 
 
-export function calculateAssessment(params: TestCaseParameters, expectedValues: ExpectedScores, toleranceParam: string, testCaseRef: string): TestCaseResult {
+export function calculateTestCase(testCaseParams: TestCaseParameters, expectedResults: OutputParameters, testCaseRef: string, testParams: OgrsTestParameters): TestCaseResult {
 
-    Decimal.set({ precision: 40 })
+    Decimal.set({ precision: testParams.precision })
 
-    const results: TestCaseResult = {
-        serious_violence_brief: null,
-        serious_violence_extended: null,
-        general_brief: null,
-        violence_brief: null,
-        general_extended: null,
-        violence_extended: null,
-        osp_c: null,
-        osp_i: null,
-        rsr: null,
+    const testCaseResult: TestCaseResult = {
         logText: [],
         failed: false,
-        outputParams: createOutputObject(),
     }
-    const tolerance = new Decimal(toleranceParam)
 
-    const snsvEResult = calculate('serious_violence_extended', params, results.outputParams)
-    const generalEResult = calculate('general_extended', params, results.outputParams)
-    const violenceEResult = calculate('violence_extended', params, results.outputParams)
-    const snsvBResult = calculate('serious_violence_brief', params, results.outputParams, snsvEResult.status == 'Y')
-    const generalBResult = calculate('general_brief', params, results.outputParams, generalEResult.status == 'Y')
-    const violenceBResult = calculate('violence_brief', params, results.outputParams, violenceEResult.status == 'Y')
-    const ospCResult = ospCCalc(params, results.outputParams)
-    const ospIResult = ospICalc(params, results.outputParams)
-    const rsrResult = rsrCalc(params, snsvBResult, snsvEResult, ospCResult, ospIResult, results.outputParams)
+    const actualResults = createOutputObject()
 
-    results.logText.push('')
-    results.logText.push(`Test case ${testCaseRef}`)
-    results.logText.push(`      Parameters:      ${JSON.stringify(params)}`)
-    results.logText.push(`      Expected output: ${JSON.stringify(expectedValues.outputParameters)}`)
-    results.logText.push(`      Cypress output:  ${JSON.stringify(results.outputParams)}`)
+    // Calculate individual scores.  Save the unrounded SNSV probabilities for use in RSR
+    // Extended versions for SNSV, OGP and OVP if possible
+    const snsvEProbability = calculate('serious_violence_extended', testCaseParams, actualResults)
+    calculate('general_extended', testCaseParams, actualResults)
+    calculate('violence_extended', testCaseParams, actualResults)
 
-    checkResult('serious_violence_extended', snsvEResult, results, expectedValues, tolerance)
-    checkResult('general_extended', generalEResult, results, expectedValues, tolerance)
-    checkResult('violence_extended', violenceEResult, results, expectedValues, tolerance)
-    checkResult('serious_violence_brief', snsvBResult, results, expectedValues, tolerance)
-    checkResult('general_brief', generalBResult, results, expectedValues, tolerance)
-    checkResult('violence_brief', violenceBResult, results, expectedValues, tolerance)
-    checkResult('osp_c', ospCResult, results, expectedValues, tolerance)
-    checkResult('osp_i', ospIResult, results, expectedValues, tolerance)
-    checkResult('rsr', rsrResult, results, expectedValues, tolerance)
+    // Attempt brief versions for SNSV, OGRS4G, OGRS4V if no results from the extended ones.
+    const snsvBProbability = calculate('serious_violence_brief', testCaseParams, actualResults, actualResults.SNSV_CALCULATED_DYNAMIC == 'Y')
+    calculate('general_brief', testCaseParams, actualResults, actualResults.OGP2_CALCULATED == 'Y')
+    calculate('violence_brief', testCaseParams, actualResults, actualResults.OVP2_CALCULATED == 'Y')
 
-    return results
+    // OSP and RSR
+    ospRsrCalc(testCaseParams, actualResults, snsvBProbability, snsvEProbability)
+
+    // Compare and report results
+    const logText: string[] = []
+    testCaseResult.failed = checkResults(expectedResults, actualResults, testParams, logText)
+
+    testCaseResult.logText.push('')
+    testCaseResult.logText.push(`Test case ${testCaseRef} ${testCaseResult.failed ? ' FAILED' : ''}`)
+    testCaseResult.logText.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
+    testCaseResult.logText.push(`    Expected result:  ${JSON.stringify(expectedResults)}`)
+    testCaseResult.logText.push(`    Actual result:    ${JSON.stringify(actualResults)}`)
+    if (testCaseResult.failed || testParams.reportMode == 'verbose') {
+        testCaseResult.logText.push('')
+        testCaseResult.logText.push(...logText)
+    }
+
+    return testCaseResult
 }
 
+function checkResults(expectedResults: OutputParameters, actualResults: OutputParameters, testParams: OgrsTestParameters, logText: string[]): boolean {
 
-function checkResult(scoreType: ScoreType, calculationResult: CalculationResult, testCaseResults: TestCaseResult, expectedScores: ExpectedScores, tolerance: Decimal) {
+    // Compare the complete result set for a single test case, line by line, to determine failure and generate report
 
-    const expectedScore = expectedScores[scoreType]
+    const tolerance = new Decimal(testParams.tolerance)
+    let failed = false
 
-    const zDiff = (calculationResult.zScore == null || expectedScore.zScore == null) ? null : expectedScore.zScore.minus(calculationResult.zScore).abs()
-    const pDiff = (calculationResult.probability == null || expectedScore.probability == null) ? null : Math.abs(expectedScore.probability - calculationResult.probability)
+    Object.keys(expectedResults).forEach((param) => {
 
-    testCaseResults[scoreType] = {
-        zScore: calculationResult.zScore,
-        probability: calculationResult.probability,
-        band: calculationResult.band,
-        logText: [],
-        zDiff: zDiff,
-        pDiff: pDiff,
-        failed: false,
-    }
+        // tolerance check for _SCORE, decimal check for all other numbers except _COUNT, array check for _MISSING_QUESTIONS, simple equality for everything else
+        let mode: 'decimal' | 'tolerance' | 'simple' | 'missing' = 'simple'
 
-    // zScore
-    if (calculationResult.zScore == null || expectedScore.zScore == null) {
-        if (calculationResult.zScore != expectedScore.zScore) {
-            testCaseResults[scoreType].failed = true
+        if (!Number.isNaN(Number.parseFloat(expectedResults[param])) && !Number.isNaN(Number.parseFloat(actualResults[param]))) {  // numeric comparison required
+
+            if (param.includes('_SCORE')) {
+                mode = 'tolerance'
+            } else if (!param.includes('_COUNT')) {
+                mode = 'decimal'
+            }
+        } else if (param.includes('MISSING_QUESTIONS')) {
+            mode = 'missing'
         }
-    } else {
-        if (zDiff.greaterThan(tolerance)) {
-            testCaseResults[scoreType].failed = true
+
+        // check Decimal values - with tolerance for scores
+        if (mode == 'decimal' || mode == 'tolerance') {
+            const diff = expectedResults[param].minus(actualResults[param]).abs()
+            if ((mode == 'tolerance' && diff.greaterThan(tolerance)) || (mode == 'decimal' && diff.greaterThan(0))) {
+                failed = true
+                if (mode == 'tolerance' || testParams.reportMode != 'minimal') {
+                    logText.push(`      ${param} failed: expected ${expectedResults[param]}, got ${actualResults[param]}, difference: ${diff}`)
+                }
+            } else if (mode == 'tolerance') {
+                logText.push(`      ${param} passed: expected ${expectedResults[param]}, got ${actualResults[param]}, difference: ${diff}`)
+            } else if (testParams.reportMode == 'verbose') {
+                logText.push(`      ${param} passed: expected ${expectedResults[param]}, got ${actualResults[param]}`)
+            }
+
+            // missing questions list
+        } else if (mode == 'missing') {  // TODO check for failure
+            if (testParams.reportMode != 'minimal') {
+                logText.push(`      ${param}: expected ${expectedResults[param]}, got ${actualResults[param]}`)
+            }
+
+            // simple equality check
+        } else if (actualResults[param] != expectedResults[param]) {
+            failed = true
+            if (testParams.reportMode != 'minimal') {
+                logText.push(`      ${param} failed: expected ${expectedResults[param]}, got ${actualResults[param]}`)
+            }
+
+            // otherwise passed
+        } else if (testParams.reportMode == 'verbose') {
+            logText.push(`      ${param} passed: ${expectedResults[param]}`)
         }
-    }
+    })
 
-    // Probability
-    if (calculationResult.probability == null || expectedScore.probability == null) {
-        if (calculationResult.probability != expectedScore.probability) {
-            testCaseResults[scoreType].failed = true
-        }
-    } else {
-        if (pDiff > 0) {
-            testCaseResults[scoreType].failed = true
-        }
-    }
-
-    // Band
-    if (calculationResult.band != expectedScore.band) {
-        testCaseResults[scoreType].failed = true
-    }
-
-    testCaseResults.logText.push('')
-    testCaseResults.logText.push(`  ${scoreType} ${testCaseResults[scoreType].failed ? '*** FAILED ***' : ''}`)
-    testCaseResults.logText.push(`    zScore -      Expected: ${expectedScore.zScore}, actual: ${testCaseResults[scoreType].zScore}, difference: ${zDiff}`)
-    testCaseResults.logText.push(`    Probability - Expected: ${expectedScore.probability}, actual: ${testCaseResults[scoreType].probability}, difference: ${pDiff}`)
-    testCaseResults.logText.push(`    Band -        Expected: ${expectedScore.band}, actual: ${testCaseResults[scoreType].band}`)
-
-    if (testCaseResults[scoreType].failed) {
-        testCaseResults.failed = true
-    }
-
+    return failed
 }
 
-
-export const requiredParams = {
-
-    serious_violence_brief: [
-        'DOB',
-        'GENDER',
-        'OFFENCE_CODE',
-        'TOTAL_SANCTIONS_COUNT',
-        'TOTAL_VIOLENT_SANCTIONS',
-        'FIRST_SANCTION_DATE',
-        'LAST_SANCTION_DATE',
-        'COMMUNITY_DATE',
-        'offenceCat',
-    ],
-    serious_violence_extended: [
-        'DOB',
-        'GENDER',
-        'OFFENCE_CODE',
-        'TOTAL_SANCTIONS_COUNT',
-        'TOTAL_VIOLENT_SANCTIONS',
-        'FIRST_SANCTION_DATE',
-        'LAST_SANCTION_DATE',
-        'COMMUNITY_DATE',
-        'TWO_POINT_TWO',
-        'THREE_POINT_FOUR',
-        'FOUR_POINT_TWO',
-        'SIX_POINT_FOUR',
-        'SIX_POINT_SEVEN',
-        'NINE_POINT_ONE',
-        'NINE_POINT_TWO',
-        'ELEVEN_POINT_TWO',
-        'ELEVEN_POINT_FOUR',
-        'TWELVE_POINT_ONE',
-        'AGGRAVATED_BURGLARY',
-        'ARSON',
-        'CRIMINAL_DAMAGE_LIFE',
-        'FIREARMS',
-        'GBH',
-        'HOMICIDE',
-        'KIDNAP',
-        'ROBBERY',
-        'WEAPONS_NOT_FIREARMS',
-        'offenceCat',
-    ],
-    general_brief: [
-        'DOB',
-        'GENDER',
-        'OFFENCE_CODE',
-        'TOTAL_SANCTIONS_COUNT',
-        'FIRST_SANCTION_DATE',
-        'LAST_SANCTION_DATE',
-        'COMMUNITY_DATE',
-        'offenceCat',
-    ],
-    violence_brief: [
-        'DOB',
-        'GENDER',
-        'OFFENCE_CODE',
-        'TOTAL_SANCTIONS_COUNT',
-        'TOTAL_VIOLENT_SANCTIONS',
-        'FIRST_SANCTION_DATE',
-        'LAST_SANCTION_DATE',
-        'COMMUNITY_DATE',
-        'offenceCat',
-    ],
-    general_extended: [
-        'DOB',
-        'GENDER',
-        'OFFENCE_CODE',
-        'TOTAL_SANCTIONS_COUNT',
-        'FIRST_SANCTION_DATE',
-        'LAST_SANCTION_DATE',
-        'COMMUNITY_DATE',
-        'THREE_POINT_FOUR',
-        'FOUR_POINT_TWO',
-        'SIX_POINT_FOUR',
-        'SIX_POINT_SEVEN',
-        'SEVEN_POINT_TWO',
-        'NINE_POINT_ONE',
-        'NINE_POINT_TWO',
-        'ELEVEN_POINT_TWO',
-        'TWELVE_POINT_ONE',
-        'DAILY_DRUG_USER',
-        'AMPHETAMINES',
-        'BENZODIAZIPINES',
-        'CANNABIS',
-        'CRACK_COCAINE',
-        'ECSTASY',
-        'HALLUCINOGENS',
-        'HEROIN',
-        'KETAMINE',
-        'METHADONE',
-        'MISUSED_PRESCRIBED',
-        'OTHER_DRUGS',
-        'OTHER_OPIATE',
-        'POWDER_COCAINE',
-        'SOLVENTS',
-        'SPICE',
-        'STEROIDS',
-        'EIGHT_POINT_EIGHT',
-        'offenceCat',
-    ],
-    violence_extended: [
-        'DOB',
-        'GENDER',
-        'OFFENCE_CODE',
-        'TOTAL_SANCTIONS_COUNT',
-        'TOTAL_VIOLENT_SANCTIONS',
-        'FIRST_SANCTION_DATE',
-        'LAST_SANCTION_DATE',
-        'COMMUNITY_DATE',
-        'TWO_POINT_TWO',
-        'THREE_POINT_FOUR',
-        'FOUR_POINT_TWO',
-        'SIX_POINT_FOUR',
-        'SIX_POINT_SEVEN',
-        'NINE_POINT_ONE',
-        'NINE_POINT_TWO',
-        'ELEVEN_POINT_TWO',
-        'ELEVEN_POINT_FOUR',
-        'TWELVE_POINT_ONE',
-        'EIGHT_POINT_EIGHT',
-        'offenceCat',
-    ],
-    osp_c: [
-        'DOB',
-        'TOTAL_SANCTIONS_COUNT',
-        'CONTACT_ADULT_SANCTIONS',
-        'CONTACT_CHILD_SANCTIONS',
-        'INDECENT_IMAGE_SANCTIONS',
-        'PARAPHILIA_SANCTIONS',
-        'STRANGER_VICTIM',
-        'DATE_RECENT_SEXUAL_OFFENCE',
-
-    ],
-    osp_i: [
-        'GENDER',
-        'CONTACT_CHILD_SANCTIONS',
-        'INDECENT_IMAGE_SANCTIONS',
-        'ONE_POINT_THIRTY',
-    ],
-}

@@ -1,6 +1,6 @@
 import { Decimal } from 'decimal.js'
 
-import { OutputParameters, ScoreType } from './types'
+import { OutputParameters, ScoreStatus, ScoreType } from './types'
 
 export function createOutputObject(): OutputParameters {
 
@@ -54,7 +54,7 @@ export function createOutputObject(): OutputParameters {
         SNSV_ONCE_VIOLENT_STATIC: null,
         SNSV_TOTAL_VIOLENT_SANCTIONS_STATIC: null,
         SNSV_COPAS_VIOLENT_STATIC: null,
-        SNSV_TOTAL_SCORE_STATIC: null,
+        SNSV_SCORE_STATIC: null,
         SNSV_PERCENTAGE_STATIC: null,
         SNSV_MISSING_QUESTIONS_STATIC: null,
         SNSV_MISSING_COUNT_STATIC: null,
@@ -95,7 +95,7 @@ export function createOutputObject(): OutputParameters {
         OGP2_CANNABIS: null,
         OGP2_STEROIDS: null,
         OGP2_OTHER_DRUGS: null,
-        OGP2_TOTAL_SCORE: null,
+        OGP2_SCORE: null,
         OGP2_PERCENTAGE: null,
         OGP2_MISSING_QUESTIONS: null,
         OGP2_MISSING_COUNT: null,
@@ -136,7 +136,7 @@ export function createOutputObject(): OutputParameters {
         OVP2_ECSTASY: null,
         OVP2_CANNABIS: null,
         OVP2_STEROIDS: null,
-        OVP2_TOTAL_SCORE: null,
+        OVP2_SCORE: null,
         OVP2_PERCENTAGE: null,
         OVP2_MISSING_QUESTIONS: null,
         OVP2_MISSING_COUNT: null,
@@ -174,7 +174,7 @@ export function createOutputObject(): OutputParameters {
         SNSV_WEAPONS_NOT_FIREARMS_DYNAMIC: null,
         SNSV_CRIMINAL_DAMAGE_LIFE_DYNAMIC: null,
         SNSV_ARSON_DYNAMIC: null,
-        SNSV_TOTAL_SCORE_DYNAMIC: null,
+        SNSV_SCORE_DYNAMIC: null,
         SNSV_PERCENTAGE_DYNAMIC: null,
         SNSV_MISSING_QUESTIONS_DYNAMIC: null,
         SNSV_MISSING_COUNT_DYNAMIC: null,
@@ -184,7 +184,6 @@ export function createOutputObject(): OutputParameters {
         OSP_DC_BAND: null,
         OSP_DC_RISK_REDUCTION: null,
         OSP_IIC_CALCULATED: 'N',
-        OSP_IIC_SCORE: null,
         OSP_IIC_PERCENTAGE: null,
         OSP_IIC_BAND: null,
         RSR_PERCENTAGE: null,
@@ -195,15 +194,15 @@ export function createOutputObject(): OutputParameters {
     }
 }
 
-export function addOutputParameter(o: OutputParameters, scoreType: ScoreType, item: string, value: string | number) {
+export function addOutputParameter(outputParams: OutputParameters, scoreType: ScoreType, item: string, value: string | Decimal | number | ScoreStatus) {
 
     const parameterName = getOutputParameterName(scoreType, item)
-    if (parameterName != null && parameterName in o) {
-        o[parameterName] = value
+    if (parameterName != null && parameterName in outputParams) {
+        outputParams[parameterName] = value
     }
 }
 
-export function getOutputParameterName(scoreType: ScoreType, item: string): string {
+function getOutputParameterName(scoreType: ScoreType, item: string): string {
 
     const suffix = scoreType == 'serious_violence_brief' ? '_STATIC' : scoreType == 'serious_violence_extended' ? '_DYNAMIC' : ''
     const itemName = outputItemName[item]
@@ -288,8 +287,8 @@ const outputItemName = {
     r1q2_damage_with_intent_prev: 'CRIMINAL_DAMAGE_LIFE',
     r1q2_arson_prev: 'ARSON',
 
-    score: 'TOTAL_SCORE',
-    probability: 'PERCENTAGE',
+    score: 'SCORE',
+    percentage: 'PERCENTAGE',
     missingQuestions: 'MISSING_QUESTIONS',
     missingCount: 'MISSING_COUNT',
     status: 'CALCULATED',
@@ -298,10 +297,5 @@ const outputItemName = {
 }
 
 const nameCorrections = {
-    OGRS4G_TOTAL_SCORE: 'OGRS4G_SCORE',
-    OGRS4V_TOTAL_SCORE: 'OGRS4V_SCORE',
-    OSP_DC_TOTAL_SCORE: 'OSP_DC_SCORE',
-    OSP_IIC_TOTAL_SCORE: 'OSP_IIC_SCORE',
     SNSV_RELATIONSHIP_DYNAMIC: 'SNSV_RELATIONSHIP_QUALITY_DYNAMIC',
-    SNSV_PERCENTAGE_DYNAMIC: 'SNSV_PERCENTAGE_YR2_DYNAMIC',
 }

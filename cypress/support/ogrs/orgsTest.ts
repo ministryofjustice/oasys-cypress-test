@@ -1,32 +1,38 @@
 import * as fs from 'fs-extra'
 
 import { OgrsTestParameters, OgrsTestScriptResult, TestCaseResult } from './types'
-import { calculateAssessment } from './ogrsCalculator'
+import { calculateTestCase } from './ogrsCalculator'
 import { loadParameterSet, loadExpectedValues } from './loadTestData'
 
 const dataFilePath = './cypress/support/ogrs/data/'
-const headers = true
-export const dateFormat = 'DD-MMM-YYYY'
+export let dateFormat = ''
 
-export async function ogrsTest(parameters: OgrsTestParameters): Promise<OgrsTestScriptResult> {
+export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTestScriptResult> {
 
-    const dataSet = await fs.readFile(`${dataFilePath}${parameters.dataFile}.csv`, 'utf8')
-    const assessments = dataSet.split('\r\n')
-    const expectedResultsSet = await fs.readFile(`${dataFilePath}${parameters.resultsFile}.csv`, 'utf8')
-    const expectedResults = expectedResultsSet.split('\r\n')
+    dateFormat = testParams.dateFormat
 
-    const results: TestCaseResult[] = []
+    const inputParameterFile = await fs.readFile(`${dataFilePath}${testParams.dataFile}.csv`, 'utf8')
+    const expectedResultsFile = await fs.readFile(`${dataFilePath}${testParams.resultsFile}.csv`, 'utf8')
 
+    const inputParameters = inputParameterFile.split('\r\n')
+    const expectedResults = expectedResultsFile.split('\r\n')
+
+    const ogrsTestResults: TestCaseResult[] = []
     let failed = false
 
-    for (let i = headers ? 1 : 0; i < assessments.length; i++) {
-        const assessmentResult = calculateAssessment(loadParameterSet(assessments[i]), loadExpectedValues(expectedResults[i]), parameters.tolerance, i.toString())
-        results.push(assessmentResult)
-        if (assessmentResult.failed) {
+    for (let i = testParams.headers ? 1 : 0; i < inputParameters.length; i++) {
+
+        const testCaseParams = loadParameterSet(inputParameters[i])
+        const expectedTestCaseResult = loadExpectedValues(expectedResults[i])
+        const testCaseIdentifier = i.toString()
+
+        const testCaseResult = calculateTestCase(testCaseParams, expectedTestCaseResult, testCaseIdentifier, testParams)
+        ogrsTestResults.push(testCaseResult)
+        if (testCaseResult.failed) {
             failed = true
         }
     }
 
-    return { assessmentResults: results, failed: failed }
+    return { testCaseResults: ogrsTestResults, failed: failed }
 }
 

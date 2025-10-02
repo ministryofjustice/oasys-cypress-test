@@ -1,16 +1,27 @@
-import { OgrsTestScriptResult } from '../../cypress/support/ogrs/types'
-
-const tolerance = '1E-09'
+import { OgrsTestParameters, OgrsTestScriptResult } from '../../cypress/support/ogrs/types'
 
 describe('OGRS calculator test', () => {
+
+    const tolerance = '1E-09'
+    const precision = 40
 
     it('Test calculations', () => {
 
         let failed = false
 
-        cy.task('ogrsAssessmentCalcTest', { dataFile: 'ogrsTestData', resultsFile: 'expectedTestResults', tolerance: tolerance }).then((result: OgrsTestScriptResult) => {
+        const ogrsTestParams: OgrsTestParameters = {
+            dataFile: 'ogrsTestData',
+            resultsFile: 'expectedTestResults',
+            headers: true,
+            dateFormat: 'DD-MMM-YYYY',
+            tolerance: tolerance,
+            precision: precision,
+            reportMode: 'verbose',
+        }
 
-            report('orgsTestData', result)
+        cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
+
+            report(ogrsTestParams, result)
             if (result.failed) {
                 failed = true
             }
@@ -20,11 +31,11 @@ describe('OGRS calculator test', () => {
     })
 })
 
-function report(dataFile: string, result: OgrsTestScriptResult) {
+function report(testParams: OgrsTestParameters, result: OgrsTestScriptResult) {
 
-    cy.groupedLogStart(`Test data file: ${dataFile}, tolerance: ${tolerance}`)
+    cy.groupedLogStart(`Test data file: ${testParams.dataFile}, expected results file: ${testParams.resultsFile}, tolerance: ${testParams.tolerance}, precisison: ${testParams.precision}`)
 
-    result.assessmentResults.forEach((assessment) => {
+    result.testCaseResults.forEach((assessment) => {
 
         assessment.logText.forEach((log) => {
             cy.groupedLog(log)
