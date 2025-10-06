@@ -14,17 +14,16 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
     const inputParameterFile = await fs.readFile(`${dataFilePath}${testParams.dataFile}.csv`, 'utf8')
     const expectedResultsFile = await fs.readFile(`${dataFilePath}${testParams.expectedResultsFile}.csv`, 'utf8')
 
-    const inputParameters = inputParameterFile.split('\r\n')
-    const expectedResults = expectedResultsFile.split('\r\n')
+    const inputParameters = inputParameterFile.split('\n')
+    const expectedResults = expectedResultsFile.split('\n')
 
     const ogrsTestResults: TestCaseResult[] = []
     let failed = false
 
     for (let i = testParams.headers ? 1 : 0; i < inputParameters.length; i++) {
-
         const testCaseParams = loadParameterSet(inputParameters[i])
         const expectedTestCaseResult = loadExpectedValues(expectedResults[i])
-        const testCaseIdentifier = i.toString()
+        const testCaseIdentifier = (i + 1).toString()
 
         const testCaseResult = calculateTestCase(testCaseParams, expectedTestCaseResult, testCaseIdentifier, testParams)
         ogrsTestResults.push(testCaseResult)

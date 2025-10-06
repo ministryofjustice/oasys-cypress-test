@@ -22,7 +22,8 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
 
         if (params.female) {
             probabilityOspC = c.ospFemale
-            reportScores(outputParams, 'osp_c', null, probabilityOspC, 'Low', 'Y', [])
+            reportScores(outputParams, 'osp_c', null, null, null, 'N', [])
+            addOutputParameter(outputParams, 'osp_c', 'riskReduction', 'N')
         } else {
 
             const contactAdultScore = params.CONTACT_ADULT_SANCTIONS == 0 ? 0 : params.CONTACT_ADULT_SANCTIONS == 1 ? 5 : params.CONTACT_ADULT_SANCTIONS == 2 ? 10 : 15
@@ -40,7 +41,7 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
             const band = ospBand(params, totalScore)
 
             addOutputParameter(outputParams, 'osp_c', 'riskReduction', band.reduced)
-            reportScores(outputParams, 'osp_c', zScore, probabilityToPercentage(probabilityOspC), band.band, 'Y', [])
+            reportScores(outputParams, 'osp_c', new Decimal(totalScore), probabilityToPercentage(probabilityOspC), band.band, 'Y', [])
         }
     }
 
@@ -72,6 +73,7 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
 
     const band = calculateBand('rsr', percentageRsr)
     reportScores(outputParams, 'rsr', null, percentageRsr, band, 'Y', [])
+    addOutputParameter(outputParams, 'rsr', 'dynamic', outputParams.SNSV_CALCULATED_DYNAMIC)
 }
 
 function ospBand(params: TestCaseParameters, totalScore: number): { band: ScoreBand, reduced: 'Y' | 'N' } {

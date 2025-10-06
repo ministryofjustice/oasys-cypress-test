@@ -37,8 +37,8 @@ export function calculateTestCase(testCaseParams: TestCaseParameters, expectedRe
     testCaseResult.logText.push('')
     testCaseResult.logText.push(`Test case ${testCaseRef} ${testCaseResult.failed ? ' FAILED' : ' PASSED'}`)
     testCaseResult.logText.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
-    testCaseResult.logText.push(`    Expected result:  ${JSON.stringify(expectedResults)}`)
-    testCaseResult.logText.push(`    Actual result:    ${JSON.stringify(testCaseResult.outputParams)}`)
+    testCaseResult.logText.push(`    Oracle result:    ${JSON.stringify(expectedResults)}`)
+    testCaseResult.logText.push(`    Cypress result:   ${JSON.stringify(testCaseResult.outputParams)}`)
     if (testCaseResult.failed || testParams.reportMode == 'verbose') {
         testCaseResult.logText.push('')
         testCaseResult.logText.push(...logText)
@@ -56,12 +56,12 @@ function checkResults(expectedResults: OutputParameters, actualResults: OutputPa
 
     Object.keys(expectedResults).forEach((param) => {
 
-        // tolerance check for _SCORE, decimal check for all other numbers except _COUNT, array check for _MISSING_QUESTIONS, simple equality for everything else
+        // tolerance check for _SCORE and _COPAS, decimal check for all other numbers except _COUNT, array check for _MISSING_QUESTIONS, simple equality for everything else
         let mode: 'decimal' | 'tolerance' | 'simple' | 'missing' = 'simple'
 
         if (!Number.isNaN(Number.parseFloat(expectedResults[param])) && !Number.isNaN(Number.parseFloat(actualResults[param]))) {  // numeric comparison required
 
-            if (param.includes('_SCORE')) {
+            if ((param.includes('_SCORE') && param != 'OSP_DC_SCORE')  || param.includes('_COPAS')) {
                 mode = 'tolerance'
             } else if (!param.includes('_COUNT')) {
                 mode = 'decimal'
@@ -75,26 +75,26 @@ function checkResults(expectedResults: OutputParameters, actualResults: OutputPa
             const diff = expectedResults[param].minus(actualResults[param]).abs()
             if ((mode == 'tolerance' && diff.greaterThan(tolerance)) || (mode == 'decimal' && diff.greaterThan(0))) {
                 failed = true
-                if (mode == 'tolerance' || testParams.reportMode != 'minimal') {
-                    logText.push(`      ${param} failed: expected ${expectedResults[param]}, got ${actualResults[param]}, difference: ${diff}`)
+                if (mode == 'tolerance' || (testParams.reportMode != 'minimal' && diff.greaterThan(0))) {
+                    logText.push(`      ${param} failed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}, difference: ${diff}`)
                 }
             } else if (mode == 'tolerance') {
-                logText.push(`      ${param} passed: expected ${expectedResults[param]}, got ${actualResults[param]}, difference: ${diff}`)
+                logText.push(`      ${param} passed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}, difference: ${diff}`)
             } else if (testParams.reportMode == 'verbose') {
-                logText.push(`      ${param} passed: expected ${expectedResults[param]}, got ${actualResults[param]}`)
+                logText.push(`      ${param} passed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}`)
             }
 
             // missing questions list
         } else if (mode == 'missing') {  // TODO check for failure
-            if (testParams.reportMode != 'minimal') {
-                logText.push(`      ${param}: expected ${expectedResults[param]}, got ${actualResults[param]}`)
+            if (testParams.reportMode == 'verbose') {
+                logText.push(`      ${param}: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}`)
             }
 
             // simple equality check
         } else if (actualResults[param] != expectedResults[param]) {
             failed = true
             if (testParams.reportMode != 'minimal') {
-                logText.push(`      ${param} failed: expected ${expectedResults[param]}, got ${actualResults[param]}`)
+                logText.push(`      ${param} failed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}`)
             }
 
             // otherwise passed
@@ -105,4 +105,3 @@ function checkResults(expectedResults: OutputParameters, actualResults: OutputPa
 
     return failed
 }
-

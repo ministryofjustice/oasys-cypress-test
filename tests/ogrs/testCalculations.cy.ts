@@ -2,7 +2,7 @@ import { OgrsTestParameters, OgrsTestScriptResult, OutputParameters } from '../.
 
 describe('OGRS calculator test', () => {
 
-    const tolerance = '1E-09'
+    const tolerance = '1E-30'
     const precision = 40
 
     it('Test calculations', () => {
@@ -10,11 +10,11 @@ describe('OGRS calculator test', () => {
         let failed = false
 
         const ogrsTestParams: OgrsTestParameters = {
-            dataFile: 'ogrsTestData',
-            expectedResultsFile: 'output',
+            dataFile: 'test1input',
+            expectedResultsFile: 'test1oracle',
             outputFile: '',
-            headers: true,
-            dateFormat: 'DD-MMM-YYYY',
+            headers: false,
+            dateFormat: 'DD-MM-YYYY',
             tolerance: tolerance,
             precision: precision,
             reportMode: 'normal',
