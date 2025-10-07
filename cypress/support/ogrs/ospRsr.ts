@@ -20,7 +20,12 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
 
         const c = ospCoefficients.osp_c
 
-        if (params.female) {
+        if (params.ONE_POINT_THIRTY == 'N') {
+            probabilityOspC = new Decimal(0)
+            reportScores(outputParams, 'osp_c', null, null, null, 'A', [])
+            addOutputParameter(outputParams, 'osp_c', 'riskReduction', 'N')
+        }
+        else if (params.female) {
             probabilityOspC = c.ospFemale
             reportScores(outputParams, 'osp_c', null, null, null, 'N', [])
             addOutputParameter(outputParams, 'osp_c', 'riskReduction', 'N')
@@ -62,9 +67,9 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
         probabilityOspI = (params.female ? c.OSPIFemale : noSanctionsSexualOffences ? c.OSPINoSanctions : twoPlusIIOC ? c.OSPITwoPlusIIOC :
             oneIIOC ? c.OSPIOneIIOC : twoPlusChildContact ? c.OSPITwoPlusChildContact : oneChildContact ? c.OSPIOneChildContact : c.OSPIOthers)
 
-        const band: ScoreBand = params.female || noSanctionsSexualOffences ? 'NA' : twoPlusIIOC ? 'H' : oneIIOC ? 'M' : 'L'
+        const band: ScoreBand = params.female || noSanctionsSexualOffences ? 'N/A' : twoPlusIIOC ? 'High' : oneIIOC ? 'Medium' : 'Low'
 
-        reportScores(outputParams, 'osp_i', null, probabilityToPercentage(probabilityOspI), band, 'Y', [])
+        reportScores(outputParams, 'osp_i', null, probabilityToPercentage(probabilityOspI), band, params.ONE_POINT_THIRTY == 'N' ? 'A' : 'Y', [])
     }
 
     // RSR
@@ -78,11 +83,11 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
 
 function ospBand(params: TestCaseParameters, totalScore: number): { band: ScoreBand, reduced: 'Y' | 'N' } {
 
-    const band: ScoreBand = totalScore < 22 ? 'L' : totalScore < 30 ? 'M' : totalScore < 36 ? 'H' : 'V'
+    const band: ScoreBand = totalScore < 22 ? 'Low' : totalScore < 30 ? 'Medium' : totalScore < 36 ? 'High' : 'Very High'
 
-    if (band == 'L' || !params.male || params.CUSTODY_IND == 'Y' || !params.out5Years || params.offenceInLast5Years || params.sexualOffenceInLast5Years) {
+    if (band == 'Low' || !params.male || params.CUSTODY_IND == 'Y' || !params.out5Years || params.offenceInLast5Years || params.sexualOffenceInLast5Years) {
         return { band: band, reduced: 'N' }
     }
 
-    return { band: band == 'V' ? 'H' : band == 'H' ? 'M' : 'L', reduced: 'Y' }
+    return { band: band == 'Very High' ? 'High' : band == 'High' ? 'Medium' : 'Low', reduced: 'Y' }
 }

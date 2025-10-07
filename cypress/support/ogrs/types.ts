@@ -24,7 +24,7 @@ export type TestCaseResult = {
 }
 
 export type ScoreType = 'serious_violence_brief' | 'serious_violence_extended' | 'general_brief' | 'violence_brief' | 'general_extended' | 'violence_extended' | 'osp_c' | 'osp_i' | 'rsr'
-export type ScoreBand = 'L' | 'M' | 'H' | 'V' | 'NA'
+export type ScoreBand = 'Low' | 'Medium' | 'High' | 'Very High' | 'N/A'
 
 export type OgrsOffenceCat = { cat: string, addVatpFlag: boolean }
 
@@ -110,7 +110,7 @@ export type TestCaseParameters = {
 }
 
 
-export type ScoreStatus = 'Y' | 'N' | 'E'
+export type ScoreStatus = 'Y' | 'N' | 'E' | 'A'
 
 export type OutputParameters = {
     OGRS4G_CALCULATED: ScoreStatus,
