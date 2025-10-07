@@ -33,7 +33,9 @@ beforeEach(() => {
             cy.log(`OASys ${version} (${testEnvironment.name}), ${Cypress.browser.name.toUpperCase()} (v${Cypress.browser.majorVersion}). Script: ${Cypress.spec.relative}`)
             cy.task('consoleLog', `OASys version ${version} in ${testEnvironment.name}`)
 
-            cy.visit(testEnvironment.url)
+            if (!noOasys) {
+                cy.visit(testEnvironment.url)
+            }
         })
     }
 })

@@ -12,13 +12,13 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
 
     // Brief versions skipped if the extended version has been calculated
     if (skipCalculation) {
-        reportScores(outputParams, scoreType, null, null, null, 'N', null)
+        reportScores(outputParams, scoreType, null, null, null, 'N', [])
         return null
     }
 
     // Extended versions skipped if STATIC_CALC flag set
     if (params.STATIC_CALC == 'Y' && ['serious_violence_extended', 'general_extended', 'violence_extended'].includes(scoreType)) {
-        reportScores(outputParams, scoreType, null, null, null, 'N', null)
+        reportScores(outputParams, scoreType, null, null, null, 'N', [])
         return null
     }
 

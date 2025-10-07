@@ -137,10 +137,9 @@ function getOffenceCat(offence: string): OgrsOffenceCat {
     return cat == undefined ? null : cat
 }
 
-export function loadExpectedValues(parameterLine: string): OutputParameters {
+export function loadExpectedValues(values: string[]): OutputParameters {
 
     const expectedOutputParameters = createOutputObject()
-    const values = parameterLine.split(',')
 
     let i = 0
     Object.keys(expectedOutputParameters).forEach((param) => {

@@ -11,13 +11,13 @@ describe('OGRS calculator test', () => {
 
         const ogrsTestParams: OgrsTestParameters = {
             dataFile: 'test1input',
-            expectedResultsFile: 'test1oracle',
+            expectedResultsFile: '',
             outputFile: '',
             headers: false,
             dateFormat: 'DD-MM-YYYY',
             tolerance: tolerance,
             precision: precision,
-            reportMode: 'normal',
+            reportMode: 'minimal',
         }
 
         cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {

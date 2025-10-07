@@ -9,7 +9,6 @@ import { createOutputObject } from './createOutput'
 export function calculateTestCase(testCaseParams: TestCaseParameters, expectedResults: OutputParameters, testCaseRef: string, testParams: OgrsTestParameters): TestCaseResult {
 
     Decimal.set({ precision: testParams.precision })
-
     const testCaseResult: TestCaseResult = {
         logText: [],
         failed: false,
@@ -61,7 +60,7 @@ function checkResults(expectedResults: OutputParameters, actualResults: OutputPa
 
         if (!Number.isNaN(Number.parseFloat(expectedResults[param])) && !Number.isNaN(Number.parseFloat(actualResults[param]))) {  // numeric comparison required
 
-            if ((param.includes('_SCORE') && param != 'OSP_DC_SCORE')  || param.includes('_COPAS')) {
+            if ((param.includes('_SCORE') && param != 'OSP_DC_SCORE') || param.includes('_COPAS')) {
                 mode = 'tolerance'
             } else if (!param.includes('_COUNT')) {
                 mode = 'decimal'
@@ -75,10 +74,10 @@ function checkResults(expectedResults: OutputParameters, actualResults: OutputPa
             const diff = expectedResults[param].minus(actualResults[param]).abs()
             if ((mode == 'tolerance' && diff.greaterThan(tolerance)) || (mode == 'decimal' && diff.greaterThan(0))) {
                 failed = true
-                if (mode == 'tolerance' || (testParams.reportMode != 'minimal' && diff.greaterThan(0))) {
+                if (mode == 'tolerance' || (mode == 'decimal' && diff.greaterThan(0))) {
                     logText.push(`      ${param} failed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}, difference: ${diff}`)
                 }
-            } else if (mode == 'tolerance') {
+            } else if (mode == 'tolerance' && testParams.reportMode != 'minimal') {
                 logText.push(`      ${param} passed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}, difference: ${diff}`)
             } else if (testParams.reportMode == 'verbose') {
                 logText.push(`      ${param} passed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}`)
@@ -93,9 +92,7 @@ function checkResults(expectedResults: OutputParameters, actualResults: OutputPa
             // simple equality check
         } else if (actualResults[param] != expectedResults[param]) {
             failed = true
-            if (testParams.reportMode != 'minimal') {
-                logText.push(`      ${param} failed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}`)
-            }
+            logText.push(`      ${param} failed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}`)
 
             // otherwise passed
         } else if (testParams.reportMode == 'verbose') {

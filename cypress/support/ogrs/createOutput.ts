@@ -203,6 +203,7 @@ export function createOutputObject(): OutputParameters {
 
 export function addOutputParameter(outputParams: OutputParameters, scoreType: ScoreType, item: string, value: string | Decimal | number | ScoreStatus | ScoreBand) {
 
+    // console.log(`${scoreType} ${item} ${value}`)
     const parameterName = getOutputParameterName(scoreType, item)
     if (parameterName != null && parameterName in outputParams) {
         outputParams[parameterName] = value

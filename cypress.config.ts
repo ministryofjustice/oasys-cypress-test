@@ -60,7 +60,7 @@ module.exports = defineConfig({
         getAppVersion(): Promise<DbResponse> {
 
           return new Promise((resolve) => {
-            const query = `select version_number from system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc fetch first 1 row only`
+            const query = `select version_number from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc fetch first 1 row only`
             oasysDb.selectSingleValue(query).then((result) => {
               resolve(result)
             })

@@ -13,24 +13,17 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
     let probabilityOspI = new Decimal(0)
 
     // OSP-C
-    const missingOspC = validateParameters(params, requiredParams['osp_c'])
-    if (missingOspC.length > 0) {
-        reportScores(outputParams, 'osp_c', null, null, null, 'E', missingOspC)
+    if (params.ONE_POINT_THIRTY == 'N') {
+        reportScores(outputParams, 'osp_c', null, null, null, 'A', [])
+    } else if (params.female) {
+        probabilityOspC = ospCoefficients.osp_c.ospFemale
+        reportScores(outputParams, 'osp_c', null, null, null, 'A', [])
     } else {
-
-        const c = ospCoefficients.osp_c
-
-        if (params.ONE_POINT_THIRTY == 'N') {
-            probabilityOspC = new Decimal(0)
-            reportScores(outputParams, 'osp_c', null, null, null, 'A', [])
-            addOutputParameter(outputParams, 'osp_c', 'riskReduction', 'N')
-        }
-        else if (params.female) {
-            probabilityOspC = c.ospFemale
-            reportScores(outputParams, 'osp_c', null, null, null, 'N', [])
-            addOutputParameter(outputParams, 'osp_c', 'riskReduction', 'N')
+        const missing = validateParameters(params, requiredParams['osp_c'])
+        if (missing.length > 0) {
+            reportScores(outputParams, 'osp_c', null, null, null, 'E', missing)
         } else {
-
+            const c = ospCoefficients.osp_c
             const contactAdultScore = params.CONTACT_ADULT_SANCTIONS == 0 ? 0 : params.CONTACT_ADULT_SANCTIONS == 1 ? 5 : params.CONTACT_ADULT_SANCTIONS == 2 ? 10 : 15
             const contactChildScore = params.CONTACT_CHILD_SANCTIONS == 0 ? 0 : params.CONTACT_CHILD_SANCTIONS == 1 ? 3 : params.CONTACT_CHILD_SANCTIONS == 2 ? 6 : 9
             const nonContactScore = params.PARAPHILIA_SANCTIONS == 0 ? 0 : params.PARAPHILIA_SANCTIONS == 1 ? 2 : params.PARAPHILIA_SANCTIONS == 2 ? 4 : 6
@@ -51,25 +44,27 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
     }
 
     // OSP-I
-    const missingOspI = validateParameters(params, requiredParams['osp_i'])
-    if (missingOspI.length > 0) {
-        reportScores(outputParams, 'osp_i', null, null, null, 'E', missingOspI)
+    if (params.ONE_POINT_THIRTY == 'N' || params.female) {
+        reportScores(outputParams, 'osp_i', null, null, null, 'A', [])
     } else {
+        const missing = validateParameters(params, requiredParams['osp_i'])
+        if (missing.length > 0) {
+            reportScores(outputParams, 'osp_i', null, null, null, 'E', missing)
+        } else {
+            const c = ospCoefficients.osp_i
+            const noSanctionsSexualOffences = params.INDECENT_IMAGE_SANCTIONS + params.CONTACT_CHILD_SANCTIONS + params.PARAPHILIA_SANCTIONS == 0
+            const twoPlusIIOC = params.INDECENT_IMAGE_SANCTIONS > 1
+            const oneIIOC = params.INDECENT_IMAGE_SANCTIONS == 1
+            const twoPlusChildContact = params.CONTACT_CHILD_SANCTIONS > 1
+            const oneChildContact = params.CONTACT_CHILD_SANCTIONS == 1
 
-        const c = ospCoefficients.osp_i
+            probabilityOspI = (params.female ? c.OSPIFemale : noSanctionsSexualOffences ? c.OSPINoSanctions : twoPlusIIOC ? c.OSPITwoPlusIIOC :
+                oneIIOC ? c.OSPIOneIIOC : twoPlusChildContact ? c.OSPITwoPlusChildContact : oneChildContact ? c.OSPIOneChildContact : c.OSPIOthers)
 
-        const noSanctionsSexualOffences = params.ONE_POINT_THIRTY != 'Y'
-        const twoPlusIIOC = params.INDECENT_IMAGE_SANCTIONS > 1
-        const oneIIOC = params.INDECENT_IMAGE_SANCTIONS == 1
-        const twoPlusChildContact = params.CONTACT_CHILD_SANCTIONS > 1
-        const oneChildContact = params.CONTACT_CHILD_SANCTIONS == 1
+            const band: ScoreBand = params.female || noSanctionsSexualOffences ? 'N/A' : twoPlusIIOC ? 'High' : oneIIOC ? 'Medium' : 'Low'
 
-        probabilityOspI = (params.female ? c.OSPIFemale : noSanctionsSexualOffences ? c.OSPINoSanctions : twoPlusIIOC ? c.OSPITwoPlusIIOC :
-            oneIIOC ? c.OSPIOneIIOC : twoPlusChildContact ? c.OSPITwoPlusChildContact : oneChildContact ? c.OSPIOneChildContact : c.OSPIOthers)
-
-        const band: ScoreBand = params.female || noSanctionsSexualOffences ? 'N/A' : twoPlusIIOC ? 'High' : oneIIOC ? 'Medium' : 'Low'
-
-        reportScores(outputParams, 'osp_i', null, probabilityToPercentage(probabilityOspI), band, params.ONE_POINT_THIRTY == 'N' ? 'A' : 'Y', [])
+            reportScores(outputParams, 'osp_i', null, probabilityToPercentage(probabilityOspI), band, 'Y', [])
+        }
     }
 
     // RSR
