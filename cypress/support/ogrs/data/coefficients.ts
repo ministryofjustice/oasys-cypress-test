@@ -3,7 +3,7 @@ import { Decimal } from 'decimal.js'
 import { OgrsCoefficients } from '../types'
 
 export const coefficients: { [keys: string]: OgrsCoefficients } = {
-    serious_violence_brief: { 
+    serious_violence_brief: {
         in_year_two_constant: new Decimal(3.60407707356772),
         aai_male: new Decimal(-0.546062410902905),
         aai_quadratic_male: new Decimal(0.0170043887737295),
@@ -31,11 +31,11 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         sexual_offences_children: new Decimal(-0.442179128494551),
         sexual_offences_not_children: new Decimal(-0.0455228893277184),
         theft_handling_not_vehicle: new Decimal(0.0202407984946185),
-        index_abh_or_above: new Decimal(0.238802610774108),
-        index_farmers_shotgun: new Decimal(0.296194351653227),
-        index_firearms: new Decimal(0.503126183131338),
-        index_weapons_not_firearm: new Decimal(0.331898861349699),
-        vatp_flag: new Decimal(0.019270382),
+        index_abh_or_above: new Decimal(0.23880261077410800000),
+        index_farmers_shotgun: new Decimal(0.2961943516532277),
+        index_firearms: new Decimal(0.50312618313133900000),
+        index_weapons_not_firearm: new Decimal(0.3318988613496987),
+        vatp_flag: new Decimal(0.0192703822415123),
         vehicle_related_theft: new Decimal(0.226781312933932),
         welfare_fraud: new Decimal(-0.0169128022430282),
         firstsanction: new Decimal(-2.09447596484765),
@@ -95,7 +95,7 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         r1q2_damage_with_intent_prev: null,
         r1q2_arson_prev: null,
     },
-    serious_violence_extended: { 
+    serious_violence_extended: {
         in_year_two_constant: new Decimal(2.39022796091603),
         aai_male: new Decimal(-0.508802063507919),
         aai_quadratic_male: new Decimal(0.0153890192629454),
@@ -123,11 +123,11 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         sexual_offences_children: new Decimal(-0.407005679932105),
         sexual_offences_not_children: new Decimal(-0.211172350332101),
         theft_handling_not_vehicle: new Decimal(0.0187611938936452),
-        index_abh_or_above: new Decimal(0.204895023669854),
-        index_farmers_shotgun: new Decimal(0.261448353627646),
-        index_firearms: new Decimal(0.41315945136753),
-        index_weapons_not_firearm: new Decimal(0.200143106218146),
-        vatp_flag: new Decimal(-0.006538498),
+        index_abh_or_above: new Decimal(0.20489502366985400),
+        index_farmers_shotgun: new Decimal(0.26144835362764590),
+        index_firearms: new Decimal(0.41315945136753000),
+        index_weapons_not_firearm: new Decimal(0.20014310621814590),
+        vatp_flag: new Decimal(-0.00653849840412091),
         vehicle_related_theft: new Decimal(0.264445840395185),
         welfare_fraud: new Decimal(-0.067383107093799),
         firstsanction: new Decimal(-1.89458617745666),
@@ -187,7 +187,7 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         r1q2_damage_with_intent_prev: new Decimal(0.357345708081477),
         r1q2_arson_prev: new Decimal(0.12261588608151),
     },
-    violence_brief: { 
+    violence_brief: {
         in_year_two_constant: new Decimal(7.40784343448446),
         aai_male: new Decimal(-0.624623899545485),
         aai_quadratic_male: new Decimal(0.0216770861038616),
@@ -219,7 +219,7 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         index_farmers_shotgun: null,
         index_firearms: null,
         index_weapons_not_firearm: null,
-        vatp_flag: new Decimal(0.05943777),
+        vatp_flag: new Decimal(0.0594377701206288),
         vehicle_related_theft: new Decimal(0.111431929253524),
         welfare_fraud: new Decimal(-0.635766985993672),
         firstsanction: new Decimal(-2.01344345226532),
@@ -279,7 +279,7 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         r1q2_damage_with_intent_prev: null,
         r1q2_arson_prev: null,
     },
-    violence_extended: { 
+    violence_extended: {
         in_year_two_constant: new Decimal(6.35075550010756),
         aai_male: new Decimal(-0.595352913862191),
         aai_quadratic_male: new Decimal(0.0205151782401625),
@@ -311,7 +311,7 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         index_farmers_shotgun: null,
         index_firearms: null,
         index_weapons_not_firearm: null,
-        vatp_flag: new Decimal(0.004309092),
+        vatp_flag: new Decimal(0.0043090918477213),
         vehicle_related_theft: new Decimal(0.206069714011829),
         welfare_fraud: new Decimal(-0.205668332058424),
         firstsanction: new Decimal(-1.802874847472),
@@ -371,7 +371,7 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         r1q2_damage_with_intent_prev: null,
         r1q2_arson_prev: null,
     },
-    general_brief: { 
+    general_brief: {
         in_year_two_constant: new Decimal(8.51521741731484),
         aai_male: new Decimal(-0.486914419602256),
         aai_quadratic_male: new Decimal(0.0153148316218416),
@@ -403,7 +403,7 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         index_farmers_shotgun: null,
         index_firearms: null,
         index_weapons_not_firearm: null,
-        vatp_flag: new Decimal(-0.167615665),
+        vatp_flag: new Decimal(-0.167615665047271),
         vehicle_related_theft: new Decimal(0.0849453969830858),
         welfare_fraud: new Decimal(-0.910935221986211),
         firstsanction: new Decimal(-4.24201332027217),
@@ -463,7 +463,7 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         r1q2_damage_with_intent_prev: null,
         r1q2_arson_prev: null,
     },
-    general_extended: { 
+    general_extended: {
         in_year_two_constant: new Decimal(6.92019356509177),
         aai_male: new Decimal(-0.407621733488193),
         aai_quadratic_male: new Decimal(0.0122973365941869),
@@ -495,7 +495,7 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         index_farmers_shotgun: null,
         index_firearms: null,
         index_weapons_not_firearm: null,
-        vatp_flag: new Decimal(-0.167211962),
+        vatp_flag: new Decimal(-0.167211961813893),
         vehicle_related_theft: new Decimal(0.132087678095139),
         welfare_fraud: new Decimal(-0.0887242406264393),
         firstsanction: new Decimal(-3.69860812028365),
@@ -556,3 +556,5 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         r1q2_arson_prev: null,
     },
 }
+
+

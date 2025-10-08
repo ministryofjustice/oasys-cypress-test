@@ -110,7 +110,9 @@ function getString(param: string): string {
 }
 
 function getDate(param: string): dayjs.Dayjs {
-    return param == '' || param == null ? null : dayjs.utc(param, dateFormat)
+
+    const result = dayjs.utc(param, dateFormat)
+    return !result.isValid() ? null : result
 }
 
 function getInteger(param: string): number {
@@ -129,7 +131,6 @@ function getDateDiff(firstDate: dayjs.Dayjs, secondDate: dayjs.Dayjs, unit: 'yea
     } else {
         return diff >= 0 ? diff : null
     }
-
 }
 
 function getOffenceCat(offence: string): OgrsOffenceCat {

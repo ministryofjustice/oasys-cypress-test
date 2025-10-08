@@ -152,7 +152,7 @@ export async function getOgrsResult(query: string): Promise<string> {
                     result.ogrs4g_score || ',' ||
                     result.ogrs4g_percentage || ',' ||
                     result.ogrs4g_band || ',' ||
-                    result.ogrs4g_missing_questions || ',' ||
+                    '''' || result.ogrs4g_missing_questions || ''',' ||
                     result.ogrs4g_missing_count || ',' ||
                     result.ogrs4v_calculated || ',' ||
                     result.ogrs4v_year_two || ',' ||
@@ -171,7 +171,7 @@ export async function getOgrsResult(query: string): Promise<string> {
                     result.ogrs4v_score || ',' ||
                     result.ogrs4v_percentage || ',' ||
                     result.ogrs4v_band || ',' ||
-                    result.ogrs4v_missing_questions || ',' ||
+                    '''' || result.ogrs4v_missing_questions || ''',' ||
                     result.ogrs4v_missing_count || ',' ||
                     result.snsv_calculated_static || ',' ||
                     result.snsv_year_two_static || ',' ||
@@ -191,7 +191,7 @@ export async function getOgrsResult(query: string): Promise<string> {
                     result.snsv_score_static || ',' ||
                     result.snsv_percentage_yr2_static || ',' ||
                     result.snsv_band_static || ',' ||
-                    result.snsv_missing_questions_static || ',' ||
+                    '''' || result.snsv_missing_questions_static || ''',' ||
                     result.snsv_missing_count_static || ',' ||
                     result.ogp2_calculated || ',' ||
                     result.ogp2_year_two || ',' ||
@@ -233,7 +233,7 @@ export async function getOgrsResult(query: string): Promise<string> {
                     result.ogp2_total_score_yr2 || ',' ||
                     result.ogp2_percentage_yr2 || ',' ||
                     result.ogp2_band || ',' ||
-                    result.ogp2_missing_questions || ',' ||
+                    '''' || result.ogp2_missing_questions || ''',' ||
                     result.ogp2_missing_count || ',' ||
                     result.ovp2_calculated || ',' ||
                     result.ovp2_year_two || ',' ||
@@ -275,7 +275,7 @@ export async function getOgrsResult(query: string): Promise<string> {
                     result.ovp2_total_score_yr2 || ',' ||
                     result.ovp2_percentage_yr2 || ',' ||
                     result.ovp2_band || ',' ||
-                    result.ovp2_missing_questions || ',' ||
+                    '''' || result.ovp2_missing_questions || ''',' ||
                     result.ovp2_missing_count || ',' ||
                     result.snsv_calculated_dynamic || ',' ||
                     result.snsv_year_two_dynamic || ',' ||
@@ -314,7 +314,7 @@ export async function getOgrsResult(query: string): Promise<string> {
                     result.snsv_score_dynamic || ',' ||
                     result.snsv_percentage_dynamic || ',' ||
                     result.snsv_band_dynamic || ',' ||
-                    result.snsv_missed_questions_dynamic || ',' ||
+                    '''' || result.snsv_missed_questions_dynamic || ''',' ||
                     result.snsv_missing_count_dynamic || ',' ||
                     result.osp_dc_calculated || ',' ||
                     result.osp_dc_score || ',' ||
@@ -336,10 +336,18 @@ export async function getOgrsResult(query: string): Promise<string> {
                 ret: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 10000 }
             }
         )
+        /*
+--                    '''' || result.OSP_DC_MISSED_QUESTIONS || ''',' ||
+--                    result.OSP_DC_MISSING_COUNT;
+--                    '''' || result.OSP_IIC_MISSED_QUESTIONS || ''',' ||
+--                    result.OSP_IIC_MISSING_COUNT; 
+        */
         return result.outBinds.ret
     }
     catch (e) {
         console.log(e)
+        console.log(query)
+        console.log('')
         return null
     }
 }

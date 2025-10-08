@@ -84,9 +84,15 @@ function checkResults(expectedResults: OutputParameters, actualResults: OutputPa
             }
 
             // missing questions list
-        } else if (mode == 'missing') {  // TODO check for failure
-            if (testParams.reportMode == 'verbose') {
-                logText.push(`      ${param}: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}`)
+        } else if (mode == 'missing') {
+            const expectedMissing = JSON.stringify(expectedResults[param])
+            const actualMissing = JSON.stringify(actualResults[param])
+            if (expectedMissing != actualMissing) {
+                logText.push(`      ${param} failed: Oracle ${expectedMissing}, Cypress ${actualMissing}`)
+                failed = true
+            }
+            else if (testParams.reportMode == 'verbose') {
+                logText.push(`      ${param} passed: Oracle ${expectedMissing}`)
             }
 
             // simple equality check

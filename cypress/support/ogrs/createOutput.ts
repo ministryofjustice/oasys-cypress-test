@@ -189,9 +189,13 @@ export function createOutputObject(): OutputParameters {
         OSP_DC_PERCENTAGE: null,
         OSP_DC_BAND: null,
         OSP_DC_RISK_REDUCTION: null,
+        // OSP_DC_MISSED_QUESTIONS: null,
+        // OSP_DC_MISSING_COUNT: 0,
         OSP_IIC_CALCULATED: 'N',
         OSP_IIC_PERCENTAGE: null,
         OSP_IIC_BAND: null,
+        // OSP_IIC_MISSED_QUESTIONS: null,
+        // OSP_IIC_MISSING_COUNT: 0,
         RSR_CALCULATED: 'N',
         RSR_DYNAMIC: null,
         RSR_PERCENTAGE: null,
@@ -201,9 +205,19 @@ export function createOutputObject(): OutputParameters {
     }
 }
 
+export function reportScores(outputParams: OutputParameters, scoreType: ScoreType, zScore: Decimal, percentage: Decimal, band: string, status: ScoreStatus, missingCount: number, missingQuestions: string) {
+
+    addOutputParameter(outputParams, scoreType, 'score', zScore)
+    addOutputParameter(outputParams, scoreType, 'percentage', percentage)
+    addOutputParameter(outputParams, scoreType, 'band', band)
+    addOutputParameter(outputParams, scoreType, 'status', status)
+
+    addOutputParameter(outputParams, scoreType, 'missingCount', missingCount)
+    addOutputParameter(outputParams, scoreType, 'missingQuestions', missingQuestions)
+}
+
 export function addOutputParameter(outputParams: OutputParameters, scoreType: ScoreType, item: string, value: string | Decimal | number | ScoreStatus | ScoreBand) {
 
-    // console.log(`${scoreType} ${item} ${value}`)
     const parameterName = getOutputParameterName(scoreType, item)
     if (parameterName != null && parameterName in outputParams) {
         outputParams[parameterName] = value
@@ -227,7 +241,7 @@ function getOutputParameterName(scoreType: ScoreType, item: string): string {
 }
 
 
-const outputScoreName = {
+export const outputScoreName = {
     serious_violence_brief: 'SNSV',
     serious_violence_extended: 'SNSV',
     general_brief: 'OGRS4G',

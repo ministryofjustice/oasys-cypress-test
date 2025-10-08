@@ -3,7 +3,7 @@ import { Decimal } from 'decimal.js'
 import { coefficients } from './data/coefficients'
 import { TestCaseParameters, ScoreType, OutputParameters, ScoreStatus, ScoreBand } from './types'
 import { OgrsOffenceCat, OgrsFeatures } from './types'
-import { addOutputParameter } from './createOutput'
+import { addOutputParameter, outputScoreName, reportScores } from './createOutput'
 
 
 export function calculate(scoreType: ScoreType, params: TestCaseParameters, outputParams: OutputParameters, skipCalculation: boolean = false): Decimal {
@@ -12,20 +12,24 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
 
     // Brief versions skipped if the extended version has been calculated
     if (skipCalculation) {
-        reportScores(outputParams, scoreType, null, null, null, 'N', [])
+        reportScores(outputParams, scoreType, null, null, null, 'N', 0, `''`)
         return null
     }
 
     // Extended versions skipped if STATIC_CALC flag set
     if (params.STATIC_CALC == 'Y' && ['serious_violence_extended', 'general_extended', 'violence_extended'].includes(scoreType)) {
-        reportScores(outputParams, scoreType, null, null, null, 'N', [])
+        reportScores(outputParams, scoreType, null, null, null, 'N', 0, `''`)
         return null
     }
 
     // Check for missing parameters or invalid gender
-    const missing = validateParameters(params, requiredParams[scoreType])
-    if (missing.length > 0) {
-        reportScores(outputParams, scoreType, null, null, null, 'E', missing)
+    if (!params.male && !params.female) {
+        reportScores(outputParams, scoreType, null, null, null, 'A', 0, `${outputScoreName[scoreType]} can't be calculated on gender other than Male and Female.`)
+        return null
+    }
+    const missing = checkMissingQuestions(params, requiredParams[scoreType])
+    if (missing.count > 0) {
+        reportScores(outputParams, scoreType, null, null, null, 'E', missing.count, missing.result)
         return null
     }
 
@@ -116,22 +120,20 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
     const percentage = probabilityToPercentage(probability)
     const band = calculateBand(scoreType, percentage)
 
-    reportScores(outputParams, scoreType, zScore, percentage, band, 'Y', [])
+    reportScores(outputParams, scoreType, zScore, percentage, band, 'Y', 0, `''`)
     return probability
 }
 
-export function validateParameters(params: TestCaseParameters, requiredParams: string[]): string[] {
+export function checkMissingQuestions(params: TestCaseParameters, requiredParams: string[]): { count: number, result: string } {
 
     const missing: string[] = []
     requiredParams.forEach((param) => {
         if (params[param] == null) {
-            missing.push(param)
+            const text = missingText[param]
+            missing.push(text ?? param)
         }
     })
-    if (!params.male && !params.female) {
-        missing.push('Invalid gender')
-    }
-    return missing
+    return { count: missing.length, result: `'${missing.join('\n')}'` }  // TODO more than 6 missing
 }
 
 function calculatePolynomial(scoreType: ScoreType, coefs: object, type: 'aai' | 'ofm', input: number, outputParams: OutputParameters, gender?: string): Decimal {
@@ -199,7 +201,7 @@ function calculateConditional(scoreType: ScoreType, coefs: object, item: OgrsFea
 function calculateMultiplier(scoreType: ScoreType, coefs: object, item: OgrsFeatures, value: number, outputParams: OutputParameters): Decimal {
 
     const coef = coefs[item]
-    const result = (coef == null || coef == undefined || value == 0) ? new Decimal(0) : coef.times(value)
+    const result = (coef == null || coef == undefined || value == 0 || value == null) ? new Decimal(0) : coef.times(value)
 
     addOutputParameter(outputParams, scoreType, item, result)
     return result
@@ -227,20 +229,6 @@ export function probabilityToPercentage(probability: Decimal): Decimal {
 
     return probability?.times(10000).round().div(100) ?? null
 }
-
-export function reportScores(outputParams: OutputParameters, scoreType: ScoreType, zScore: Decimal, percentage: Decimal, band: string, status: ScoreStatus, missingQuestions: string[]) {
-
-    addOutputParameter(outputParams, scoreType, 'score', zScore)
-    addOutputParameter(outputParams, scoreType, 'percentage', percentage)
-    addOutputParameter(outputParams, scoreType, 'band', band)
-    addOutputParameter(outputParams, scoreType, 'status', status)
-
-    if (missingQuestions != null) {
-        addOutputParameter(outputParams, scoreType, 'missingCount', missingQuestions.length)
-        addOutputParameter(outputParams, scoreType, 'missingQuestions', missingQuestions.length == 0 ? null : JSON.stringify(missingQuestions).replace('[', '').replace(']', ''))
-    }
-}
-
 
 export function calculateBand(scoreType: ScoreType, probability: Decimal): ScoreBand {
 
@@ -304,7 +292,6 @@ export const requiredParams = {
         'KIDNAP',
         'ROBBERY',
         'WEAPONS_NOT_FIREARMS',
-        'offenceCat',
     ],
     general_brief: [
         'DOB',
@@ -314,7 +301,6 @@ export const requiredParams = {
         'AGE_AT_FIRST_SANCTION',
         'LAST_SANCTION_DATE',
         'COMMUNITY_DATE',
-        'offenceCat',
     ],
     violence_brief: [
         'DOB',
@@ -325,7 +311,6 @@ export const requiredParams = {
         'AGE_AT_FIRST_SANCTION',
         'LAST_SANCTION_DATE',
         'COMMUNITY_DATE',
-        'offenceCat',
     ],
     general_extended: [
         'DOB',
@@ -362,7 +347,6 @@ export const requiredParams = {
         'SPICE',
         'STEROIDS',
         'EIGHT_POINT_EIGHT',
-        'offenceCat',
     ],
     violence_extended: [
         'DOB',
@@ -384,7 +368,6 @@ export const requiredParams = {
         'ELEVEN_POINT_FOUR',
         'TWELVE_POINT_ONE',
         'EIGHT_POINT_EIGHT',
-        'offenceCat',
     ],
     osp_c: [
         'DOB',
@@ -403,4 +386,43 @@ export const requiredParams = {
         'INDECENT_IMAGE_SANCTIONS',
         'ONE_POINT_THIRTY',
     ],
+}
+
+const missingText = {
+    DOB: 'Date of birth',
+    LAST_SANCTION_DATE: 'Last Sanction Date',
+    AGE_AT_FIRST_SANCTION: 'Age at first sanction',
+    GENDER: 'Gender',
+    OFFENCE_CODE: 'Offence Code',
+    TOTAL_SANCTIONS_COUNT: '1.32 Total number of sanctions for all offences',
+    COMMUNITY_DATE: '1.38 Date of commencement of community sentence or earliest possible release from custody',
+    TOTAL_VIOLENT_SANCTIONS: '1.40 How many of the total number of sanctions involved violent offences?',
+    THREE_POINT_FOUR: '3.4 Is the offender living in suitable accommodation?',
+    FOUR_POINT_TWO: '4.2 Is the person unemployed, or will be unemployed on release?',
+    SIX_POINT_FOUR: '6.4 What is the person’s current relationship with partner?',
+    SIX_POINT_SEVEN: '6.7 Perpetrator of domestic abuse?',
+    SIX_POINT_EIGHT: '6.8 Current Relationship Status',
+    SEVEN_POINT_TWO: '7.2 Regular activities encourage offending',
+    // : '8.1 Drugs ever misused (in custody and community)',
+    EIGHT_POINT_EIGHT: '8.8 Motivation to tackle drug misuse',
+    NINE_POINT_ONE: '9.1 Is current alcohol use a problem',
+    NINE_POINT_TWO: '9.2 Binge drinking or excessive use of alcohol in last 6 months',
+    ELEVEN_POINT_TWO: '11.2 Impulsivity',
+    ELEVEN_POINT_FOUR: '11.4 Temper control',
+    TWELVE_POINT_ONE: '12.1 Pro-criminal attitudes',
+    HOMICIDE: 'R1.2 Murder / attempted murder / threat or conspiracy to murder / manslaughter',
+    GBH: 'R1.2 Wounding / GBH',
+    KIDNAP: 'R1.2 Kidnapping / false imprisonment',
+    FIREARMS: 'R1.2 Possession of a firearm with intent to endanger life or resist arrest',
+    ROBBERY: 'R1.2 Robbery',
+    AGGRAVATED_BURGLARY: 'R1.2 Aggravated burglary',
+    WEAPONS_NOT_FIREARMS: 'R1.2 Any offence involving possession and / or use of weapons',
+    CRIMINAL_DAMAGE_LIFE: 'R1.2 Criminal damage with the intent to endanger life',
+    ARSON: 'R1.2 Arson',
+    CONTACT_ADULT_SANCTIONS: '1.34 Number of previous/current sanctions involving contact adult sexual/sexually motivated offences',
+    CONTACT_CHILD_SANCTIONS: '1.45 Number of previous/current sanctions involving direct contact child sexual/sexually motivated offences',
+    PARAPHILIA_SANCTIONS: '1.37 Number of previous/current sanctions involving other non-contact sexual/sexually motivated offences',
+    DATE_RECENT_SEXUAL_OFFENCE: '1.33 Date of most recent sanction involving a sexual/sexually motivated offence',
+    STRANGER_VICTIM: '1.44 Does the current offence involve actual/attempted direct contact against a victim who was a stranger?',
+    INDECENT_IMAGE_SANCTIONS: '1.46 Number of previous/current sanctions involving indecent child image or indirect child contact sexual/sexually motivated offences',
 }
