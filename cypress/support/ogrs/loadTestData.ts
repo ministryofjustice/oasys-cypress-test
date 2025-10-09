@@ -32,6 +32,7 @@ export function loadParameterSet(parameterLine: string): TestCaseParameters {
         AGE_AT_FIRST_SANCTION: getInteger(parameters[i++]),
         LAST_SANCTION_DATE: getDate(parameters[i++]),
         DATE_RECENT_SEXUAL_OFFENCE: getDate(parameters[i++]),
+        CURR_SEX_OFF_MOTIVATION: getString(parameters[i++]),
         MOST_RECENT_OFFENCE: getDate(parameters[i++]),
         COMMUNITY_DATE: getDate(parameters[i++]),
         ONE_POINT_THIRTY: getString(parameters[i++]),

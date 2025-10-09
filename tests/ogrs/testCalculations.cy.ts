@@ -2,10 +2,36 @@ import { OgrsTestParameters, OgrsTestScriptResult, OutputParameters } from '../.
 
 describe('OGRS calculator test', () => {
 
-    const tolerance = '1E-30'
+    const tolerance = '1E-35'
     const precision = 40
 
-    it('Test calculations', () => {
+    it('Test calculations set 1', () => {
+
+        let failed = false
+
+        const ogrsTestParams: OgrsTestParameters = {
+            dataFile: 'test1input',
+            expectedResultsFile: '',
+            outputFile: '',
+            headers: false,
+            dateFormat: 'DD-MM-YYYY',
+            tolerance: tolerance,
+            precision: precision,
+            reportMode: 'minimal',
+        }
+
+        cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
+
+            report(ogrsTestParams, result)
+            if (result.failed) {
+                failed = true
+            }
+
+        }).then(() => { expect(failed).equal(false) })
+
+    })
+
+        it('Test calculations set 2 (with some missing questions)', () => {
 
         let failed = false
 

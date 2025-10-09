@@ -85,6 +85,7 @@ function getFunctionCall(params: TestCaseParameters): string {
     result.push(params.AGE_AT_FIRST_SANCTION?.toString() ?? 'null')
     result.push(dateParameterToString(params.LAST_SANCTION_DATE))
     result.push(dateParameterToString(params.DATE_RECENT_SEXUAL_OFFENCE))
+    result.push(stringParameterToString(params.CURR_SEX_OFF_MOTIVATION))
     result.push(dateParameterToString(params.MOST_RECENT_OFFENCE))
     result.push(dateParameterToString(params.COMMUNITY_DATE))
     result.push(stringParameterToString(params.ONE_POINT_THIRTY))

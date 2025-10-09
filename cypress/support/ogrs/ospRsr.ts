@@ -14,15 +14,20 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
 
     // OSP-C
     if (params.ONE_POINT_THIRTY == 'N') {
-        reportScores(outputParams, 'osp_c', new Decimal(0), new Decimal(0), null, 'A', 0, null)
-    } else if (!params.male) {
-        reportScores(outputParams, 'osp_c', new Decimal(0), new Decimal(0), null, 'A', 0, `OSP-DC can't be calculated on gender other than Male.`)
-        if (params.female) {
-            probabilityOspC = ospCoefficients.osp_c.ospFemale
-        }
+        reportScores(outputParams, 'osp_c', new Decimal(0), new Decimal(0), null, 'A', 0, `''`)
     } else {
         const missing = checkMissingQuestions(params, requiredParams['osp_c'])
-        if (missing.count > 0) {
+        if (params.female) {
+            probabilityOspC = ospCoefficients.osp_c.ospFemale
+            if (missing.count > 0) {
+                reportScores(outputParams, 'osp_c', null, null, null, 'E', missing.count, missing.result)
+            } else {
+                reportScores(outputParams, 'osp_c', new Decimal(0), new Decimal(0), null, 'A', 0, `''`)
+            }
+        } else if (!params.male) {
+            reportScores(outputParams, 'osp_c', new Decimal(0), new Decimal(0), null, 'E', 0, `'OSP-DC can't be calculated on gender other than Male.'`)
+        }
+        else if (missing.count > 0) {
             reportScores(outputParams, 'osp_c', null, null, null, 'E', missing.count, missing.result)
         } else {
             const c = ospCoefficients.osp_c
@@ -47,9 +52,11 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
 
     // OSP-I
     if (params.ONE_POINT_THIRTY == 'N') {
-        reportScores(outputParams, 'osp_i', null, new Decimal(0), null, 'A', 0, null)
+        reportScores(outputParams, 'osp_i', null, new Decimal(0), null, 'A', 0, `''`)
+    } else if (params.female) {
+        reportScores(outputParams, 'osp_i', null, new Decimal(0), null, 'A', 0, `''`)
     } else if (!params.male) {
-        reportScores(outputParams, 'osp_i', null, new Decimal(0), null, 'A', 0, `OSP-IIC can't be calculated on gender other than Male.`)
+        reportScores(outputParams, 'osp_i', null, new Decimal(0), null, 'E', 0, `'OSP-IIC can't be calculated on gender other than Male.'`)
     } else {
         const missing = checkMissingQuestions(params, requiredParams['osp_i'])
         if (missing.count > 0) {
@@ -73,15 +80,14 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
 
     // RSR
     if (!params.male && !params.female) {
-        reportScores(outputParams, 'rsr', null, null, null, 'A', 0, `RSR can't be calculated on gender other than Male and Female.`)
+        reportScores(outputParams, 'rsr', null, null, null, 'E', 0, `'RSR can't be calculated on gender other than Male and Female.'`)
         return null
     } else {
-        const dynamic = outputParams.SNSV_CALCULATED_DYNAMIC == 'Y'
-        const missing = checkMissingQuestions(params, requiredParams[dynamic ? 'serious_violence_extended' : 'serious_violence_brief'])
+        const missing = checkMissingQuestions(params, requiredParams[params.STATIC_CALC == 'Y' ? 'serious_violence_brief' : 'serious_violence_extended'])
         if (missing.count > 0) {
             reportScores(outputParams, 'rsr', null, null, null, 'E', missing.count, missing.result)
         } else {
-            const probabilityRsr = dynamic ? snsvEProbability : snsvBProbability
+            const probabilityRsr = outputParams.SNSV_CALCULATED_DYNAMIC == 'Y' ? snsvEProbability : snsvBProbability
             const percentageRsr = probabilityToPercentage(probabilityRsr?.add(probabilityOspC).add(probabilityOspI) ?? null)
 
             const band = calculateBand('rsr', percentageRsr)

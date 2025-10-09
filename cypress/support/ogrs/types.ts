@@ -43,6 +43,7 @@ export type TestCaseParameters = {
     AGE_AT_FIRST_SANCTION: number,
     LAST_SANCTION_DATE: dayjs.Dayjs,
     DATE_RECENT_SEXUAL_OFFENCE: dayjs.Dayjs,
+    CURR_SEX_OFF_MOTIVATION:  string,
     MOST_RECENT_OFFENCE: dayjs.Dayjs,
     COMMUNITY_DATE: dayjs.Dayjs,
     ONE_POINT_THIRTY: string,

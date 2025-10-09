@@ -323,19 +323,19 @@ export async function getOgrsResult(query: string): Promise<string> {
                     result.OSP_DC_BAND || ',' ||
                     result.OSP_DC_RISK_REDUCTION || ',' ||
                     '''' || result.OSP_DC_MISSED_QUESTIONS || ''',' ||
-                    result.OSP_DC_MISSING_COUNT;
+                    result.OSP_DC_MISSING_COUNT || ',' ||
                     result.OSP_IIC_CALCULATED || ',' ||
                     result.OSP_IIC_PERCENTAGE || ',' ||
                     result.OSP_IIC_BAND || ',' ||
                     '''' || result.OSP_IIC_MISSED_QUESTIONS || ''',' ||
-                    result.OSP_IIC_MISSING_COUNT; 
+                    result.OSP_IIC_MISSING_COUNT || ',' ||
                     result.RSR_CALCULATED || ',' ||
                     result.RSR_DYNAMIC || ',' ||
                     result.RSR_PERCENTAGE || ',' ||
                     result.RSR_BAND || ',' ||
                     '''' || result.RSR_MISSING_QUESTIONS || ''',' ||
-                    result.RSR_MISSING_COUNT;
-
+                    result.RSR_MISSING_COUNT
+                    ;
                 END;`,
             {
                 ret: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 10000 }

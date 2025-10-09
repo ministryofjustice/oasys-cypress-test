@@ -1,7 +1,7 @@
 import { Decimal } from 'decimal.js'
 
 import { coefficients } from './data/coefficients'
-import { TestCaseParameters, ScoreType, OutputParameters, ScoreStatus, ScoreBand } from './types'
+import { TestCaseParameters, ScoreType, OutputParameters, ScoreBand } from './types'
 import { OgrsOffenceCat, OgrsFeatures } from './types'
 import { addOutputParameter, outputScoreName, reportScores } from './createOutput'
 
@@ -24,7 +24,7 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
 
     // Check for missing parameters or invalid gender
     if (!params.male && !params.female) {
-        reportScores(outputParams, scoreType, null, null, null, 'A', 0, `${outputScoreName[scoreType]} can't be calculated on gender other than Male and Female.`)
+        reportScores(outputParams, scoreType, null, null, null, 'E', 0, `'${outputScoreName[scoreType]} can't be calculated on gender other than Male and Female.'`)
         return null
     }
     const missing = checkMissingQuestions(params, requiredParams[scoreType])
@@ -104,7 +104,6 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
         params.HALLUCINOGENS == 'Y' || params.KETAMINE == 'Y' || params.OTHER_DRUGS == 'Y' || params.SOLVENTS == 'Y' || params.SPICE == 'Y', outputParams))
 
     // Previous convictions
-
     zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'r1q2_murder_prev', params.HOMICIDE, outputParams))
     zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'r1q2_wounding_prev', params.GBH, outputParams))
     zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'r1q2_kidnapping_prev', params.KIDNAP, outputParams))
@@ -124,18 +123,6 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
     return probability
 }
 
-export function checkMissingQuestions(params: TestCaseParameters, requiredParams: string[]): { count: number, result: string } {
-
-    const missing: string[] = []
-    requiredParams.forEach((param) => {
-        if (params[param] == null) {
-            const text = missingText[param]
-            missing.push(text ?? param)
-        }
-    })
-    const result = missing.length == 0 ? `''` : `'${missing.join('\n')}\n'`
-    return { count: missing.length, result: result }
-}
 
 function calculatePolynomial(scoreType: ScoreType, coefs: object, type: 'aai' | 'ofm', input: number, outputParams: OutputParameters, gender?: string): Decimal {
 
@@ -251,6 +238,18 @@ export function calculateBand(scoreType: ScoreType, probability: Decimal): Score
     return null
 }
 
+export function checkMissingQuestions(params: TestCaseParameters, requiredParams: string[]): { count: number, result: string } {
+
+    const missing: string[] = []
+    requiredParams.forEach((param) => {
+        if (params[param] == null) {
+            const text = missingText[param]
+            missing.push(text == undefined ? param : text)
+        }
+    })
+    const result = missing.length == 0 ? `''` : `'${missing.join('\n')}\n'`
+    return { count: missing.length, result: result }
+}
 
 export const requiredParams = {
 
@@ -400,11 +399,11 @@ const missingText = {
     TOTAL_VIOLENT_SANCTIONS: '1.40 How many of the total number of sanctions involved violent offences?',
     THREE_POINT_FOUR: '3.4 Is the offender living in suitable accommodation?',
     FOUR_POINT_TWO: '4.2 Is the person unemployed, or will be unemployed on release?',
-    SIX_POINT_FOUR: '6.4 What is the person’s current relationship with partner?',
+    SIX_POINT_FOUR: `6.4 What is the person's current relationship with partner?`,
     SIX_POINT_SEVEN: '6.7 Perpetrator of domestic abuse?',
     SIX_POINT_EIGHT: '6.8 Current Relationship Status',
     SEVEN_POINT_TWO: '7.2 Regular activities encourage offending',
-    // : '8.1 Drugs ever misused (in custody and community)',
+    DAILY_DRUG_USER: '8.1 Drugs ever misused (in custody and community)',
     EIGHT_POINT_EIGHT: '8.8 Motivation to tackle drug misuse',
     NINE_POINT_ONE: '9.1 Is current alcohol use a problem',
     NINE_POINT_TWO: '9.2 Binge drinking or excessive use of alcohol in last 6 months',
