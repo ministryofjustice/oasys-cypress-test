@@ -5,6 +5,7 @@ import { calculateTestCase } from './ogrsCalculator'
 import { loadParameterSet, loadExpectedValues } from './loadTestData'
 import { getOgrsResult } from '../oasysDb'
 import { Dayjs } from 'dayjs'
+import { getTestData } from './getTestData/getTestData'
 
 const dataFilePath = './cypress/support/ogrs/data/'
 export let dateFormat = ''
@@ -63,6 +64,9 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
             failed = true
         }
     }
+
+    const oasysSetData = await getTestData(1)
+    console.log(JSON.stringify(oasysSetData))
 
     return { testCaseResults: ogrsTestResults, failed: failed }
 }
