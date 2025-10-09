@@ -16,7 +16,7 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
     if (params.ONE_POINT_THIRTY == 'N') {
         reportScores(outputParams, 'osp_c', new Decimal(0), new Decimal(0), null, 'A', 0, null)
     } else if (!params.male) {
-        reportScores(outputParams, 'osp_c',  new Decimal(0), new Decimal(0), null, 'A', 0, `OSP-DC can't be calculated on gender other than Male.`)
+        reportScores(outputParams, 'osp_c', new Decimal(0), new Decimal(0), null, 'A', 0, `OSP-DC can't be calculated on gender other than Male.`)
         if (params.female) {
             probabilityOspC = ospCoefficients.osp_c.ospFemale
         }
@@ -75,13 +75,20 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
     if (!params.male && !params.female) {
         reportScores(outputParams, 'rsr', null, null, null, 'A', 0, `RSR can't be calculated on gender other than Male and Female.`)
         return null
-    }
-    const probabilityRsr = outputParams.SNSV_CALCULATED_DYNAMIC == 'Y' ? snsvEProbability : snsvBProbability
-    const percentageRsr = probabilityToPercentage(probabilityRsr?.add(probabilityOspC).add(probabilityOspI) ?? null)
+    } else {
+        const dynamic = outputParams.SNSV_CALCULATED_DYNAMIC == 'Y'
+        const missing = checkMissingQuestions(params, requiredParams[dynamic ? 'serious_violence_extended' : 'serious_violence_brief'])
+        if (missing.count > 0) {
+            reportScores(outputParams, 'rsr', null, null, null, 'E', missing.count, missing.result)
+        } else {
+            const probabilityRsr = dynamic ? snsvEProbability : snsvBProbability
+            const percentageRsr = probabilityToPercentage(probabilityRsr?.add(probabilityOspC).add(probabilityOspI) ?? null)
 
-    const band = calculateBand('rsr', percentageRsr)
-    reportScores(outputParams, 'rsr', null, percentageRsr, band, 'Y', 0, `''`)
-    addOutputParameter(outputParams, 'rsr', 'dynamic', outputParams.SNSV_CALCULATED_DYNAMIC)
+            const band = calculateBand('rsr', percentageRsr)
+            reportScores(outputParams, 'rsr', null, percentageRsr, band, 'Y', 0, `''`)
+            addOutputParameter(outputParams, 'rsr', 'dynamic', outputParams.SNSV_CALCULATED_DYNAMIC)
+        }
+    }
 }
 
 function ospBand(params: TestCaseParameters, totalScore: number): { band: ScoreBand, reduced: 'Y' | 'N' } {

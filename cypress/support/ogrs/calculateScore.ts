@@ -133,7 +133,8 @@ export function checkMissingQuestions(params: TestCaseParameters, requiredParams
             missing.push(text ?? param)
         }
     })
-    return { count: missing.length, result: `'${missing.join('\n')}'` }  // TODO more than 6 missing
+    const result = missing.length == 0 ? `''` : `'${missing.join('\n')}\n'`
+    return { count: missing.length, result: result }
 }
 
 function calculatePolynomial(scoreType: ScoreType, coefs: object, type: 'aai' | 'ofm', input: number, outputParams: OutputParameters, gender?: string): Decimal {
@@ -262,7 +263,6 @@ export const requiredParams = {
         'AGE_AT_FIRST_SANCTION',
         'LAST_SANCTION_DATE',
         'COMMUNITY_DATE',
-        'offenceCat',
     ],
     serious_violence_extended: [
         'DOB',
@@ -362,6 +362,7 @@ export const requiredParams = {
         'FOUR_POINT_TWO',
         'SIX_POINT_FOUR',
         'SIX_POINT_SEVEN',
+        'SEVEN_POINT_TWO',
         'NINE_POINT_ONE',
         'NINE_POINT_TWO',
         'ELEVEN_POINT_TWO',

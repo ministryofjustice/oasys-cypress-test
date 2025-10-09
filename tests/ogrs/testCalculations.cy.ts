@@ -10,7 +10,7 @@ describe('OGRS calculator test', () => {
         let failed = false
 
         const ogrsTestParams: OgrsTestParameters = {
-            dataFile: 'test1input',
+            dataFile: 'test1inputWithMissingFields',
             expectedResultsFile: '',
             outputFile: '',
             headers: false,
