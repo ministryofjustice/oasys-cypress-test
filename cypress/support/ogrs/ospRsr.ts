@@ -30,7 +30,6 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
         else if (missing.count > 0) {
             reportScores(outputParams, 'osp_c', null, null, null, 'E', missing.count, missing.result)
         } else {
-            const c = ospCoefficients.osp_c
             const contactAdultScore = params.CONTACT_ADULT_SANCTIONS == 0 ? 0 : params.CONTACT_ADULT_SANCTIONS == 1 ? 5 : params.CONTACT_ADULT_SANCTIONS == 2 ? 10 : 15
             const contactChildScore = params.CONTACT_CHILD_SANCTIONS == 0 ? 0 : params.CONTACT_CHILD_SANCTIONS == 1 ? 3 : params.CONTACT_CHILD_SANCTIONS == 2 ? 6 : 9
             const nonContactScore = params.PARAPHILIA_SANCTIONS == 0 ? 0 : params.PARAPHILIA_SANCTIONS == 1 ? 2 : params.PARAPHILIA_SANCTIONS == 2 ? 4 : 6
@@ -40,7 +39,13 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
             const contactWithStrangerScore = params.STRANGER_VICTIM == 'Y' ? 4 : 0
 
             const totalScore = contactAdultScore + contactChildScore + nonContactScore + ageScore + ageAtLastSanctionSexualScore + previousHistoryScore + contactWithStrangerScore
-            const zScore = c.OSPCIntercept.add(c.OSPCFactor.times(0.5 + (0.5 * totalScore)))
+
+            // TODO awaiting definitive spec from PH
+            // const c = ospCoefficients.osp_c
+            // const zScore = c.OSPCIntercept.add(c.OSPCFactor.times(0.5 + (0.5 * totalScore)))
+
+            const c = ospCoefficients.osp_ddc
+            const zScore = c.OSPCIntercept.add(c.OSPCFactor.times(totalScore))
 
             probabilityOspC = calculateProbability(zScore)
             const band = ospBand(params, totalScore)
@@ -62,7 +67,8 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
         if (missing.count > 0) {
             reportScores(outputParams, 'osp_i', null, null, null, 'E', missing.count, missing.result)
         } else {
-            const c = ospCoefficients.osp_i
+            // const c = ospCoefficients.osp_i
+            const c = ospCoefficients.osp_iic  // TODO awaiting confirmation from PH that this is the correct algorithm
             const noSanctionsSexualOffences = params.INDECENT_IMAGE_SANCTIONS + params.CONTACT_CHILD_SANCTIONS + params.PARAPHILIA_SANCTIONS == 0
             const twoPlusIIOC = params.INDECENT_IMAGE_SANCTIONS > 1
             const oneIIOC = params.INDECENT_IMAGE_SANCTIONS == 1
