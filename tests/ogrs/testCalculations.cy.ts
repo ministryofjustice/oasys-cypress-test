@@ -2,7 +2,7 @@ import { OgrsTestParameters, OgrsTestScriptResult, OutputParameters } from '../.
 
 describe('OGRS calculator test', () => {
 
-    const tolerance = '1E-35'
+    const tolerance = '1E-37'
     const precision = 40
 
     it('Test calculations set 1', () => {
@@ -10,10 +10,11 @@ describe('OGRS calculator test', () => {
         let failed = false
 
         const ogrsTestParams: OgrsTestParameters = {
-            dataFile: 'test1input',
-            expectedResultsFile: '',
-            outputFile: '',
+            dataFile: null,
+            expectedResultsFile: null,
+            outputFile: null,
             headers: false,
+            assessmentCount: 10,
             dateFormat: 'DD-MM-YYYY',
             tolerance: tolerance,
             precision: precision,
@@ -31,15 +32,16 @@ describe('OGRS calculator test', () => {
 
     })
 
-        it('Test calculations set 2 (with some missing questions)', () => {
+    it('Test calculations set 2', () => {
 
         let failed = false
 
         const ogrsTestParams: OgrsTestParameters = {
-            dataFile: 'test1inputWithMissingFields',
-            expectedResultsFile: '',
-            outputFile: '',
+            dataFile: 'test1Input',
+            expectedResultsFile: null,
+            outputFile: null,
             headers: false,
+            assessmentCount: null,
             dateFormat: 'DD-MM-YYYY',
             tolerance: tolerance,
             precision: precision,
@@ -56,6 +58,32 @@ describe('OGRS calculator test', () => {
         }).then(() => { expect(failed).equal(false) })
 
     })
+    // it('Test calculations set 2 (with some missing questions)', () => {
+
+    //     let failed = false
+
+    //     const ogrsTestParams: OgrsTestParameters = {
+    //         dataFile: 'test1inputWithMissingFields',
+    //         expectedResultsFile: null,
+    //         outputFile: null,
+    //         headers: false,
+    //         assessmentCount: null,
+    //         dateFormat: 'DD-MM-YYYY',
+    //         tolerance: tolerance,
+    //         precision: precision,
+    //         reportMode: 'minimal',
+    //     }
+
+    //     cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
+
+    //         report(ogrsTestParams, result)
+    //         if (result.failed) {
+    //             failed = true
+    //         }
+
+    //     }).then(() => { expect(failed).equal(false) })
+
+    // })
 })
 
 function report(testParams: OgrsTestParameters, result: OgrsTestScriptResult) {
@@ -72,13 +100,13 @@ function report(testParams: OgrsTestParameters, result: OgrsTestScriptResult) {
         testCase.logText.forEach((log) => {
             cy.groupedLog(log)
         })
-        if (testParams.outputFile != '') {
+        if (testParams.outputFile != null) {
             outputData = `${outputData}${createOutputCsvLine(testCase.outputParams)}\n`
         }
     })
     cy.groupedLogEnd()
 
-    if (testParams.outputFile != '') {
+    if (testParams.outputFile != null) {
         cy.writeFile(`./cypress/downloads/${testParams.outputFile}.csv`, outputData.slice(0, -1), { encoding: null })
     }
 }

@@ -15,19 +15,19 @@ export function calculateTestCase(testCaseParams: TestCaseParameters, expectedRe
         outputParams: createOutputObject(),
     }
 
-    // Calculate individual scores.  Save the unrounded SNSV probabilities for use in RSR
+    // Calculate individual scores
     // Extended versions for SNSV, OGP and OVP if possible
-    const snsvEProbability = calculate('serious_violence_extended', testCaseParams, testCaseResult.outputParams)
+    calculate('serious_violence_extended', testCaseParams, testCaseResult.outputParams)
     calculate('general_extended', testCaseParams, testCaseResult.outputParams)
     calculate('violence_extended', testCaseParams, testCaseResult.outputParams)
 
     // Attempt brief versions for SNSV, OGRS4G, OGRS4V if no results from the extended ones.
-    const snsvBProbability = calculate('serious_violence_brief', testCaseParams, testCaseResult.outputParams, testCaseResult.outputParams.SNSV_CALCULATED_DYNAMIC == 'Y')
+    calculate('serious_violence_brief', testCaseParams, testCaseResult.outputParams, testCaseResult.outputParams.SNSV_CALCULATED_DYNAMIC == 'Y')
     calculate('general_brief', testCaseParams, testCaseResult.outputParams, testCaseResult.outputParams.OGP2_CALCULATED == 'Y')
     calculate('violence_brief', testCaseParams, testCaseResult.outputParams, testCaseResult.outputParams.OVP2_CALCULATED == 'Y')
 
     // OSP and RSR
-    ospRsrCalc(testCaseParams, testCaseResult.outputParams, snsvBProbability, snsvEProbability)
+    ospRsrCalc(testCaseParams, testCaseResult.outputParams)
 
     // Compare and report results
     const logText: string[] = []

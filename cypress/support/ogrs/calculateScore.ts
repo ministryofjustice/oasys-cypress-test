@@ -6,31 +6,31 @@ import { OgrsOffenceCat, OgrsFeatures } from './types'
 import { addOutputParameter, outputScoreName, reportScores } from './createOutput'
 
 
-export function calculate(scoreType: ScoreType, params: TestCaseParameters, outputParams: OutputParameters, skipCalculation: boolean = false): Decimal {
+export function calculate(scoreType: ScoreType, params: TestCaseParameters, outputParams: OutputParameters, skipCalculation: boolean = false) {
 
     // Calculate any of the scores other than OSP and RSR.  The selected coefficient set (depending on scoreType) determines which components make up the score.
 
     // Brief versions skipped if the extended version has been calculated
     if (skipCalculation) {
         reportScores(outputParams, scoreType, null, null, null, 'N', 0, `''`)
-        return null
+        return
     }
 
     // Extended versions skipped if STATIC_CALC flag set
     if (params.STATIC_CALC == 'Y' && ['serious_violence_extended', 'general_extended', 'violence_extended'].includes(scoreType)) {
         reportScores(outputParams, scoreType, null, null, null, 'N', 0, `''`)
-        return null
+        return
     }
 
     // Check for missing parameters or invalid gender
     if (!params.male && !params.female) {
         reportScores(outputParams, scoreType, null, null, null, 'E', 0, `'${outputScoreName[scoreType]} can't be calculated on gender other than Male and Female.'`)
-        return null
+        return
     }
     const missing = checkMissingQuestions(params, requiredParams[scoreType])
     if (missing.count > 0) {
         reportScores(outputParams, scoreType, null, null, null, 'E', missing.count, missing.result)
-        return null
+        return
     }
 
     // zScore holds a running total
@@ -75,8 +75,8 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
     // Section 6
     zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's6q4_partner_relationship', params.SIX_POINT_FOUR, outputParams))
     zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's6q7_perpetrator', params.SIX_POINT_SEVEN, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's3q2_lives_with_partner', params.SIX_POINT_EIGHT, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'quality_of_livein_relationship', params.SIX_POINT_FOUR * params.SIX_POINT_EIGHT, outputParams))
+    zScore = zScore.add(calculateConditional(scoreType, coefs, 's3q2_lives_with_partner', params.SIX_POINT_EIGHT == 1, outputParams))
+    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'quality_of_livein_relationship', params.SIX_POINT_EIGHT == 1 ? params.SIX_POINT_FOUR : 0, outputParams))
 
     // Section 7, 9, 11, 12
     zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's7q2_activities_encourage', params.SEVEN_POINT_TWO, outputParams))
@@ -120,7 +120,6 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
     const band = calculateBand(scoreType, percentage)
 
     reportScores(outputParams, scoreType, zScore, percentage, band, 'Y', 0, `''`)
-    return probability
 }
 
 
@@ -329,22 +328,6 @@ export const requiredParams = {
         'ELEVEN_POINT_TWO',
         'TWELVE_POINT_ONE',
         'DAILY_DRUG_USER',
-        'AMPHETAMINES',
-        'BENZODIAZIPINES',
-        'CANNABIS',
-        'CRACK_COCAINE',
-        'ECSTASY',
-        'HALLUCINOGENS',
-        'HEROIN',
-        'KETAMINE',
-        'METHADONE',
-        'MISUSED_PRESCRIBED',
-        'OTHER_DRUGS',
-        'OTHER_OPIATE',
-        'POWDER_COCAINE',
-        'SOLVENTS',
-        'SPICE',
-        'STEROIDS',
         'EIGHT_POINT_EIGHT',
     ],
     violence_extended: [
@@ -356,7 +339,6 @@ export const requiredParams = {
         'AGE_AT_FIRST_SANCTION',
         'LAST_SANCTION_DATE',
         'COMMUNITY_DATE',
-        'TWO_POINT_TWO',
         'THREE_POINT_FOUR',
         'FOUR_POINT_TWO',
         'SIX_POINT_FOUR',
@@ -371,6 +353,7 @@ export const requiredParams = {
     ],
     osp_c: [
         'DOB',
+        'COMMUNITY_DATE',
         'TOTAL_SANCTIONS_COUNT',
         'CONTACT_ADULT_SANCTIONS',
         'CONTACT_CHILD_SANCTIONS',
@@ -378,12 +361,12 @@ export const requiredParams = {
         'PARAPHILIA_SANCTIONS',
         'STRANGER_VICTIM',
         'DATE_RECENT_SEXUAL_OFFENCE',
-
+        'ONE_POINT_THIRTY',
     ],
     osp_i: [
-        'GENDER',
         'CONTACT_CHILD_SANCTIONS',
         'INDECENT_IMAGE_SANCTIONS',
+        'PARAPHILIA_SANCTIONS',
         'ONE_POINT_THIRTY',
     ],
 }
@@ -397,6 +380,7 @@ const missingText = {
     TOTAL_SANCTIONS_COUNT: '1.32 Total number of sanctions for all offences',
     COMMUNITY_DATE: '1.38 Date of commencement of community sentence or earliest possible release from custody',
     TOTAL_VIOLENT_SANCTIONS: '1.40 How many of the total number of sanctions involved violent offences?',
+    TWO_POINT_TWO: '2.2 Did the offence involve carrying or using a weapon',
     THREE_POINT_FOUR: '3.4 Is the offender living in suitable accommodation?',
     FOUR_POINT_TWO: '4.2 Is the person unemployed, or will be unemployed on release?',
     SIX_POINT_FOUR: `6.4 What is the person's current relationship with partner?`,

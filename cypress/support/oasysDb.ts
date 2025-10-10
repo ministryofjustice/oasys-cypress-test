@@ -274,7 +274,7 @@ export async function getOgrsResult(query: string): Promise<string> {
                     result.OVP2_CANNABIS || ',' ||
                     result.OVP2_STEROIDS || ',' ||
                     result.OVP2_TOTAL_SCORE || ',' ||
-                    result.OVP2_PERCENTAGE2 || ',' ||
+                    result.OVP2_PERCENTAGE || ',' ||
                     result.OVP2_BAND || ',' ||
                     '''' || result.OVP2_MISSING_QUESTIONS || ''',' ||
                     result.OVP2_MISSING_COUNT || ',' ||
@@ -315,19 +315,19 @@ export async function getOgrsResult(query: string): Promise<string> {
                     result.SNSV_SCORE_DYNAMIC || ',' ||
                     result.SNSV_PERCENTAGE_DYNAMIC || ',' ||
                     result.SNSV_BAND_DYNAMIC || ',' ||
-                    '''' || result.SNSV_MISSED_QUESTIONS_DYNAMIC || ''',' ||
+                    '''' || result.SNSV_MISSING_QUESTIONS_DYNAMIC || ''',' ||
                     result.SNSV_MISSING_COUNT_DYNAMIC || ',' ||
                     result.OSP_DC_CALCULATED || ',' ||
                     result.OSP_DC_SCORE || ',' ||
                     result.OSP_DC_PERCENTAGE || ',' ||
                     result.OSP_DC_BAND || ',' ||
                     result.OSP_DC_RISK_REDUCTION || ',' ||
-                    '''' || result.OSP_DC_MISSED_QUESTIONS || ''',' ||
+                    '''' || result.OSP_DC_MISSING_QUESTIONS || ''',' ||
                     result.OSP_DC_MISSING_COUNT || ',' ||
                     result.OSP_IIC_CALCULATED || ',' ||
                     result.OSP_IIC_PERCENTAGE || ',' ||
                     result.OSP_IIC_BAND || ',' ||
-                    '''' || result.OSP_IIC_MISSED_QUESTIONS || ''',' ||
+                    '''' || result.OSP_IIC_MISSING_QUESTIONS || ''',' ||
                     result.OSP_IIC_MISSING_COUNT || ',' ||
                     result.RSR_CALCULATED || ',' ||
                     result.RSR_DYNAMIC || ',' ||
