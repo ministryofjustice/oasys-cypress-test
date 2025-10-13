@@ -23,12 +23,11 @@ export class OgrsAssessment {
         this.prison = assessmentData[5]
     }
 
-    static query(rows: number): string {
-
+    static query(rows: number, whereClause: string): string {
         return `select oasys_set_pk, ref_ass_version_code, assessment_status_elm,
                     to_char(date_of_birth, '${dateFormat}'), gender_elm, prison_ind
                     from eor.oasys_set 
-                    where deleted_date is null and ref_ass_version_code = 'LAYER3' and version_number = 1 and assessment_status_elm = 'COMPLETE' 
+                    where ${whereClause} 
                     order by initiation_date desc fetch first ${rows} rows only`
     }
 

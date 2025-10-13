@@ -4,17 +4,19 @@ describe('OGRS calculator test', () => {
 
     const tolerance = '1E-37'
     const precision = 40
+    const count = 5
 
-    it('Test calculations set 1', () => {
+    it(`Layer 3 v1 complete - ${count} assessments`, () => {
 
-        let failed = false
+        let failures = 0
 
         const ogrsTestParams: OgrsTestParameters = {
             dataFile: null,
             expectedResultsFile: null,
             outputFile: null,
             headers: false,
-            assessmentCount: 10,
+            assessmentCount: count,
+            whereClause: `deleted_date is null and ref_ass_version_code = 'LAYER3' and version_number = 1 and assessment_status_elm = 'COMPLETE'`,
             dateFormat: 'DD-MM-YYYY',
             tolerance: tolerance,
             precision: precision,
@@ -24,17 +26,93 @@ describe('OGRS calculator test', () => {
         cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
 
             report(ogrsTestParams, result)
-            if (result.failed) {
-                failed = true
-            }
+            failures = result.failures
 
-        }).then(() => { expect(failed).equal(false) })
+        }).then(() => { expect(failures).equal(0) })
 
     })
 
-    it('Test calculations set 2', () => {
+    it(`Layer 3 v1 not complete (any other status) - ${count} assessments`, () => {
 
-        let failed = false
+        let failures = 0
+
+        const ogrsTestParams: OgrsTestParameters = {
+            dataFile: null,
+            expectedResultsFile: null,
+            outputFile: null,
+            headers: false,
+            assessmentCount: count,
+            whereClause: `deleted_date is null and ref_ass_version_code = 'LAYER3' and version_number = 1 and assessment_status_elm <> 'COMPLETE'`,
+            dateFormat: 'DD-MM-YYYY',
+            tolerance: tolerance,
+            precision: precision,
+            reportMode: 'minimal',
+        }
+
+        cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
+
+            report(ogrsTestParams, result)
+            failures = result.failures
+
+        }).then(() => { expect(failures).equal(0) })
+
+    })
+
+    it(`Layer 3 v2 complete - ${count} assessments`, () => {
+
+        let failures = 0
+
+        const ogrsTestParams: OgrsTestParameters = {
+            dataFile: null,
+            expectedResultsFile: null,
+            outputFile: null,
+            headers: false,
+            assessmentCount: count,
+            whereClause: `deleted_date is null and ref_ass_version_code = 'LAYER3' and version_number = 2 and assessment_status_elm = 'COMPLETE'`,
+            dateFormat: 'DD-MM-YYYY',
+            tolerance: tolerance,
+            precision: precision,
+            reportMode: 'minimal',
+        }
+
+        cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
+
+            report(ogrsTestParams, result)
+            failures = result.failures
+
+        }).then(() => { expect(failures).equal(0) })
+
+    })
+
+    it(`Layer 1 v2 complete - ${count} assessments`, () => {
+
+        let failures = 0
+
+        const ogrsTestParams: OgrsTestParameters = {
+            dataFile: null,
+            expectedResultsFile: null,
+            outputFile: null,
+            headers: false,
+            assessmentCount: count,
+            whereClause: `deleted_date is null and ref_ass_version_code = 'LAYER1' and version_number = 2 and assessment_status_elm = 'COMPLETE'`,
+            dateFormat: 'DD-MM-YYYY',
+            tolerance: tolerance,
+            precision: precision,
+            reportMode: 'minimal',
+        }
+
+        cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
+
+            report(ogrsTestParams, result)
+            failures = result.failures
+
+        }).then(() => { expect(failures).equal(0) })
+
+    })
+
+    it('Example set of 20', () => {
+
+        let failures = 0
 
         const ogrsTestParams: OgrsTestParameters = {
             dataFile: 'test1Input',
@@ -42,6 +120,7 @@ describe('OGRS calculator test', () => {
             outputFile: null,
             headers: false,
             assessmentCount: null,
+            whereClause: null,
             dateFormat: 'DD-MM-YYYY',
             tolerance: tolerance,
             precision: precision,
@@ -51,44 +130,48 @@ describe('OGRS calculator test', () => {
         cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
 
             report(ogrsTestParams, result)
-            if (result.failed) {
-                failed = true
-            }
+            failures = result.failures
 
-        }).then(() => { expect(failed).equal(false) })
+        }).then(() => { expect(failures).equal(0) })
+
 
     })
-    // it('Test calculations set 2 (with some missing questions)', () => {
+    it('Example set of 20 (with some missing questions)', () => {
 
-    //     let failed = false
+        let failures = 0
 
-    //     const ogrsTestParams: OgrsTestParameters = {
-    //         dataFile: 'test1inputWithMissingFields',
-    //         expectedResultsFile: null,
-    //         outputFile: null,
-    //         headers: false,
-    //         assessmentCount: null,
-    //         dateFormat: 'DD-MM-YYYY',
-    //         tolerance: tolerance,
-    //         precision: precision,
-    //         reportMode: 'minimal',
-    //     }
+        const ogrsTestParams: OgrsTestParameters = {
+            dataFile: 'test1inputWithMissingFields',
+            expectedResultsFile: null,
+            outputFile: null,
+            headers: false,
+            assessmentCount: null,
+            whereClause: null,
+            dateFormat: 'DD-MM-YYYY',
+            tolerance: tolerance,
+            precision: precision,
+            reportMode: 'minimal',
+        }
 
-    //     cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
+        cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
 
-    //         report(ogrsTestParams, result)
-    //         if (result.failed) {
-    //             failed = true
-    //         }
+            report(ogrsTestParams, result)
+            failures = result.failures
 
-    //     }).then(() => { expect(failed).equal(false) })
+        }).then(() => { expect(failures).equal(0) })
 
-    // })
+
+    })
 })
 
 function report(testParams: OgrsTestParameters, result: OgrsTestScriptResult) {
 
-    cy.groupedLogStart(`Test data file: ${testParams.dataFile}, expected results file: ${testParams.expectedResultsFile}, tolerance: ${testParams.tolerance}, precisison: ${testParams.precision}`)
+    if (testParams.dataFile != null) {
+        cy.groupedLogStart(`Test data file: ${testParams.dataFile}, expected results file: ${testParams.expectedResultsFile}, tolerance: ${testParams.tolerance}, precisison: ${testParams.precision}`)
+    } else {
+        cy.groupedLogStart(`Test data from OASys, tolerance: ${testParams.tolerance}, precisison: ${testParams.precision}`)
+    }
+    cy.groupedLog(`Cases: ${result.cases}, failures: ${result.failures}.  ${result.failures > 0 ? 'FAILED' : 'PASSED'}`)
 
     let outputData = ''
     if (testParams.dataFile != '' && testParams.headers) {

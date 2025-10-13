@@ -124,7 +124,7 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         sexual_offences_not_children: new Decimal(-0.211172350332101),
         theft_handling_not_vehicle: new Decimal(0.0187611938936452),
         index_abh_or_above: new Decimal(0.20489502366985400),
-        index_farmers_shotgun: new Decimal(0.26144835362764590),
+        index_farmers_shotgun: new Decimal(0.26144835362764591),
         index_firearms: new Decimal(0.41315945136753000),
         index_weapons_not_firearm: new Decimal(0.20014310621814590),
         vatp_flag: new Decimal(-0.00653849840412091),

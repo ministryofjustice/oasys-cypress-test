@@ -6,6 +6,7 @@ export type OgrsTestParameters = {
     expectedResultsFile?: string,
     outputFile: string,
     assessmentCount: number,
+    whereClause: string,
     headers: boolean,
     dateFormat: string,
     tolerance: string,
@@ -15,7 +16,8 @@ export type OgrsTestParameters = {
 
 export type OgrsTestScriptResult = {
     testCaseResults: TestCaseResult[],
-    failed: boolean,
+    cases: number,
+    failures: number,
 }
 
 export type TestCaseResult = {

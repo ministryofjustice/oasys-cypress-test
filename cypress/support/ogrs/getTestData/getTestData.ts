@@ -8,9 +8,9 @@ import { OgrsAssessment } from './dbClasses'
 import { dateFormat } from '../orgsTest'
 import { offenceCats, offences } from '../data/offences'
 
-export async function getTestData(rows: number): Promise<OgrsAssessment[]> {
+export async function getTestData(rows: number, whereClause: string): Promise<OgrsAssessment[]> {
 
-    const assessmentData = await db.selectData(OgrsAssessment.query(rows))
+    const assessmentData = await db.selectData(OgrsAssessment.query(rows, whereClause))
     if (assessmentData.error != null) throw new Error(assessmentData.error)
     const assessments = assessmentData.data as string[][]
 
@@ -41,7 +41,9 @@ export async function getAssessment(assessmentData: string[]): Promise<OgrsAsses
     const offencesData = await db.selectData(OgrsAssessment.offenceQuery(assessment.assessmentPk))
     if (offencesData.error != null) throw new Error(offencesData.error)
     const offences = offencesData.data as string[][]
-    assessment.offence = offences[0][0]
+    if (offences.length > 0 && offences[0].length > 0) {
+        assessment.offence = offences[0][0]
+    }
 
     return assessment
 }
@@ -190,7 +192,7 @@ function getNumericAnswer(data: string[][], section: string, question: string): 
 
     if (answers.length > 0) {
         const answer = answers[0][2] == null ? answers[0][3] : answers[0][2]
-        return answer == null ? null : answer == 'YES' ? 1 : answer == 'NO' ? 0 : answer == 'M' ? null : Number.parseInt(answer)
+        return answer == null ? null : answer == 'YES' ? 1 : answer == 'NO' || answer == 'NA' ? 0 : answer == 'M' ? null : Number.parseInt(answer)
     }
     return null
 }
@@ -238,13 +240,13 @@ function q88(data: string[][]): number {
     return q81 == 1 ? getNumericAnswer(data, '8', '8.8') : q81
 }
 
-function getDrugUsed(data: string[][], drug: string):string {
+function getDrugUsed(data: string[][], drug: string): string {
 
     const drugs = getDrugsUsage(data)
     return drugs[drug] == null ? null : 'Y'
 }
 
-function getDrugsUsage(data: string[][]) : {} {
+function getDrugsUsage(data: string[][]): {} {
 
     return {
         HEROIN: getSingleAnswer(data, '8', '8.2.1.1'),
