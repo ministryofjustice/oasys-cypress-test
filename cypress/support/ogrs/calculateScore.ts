@@ -324,7 +324,6 @@ export const requiredParams = {
         'SIX_POINT_SEVEN',
         'SIX_POINT_EIGHT',
         'SEVEN_POINT_TWO',
-        'HEROIN',  // TODO : remove this
         'DAILY_DRUG_USER',
         'EIGHT_POINT_EIGHT',
         'NINE_POINT_ONE',
@@ -416,5 +415,4 @@ export const missingText = {
     CURR_SEX_OFF_MOTIVATION: '1.41 Does the current offence have a sexual motivation?',
     STRANGER_VICTIM: '1.44 Does the current offence involve actual/attempted direct contact against a victim who was a stranger?',
     INDECENT_IMAGE_SANCTIONS: '1.46 Number of previous/current sanctions involving indecent child image or indirect child contact sexual/sexually motivated offences',
-    HEROIN: '8.1 Drugs ever misused (in custody and community)',  // TODO : remove this
 }

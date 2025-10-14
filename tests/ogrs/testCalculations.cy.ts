@@ -4,7 +4,7 @@ describe('OGRS calculator test', () => {
 
     const tolerance = '1E-37'
     const precision = 40
-    const count = 5
+    const count = 100
 
     it(`Layer 3 v1 complete - ${count} assessments`, () => {
 

@@ -14,14 +14,16 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
 
     // OSP-C
     if (params.female) {
-        percentageOspC = probabilityToPercentage(ospCoefficients.osp_c.ospFemale)
-        reportScores(outputParams, 'osp_c', null, null, null, 'A', 0, `''`)
+        if (params.ONE_POINT_THIRTY == 'Y') {
+            percentageOspC = probabilityToPercentage(ospCoefficients.osp_c.ospFemale)
+        }
+        reportScores(outputParams, 'osp_c', null, new Decimal(0), null, 'A', 0, `''`)
     } else if (!params.male) {
-        reportScores(outputParams, 'osp_c', null, null, null, 'A', 0, `'OSP-DC can't be calculated on gender other than Male.'`)
+        reportScores(outputParams, 'osp_c', null, new Decimal(0), null, 'A', 0, `'OSP-DC can't be calculated on gender other than Male.'`)
     } else if (params.ONE_POINT_THIRTY == 'N') {
-        reportScores(outputParams, 'osp_c', null, null, null, 'A', 0, `''`)
+        reportScores(outputParams, 'osp_c', null, new Decimal(0), null, 'A', 0, `''`)
     } else if (params.ONE_POINT_THIRTY == null) {
-        reportScores(outputParams, 'osp_c', null, null, null, 'E', 1, `'1.30 Have they ever committed a sexual or sexually motivated offence?'`)
+        reportScores(outputParams, 'osp_c', null, null, null, 'E', 1, `'1.30 Have they ever committed a sexual or sexually motivated offence?\n'`)
     } else {
         const missing = checkMissingQuestions(params, requiredParams['osp_c'])
         if (params.CURR_SEX_OFF_MOTIVATION == 'Y' && params.STRANGER_VICTIM == null) {
@@ -58,13 +60,13 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
 
     // OSP-I
     if (params.female) {
-        reportScores(outputParams, 'osp_i', null, null, null, 'A', 0, `''`)
+        reportScores(outputParams, 'osp_i', null, new Decimal(0), null, 'A', 0, `''`)
     } else if (!params.male) {
-        reportScores(outputParams, 'osp_i', null, null, null, 'A', 0, `'OSP-IIC can't be calculated on gender other than Male.'`)
+        reportScores(outputParams, 'osp_i', null, new Decimal(0), null, 'A', 0, `'OSP-IIC can't be calculated on gender other than Male.'`)
     } else if (params.ONE_POINT_THIRTY == 'N') {
-        reportScores(outputParams, 'osp_i', null, null, null, 'A', 0, `''`)
+        reportScores(outputParams, 'osp_i', null, new Decimal(0), null, 'A', 0, `''`)
     } else if (params.ONE_POINT_THIRTY == null) {
-        reportScores(outputParams, 'osp_i', null, null, null, 'E', 1, `'1.30 Have they ever committed a sexual or sexually motivated offence?'`)
+        reportScores(outputParams, 'osp_i', null, null, null, 'E', 1, `'1.30 Have they ever committed a sexual or sexually motivated offence?\n'`)
     } else {
         const missing = checkMissingQuestions(params, requiredParams['osp_i'])
         if (missing.count > 0) {
@@ -72,7 +74,8 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
         } else {
             // const c = ospCoefficients.osp_i
             const c = ospCoefficients.osp_iic  // TODO awaiting confirmation from PH that this is the correct algorithm
-            const noSanctionsSexualOffences = params.INDECENT_IMAGE_SANCTIONS + params.CONTACT_CHILD_SANCTIONS + params.PARAPHILIA_SANCTIONS == 0
+            const noSanctionsSexualOffences = params.CONTACT_ADULT_SANCTIONS + params.INDECENT_IMAGE_SANCTIONS +
+                params.CONTACT_CHILD_SANCTIONS + params.PARAPHILIA_SANCTIONS == 0
             const twoPlusIIOC = params.INDECENT_IMAGE_SANCTIONS > 1
             const oneIIOC = params.INDECENT_IMAGE_SANCTIONS == 1
             const twoPlusChildContact = params.CONTACT_CHILD_SANCTIONS > 1
@@ -96,7 +99,7 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
 
     } else if (rsrMissing.failed) {
         reportScores(outputParams, 'rsr', null, null, null, 'E', rsrMissing.count, rsrMissing.result)
-        addOutputParameter(outputParams, 'rsr', 'dynamic', 'N')
+        addOutputParameter(outputParams, 'rsr', 'dynamic', outputParams.SNSV_CALCULATED_DYNAMIC == 'Y' ? 'Y' : 'N')
 
     } else {
         let percentageRsr = outputParams.SNSV_CALCULATED_DYNAMIC == 'Y' ? outputParams.SNSV_PERCENTAGE_DYNAMIC : outputParams.SNSV_PERCENTAGE_STATIC
@@ -147,7 +150,7 @@ export function checkRsrMissingQuestions(params: TestCaseParameters, outputParam
         }
     }
 
-    if (params.ONE_POINT_THIRTY == null) {
+    if (params.ONE_POINT_THIRTY == null && params.male) {
         missing.push(missingText.ONE_POINT_THIRTY)
     } else {
         if (outputParams.OSP_DC_CALCULATED == 'E') {
