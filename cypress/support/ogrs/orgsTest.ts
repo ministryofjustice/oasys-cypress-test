@@ -5,14 +5,16 @@ import { calculateTestCase } from './ogrsCalculator'
 import { loadParameterSet, loadExpectedValues } from './loadTestData'
 import { getOgrsResult } from '../oasysDb'
 import { Dayjs } from 'dayjs'
-import { createTestCase, getTestData } from './getTestData/getTestData'
+import { getAssessmentTestData, getRsrTestData } from './getTestData/getTestData'
+import { createAssessmentTestCase } from './getTestData/createAssessmentTestCase'
+import { createRsrTestCase } from './getTestData/createRsrTestCase'
+import { OgrsAssessment, OgrsRsr } from './getTestData/dbClasses'
 
 const dataFilePath = './cypress/support/ogrs/data/'
-export let dateFormat = ''
+export const dateFormat = 'DD-MM-YYYY'
 
 export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTestScriptResult> {
 
-    dateFormat = testParams.dateFormat
     const scriptResults: OgrsTestScriptResult = {
         testCaseResults: [],
         cases: 0,
@@ -20,17 +22,17 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
     }
 
     // Load input parameters from a CSV file
-    if (testParams.dataFile != null) {
-        const inputParameterFile = await fs.readFile(`${dataFilePath}${testParams.dataFile}.csv`, 'utf8')
+    if (testParams.testType == 'csv') {
+        const inputParameterFile = await fs.readFile(`${dataFilePath}${testParams.csvDetails.dataFile}.csv`, 'utf8')
         const inputParameters = inputParameterFile.split('\r\n')
 
         let expectedResults: string[]
-        if (testParams.expectedResultsFile != null) {
-            const expectedResultsFile = await fs.readFile(`${dataFilePath}${testParams.expectedResultsFile}.csv`, 'utf8')
+        if (testParams.csvDetails.expectedResultsFile) {
+            const expectedResultsFile = await fs.readFile(`${dataFilePath}${testParams.csvDetails.expectedResultsFile}.csv`, 'utf8')
             expectedResults = expectedResultsFile.split('\n')
         }
 
-        for (let i = testParams.headers ? 1 : 0; i < inputParameters.length; i++) {
+        for (let i = 0; i < inputParameters.length; i++) {
             const errorLog: string[] = []
             scriptResults.cases++
             try {
@@ -39,7 +41,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
 
                 let expectedTestCaseValues = ''
                 let expectedTestCaseResult: OutputParameters
-                if (testParams.expectedResultsFile == null) {
+                if (testParams.csvDetails.expectedResultsFile == null) {
                     const functionCall = getFunctionCall(testCaseParams)
                     errorLog.push(`    Oracle call:    ${JSON.stringify(functionCall)}`)
                     expectedTestCaseValues = await getOgrsResult(functionCall)
@@ -74,36 +76,36 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
     }
 
     // Create test cases using OASys assessment data
-    if (testParams.assessmentCount != null) {
+    if (testParams.testType == 'db') {
 
-        const oasysSetData = await getTestData(testParams.assessmentCount, testParams.whereClause)
-        
-        for (const assessment of oasysSetData) {
+        const oasysData: OgrsAssessment[] | OgrsRsr[] =
+            testParams.dbDetails.type == 'assessment' ? await getAssessmentTestData(testParams.dbDetails.count, testParams.dbDetails.whereClause)
+                : await getRsrTestData(testParams.dbDetails.count, testParams.dbDetails.whereClause)
+
+        for (const assessmentOrRsr of oasysData) {
             scriptResults.cases++
             const errorLog: string[] = []
             try {
-                const testCaseParams = createTestCase(assessment)
+                const testCaseParams = testParams.dbDetails.type == 'assessment' ?
+                    createAssessmentTestCase(assessmentOrRsr as OgrsAssessment) : createRsrTestCase(assessmentOrRsr as OgrsRsr)
                 errorLog.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
 
-                let expectedTestCaseValues = ''
-                if (testParams.expectedResultsFile == null) {
-                    const functionCall = getFunctionCall(testCaseParams)
-                    errorLog.push(`    Oracle call:    ${JSON.stringify(functionCall)}`)
-                    expectedTestCaseValues = await getOgrsResult(functionCall)
-                    errorLog.push(`    Oracle  results:   ${expectedTestCaseValues}`)
-                }
+                const functionCall = getFunctionCall(testCaseParams)
+                errorLog.push(`    Oracle call:    ${JSON.stringify(functionCall)}`)
+                const expectedTestCaseValues = await getOgrsResult(functionCall)
+                errorLog.push(`    Oracle  results:   ${expectedTestCaseValues}`)
 
                 const expectedTestCaseResult = loadExpectedValues(expectedTestCaseValues.split('|'))
                 errorLog.push(`    Oracle  result object:   ${JSON.stringify(expectedTestCaseResult)}`)
 
-                const testCaseResult = calculateTestCase(testCaseParams, expectedTestCaseResult, assessment.assessmentPk.toString(), testParams)
+                const testCaseResult = calculateTestCase(testCaseParams, expectedTestCaseResult, assessmentOrRsr.pk.toString(), testParams)
                 scriptResults.testCaseResults.push(testCaseResult)
                 if (testCaseResult.failed) {
                     scriptResults.failures++
                 }
             } catch (e) {
                 const logText: string[] = ['']
-                logText.push(`Test case ${assessment.assessmentPk.toString()}  ERROR`)
+                logText.push(`Test case ${assessmentOrRsr.pk.toString()}  ERROR`)
                 logText.push(`    Error:   ${e}`)
                 errorLog.forEach((line) => logText.push(line))
                 scriptResults.testCaseResults.push({
@@ -115,6 +117,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
             }
         }
     }
+
 
     return scriptResults
 }

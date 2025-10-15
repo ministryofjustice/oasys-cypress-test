@@ -27,10 +27,10 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
     } else {
         const missing = checkMissingQuestions(params, requiredParams['osp_c'])
         if (params.CURR_SEX_OFF_MOTIVATION == 'Y' && params.STRANGER_VICTIM == null) {
-            missing.result = `${missing.result}${missing.count == 0 ? '' : '\n'}${missingText.STRANGER_VICTIM}`
+            missing.result = `'${missing.result.replaceAll(`'`, '')}${missingText.STRANGER_VICTIM}\n'`
             missing.count++
         }
-        else if (missing.count > 0) {
+        if (missing.count > 0) {
             reportScores(outputParams, 'osp_c', null, null, null, 'E', missing.count, missing.result)
         } else {
             const contactAdultScore = params.CONTACT_ADULT_SANCTIONS == 0 ? 0 : params.CONTACT_ADULT_SANCTIONS == 1 ? 5 : params.CONTACT_ADULT_SANCTIONS == 2 ? 10 : 15
@@ -129,6 +129,11 @@ export function checkRsrMissingQuestions(params: TestCaseParameters, outputParam
     const missing: string[] = []
     let failed = false
 
+    if (params.ONE_POINT_THIRTY == null && (params.male || params.female)) {
+        missing.push(missingText.ONE_POINT_THIRTY)
+        failed = true
+    }
+
     const snsvRequired = requiredParams[params.STATIC_CALC == 'Y' ? 'serious_violence_brief' : 'serious_violence_extended']
     snsvRequired.forEach((param) => {
         if (params[param] == null) {
@@ -150,8 +155,8 @@ export function checkRsrMissingQuestions(params: TestCaseParameters, outputParam
         }
     }
 
-    if (params.ONE_POINT_THIRTY == null && params.male) {
-        missing.push(missingText.ONE_POINT_THIRTY)
+    if (params.ONE_POINT_THIRTY == null && (params.male || params.female)) {
+        // missing.push(missingText.ONE_POINT_THIRTY)
     } else {
         if (outputParams.OSP_DC_CALCULATED == 'E') {
             requiredParams['osp_c'].forEach((param) => {
@@ -161,6 +166,10 @@ export function checkRsrMissingQuestions(params: TestCaseParameters, outputParam
                     failed = true
                 }
             })
+            if (params.CURR_SEX_OFF_MOTIVATION == 'Y' && params.STRANGER_VICTIM == null) {
+                missing.push(missingText.STRANGER_VICTIM)
+                failed = true
+            }
         }
 
         if (outputParams.OSP_IIC_CALCULATED == 'E') {

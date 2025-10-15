@@ -358,8 +358,8 @@ export const requiredParams = {
         'ONE_POINT_THIRTY',
         'DOB',
         'GENDER',
-        'COMMUNITY_DATE',
         'TOTAL_SANCTIONS_COUNT',
+        'COMMUNITY_DATE',
         'CONTACT_ADULT_SANCTIONS',
         'CONTACT_CHILD_SANCTIONS',
         'PARAPHILIA_SANCTIONS',
@@ -369,6 +369,7 @@ export const requiredParams = {
     osp_i: [
         'ONE_POINT_THIRTY',
         'GENDER',
+        'CONTACT_ADULT_SANCTIONS',
         'CONTACT_CHILD_SANCTIONS',
         'PARAPHILIA_SANCTIONS',
         'INDECENT_IMAGE_SANCTIONS',

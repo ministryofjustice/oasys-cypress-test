@@ -2,13 +2,17 @@ import { Decimal } from 'decimal.js'
 import * as dayjs from 'dayjs'
 
 export type OgrsTestParameters = {
-    dataFile: string,
-    expectedResultsFile?: string,
-    outputFile: string,
-    assessmentCount: number,
-    whereClause: string,
-    headers: boolean,
-    dateFormat: string,
+    testType: 'csv' | 'db'
+    csvDetails?: {
+        dataFile: string,
+        expectedResultsFile?: string,
+    }
+    dbDetails?: {
+        type: 'assessment' | 'rsr',
+        whereClause: string,
+        count: number,
+    }
+    outputFile?: string,
     tolerance: string,
     precision: number,
     reportMode: 'verbose' | 'normal' | 'minimal',
@@ -46,7 +50,7 @@ export type TestCaseParameters = {
     AGE_AT_FIRST_SANCTION: number,
     LAST_SANCTION_DATE: dayjs.Dayjs,
     DATE_RECENT_SEXUAL_OFFENCE: dayjs.Dayjs,
-    CURR_SEX_OFF_MOTIVATION:  string,
+    CURR_SEX_OFF_MOTIVATION: string,
     MOST_RECENT_OFFENCE: dayjs.Dayjs,
     COMMUNITY_DATE: dayjs.Dayjs,
     ONE_POINT_THIRTY: string,

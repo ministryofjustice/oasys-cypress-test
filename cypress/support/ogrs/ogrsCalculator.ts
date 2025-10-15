@@ -34,7 +34,7 @@ export function calculateTestCase(testCaseParams: TestCaseParameters, expectedRe
     testCaseResult.failed = checkResults(expectedResults, testCaseResult.outputParams, testParams, logText)
 
     testCaseResult.logText.push('')
-    testCaseResult.logText.push(`Test case ${testCaseRef} ${testCaseResult.failed ? ' FAILED' : ' PASSED'}`)
+    testCaseResult.logText.push(`Test case ${testCaseRef} ${testCaseResult.failed ? ' *** FAILED ***' : ' PASSED'}`)
     testCaseResult.logText.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
     testCaseResult.logText.push(`    Oracle result:    ${JSON.stringify(expectedResults)}`)
     testCaseResult.logText.push(`    Cypress result:   ${JSON.stringify(testCaseResult.outputParams)}`)
