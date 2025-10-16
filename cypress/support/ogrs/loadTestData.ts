@@ -107,7 +107,7 @@ export function loadParameterSet(parameterLine: string): TestCaseParameters {
 }
 
 function getString(param: string): string {
-    return param == '' || param == null ? null : param
+    return param == '' || param == 'null' || param == null ? null : param
 }
 
 function getDate(param: string): dayjs.Dayjs {
