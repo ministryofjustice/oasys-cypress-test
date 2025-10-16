@@ -6,8 +6,9 @@ describe('OGRS calculator test', () => {
 
     const tolerance = '1E-37'
     const precision = 40
-    const count = 100
+    const count = 10000
     const reportMode: 'verbose' | 'normal' | 'minimal' = 'minimal'
+    const timeout = 600000
 
     let cases = 0
     let failures = 0
@@ -15,200 +16,99 @@ describe('OGRS calculator test', () => {
 
     let start = dayjs()
 
+    const dbTestParams: OgrsTestParameters = {
+        testType: 'db',
+        dbDetails: {
+            type: 'assessment',
+            whereClause: `deleted_date is null and ref_ass_version_code = 'LAYER3' and version_number = 1 and assessment_status_elm = 'COMPLETE'`,
+            count: count,
+        },
+        tolerance: tolerance,
+        precision: precision,
+        reportMode: reportMode,
+    }
+
+    const csvTestParams: OgrsTestParameters = {
+        testType: 'csv',
+        csvDetails: {
+            dataFile: '',
+        },
+        tolerance: tolerance,
+        precision: precision,
+        reportMode: reportMode,
+    }
+
     it(`Layer 3 v1 complete`, () => {
 
-        const ogrsTestParams: OgrsTestParameters = {
-            testType: 'db',
-            dbDetails: {
-                type: 'assessment',
-                whereClause: `deleted_date is null and ref_ass_version_code = 'LAYER3' and version_number = 1 and assessment_status_elm = 'COMPLETE'`,
-                count: count,
-            },
-            tolerance: tolerance,
-            precision: precision,
-            reportMode: reportMode,
-        }
-
-        cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
-
-            report(ogrsTestParams, result)
-            cases = result.cases
-            failures = result.failures
-
-        }).then(() => {
-            checkAndLogOutcome()
-        })
-
+        dbTestParams.dbDetails.type = 'assessment'
+        dbTestParams.dbDetails.whereClause = `deleted_date is null and ref_ass_version_code = 'LAYER3' and version_number = 1 and assessment_status_elm = 'COMPLETE'`
+        runTest(dbTestParams)
     })
 
     it(`Layer 3 v1 not complete (any other status)`, () => {
 
-        const ogrsTestParams: OgrsTestParameters = {
-            testType: 'db',
-            dbDetails: {
-                type: 'assessment',
-                whereClause: `deleted_date is null and ref_ass_version_code = 'LAYER3' and version_number = 1 and assessment_status_elm <> 'COMPLETE'`,
-                count: count,
-            },
-            tolerance: tolerance,
-            precision: precision,
-            reportMode: reportMode,
-        }
-
-        cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
-
-            report(ogrsTestParams, result)
-            cases = result.cases
-            failures = result.failures
-
-        }).then(() => {
-            checkAndLogOutcome()
-        })
-
+        dbTestParams.dbDetails.type = 'assessment'
+        dbTestParams.dbDetails.whereClause = `deleted_date is null and ref_ass_version_code = 'LAYER3' and version_number = 1 and assessment_status_elm <> 'COMPLETE'`
+        runTest(dbTestParams)
     })
 
     it(`Layer 3 v2 complete`, () => {
 
-        const ogrsTestParams: OgrsTestParameters = {
-            testType: 'db',
-            dbDetails: {
-                type: 'assessment',
-                whereClause: `deleted_date is null and ref_ass_version_code = 'LAYER3' and version_number = 2 and assessment_status_elm = 'COMPLETE'`,
-                count: count,
-            },
-            tolerance: tolerance,
-            precision: precision,
-            reportMode: reportMode,
-        }
-
-        cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
-
-            report(ogrsTestParams, result)
-            cases = result.cases
-            failures = result.failures
-
-        }).then(() => {
-            checkAndLogOutcome()
-        })
-
+        dbTestParams.dbDetails.type = 'assessment'
+        dbTestParams.dbDetails.whereClause = `deleted_date is null and ref_ass_version_code = 'LAYER3' and version_number = 2 and assessment_status_elm = 'COMPLETE'`
+        runTest(dbTestParams)
     })
 
     it(`Layer 1 v2 complete`, () => {
 
-        const ogrsTestParams: OgrsTestParameters = {
-            testType: 'db',
-            dbDetails: {
-                type: 'assessment',
-                whereClause: `deleted_date is null and ref_ass_version_code = 'LAYER1' and version_number = 2 and assessment_status_elm = 'COMPLETE'`,
-                count: count,
-            },
-            tolerance: tolerance,
-            precision: precision,
-            reportMode: reportMode,
-        }
-
-        cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
-
-            report(ogrsTestParams, result)
-            cases = result.cases
-            failures = result.failures
-
-        }).then(() => {
-            checkAndLogOutcome()
-        })
-
+        dbTestParams.dbDetails.type = 'assessment'
+        dbTestParams.dbDetails.whereClause = `deleted_date is null and ref_ass_version_code = 'LAYER1' and version_number = 2 and assessment_status_elm = 'COMPLETE'`,
+            runTest(dbTestParams)
     })
 
     it(`Standalone RSR complete`, () => {
 
-        const ogrsTestParams: OgrsTestParameters = {
-            testType: 'db',
-            dbDetails: {
-                type: 'rsr',
-                whereClause: `deleted_date is null and rsr_status = 'COMPLETE'`,
-                count: count,
-            },
-            tolerance: tolerance,
-            precision: precision,
-            reportMode: reportMode,
-        }
-
-        cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
-
-            report(ogrsTestParams, result)
-            cases = result.cases
-            failures = result.failures
-
-        }).then(() => {
-            checkAndLogOutcome()
-        })
-
+        dbTestParams.dbDetails.type = 'rsr'
+        dbTestParams.dbDetails.whereClause = `deleted_date is null and rsr_status = 'COMPLETE'`
+        runTest(dbTestParams)
     })
 
     it('Example set of 20', () => {
 
-        const ogrsTestParams: OgrsTestParameters = {
-            testType: 'csv',
-            csvDetails: {
-                dataFile: 'test1Input',
-            },
-            tolerance: tolerance,
-            precision: precision,
-            reportMode: reportMode,
-        }
-
-        cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
-
-            report(ogrsTestParams, result)
-            cases = result.cases
-            failures = result.failures
-
-        }).then(() => {
-            checkAndLogOutcome()
-        })
-
-
+        csvTestParams.csvDetails.dataFile = 'test1Input'
+        runTest(csvTestParams)
     })
+
     it('Example set of 20 (with some missing questions)', () => {
 
-        const ogrsTestParams: OgrsTestParameters = {
-            testType: 'csv',
-            csvDetails: {
-                dataFile: 'test1inputWithMissingFields',
-            },
-            tolerance: tolerance,
-            precision: precision,
-            reportMode: reportMode,
-        }
+        csvTestParams.csvDetails.dataFile = 'test1inputWithMissingFields'
+        runTest(csvTestParams)
+    })
 
-        cy.task('ogrsAssessmentCalcTest', ogrsTestParams).then((result: OgrsTestScriptResult) => {
+    function runTest(params: OgrsTestParameters) {
+        cy.task('ogrsAssessmentCalcTest', params, { timeout: timeout }).then((result: OgrsTestScriptResult) => {
 
-            report(ogrsTestParams, result)
+            report(params, result)
             cases = result.cases
             failures = result.failures
 
         }).then(() => {
-            checkAndLogOutcome()
+            const now = dayjs()
+            summary.push({ title: Cypress.currentTest.title, cases: cases, failures: failures, duration: now.diff(start) })
+            start = now  // set for the next test
+
+            if (failures > 0) {
+                throw new Error(`${failures} failed out of ${cases}`)
+            }
         })
-    })
-
-    function checkAndLogOutcome() {
-
-        const now = dayjs()
-        summary.push({ title: Cypress.currentTest.title, cases: cases, failures: failures, duration: now.diff(start) })
-        start = now  // set for the next test
-
-        if (failures > 0) {
-            throw new Error(`${failures} failed out of ${cases}`)
-        }
     }
 
     it('Summary', () => {
-        
+
         const totalCases = summary.reduce((n, { cases }) => n + cases, 0)
         const totalFailures = summary.reduce((n, { failures }) => n + failures, 0)
         const totalDuration = summary.reduce((n, { duration }) => n + duration, 0)
-        cy.groupedLogStart(`TOTAL ${totalCases} tests, ${totalFailures} failures.  Duration: ${(totalDuration/1000).toFixed(0)}s`)
+        cy.groupedLogStart(`TOTAL ${totalCases} tests, ${totalFailures} failures.  Duration: ${(totalDuration / 1000).toFixed(0)}s`)
         cy.groupedLog('')
 
         summary.forEach((test) => cy.groupedLog(`${test.title}: ${test.cases} tests, ${test.failures} failure(s).  Duration: ${test.duration}ms`))

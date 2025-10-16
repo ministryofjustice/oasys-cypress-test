@@ -33,16 +33,17 @@ export function calculateTestCase(testCaseParams: TestCaseParameters, expectedRe
     const logText: string[] = []
     testCaseResult.failed = checkResults(expectedResults, testCaseResult.outputParams, testParams, logText)
 
-    testCaseResult.logText.push('')
-    testCaseResult.logText.push(`Test case ${testCaseRef} ${testCaseResult.failed ? ' *** FAILED ***' : ' PASSED'}`)
-    testCaseResult.logText.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
-    testCaseResult.logText.push(`    Oracle result:    ${JSON.stringify(expectedResults)}`)
-    testCaseResult.logText.push(`    Cypress result:   ${JSON.stringify(testCaseResult.outputParams)}`)
-    if (testCaseResult.failed || testParams.reportMode == 'verbose') {
+    if (testCaseResult.failed || testParams.reportMode != 'minimal') {
         testCaseResult.logText.push('')
-        testCaseResult.logText.push(...logText)
+        testCaseResult.logText.push(`Test case ${testCaseRef} ${testCaseResult.failed ? ' *** FAILED ***' : ' PASSED'}`)
+        testCaseResult.logText.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
+        testCaseResult.logText.push(`    Oracle result:    ${JSON.stringify(expectedResults)}`)
+        testCaseResult.logText.push(`    Cypress result:   ${JSON.stringify(testCaseResult.outputParams)}`)
+        if (testCaseResult.failed || testParams.reportMode == 'verbose') {
+            testCaseResult.logText.push('')
+            testCaseResult.logText.push(...logText)
+        }
     }
-
     return testCaseResult
 }
 
@@ -75,7 +76,7 @@ function checkResults(expectedResults: OutputParameters, actualResults: OutputPa
             if ((mode == 'tolerance' && diff.greaterThan(tolerance)) || (mode == 'decimal' && diff.greaterThan(0))) {
                 failed = true
                 if (mode == 'tolerance' || (mode == 'decimal' && diff.greaterThan(0))) {
-                    logText.push(`      ${param} failed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}, difference: ${diff}`)
+                    logText.push(`      ${param} *** failed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}, difference: ${diff}`)
                 }
             } else if (mode == 'tolerance' && testParams.reportMode != 'minimal') {
                 logText.push(`      ${param} passed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}, difference: ${diff}`)
@@ -88,7 +89,7 @@ function checkResults(expectedResults: OutputParameters, actualResults: OutputPa
             const expectedMissing = JSON.stringify(expectedResults[param])
             const actualMissing = JSON.stringify(actualResults[param])
             if (expectedMissing != actualMissing) {
-                logText.push(`      ${param} failed: Oracle ${expectedMissing}, Cypress ${actualMissing}`)
+                logText.push(`      ${param} *** failed: Oracle ${expectedMissing}, Cypress ${actualMissing}`)
                 failed = true
             }
             else if (testParams.reportMode == 'verbose') {
@@ -98,7 +99,7 @@ function checkResults(expectedResults: OutputParameters, actualResults: OutputPa
             // simple equality check
         } else if (actualResults[param] != expectedResults[param]) {
             failed = true
-            logText.push(`      ${param} failed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}`)
+            logText.push(`      ${param} *** failed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}`)
 
             // otherwise passed
         } else if (testParams.reportMode == 'verbose') {

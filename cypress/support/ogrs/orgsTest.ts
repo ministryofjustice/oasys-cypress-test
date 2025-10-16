@@ -62,7 +62,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                 }
             } catch (e) {
                 const logText: string[] = ['']
-                logText.push(`Test case ${i + 1}  ERROR`)
+                logText.push(`Test case ${i + 1}  ERROR *** FAILED ***`)
                 logText.push(`    Error:   ${e}`)
                 errorLog.forEach((line) => logText.push(line))
                 scriptResults.testCaseResults.push({
@@ -105,7 +105,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                 }
             } catch (e) {
                 const logText: string[] = ['']
-                logText.push(`Test case ${assessmentOrRsr.pk.toString()}  ERROR`)
+                logText.push(`Test case ${assessmentOrRsr.pk.toString()}  ERROR *** FAILED ***`)
                 logText.push(`    Error:   ${e}`)
                 errorLog.forEach((line) => logText.push(line))
                 scriptResults.testCaseResults.push({
