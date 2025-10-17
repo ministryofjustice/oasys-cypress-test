@@ -70,6 +70,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                     inputParams: null,
                     outputParams: null,
                     failed: true,
+                    identifier: null,
                 })
                 scriptResults.failures++
             }
@@ -114,6 +115,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                     inputParams: null,
                     outputParams: null,
                     failed: true,
+                    identifier: null,
                 })
                 scriptResults.failures++
             }

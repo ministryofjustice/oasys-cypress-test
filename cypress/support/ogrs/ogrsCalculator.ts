@@ -14,6 +14,7 @@ export function calculateTestCase(testCaseParams: TestCaseParameters, expectedRe
         failed: false,
         inputParams: testCaseParams,
         outputParams: createOutputObject(),
+        identifier: testCaseRef,
     }
 
     // Calculate individual scores

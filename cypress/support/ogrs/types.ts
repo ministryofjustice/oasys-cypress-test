@@ -28,6 +28,8 @@ export type TestCaseResult = {
     inputParams: TestCaseParameters,
     outputParams: OutputParameters,
     failed: boolean,
+    identifier: string,
+
 }
 
 export type ScoreType = 'serious_violence_brief' | 'serious_violence_extended' | 'general_brief' | 'violence_brief' | 'general_extended' | 'violence_extended' | 'osp_c' | 'osp_i' | 'rsr'
