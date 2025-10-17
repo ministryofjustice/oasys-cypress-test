@@ -152,18 +152,21 @@ describe('OGRS calculator test', () => {
 
     function createOutputCsvLine(inputParams: TestCaseParameters, outputParams: OutputParameters): string {
 
-        let line = ''
-        Object.keys(inputParams).forEach((key) => {
-            const value = inputParams[key]
-            line = `${line}${value ?? ''},`
-        })
-        Object.keys(outputParams).forEach((key) => {
-            let value = outputParams[key]
-            if (value) {
-                value = value.toString().replaceAll('\n', '').replaceAll(',','')
-            }
-            line = `${line}${value ?? ''},`
-        })
-        return line.slice(0, -1) // remove last comma
+        if (inputParams && outputParams) {
+            let line = ''
+            Object.keys(inputParams).forEach((key) => {
+                const value = inputParams[key]
+                line = `${line}${value ?? ''},`
+            })
+            Object.keys(outputParams).forEach((key) => {
+                let value = outputParams[key]
+                if (value) {
+                    value = value.toString().replaceAll('\n', '').replaceAll(',', '')
+                }
+                line = `${line}${value ?? ''},`
+            })
+            return line.slice(0, -1) // remove last comma}
+        }
+        return ''
     }
 })
