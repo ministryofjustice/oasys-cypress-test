@@ -377,7 +377,7 @@ export type OgrsFeatures =
     'ogrs3_ovp_sanct' |
     'ogrs4v_rate_violent' |
     's2q2a_carry_use_weapon' |
-    's3q2_lives_with_partner' |
+    'livein_relationship' |
     's3q4_suitability' |
     's4q2_unemployed' |
     's6q4_partner_relationship' |
@@ -391,18 +391,18 @@ export type OgrsFeatures =
     's11q4_temper_control' |
     's12q1_procriminal_attitudes' |
     's7q2_activities_encourage' |
-    'drug_current_use_heroin' |
-    'drug_current_use_methadone' |
-    'drug_current_use_otheropiate' |
-    'drug_current_use_crack' |
-    'drug_current_use_cokepowder' |
-    'drug_current_use_prescribed' |
-    'drug_current_use_benzo' |
-    'drug_current_use_amphetamine' |
-    'drug_current_use_ecstasy' |
-    'drug_current_use_cannabis' |
-    'drug_current_use_steroid' |
-    'drug_current_use_anyotherdrug_new' |
+    'drug_use_flag_v411_heroin' |
+    'drug_use_flag_v411_methadone' |
+    'drug_use_flag_v411_otheropiate' |
+    'drug_use_flag_v411_crack' |
+    'drug_use_flag_v411_cokepowder' |
+    'drug_use_flag_v411_prescribed' |
+    'drug_use_flag_v411_benzo' |
+    'drug_use_flag_v411_amphetamine' |
+    'drug_use_flag_v411_ecstasy' |
+    'drug_use_flag_v411_cannabis' |
+    'drug_use_flag_v411_steroid' |
+    'drug_use_flag_v411_anyotherdrug' |
     'r1q2_murder_prev' |
     'r1q2_wounding_prev' |
     'r1q2_kidnapping_prev' |
