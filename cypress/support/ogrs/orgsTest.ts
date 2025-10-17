@@ -67,6 +67,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                 errorLog.forEach((line) => logText.push(line))
                 scriptResults.testCaseResults.push({
                     logText: logText,
+                    inputParams: null,
                     outputParams: null,
                     failed: true,
                 })
@@ -110,6 +111,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                 errorLog.forEach((line) => logText.push(line))
                 scriptResults.testCaseResults.push({
                     logText: logText,
+                    inputParams: null,
                     outputParams: null,
                     failed: true,
                 })

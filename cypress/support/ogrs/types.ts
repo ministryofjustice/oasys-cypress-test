@@ -12,7 +12,6 @@ export type OgrsTestParameters = {
         whereClause: string,
         count: number,
     }
-    outputFile?: string,
     tolerance: string,
     precision: number,
     reportMode: 'verbose' | 'normal' | 'minimal',
@@ -26,6 +25,7 @@ export type OgrsTestScriptResult = {
 
 export type TestCaseResult = {
     logText: string[],
+    inputParams: TestCaseParameters,
     outputParams: OutputParameters,
     failed: boolean,
 }

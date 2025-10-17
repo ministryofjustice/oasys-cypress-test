@@ -209,7 +209,8 @@ export function createOutputObject(): OutputParameters {
 export function reportScores(outputParams: OutputParameters, scoreType: ScoreType, zScore: Decimal, percentage: Decimal, band: string, status: ScoreStatus, missingCount: number, missingQuestions: string) {
 
     addOutputParameter(outputParams, scoreType, 'score', zScore)
-    addOutputParameter(outputParams, scoreType, 'percentage', percentage)
+    addOutputParameter(outputParams, scoreType, 'percentage',
+        percentage && percentage.greaterThanOrEqualTo(100) ? new Decimal(99.99) : percentage)
     addOutputParameter(outputParams, scoreType, 'band', band)
     addOutputParameter(outputParams, scoreType, 'status', status)
 

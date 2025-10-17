@@ -12,6 +12,7 @@ export function calculateTestCase(testCaseParams: TestCaseParameters, expectedRe
     const testCaseResult: TestCaseResult = {
         logText: [],
         failed: false,
+        inputParams: testCaseParams,
         outputParams: createOutputObject(),
     }
 
