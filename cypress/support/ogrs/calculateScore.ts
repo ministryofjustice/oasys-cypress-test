@@ -75,7 +75,7 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
     // Section 6
     zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's6q4_partner_relationship', params.SIX_POINT_FOUR, outputParams))
     zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's6q7_perpetrator', params.SIX_POINT_SEVEN, outputParams))
-    zScore = zScore.add(calculateConditional(scoreType, coefs, 's3q2_lives_with_partner', params.SIX_POINT_EIGHT == 1, outputParams))
+    zScore = zScore.add(calculateConditional(scoreType, coefs, 'livein_relationship', params.SIX_POINT_EIGHT == 1, outputParams))
     zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'quality_of_livein_relationship', params.SIX_POINT_EIGHT == 1 ? params.SIX_POINT_FOUR : 0, outputParams))
 
     // Section 7, 9, 11, 12
@@ -89,18 +89,18 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
     // Drugs
     zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's8q8_motivation_tackle_misuse', params.EIGHT_POINT_EIGHT, outputParams))
     zScore = zScore.add(calculateConditional(scoreType, coefs, 'dailydrug', params.DAILY_DRUG_USER == 'Y', outputParams))
-    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_current_use_heroin', params.HEROIN == 'Y', outputParams))
-    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_current_use_methadone', params.METHADONE == 'Y', outputParams))
-    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_current_use_otheropiate', params.OTHER_OPIATE == 'Y', outputParams))
-    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_current_use_crack', params.CRACK_COCAINE == 'Y', outputParams))
-    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_current_use_cokepowder', params.POWDER_COCAINE == 'Y', outputParams))
-    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_current_use_prescribed', params.MISUSED_PRESCRIBED == 'Y', outputParams))
-    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_current_use_benzo', params.BENZODIAZIPINES == 'Y', outputParams))
-    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_current_use_amphetamine', params.AMPHETAMINES == 'Y', outputParams))
-    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_current_use_ecstasy', params.ECSTASY == 'Y', outputParams))
-    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_current_use_cannabis', params.CANNABIS == 'Y', outputParams))
-    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_current_use_steroid', params.STEROIDS == 'Y', outputParams))
-    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_current_use_anyotherdrug_new',
+    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_use_flag_v411_heroin', params.HEROIN == 'Y', outputParams))
+    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_use_flag_v411_methadone', params.METHADONE == 'Y', outputParams))
+    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_use_flag_v411_otheropiate', params.OTHER_OPIATE == 'Y', outputParams))
+    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_use_flag_v411_crack', params.CRACK_COCAINE == 'Y', outputParams))
+    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_use_flag_v411_cokepowder', params.POWDER_COCAINE == 'Y', outputParams))
+    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_use_flag_v411_prescribed', params.MISUSED_PRESCRIBED == 'Y', outputParams))
+    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_use_flag_v411_benzo', params.BENZODIAZIPINES == 'Y', outputParams))
+    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_use_flag_v411_amphetamine', params.AMPHETAMINES == 'Y', outputParams))
+    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_use_flag_v411_ecstasy', params.ECSTASY == 'Y', outputParams))
+    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_use_flag_v411_cannabis', params.CANNABIS == 'Y', outputParams))
+    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_use_flag_v411_steroid', params.STEROIDS == 'Y', outputParams))
+    zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_use_flag_v411_anyotherdrug',
         params.HALLUCINOGENS == 'Y' || params.KETAMINE == 'Y' || params.OTHER_DRUGS == 'Y' || params.SOLVENTS == 'Y' || params.SPICE == 'Y', outputParams))
 
     // Previous convictions
