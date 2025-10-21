@@ -1,6 +1,6 @@
 import { Decimal } from 'decimal.js'
 
-import { OutputParameters, ScoreBand, ScoreStatus, ScoreType } from './types'
+import { OgrsFeatures, OutputParameters, ScoreBand, ScoreStatus, ScoreType } from './types'
 
 export function createOutputObject(): OutputParameters {
 
@@ -140,6 +140,9 @@ export function createOutputObject(): OutputParameters {
         OVP2_AMPHETAMINES: null,
         OVP2_ECSTASY: null,
         OVP2_CANNABIS: null,
+        OVP2_OTHER_OPIATE: null,
+        OVP2_OTHER_DRUGS: null,
+        OVP2_METHADONE: null,
         OVP2_STEROIDS: null,
         OVP2_TOTAL_SCORE: null,
         OVP2_PERCENTAGE: null,
@@ -223,7 +226,7 @@ export function addOutputParameter(outputParams: OutputParameters, scoreType: Sc
     const parameterName = getOutputParameterName(scoreType, item)
     if (parameterName != null && parameterName in outputParams) {
         outputParams[parameterName] = value
-    }
+    } // else if (scoreType == 'general_extended')   console.log(`${item} ${outputItemName[parameterName]} ${value}`)
 }
 
 function getOutputParameterName(scoreType: ScoreType, item: string): string {
@@ -275,7 +278,7 @@ const outputItemName = {
     ogrs3_ovp_sanct: 'TOT_VIOLENT_SANC',
     violent: 'COPAS_VIOLENT',
     s2q2a_carry_use_weapon: 'WEAPON',
-    s3q2_lives_with_partner: 'LIVE_IN_RELATIONSHIP',
+    livein_relationship: 'LIVE_IN_RELATIONSHIP',
     s3q4_suitability: 'SUITABLE_ACC',
     s4q2_unemployed: 'UNEMPLOYED',
     s6q4_partner_relationship: 'RELATIONSHIP',
@@ -289,18 +292,18 @@ const outputItemName = {
     s11q4_temper_control: 'TEMPER',
     s12q1_procriminal_attitudes: 'CRIMINAL_ATTITUDE',
     s7q2_activities_encourage: 'REGULAR_ACTIVITIES',
-    drug_current_use_heroin: 'HEROIN',
-    drug_current_use_methadone: 'METHADONE',
-    drug_current_use_otheropiate: 'OTHER_OPIATE',
-    drug_current_use_crack: 'CRACK',
-    drug_current_use_cokepowder: 'COCAINE',
-    drug_current_use_prescribed: 'MISUSE_PRESCRIBED',
-    drug_current_use_benzo: 'BENZOS',
-    drug_current_use_amphetamine: 'AMPHETAMINES',
-    drug_current_use_ecstasy: 'ECSTASY',
-    drug_current_use_cannabis: 'CANNABIS',
-    drug_current_use_steroid: 'STEROIDS',
-    drug_current_use_anyotherdrug_new: 'OTHER_DRUGS',
+    drug_use_flag_v411_heroin: 'HEROIN',
+    drug_use_flag_v411_methadone: 'METHADONE',
+    drug_use_flag_v411_otheropiate: 'OTHER_OPIATE',
+    drug_use_flag_v411_crack: 'CRACK',
+    drug_use_flag_v411_cokepowder: 'COCAINE',
+    drug_use_flag_v411_prescribed: 'MISUSE_PRESCRIBED',
+    drug_use_flag_v411_benzo: 'BENZOS',
+    drug_use_flag_v411_amphetamine: 'AMPHETAMINES',
+    drug_use_flag_v411_ecstasy: 'ECSTASY',
+    drug_use_flag_v411_cannabis: 'CANNABIS',
+    drug_use_flag_v411_steroid: 'STEROIDS',
+    drug_use_flag_v411_anyotherdrug: 'OTHER_DRUGS',
     r1q2_murder_prev: 'HOMICIDE',
     r1q2_wounding_prev: 'GBH',
     r1q2_kidnapping_prev: 'KIDNAP',

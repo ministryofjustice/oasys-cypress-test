@@ -23,7 +23,7 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
     }
 
     // Check for missing parameters or invalid gender
-    if (!params.male && !params.female) {
+    if (!params.male && !params.female && params.GENDER != null) {
         reportScores(outputParams, scoreType, null, null, null, 'E', 0, `'${outputScoreName[scoreType]} can't be calculated on gender other than Male and Female.'`)
         return
     }

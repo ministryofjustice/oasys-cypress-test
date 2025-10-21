@@ -13,6 +13,9 @@ import { OgrsAssessment, OgrsRsr } from './getTestData/dbClasses'
 const dataFilePath = './cypress/support/ogrs/data/'
 export const dateFormat = 'DD-MM-YYYY'
 
+const tolerance = '1E-37'
+const precision = 40
+
 export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTestScriptResult> {
 
     const scriptResults: OgrsTestScriptResult = {
@@ -26,43 +29,40 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
         const inputParameterFile = await fs.readFile(`${dataFilePath}${testParams.csvDetails.dataFile}.csv`, 'utf8')
         const inputParameters = inputParameterFile.split('\r\n')
 
-        let expectedResults: string[]
-        if (testParams.csvDetails.expectedResultsFile) {
-            const expectedResultsFile = await fs.readFile(`${dataFilePath}${testParams.csvDetails.expectedResultsFile}.csv`, 'utf8')
-            expectedResults = expectedResultsFile.split('\n')
-        }
+        const start = testParams.csvDetails.start ?? 0
+        const end = testParams.csvDetails.end ?? inputParameters.length - 1
 
-        for (let i = 0; i < inputParameters.length; i++) {
+        for (let i = start; i <= end; i++) {
             const errorLog: string[] = []
             scriptResults.cases++
             try {
                 const testCaseParams = loadParameterSet(inputParameters[i])
                 errorLog.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
 
-                let expectedTestCaseValues = ''
-                let expectedTestCaseResult: OutputParameters
-                if (testParams.csvDetails.expectedResultsFile == null) {
-                    const functionCall = getFunctionCall(testCaseParams)
-                    errorLog.push(`    Oracle call:    ${JSON.stringify(functionCall)}`)
-                    expectedTestCaseValues = await getOgrsResult(functionCall)
-                    errorLog.push(`    Oracle  results:   ${expectedTestCaseValues}`)
-                    expectedTestCaseResult = loadExpectedValues(expectedTestCaseValues.split('|'))
-                } else {
-                    expectedTestCaseValues = expectedResults[i]
-                    expectedTestCaseResult = loadExpectedValues(expectedTestCaseValues.split(','))
+                if (testParams.staticFlag) {
+                    testCaseParams.STATIC_CALC = testParams.staticFlag
                 }
 
-                errorLog.push(`    Oracle  result object:   ${JSON.stringify(expectedTestCaseResult)}`)
-                const testCaseIdentifier = (i + 1)?.toString() ?? 'null'
+                let oracleTestCaseValues = ''
+                let oracleTestCaseResult: OutputParameters
 
-                const testCaseResult = calculateTestCase(testCaseParams, expectedTestCaseResult, testCaseIdentifier, testParams)
+                const functionCall = getFunctionCall(testCaseParams)
+                errorLog.push(`    Oracle call:    ${JSON.stringify(functionCall)}`)
+                oracleTestCaseValues = await getOgrsResult(functionCall)
+                errorLog.push(`    Oracle  results:   ${oracleTestCaseValues}`)
+                oracleTestCaseResult = loadExpectedValues(oracleTestCaseValues.split('|'))
+
+                errorLog.push(`    Oracle  result object:   ${JSON.stringify(oracleTestCaseResult)}`)
+                const testCaseIdentifier = (i)?.toString() ?? 'null'
+
+                const testCaseResult = calculateTestCase(testCaseParams, oracleTestCaseResult, testCaseIdentifier, testParams)
                 scriptResults.testCaseResults.push(testCaseResult)
                 if (testCaseResult.failed) {
                     scriptResults.failures++
                 }
             } catch (e) {
                 const logText: string[] = ['']
-                logText.push(`Test case ${i + 1}  ERROR *** FAILED ***`)
+                logText.push(`Test case ${i}  ERROR *** FAILED ***`)
                 logText.push(`    Error:   ${e}`)
                 errorLog.forEach((line) => logText.push(line))
                 scriptResults.testCaseResults.push({
@@ -92,15 +92,19 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                     createAssessmentTestCase(assessmentOrRsr as OgrsAssessment) : createRsrTestCase(assessmentOrRsr as OgrsRsr)
                 errorLog.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
 
+                if (testParams.staticFlag) {
+                    testCaseParams.STATIC_CALC = testParams.staticFlag
+                }
+
                 const functionCall = getFunctionCall(testCaseParams)
                 errorLog.push(`    Oracle call:    ${JSON.stringify(functionCall)}`)
-                const expectedTestCaseValues = await getOgrsResult(functionCall)
-                errorLog.push(`    Oracle  results:   ${expectedTestCaseValues}`)
+                const oracleTestCaseValues = await getOgrsResult(functionCall)
+                errorLog.push(`    Oracle  results:   ${oracleTestCaseValues}`)
 
-                const expectedTestCaseResult = loadExpectedValues(expectedTestCaseValues.split('|'))
-                errorLog.push(`    Oracle  result object:   ${JSON.stringify(expectedTestCaseResult)}`)
+                const oracleTestCaseResult = loadExpectedValues(oracleTestCaseValues.split('|'))
+                errorLog.push(`    Oracle  result object:   ${JSON.stringify(oracleTestCaseResult)}`)
 
-                const testCaseResult = calculateTestCase(testCaseParams, expectedTestCaseResult, assessmentOrRsr.pk.toString(), testParams)
+                const testCaseResult = calculateTestCase(testCaseParams, oracleTestCaseResult, assessmentOrRsr.pk.toString(), testParams)
                 scriptResults.testCaseResults.push(testCaseResult)
                 if (testCaseResult.failed) {
                     scriptResults.failures++
@@ -130,31 +134,32 @@ function getFunctionCall(params: TestCaseParameters): string {
 
     let result: string[] = []
 
-    result.push(`eor.new_gen_predictors_pkg.get_ogrs4('${params.STATIC_CALC}'`)
+    result.push(`eor.new_gen_predictors_pkg.get_ogrs4(${dateParameterToString(params.ASSESSMENT_DATE)}`)
+    result.push(stringParameterToString(params.STATIC_CALC))
     result.push(dateParameterToString(params.DOB))
     result.push(stringParameterToString(params.GENDER))
     result.push(stringParameterToString(params.OFFENCE_CODE))
-    result.push(params.TOTAL_SANCTIONS_COUNT?.toString() ?? 'null')
-    result.push(params.TOTAL_VIOLENT_SANCTIONS?.toString() ?? 'null')
-    result.push(params.CONTACT_ADULT_SANCTIONS?.toString() ?? 'null')
-    result.push(params.CONTACT_CHILD_SANCTIONS?.toString() ?? 'null')
-    result.push(params.INDECENT_IMAGE_SANCTIONS?.toString() ?? 'null')
-    result.push(params.PARAPHILIA_SANCTIONS?.toString() ?? 'null')
+    result.push(numericParameterToString(params.TOTAL_SANCTIONS_COUNT))
+    result.push(numericParameterToString(params.TOTAL_VIOLENT_SANCTIONS))
+    result.push(numericParameterToString(params.CONTACT_ADULT_SANCTIONS))
+    result.push(numericParameterToString(params.CONTACT_CHILD_SANCTIONS))
+    result.push(numericParameterToString(params.INDECENT_IMAGE_SANCTIONS))
+    result.push(numericParameterToString(params.PARAPHILIA_SANCTIONS))
     result.push(stringParameterToString(params.STRANGER_VICTIM))
-    result.push(params.AGE_AT_FIRST_SANCTION?.toString() ?? 'null')
+    result.push(numericParameterToString(params.AGE_AT_FIRST_SANCTION))
     result.push(dateParameterToString(params.LAST_SANCTION_DATE))
     result.push(dateParameterToString(params.DATE_RECENT_SEXUAL_OFFENCE))
     result.push(stringParameterToString(params.CURR_SEX_OFF_MOTIVATION))
     result.push(dateParameterToString(params.MOST_RECENT_OFFENCE))
     result.push(dateParameterToString(params.COMMUNITY_DATE))
     result.push(stringParameterToString(params.ONE_POINT_THIRTY))
-    result.push(params.TWO_POINT_TWO?.toString() ?? 'null')
-    result.push(params.THREE_POINT_FOUR?.toString() ?? 'null')
-    result.push(params.FOUR_POINT_TWO?.toString() ?? 'null')
-    result.push(params.SIX_POINT_FOUR?.toString() ?? 'null')
-    result.push(params.SIX_POINT_SEVEN?.toString() ?? 'null')
-    result.push(params.SIX_POINT_EIGHT?.toString() ?? 'null')
-    result.push(params.SEVEN_POINT_TWO?.toString() ?? 'null')
+    result.push(numericParameterToString(params.TWO_POINT_TWO))
+    result.push(numericParameterToString(params.THREE_POINT_FOUR))
+    result.push(numericParameterToString(params.FOUR_POINT_TWO))
+    result.push(numericParameterToString(params.SIX_POINT_FOUR))
+    result.push(numericParameterToString(params.SIX_POINT_SEVEN))
+    result.push(numericParameterToString(params.SIX_POINT_EIGHT))
+    result.push(numericParameterToString(params.SEVEN_POINT_TWO))
     result.push(stringParameterToString(params.DAILY_DRUG_USER))
     result.push(stringParameterToString(params.AMPHETAMINES))
     result.push(stringParameterToString(params.BENZODIAZIPINES))
@@ -172,27 +177,27 @@ function getFunctionCall(params: TestCaseParameters): string {
     result.push(stringParameterToString(params.SOLVENTS))
     result.push(stringParameterToString(params.SPICE))
     result.push(stringParameterToString(params.STEROIDS))
-    result.push(params.EIGHT_POINT_EIGHT?.toString() ?? 'null')
-    result.push(params.NINE_POINT_ONE?.toString() ?? 'null')
-    result.push(params.NINE_POINT_TWO?.toString() ?? 'null')
-    result.push(params.ELEVEN_POINT_TWO?.toString() ?? 'null')
-    result.push(params.ELEVEN_POINT_FOUR?.toString() ?? 'null')
-    result.push(params.TWELVE_POINT_ONE?.toString() ?? 'null')
-    result.push(params.OGRS4G_ALGO_VERSION?.toString() ?? 'null')
-    result.push(params.OGRS4V_ALGO_VERSION?.toString() ?? 'null')
-    result.push(params.OGP2_ALGO_VERSION?.toString() ?? 'null')
-    result.push(params.OVP2_ALGO_VERSION?.toString() ?? 'null')
-    result.push(params.OSP_ALGO_VERSION?.toString() ?? 'null')
-    result.push(params.SNSV_ALGO_VERSION?.toString() ?? 'null')
-    result.push(params.AGGRAVATED_BURGLARY?.toString() ?? 'null')
-    result.push(params.ARSON?.toString() ?? 'null')
-    result.push(params.CRIMINAL_DAMAGE_LIFE?.toString() ?? 'null')
-    result.push(params.FIREARMS?.toString() ?? 'null')
-    result.push(params.GBH?.toString() ?? 'null')
-    result.push(params.HOMICIDE?.toString() ?? 'null')
-    result.push(params.KIDNAP?.toString() ?? 'null')
-    result.push(params.ROBBERY?.toString() ?? 'null')
-    result.push(params.WEAPONS_NOT_FIREARMS?.toString() ?? 'null')
+    result.push(numericParameterToString(params.EIGHT_POINT_EIGHT))
+    result.push(numericParameterToString(params.NINE_POINT_ONE))
+    result.push(numericParameterToString(params.NINE_POINT_TWO))
+    result.push(numericParameterToString(params.ELEVEN_POINT_TWO))
+    result.push(numericParameterToString(params.ELEVEN_POINT_FOUR))
+    result.push(numericParameterToString(params.TWELVE_POINT_ONE))
+    result.push(numericParameterToString(params.OGRS4G_ALGO_VERSION))
+    result.push(numericParameterToString(params.OGRS4V_ALGO_VERSION))
+    result.push(numericParameterToString(params.OGP2_ALGO_VERSION))
+    result.push(numericParameterToString(params.OVP2_ALGO_VERSION))
+    result.push(numericParameterToString(params.OSP_ALGO_VERSION))
+    result.push(numericParameterToString(params.SNSV_ALGO_VERSION))
+    result.push(numericParameterToString(params.AGGRAVATED_BURGLARY))
+    result.push(numericParameterToString(params.ARSON))
+    result.push(numericParameterToString(params.CRIMINAL_DAMAGE_LIFE))
+    result.push(numericParameterToString(params.FIREARMS))
+    result.push(numericParameterToString(params.GBH))
+    result.push(numericParameterToString(params.HOMICIDE))
+    result.push(numericParameterToString(params.KIDNAP))
+    result.push(numericParameterToString(params.ROBBERY))
+    result.push(numericParameterToString(params.WEAPONS_NOT_FIREARMS))
     result.push(`${stringParameterToString(params.CUSTODY_IND)})`)
 
     return result.join(',')
@@ -207,4 +212,10 @@ function dateParameterToString(param: Dayjs): string {
 function stringParameterToString(param: string): string {
 
     return param == null ? 'null' : `'${param}'`
+}
+
+
+function numericParameterToString(param: number): string {
+
+    return param == null ? 'null' : param.toString()
 }

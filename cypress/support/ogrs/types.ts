@@ -5,15 +5,15 @@ export type OgrsTestParameters = {
     testType: 'csv' | 'db'
     csvDetails?: {
         dataFile: string,
-        expectedResultsFile?: string,
+        start?: number,
+        end?: number,
     }
     dbDetails?: {
         type: 'assessment' | 'rsr',
         whereClause: string,
         count: number,
     }
-    tolerance: string,
-    precision: number,
+    staticFlag: 'Y' | 'N',
     reportMode: 'verbose' | 'normal' | 'minimal',
 }
 
@@ -38,6 +38,7 @@ export type ScoreBand = 'Low' | 'Medium' | 'High' | 'Very High' | 'N/A'
 export type OgrsOffenceCat = { cat: string, addVatpFlag: boolean }
 
 export type TestCaseParameters = {
+    ASSESSMENT_DATE: dayjs.Dayjs,
     STATIC_CALC: string,
     DOB: dayjs.Dayjs,
     GENDER: string,
@@ -258,6 +259,9 @@ export type OutputParameters = {
     OVP2_AMPHETAMINES: Decimal,
     OVP2_ECSTASY: Decimal,
     OVP2_CANNABIS: Decimal,
+    OVP2_OTHER_OPIATE: Decimal,
+    OVP2_OTHER_DRUGS: Decimal,
+    OVP2_METHADONE: Decimal,
     OVP2_STEROIDS: Decimal,
     OVP2_TOTAL_SCORE: Decimal,
     OVP2_PERCENTAGE: Decimal,

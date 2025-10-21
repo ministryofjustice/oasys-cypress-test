@@ -1,6 +1,7 @@
 import * as dayjs from 'dayjs'
 import * as customParseFormat from 'dayjs/plugin/customParseFormat'
 import * as utc from 'dayjs/plugin/utc'
+import * as isLeapYear from 'dayjs/plugin/isLeapYear'
 import { Decimal } from 'decimal.js'
 
 import { TestCaseParameters, OgrsOffenceCat, ScoreType, ScoreBand, OutputParameters } from './types'
@@ -15,9 +16,10 @@ export function loadParameterSet(parameterLine: string): TestCaseParameters {
 
     dayjs.extend(customParseFormat)
     dayjs.extend(utc)
-    const today = dayjs.utc()
+    dayjs.extend(isLeapYear)
 
     const p: TestCaseParameters = {
+        ASSESSMENT_DATE: getDate(parameters[i++]),
         STATIC_CALC: getString(parameters[i++]),
         DOB: getDate(parameters[i++]),
         GENDER: getString(parameters[i++]),
@@ -87,7 +89,7 @@ export function loadParameterSet(parameterLine: string): TestCaseParameters {
     p.age = getDateDiff(p.DOB, p.COMMUNITY_DATE, 'year')
     p.ageAtLastSanction = getDateDiff(p.DOB, p.LAST_SANCTION_DATE, 'year')
     p.ageAtLastSanctionSexual = getDateDiff(p.DOB, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
-    p.ofm = getDateDiff(p.COMMUNITY_DATE, today, 'month', true)
+    p.ofm = getDateDiff(p.COMMUNITY_DATE, p.ASSESSMENT_DATE, 'month', true)
     p.offenceCat = getOffenceCat(p.OFFENCE_CODE)
     p.firstSanction = p.TOTAL_SANCTIONS_COUNT == 1
     p.secondSanction = p.TOTAL_SANCTIONS_COUNT == 2
@@ -96,11 +98,11 @@ export function loadParameterSet(parameterLine: string): TestCaseParameters {
     p.onceViolent = p.TOTAL_VIOLENT_SANCTIONS == 1
     p.male = p.GENDER == 'M'
     p.female = p.GENDER == 'F'
-    p.out5Years = getDateDiff(today, p.COMMUNITY_DATE, 'year') >= 5
+    p.out5Years = getDateDiff(p.ASSESSMENT_DATE, p.COMMUNITY_DATE, 'year') >= 5
 
-    const offenceInLast5Years = getDateDiff(today, p.MOST_RECENT_OFFENCE, 'year')
+    const offenceInLast5Years = getDateDiff(p.ASSESSMENT_DATE, p.MOST_RECENT_OFFENCE, 'year')
     p.offenceInLast5Years = offenceInLast5Years == null ? false : offenceInLast5Years < 5
-    const sexualOffenceInLast5Years = getDateDiff(today, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
+    const sexualOffenceInLast5Years = getDateDiff(p.ASSESSMENT_DATE, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
     p.sexualOffenceInLast5Years = sexualOffenceInLast5Years == null ? false : sexualOffenceInLast5Years < 5
 
     return p
@@ -117,7 +119,7 @@ function getDate(param: string): dayjs.Dayjs {
 }
 
 function getInteger(param: string): number {
-    return param == '' || param == null ? null : Number.parseInt(param)
+    return param == '' || param == null || param.toLowerCase() == 'null' ? null : Number.parseInt(param)
 }
 
 function getDateDiff(firstDate: dayjs.Dayjs, secondDate: dayjs.Dayjs, unit: 'year' | 'month', ofm: boolean = false): number {
@@ -125,7 +127,11 @@ function getDateDiff(firstDate: dayjs.Dayjs, secondDate: dayjs.Dayjs, unit: 'yea
     if (firstDate == null || secondDate == null) {
         return null
     }
-    const diff = secondDate.diff(firstDate, unit)
+    let diff = secondDate.diff(firstDate, unit)
+
+    if (unit == 'year' && firstDate.date() == 29 && firstDate.month() == 1 && secondDate.date() == 28 && secondDate.month() == 1 && !secondDate.isLeapYear()) {
+        diff--
+    }
 
     if (ofm) {
         return diff < 0 ? 0 : diff > 36 ? 36 : diff
@@ -147,7 +153,7 @@ export function loadExpectedValues(values: string[]): OutputParameters {
     Object.keys(expectedOutputParameters).forEach((param) => {
         const stringValue = values[i++]
         const isNumeric = !Number.isNaN(Number.parseFloat(stringValue))
-        expectedOutputParameters[param] =  isNumeric ? new Decimal(stringValue) : stringValue == '' ? null : stringValue
+        expectedOutputParameters[param] = isNumeric ? new Decimal(stringValue) : stringValue == '' ? null : stringValue
     })
 
     return expectedOutputParameters

@@ -21,6 +21,7 @@ export function createAssessmentTestCase(assessment: OgrsAssessment): TestCasePa
     }
 
     const p: TestCaseParameters = {
+        ASSESSMENT_DATE: today, // TODO is this right?
         STATIC_CALC: staticCalc,
         DOB: getDate(assessment.dob),
         GENDER: lookupValue(assessment.gender, genderLookup),
@@ -90,7 +91,7 @@ export function createAssessmentTestCase(assessment: OgrsAssessment): TestCasePa
     p.age = getDateDiff(p.DOB, p.COMMUNITY_DATE, 'year')
     p.ageAtLastSanction = getDateDiff(p.DOB, p.LAST_SANCTION_DATE, 'year')
     p.ageAtLastSanctionSexual = getDateDiff(p.DOB, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
-    p.ofm = getDateDiff(p.COMMUNITY_DATE, today, 'month', true)
+    p.ofm = getDateDiff(p.COMMUNITY_DATE, p.ASSESSMENT_DATE, 'month', true)
     p.offenceCat = getOffenceCat(p.OFFENCE_CODE)
     p.firstSanction = p.TOTAL_SANCTIONS_COUNT == 1
     p.secondSanction = p.TOTAL_SANCTIONS_COUNT == 2
@@ -99,11 +100,11 @@ export function createAssessmentTestCase(assessment: OgrsAssessment): TestCasePa
     p.onceViolent = p.TOTAL_VIOLENT_SANCTIONS == 1
     p.male = p.GENDER == 'M'
     p.female = p.GENDER == 'F'
-    p.out5Years = getDateDiff(today, p.COMMUNITY_DATE, 'year') >= 5
+    p.out5Years = getDateDiff(p.ASSESSMENT_DATE, p.COMMUNITY_DATE, 'year') >= 5
 
-    const offenceInLast5Years = getDateDiff(today, p.MOST_RECENT_OFFENCE, 'year')
+    const offenceInLast5Years = getDateDiff(p.ASSESSMENT_DATE, p.MOST_RECENT_OFFENCE, 'year')
     p.offenceInLast5Years = offenceInLast5Years == null ? false : offenceInLast5Years < 5
-    const sexualOffenceInLast5Years = getDateDiff(today, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
+    const sexualOffenceInLast5Years = getDateDiff(p.ASSESSMENT_DATE, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
     p.sexualOffenceInLast5Years = sexualOffenceInLast5Years == null ? false : sexualOffenceInLast5Years < 5
 
     return p

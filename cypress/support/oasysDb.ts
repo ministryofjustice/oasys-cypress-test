@@ -272,6 +272,9 @@ export async function getOgrsResult(query: string): Promise<string> {
                     result.OVP2_AMPHETAMINES || '|' ||
                     result.OVP2_ECSTASY || '|' ||
                     result.OVP2_CANNABIS || '|' ||
+                    result.OVP2_OTHER_OPIATE || '|' ||
+                    result.OVP2_OTHER_DRUG || '|' ||
+                    result.OVP2_METHADONE || '|' ||
                     result.OVP2_STEROIDS || '|' ||
                     result.OVP2_TOTAL_SCORE || '|' ||
                     result.OVP2_PERCENTAGE || '|' ||

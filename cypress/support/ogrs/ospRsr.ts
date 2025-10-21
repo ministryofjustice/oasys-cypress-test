@@ -18,7 +18,7 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
             percentageOspC = probabilityToPercentage(ospCoefficients.osp_c.ospFemale)
         }
         reportScores(outputParams, 'osp_c', null, new Decimal(0), null, 'A', 0, `''`)
-    } else if (!params.male) {
+    } else if (!params.male && params.GENDER != null) {
         reportScores(outputParams, 'osp_c', null, new Decimal(0), null, 'A', 0, `'OSP-DC can't be calculated on gender other than Male.'`)
     } else if (params.ONE_POINT_THIRTY == 'N') {
         reportScores(outputParams, 'osp_c', null, new Decimal(0), null, 'A', 0, `''`)
@@ -61,7 +61,7 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
     // OSP-I
     if (params.female) {
         reportScores(outputParams, 'osp_i', null, new Decimal(0), null, 'A', 0, `''`)
-    } else if (!params.male) {
+    } else if (!params.male && params.GENDER != null) {
         reportScores(outputParams, 'osp_i', null, new Decimal(0), null, 'A', 0, `'OSP-IIC can't be calculated on gender other than Male.'`)
     } else if (params.ONE_POINT_THIRTY == 'N') {
         reportScores(outputParams, 'osp_i', null, new Decimal(0), null, 'A', 0, `''`)
@@ -93,7 +93,7 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
 
     // RSR
     const rsrMissing = checkRsrMissingQuestions(params, outputParams)
-    if (!params.male && !params.female) {
+    if (!params.male && !params.female && params.GENDER != null) {
         reportScores(outputParams, 'rsr', null, null, null, 'E', 0, `'RSR can't be calculated on gender other than Male and Female.'`)
         return null
 

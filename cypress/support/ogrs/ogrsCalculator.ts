@@ -5,10 +5,12 @@ import { calculate } from './calculateScore'
 import { ospRsrCalc } from './ospRsr'
 import { createOutputObject } from './createOutput'
 
+const tolerance = new Decimal('1E-37')
+const precision = 40
 
 export function calculateTestCase(testCaseParams: TestCaseParameters, expectedResults: OutputParameters, testCaseRef: string, testParams: OgrsTestParameters): TestCaseResult {
 
-    Decimal.set({ precision: testParams.precision })
+    Decimal.set({ precision: precision })
     const testCaseResult: TestCaseResult = {
         logText: [],
         failed: false,
@@ -53,7 +55,6 @@ function checkResults(expectedResults: OutputParameters, actualResults: OutputPa
 
     // Compare the complete result set for a single test case, line by line, to determine failure and generate report
 
-    const tolerance = new Decimal(testParams.tolerance)
     let failed = false
 
     Object.keys(expectedResults).forEach((param) => {
