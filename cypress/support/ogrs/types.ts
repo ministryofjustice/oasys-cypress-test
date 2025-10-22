@@ -21,6 +21,7 @@ export type OgrsTestScriptResult = {
     testCaseResults: TestCaseResult[],
     cases: number,
     failures: number,
+    offenceCodeErrors: string[],
 }
 
 export type TestCaseResult = {

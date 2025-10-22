@@ -4,7 +4,7 @@ import * as utc from 'dayjs/plugin/utc'
 import * as isLeapYear from 'dayjs/plugin/isLeapYear'
 import { Decimal } from 'decimal.js'
 
-import { TestCaseParameters, OgrsOffenceCat, ScoreType, ScoreBand, OutputParameters } from './types'
+import { TestCaseParameters, OgrsOffenceCat, OutputParameters } from './types'
 import { offences, offenceCats } from './data/offences'
 import { dateFormat } from './orgsTest'
 import { createOutputObject } from './createOutput'
@@ -130,7 +130,7 @@ function getDateDiff(firstDate: dayjs.Dayjs, secondDate: dayjs.Dayjs, unit: 'yea
     let diff = secondDate.diff(firstDate, unit)
 
     if (unit == 'year' && firstDate.date() == 29 && firstDate.month() == 1 && secondDate.date() == 28 && secondDate.month() == 1 && !secondDate.isLeapYear()) {
-        diff--
+        diff++
     }
 
     if (ofm) {
@@ -141,6 +141,7 @@ function getDateDiff(firstDate: dayjs.Dayjs, secondDate: dayjs.Dayjs, unit: 'yea
 }
 
 function getOffenceCat(offence: string): OgrsOffenceCat {
+
     const cat = offenceCats[offences[offence]]
     return cat == undefined ? null : cat
 }

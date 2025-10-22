@@ -48,6 +48,15 @@ export function calculateTestCase(testCaseParams: TestCaseParameters, expectedRe
             testCaseResult.logText.push(...logText)
         }
     }
+
+    // Report missing offence codes
+    if (!testCaseParams.offenceCat) {
+        if (testParams.reportMode == 'minimal') {
+            testCaseResult.logText.push(`Test ${testCaseRef}: missing/invalid offence code ${testCaseParams.OFFENCE_CODE}`)
+        } else {
+            testCaseResult.logText.push(`Missing/invalid offence code: ${testCaseParams.OFFENCE_CODE}`)
+        }
+    }
     return testCaseResult
 }
 

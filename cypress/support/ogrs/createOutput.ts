@@ -1,6 +1,6 @@
 import { Decimal } from 'decimal.js'
 
-import { OgrsFeatures, OutputParameters, ScoreBand, ScoreStatus, ScoreType } from './types'
+import { OutputParameters, ScoreBand, ScoreStatus, ScoreType } from './types'
 
 export function createOutputObject(): OutputParameters {
 
@@ -218,7 +218,12 @@ export function reportScores(outputParams: OutputParameters, scoreType: ScoreTyp
     addOutputParameter(outputParams, scoreType, 'status', status)
 
     addOutputParameter(outputParams, scoreType, 'missingCount', missingCount)
-    addOutputParameter(outputParams, scoreType, 'missingQuestions', missingQuestions)
+
+    let mQAdjusted = missingQuestions
+    if (scoreType == 'serious_violence_brief') {
+        mQAdjusted = missingQuestions.replace('Offence Code Invalid', 'Offence Code')
+    }
+    addOutputParameter(outputParams, scoreType, 'missingQuestions', mQAdjusted)
 }
 
 export function addOutputParameter(outputParams: OutputParameters, scoreType: ScoreType, item: string, value: string | Decimal | number | ScoreStatus | ScoreBand) {

@@ -9,12 +9,11 @@ import { getAssessmentTestData, getRsrTestData } from './getTestData/getTestData
 import { createAssessmentTestCase } from './getTestData/createAssessmentTestCase'
 import { createRsrTestCase } from './getTestData/createRsrTestCase'
 import { OgrsAssessment, OgrsRsr } from './getTestData/dbClasses'
+import { offences } from './data/offences'
+import * as db from '../oasysDb'
 
 const dataFilePath = './cypress/support/ogrs/data/'
 export const dateFormat = 'DD-MM-YYYY'
-
-const tolerance = '1E-37'
-const precision = 40
 
 export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTestScriptResult> {
 
@@ -22,7 +21,17 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
         testCaseResults: [],
         cases: 0,
         failures: 0,
+        offenceCodeErrors: [],
     }
+
+    // Load offence codes from OASys
+    const offenceCodeData = await db.selectData('select offence_group_code || sub_code, rsr_category_desc from eor.ct_offence order by 1')
+    if (offenceCodeData.error != null) {
+        throw new Error(offenceCodeData.error)
+    }
+    (offenceCodeData.data as string[][]).forEach(offence => {
+        offences[offence[0]] = offence[1]
+    })
 
     // Load input parameters from a CSV file
     if (testParams.testType == 'csv') {
@@ -59,6 +68,10 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                 scriptResults.testCaseResults.push(testCaseResult)
                 if (testCaseResult.failed) {
                     scriptResults.failures++
+                }
+                // count missing/invalid offence codes
+                if (!testCaseParams.offenceCat) {
+                    scriptResults.offenceCodeErrors.push(testCaseParams.OFFENCE_CODE)
                 }
             } catch (e) {
                 const logText: string[] = ['']

@@ -21,6 +21,12 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
         reportScores(outputParams, scoreType, null, null, null, 'N', 0, `''`)
         return
     }
+    
+    // Invalid offence code
+    if (!params.offenceCat) {
+        reportScores(outputParams, scoreType, null, null, null, 'E', 1, `'Offence Code Invalid\n'`)
+        return
+    }
 
     // Check for missing parameters or invalid gender
     if (!params.male && !params.female && params.GENDER != null) {
