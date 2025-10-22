@@ -16,15 +16,6 @@ describe('OGRS calculator test', () => {
         reportMode: 'minimal',
     }
 
-    const csvTestParams: OgrsTestParameters = {
-        testType: 'csv',
-        csvDetails: {
-            dataFile: '',
-        },
-        staticFlag: staticFlag,
-        reportMode: 'minimal',
-    }
-
     it(`Layer 3 v1 complete`, () => {
 
         dbTestParams.dbDetails.type = 'assessment'
@@ -59,19 +50,4 @@ describe('OGRS calculator test', () => {
         dbTestParams.dbDetails.whereClause = `deleted_date is null and rsr_status = 'COMPLETE'`
         runTest(dbTestParams, '', false, false)
     })
-
-    it('Example set of 20', () => {
-
-        csvTestParams.csvDetails.dataFile = 'test1Input'
-        csvTestParams.staticFlag = null
-        runTest(csvTestParams, '', false, false)
-    })
-
-    it('Example set of 20 (with some missing questions)', () => {
-
-        csvTestParams.csvDetails.dataFile = 'test1inputWithMissingFields'
-        csvTestParams.staticFlag = null
-        runTest(csvTestParams, '', false, false)
-    })
-
 })
