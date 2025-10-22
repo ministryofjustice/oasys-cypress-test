@@ -134,10 +134,6 @@ export function checkRsrMissingQuestions(params: TestCaseParameters, outputParam
         failed = true
     }
 
-    if (!params.offenceCat) {
-        missing.push('Offence Code Invalid')
-    }
-
     const snsvRequired = requiredParams[params.STATIC_CALC == 'Y' ? 'serious_violence_brief' : 'serious_violence_extended']
     snsvRequired.forEach((param) => {
         if (params[param] == null) {
@@ -157,6 +153,11 @@ export function checkRsrMissingQuestions(params: TestCaseParameters, outputParam
         } else {
             failed = true
         }
+    }
+
+    // Invalid offence code
+    if (params.OFFENCE_CODE && !params.offenceCat) {
+        missing.push('Offence Code Invalid')
     }
 
     if (params.ONE_POINT_THIRTY == null && (params.male || params.female)) {

@@ -21,12 +21,6 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
         reportScores(outputParams, scoreType, null, null, null, 'N', 0, `''`)
         return
     }
-    
-    // Invalid offence code
-    if (!params.offenceCat) {
-        reportScores(outputParams, scoreType, null, null, null, 'E', 1, `'Offence Code Invalid\n'`)
-        return
-    }
 
     // Check for missing parameters or invalid gender
     if (!params.male && !params.female && params.GENDER != null) {
@@ -36,6 +30,12 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
     const missing = checkMissingQuestions(params, requiredParams[scoreType])
     if (missing.count > 0) {
         reportScores(outputParams, scoreType, null, null, null, 'E', missing.count, missing.result)
+        return
+    }
+
+    // Invalid offence code
+    if (params.OFFENCE_CODE && !params.offenceCat) {
+        reportScores(outputParams, scoreType, null, null, null, 'E', missing.count + 1, `'${missing.result.replaceAll(`'`,'')}Offence Code Invalid\n'`)
         return
     }
 

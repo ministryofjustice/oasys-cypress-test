@@ -219,11 +219,7 @@ export function reportScores(outputParams: OutputParameters, scoreType: ScoreTyp
 
     addOutputParameter(outputParams, scoreType, 'missingCount', missingCount)
 
-    let mQAdjusted = missingQuestions
-    if (scoreType == 'serious_violence_brief') {
-        mQAdjusted = missingQuestions.replace('Offence Code Invalid', 'Offence Code')
-    }
-    addOutputParameter(outputParams, scoreType, 'missingQuestions', mQAdjusted)
+    addOutputParameter(outputParams, scoreType, 'missingQuestions', missingQuestions)
 }
 
 export function addOutputParameter(outputParams: OutputParameters, scoreType: ScoreType, item: string, value: string | Decimal | number | ScoreStatus | ScoreBand) {
