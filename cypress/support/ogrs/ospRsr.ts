@@ -33,8 +33,7 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
             missing.count++
         }
         if (params.ONE_POINT_THIRTY == 'Y' && params.totalSexualSanctionCount == 0) {
-            // TODO new error condition
-            missing.result = `'${missing.result.replaceAll(`'`, '')}new error text\n'`
+            missing.result = `'${missing.result.replaceAll(`'`, '')}Sexual motivation/offending identified - please complete sexual offence counts.\n'`
             missing.count++
         }
         if (missing.count > 0) {
@@ -75,8 +74,7 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
     } else {
         const missing = checkMissingQuestions('osp_i', params)
         if (params.ONE_POINT_THIRTY == 'Y' && params.totalSexualSanctionCount == 0) {
-            // TODO new error condition
-            missing.result = `'${missing.result.replaceAll(`'`, '')}new error text\n'`
+            missing.result = `'${missing.result.replaceAll(`'`, '')}Sexual motivation/offending identified - please complete sexual offence counts.\n'`
             missing.count++
         }
         if (missing.count > 0) {
@@ -197,7 +195,7 @@ export function checkRsrMissingQuestions(params: TestCaseParameters, outputParam
             })
         }
         if (params.ONE_POINT_THIRTY == 'Y' && params.totalSexualSanctionCount == 0) {
-            missing.push('new error condition') // TODO
+            missing.push('Sexual motivation/offending identified - please complete sexual offence counts.')
         }
     }
     const filteredMissing = uniq(missing)
