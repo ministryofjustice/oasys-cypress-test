@@ -1,7 +1,8 @@
-import { OgrsTestParameters } from '../../cypress/support/ogrs/types'
+import { OgrsTestParameters, ReportMode } from '../../cypress/support/ogrs/types'
 import { runTest } from './testLib'
 
 const count = 10000
+const reportMode: ReportMode = 'minimal' 
 
 describe('OGRS calculator test - static flag = N', () => {
 
@@ -23,7 +24,7 @@ function runTests(staticFlag: 'Y' | 'N') {
             count: count,
         },
         staticFlag: staticFlag,
-        reportMode: 'minimal',
+        reportMode: reportMode,
     }
 
     it(`Layer 3 v1 complete`, () => {

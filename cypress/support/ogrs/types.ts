@@ -1,6 +1,8 @@
 import { Decimal } from 'decimal.js'
 import * as dayjs from 'dayjs'
 
+export type ReportMode = 'verbose' | 'normal' | 'minimal'
+
 export type OgrsTestParameters = {
     testType: 'csv' | 'db'
     csvDetails?: {
@@ -14,7 +16,7 @@ export type OgrsTestParameters = {
         count: number,
     }
     staticFlag: 'Y' | 'N',
-    reportMode: 'verbose' | 'normal' | 'minimal',
+    reportMode: ReportMode,
 }
 
 export type OgrsTestScriptResult = {
