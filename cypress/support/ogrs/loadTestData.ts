@@ -129,8 +129,9 @@ function getDateDiff(firstDate: dayjs.Dayjs, secondDate: dayjs.Dayjs, unit: 'yea
     }
     let diff = secondDate.diff(firstDate, unit)
 
+    // Leap-year fix - if dob = 29/2, 28/2 is not a birthday on a non-leap year; the DaysJS calculation doesn't work like that
     if (unit == 'year' && firstDate.date() == 29 && firstDate.month() == 1 && secondDate.date() == 28 && secondDate.month() == 1 && !secondDate.isLeapYear()) {
-        diff++
+        diff--
     }
 
     if (ofm) {
