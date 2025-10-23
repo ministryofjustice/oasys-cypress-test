@@ -32,13 +32,18 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
             missing.result = `'${missing.result.replaceAll(`'`, '')}${missingText.STRANGER_VICTIM}\n'`
             missing.count++
         }
+        if (params.ONE_POINT_THIRTY == 'Y' && params.totalSexualSanctionCount == 0) {
+            // TODO new error condition
+            missing.result = `'${missing.result.replaceAll(`'`, '')}new error text\n'`
+            missing.count++
+        }
         if (missing.count > 0) {
             reportScores(outputParams, 'osp_c', null, null, null, 'E', missing.count, missing.result)
         } else {
             const contactAdultScore = params.CONTACT_ADULT_SANCTIONS == 0 ? 0 : params.CONTACT_ADULT_SANCTIONS == 1 ? 5 : params.CONTACT_ADULT_SANCTIONS == 2 ? 10 : 15
             const contactChildScore = params.CONTACT_CHILD_SANCTIONS == 0 ? 0 : params.CONTACT_CHILD_SANCTIONS == 1 ? 3 : params.CONTACT_CHILD_SANCTIONS == 2 ? 6 : 9
             const nonContactScore = params.PARAPHILIA_SANCTIONS == 0 ? 0 : params.PARAPHILIA_SANCTIONS == 1 ? 2 : params.PARAPHILIA_SANCTIONS == 2 ? 4 : 6
-            const ageScore = (params.age < 18 || params.age > 59) ? 0 : Math.ceil((60 - params.age) / 3)
+            const ageScore = params.age < 18 ? 14 : params.age > 59 ? 0 : Math.ceil((60 - params.age) / 3)
             const ageAtLastSanctionSexualScore = params.ageAtLastSanctionSexual > 17 ? 10 : params.ageAtLastSanctionSexual > 15 ? 5 : 0
             const previousHistoryScore = params.TOTAL_SANCTIONS_COUNT <= 1 ? 0 : 6
             const contactWithStrangerScore = params.STRANGER_VICTIM == 'Y' ? 4 : 0
@@ -69,6 +74,11 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
         reportScores(outputParams, 'osp_i', null, null, null, 'E', 1, `'1.30 Have they ever committed a sexual or sexually motivated offence?\n'`)
     } else {
         const missing = checkMissingQuestions('osp_i', params)
+        if (params.ONE_POINT_THIRTY == 'Y' && params.totalSexualSanctionCount == 0) {
+            // TODO new error condition
+            missing.result = `'${missing.result.replaceAll(`'`, '')}new error text\n'`
+            missing.count++
+        }
         if (missing.count > 0) {
             reportScores(outputParams, 'osp_i', null, null, null, 'E', missing.count, missing.result)
         } else {
@@ -185,6 +195,9 @@ export function checkRsrMissingQuestions(params: TestCaseParameters, outputParam
                 }
                 failed = true
             })
+        }
+        if (params.ONE_POINT_THIRTY == 'Y' && params.totalSexualSanctionCount == 0) {
+            missing.push('new error condition') // TODO
         }
     }
     const filteredMissing = uniq(missing)

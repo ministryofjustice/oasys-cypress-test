@@ -104,6 +104,11 @@ export function loadParameterSet(parameterLine: string): TestCaseParameters {
     p.offenceInLast5Years = offenceInLast5Years == null ? false : offenceInLast5Years < 5
     const sexualOffenceInLast5Years = getDateDiff(p.ASSESSMENT_DATE, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
     p.sexualOffenceInLast5Years = sexualOffenceInLast5Years == null ? false : sexualOffenceInLast5Years < 5
+    p.totalSexualSanctionCount = 0
+    if (p.CONTACT_ADULT_SANCTIONS) p.totalSexualSanctionCount += p.CONTACT_ADULT_SANCTIONS
+    if (p.CONTACT_CHILD_SANCTIONS) p.totalSexualSanctionCount += p.CONTACT_CHILD_SANCTIONS
+    if (p.INDECENT_IMAGE_SANCTIONS) p.totalSexualSanctionCount += p.INDECENT_IMAGE_SANCTIONS
+    if (p.PARAPHILIA_SANCTIONS) p.totalSexualSanctionCount += p.PARAPHILIA_SANCTIONS
 
     return p
 }

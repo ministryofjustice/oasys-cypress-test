@@ -119,6 +119,7 @@ export type TestCaseParameters = {
     out5Years?: boolean,
     offenceInLast5Years?: boolean,
     sexualOffenceInLast5Years?: boolean,
+    totalSexualSanctionCount?: number,
 }
 
 
