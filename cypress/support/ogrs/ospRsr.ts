@@ -15,17 +15,19 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
     // OSP-C
     if (params.female) {
         if (params.ONE_POINT_THIRTY == 'Y') {
-            percentageOspC = probabilityToPercentage(ospCoefficients.osp_c.ospFemale)
+            percentageOspC = probabilityToPercentage(ospCoefficients.osp_ddc.ospFemale)
         }
         reportScores(outputParams, 'osp_c', null, new Decimal(0), null, 'A', 0, `''`)
     } else if (!params.male && params.GENDER != null) {
         reportScores(outputParams, 'osp_c', null, new Decimal(0), null, 'A', 0, `'OSP-DC can't be calculated on gender other than Male.'`)
     } else if (params.ONE_POINT_THIRTY == 'N') {
         reportScores(outputParams, 'osp_c', null, new Decimal(0), null, 'A', 0, `''`)
+    } else if (params.GENDER == null) {
+        reportScores(outputParams, 'osp_c', null, null, null, 'E', 1, `'Gender\n'`)
     } else if (params.ONE_POINT_THIRTY == null) {
         reportScores(outputParams, 'osp_c', null, null, null, 'E', 1, `'1.30 Have they ever committed a sexual or sexually motivated offence?\n'`)
     } else {
-        const missing = checkMissingQuestions(params, requiredParams['osp_c'])
+        const missing = checkMissingQuestions('osp_c', params)
         if (params.CURR_SEX_OFF_MOTIVATION == 'Y' && params.STRANGER_VICTIM == null) {
             missing.result = `'${missing.result.replaceAll(`'`, '')}${missingText.STRANGER_VICTIM}\n'`
             missing.count++
@@ -42,10 +44,6 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
             const contactWithStrangerScore = params.STRANGER_VICTIM == 'Y' ? 4 : 0
 
             const totalScore = contactAdultScore + contactChildScore + nonContactScore + ageScore + ageAtLastSanctionSexualScore + previousHistoryScore + contactWithStrangerScore
-
-            // TODO awaiting definitive spec from PH
-            // const c = ospCoefficients.osp_c
-            // const zScore = c.OSPCIntercept.add(c.OSPCFactor.times(0.5 + (0.5 * totalScore)))
 
             const c = ospCoefficients.osp_ddc
             const zScore = c.OSPCIntercept.add(c.OSPCFactor.times(totalScore))
@@ -65,15 +63,16 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
         reportScores(outputParams, 'osp_i', null, new Decimal(0), null, 'A', 0, `'OSP-IIC can't be calculated on gender other than Male.'`)
     } else if (params.ONE_POINT_THIRTY == 'N') {
         reportScores(outputParams, 'osp_i', null, new Decimal(0), null, 'A', 0, `''`)
+    } else if (params.GENDER == null) {
+        reportScores(outputParams, 'osp_i', null, null, null, 'E', 1, `'Gender\n'`)
     } else if (params.ONE_POINT_THIRTY == null) {
         reportScores(outputParams, 'osp_i', null, null, null, 'E', 1, `'1.30 Have they ever committed a sexual or sexually motivated offence?\n'`)
     } else {
-        const missing = checkMissingQuestions(params, requiredParams['osp_i'])
+        const missing = checkMissingQuestions('osp_i', params)
         if (missing.count > 0) {
             reportScores(outputParams, 'osp_i', null, null, null, 'E', missing.count, missing.result)
         } else {
-            // const c = ospCoefficients.osp_i
-            const c = ospCoefficients.osp_iic  // TODO awaiting confirmation from PH that this is the correct algorithm
+            const c = ospCoefficients.osp_iic
             const noSanctionsSexualOffences = params.CONTACT_ADULT_SANCTIONS + params.INDECENT_IMAGE_SANCTIONS +
                 params.CONTACT_CHILD_SANCTIONS + params.PARAPHILIA_SANCTIONS == 0
             const twoPlusIIOC = params.INDECENT_IMAGE_SANCTIONS > 1
@@ -129,8 +128,14 @@ export function checkRsrMissingQuestions(params: TestCaseParameters, outputParam
     const missing: string[] = []
     let failed = false
 
-    if (params.ONE_POINT_THIRTY == null && (params.male || params.female)) {
+    if (params.ONE_POINT_THIRTY == null && (params.male || params.female || params.GENDER == null)) {
         missing.push(missingText.ONE_POINT_THIRTY)
+        failed = true
+    }
+
+    // Invalid offence code
+    if (params.OFFENCE_CODE && !params.offenceCat) {
+        missing.push('Offence Code Invalid')
         failed = true
     }
 
@@ -155,14 +160,9 @@ export function checkRsrMissingQuestions(params: TestCaseParameters, outputParam
         }
     }
 
-    // Invalid offence code
-    if (params.OFFENCE_CODE && !params.offenceCat) {
-        missing.push('Offence Code Invalid')
-    }
-
     if (params.ONE_POINT_THIRTY == null && (params.male || params.female)) {
         // missing.push(missingText.ONE_POINT_THIRTY)
-    } else {
+    } else if (params.GENDER != null) {
         if (outputParams.OSP_DC_CALCULATED == 'E') {
             requiredParams['osp_c'].forEach((param) => {
                 if (params[param] == null) {

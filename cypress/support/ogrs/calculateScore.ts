@@ -27,15 +27,9 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
         reportScores(outputParams, scoreType, null, null, null, 'E', 0, `'${outputScoreName[scoreType]} can't be calculated on gender other than Male and Female.'`)
         return
     }
-    const missing = checkMissingQuestions(params, requiredParams[scoreType])
+    const missing = checkMissingQuestions(scoreType, params)
     if (missing.count > 0) {
         reportScores(outputParams, scoreType, null, null, null, 'E', missing.count, missing.result)
-        return
-    }
-
-    // Invalid offence code
-    if (params.OFFENCE_CODE && !params.offenceCat) {
-        reportScores(outputParams, scoreType, null, null, null, 'E', missing.count + 1, `'${missing.result.replaceAll(`'`,'')}Offence Code Invalid\n'`)
         return
     }
 
@@ -243,10 +237,16 @@ export function calculateBand(scoreType: ScoreType, probability: Decimal): Score
     return null
 }
 
-export function checkMissingQuestions(params: TestCaseParameters, requiredParams: string[]): { count: number, result: string } {
+export function checkMissingQuestions(scoreType: ScoreType, params: TestCaseParameters): { count: number, result: string } {
 
     const missing: string[] = []
-    requiredParams.forEach((param) => {
+
+    // Invalid offence code
+    if (params.OFFENCE_CODE && !params.offenceCat) {
+        missing.push(scoreType == 'serious_violence_brief' ? 'Offence Code' : 'Offence Code Invalid')
+    }
+
+    requiredParams[scoreType].forEach((param) => {
         if (params[param] == null) {
             const text = missingText[param]
             missing.push(text == undefined ? param : text)
