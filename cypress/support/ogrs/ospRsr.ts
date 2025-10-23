@@ -14,10 +14,14 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
 
     // OSP-C
     if (params.female) {
-        if (params.ONE_POINT_THIRTY == 'Y') {
-            percentageOspC = probabilityToPercentage(ospCoefficients.osp_ddc.ospFemale)
+        if (params.ONE_POINT_THIRTY == 'Y' && params.totalSexualSanctionCount == 0) {
+            reportScores(outputParams, 'osp_c', null, null, null, 'E', 1, `'Sexual motivation/offending identified - please complete sexual offence counts.\n'`)
+        } else {
+            if (params.ONE_POINT_THIRTY == 'Y') {
+                percentageOspC = probabilityToPercentage(ospCoefficients.osp_ddc.ospFemale)
+            }
+            reportScores(outputParams, 'osp_c', null, new Decimal(0), null, 'A', 0, `''`)
         }
-        reportScores(outputParams, 'osp_c', null, new Decimal(0), null, 'A', 0, `''`)
     } else if (!params.male && params.GENDER != null) {
         reportScores(outputParams, 'osp_c', null, new Decimal(0), null, 'A', 0, `'OSP-DC can't be calculated on gender other than Male.'`)
     } else if (params.ONE_POINT_THIRTY == 'N') {
@@ -62,7 +66,11 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
 
     // OSP-I
     if (params.female) {
-        reportScores(outputParams, 'osp_i', null, new Decimal(0), null, 'A', 0, `''`)
+        if (params.ONE_POINT_THIRTY == 'Y' && params.totalSexualSanctionCount == 0) {
+            reportScores(outputParams, 'osp_i', null, null, null, 'E', 1, `'Sexual motivation/offending identified - please complete sexual offence counts.\n'`)
+        } else {
+            reportScores(outputParams, 'osp_i', null, new Decimal(0), null, 'A', 0, `''`)
+        }
     } else if (!params.male && params.GENDER != null) {
         reportScores(outputParams, 'osp_i', null, new Decimal(0), null, 'A', 0, `'OSP-IIC can't be calculated on gender other than Male.'`)
     } else if (params.ONE_POINT_THIRTY == 'N') {
@@ -196,6 +204,7 @@ export function checkRsrMissingQuestions(params: TestCaseParameters, outputParam
         }
         if (params.ONE_POINT_THIRTY == 'Y' && params.totalSexualSanctionCount == 0) {
             missing.push('Sexual motivation/offending identified - please complete sexual offence counts.')
+            failed = true
         }
     }
     const filteredMissing = uniq(missing)
