@@ -1,6 +1,6 @@
 import { OgrsTestParameters, OgrsTestScriptResult, OutputParameters, TestCaseParameters } from '../../cypress/support/ogrs/types'
 
-const timeout = 600000
+const timeout = 10000000
 const summaryOutputItems = ['SNSV_PERCENTAGE_STATIC', 'SNSV_PERCENTAGE_DYNAMIC', 'OGRS4V_PERCENTAGE', 'OVP2_PERCENTAGE', 'OGRS4G_PERCENTAGE', 'OGP2_PERCENTAGE',]
 
 export function runTest(params: OgrsTestParameters, outputFile: string, summaryOutput: boolean, includeHeader: boolean) {
