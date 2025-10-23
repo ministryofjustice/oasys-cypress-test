@@ -86,30 +86,7 @@ export function loadParameterSet(parameterLine: string): TestCaseParameters {
         CUSTODY_IND: getString(parameters[i++]),
     }
 
-    p.age = getDateDiff(p.DOB, p.COMMUNITY_DATE, 'year')
-    p.ageAtLastSanction = getDateDiff(p.DOB, p.LAST_SANCTION_DATE, 'year')
-    p.ageAtLastSanctionSexual = getDateDiff(p.DOB, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
-    p.ofm = getDateDiff(p.COMMUNITY_DATE, p.ASSESSMENT_DATE, 'month', true)
-    p.offenceCat = getOffenceCat(p.OFFENCE_CODE)
-    p.firstSanction = p.TOTAL_SANCTIONS_COUNT == 1
-    p.secondSanction = p.TOTAL_SANCTIONS_COUNT == 2
-    p.yearsBetweenFirstTwoSanctions = p.secondSanction ? p.ageAtLastSanction - p.AGE_AT_FIRST_SANCTION : 0
-    p.neverSanctionedViolence = p.TOTAL_VIOLENT_SANCTIONS == 0
-    p.onceViolent = p.TOTAL_VIOLENT_SANCTIONS == 1
-    p.male = p.GENDER == 'M'
-    p.female = p.GENDER == 'F'
-    p.out5Years = getDateDiff(p.ASSESSMENT_DATE, p.COMMUNITY_DATE, 'year') >= 5
-
-    const offenceInLast5Years = getDateDiff(p.ASSESSMENT_DATE, p.MOST_RECENT_OFFENCE, 'year')
-    p.offenceInLast5Years = offenceInLast5Years == null ? false : offenceInLast5Years < 5
-    const sexualOffenceInLast5Years = getDateDiff(p.ASSESSMENT_DATE, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
-    p.sexualOffenceInLast5Years = sexualOffenceInLast5Years == null ? false : sexualOffenceInLast5Years < 5
-    p.totalSexualSanctionCount = 0
-    if (p.CONTACT_ADULT_SANCTIONS) p.totalSexualSanctionCount += p.CONTACT_ADULT_SANCTIONS
-    if (p.CONTACT_CHILD_SANCTIONS) p.totalSexualSanctionCount += p.CONTACT_CHILD_SANCTIONS
-    if (p.INDECENT_IMAGE_SANCTIONS) p.totalSexualSanctionCount += p.INDECENT_IMAGE_SANCTIONS
-    if (p.PARAPHILIA_SANCTIONS) p.totalSexualSanctionCount += p.PARAPHILIA_SANCTIONS
-
+    addCalculatedInputParameters(p)
     return p
 }
 
@@ -164,4 +141,32 @@ export function loadExpectedValues(values: string[]): OutputParameters {
     })
 
     return expectedOutputParameters
+}
+
+export function addCalculatedInputParameters(p: TestCaseParameters) {
+
+    p.age = getDateDiff(p.DOB, p.COMMUNITY_DATE, 'year')
+    p.ageAtLastSanction = getDateDiff(p.DOB, p.LAST_SANCTION_DATE, 'year')
+    p.ageAtLastSanctionSexual = getDateDiff(p.DOB, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
+    p.ofm = getDateDiff(p.COMMUNITY_DATE, p.ASSESSMENT_DATE, 'month', true)
+    p.offenceCat = getOffenceCat(p.OFFENCE_CODE)
+    p.firstSanction = p.TOTAL_SANCTIONS_COUNT == 1
+    p.secondSanction = p.TOTAL_SANCTIONS_COUNT == 2
+    p.yearsBetweenFirstTwoSanctions = p.secondSanction ? p.ageAtLastSanction - p.AGE_AT_FIRST_SANCTION : 0
+    p.neverSanctionedViolence = p.TOTAL_VIOLENT_SANCTIONS == 0
+    p.onceViolent = p.TOTAL_VIOLENT_SANCTIONS == 1
+    p.male = p.GENDER == 'M'
+    p.female = p.GENDER == 'F'
+    p.out5Years = getDateDiff(p.ASSESSMENT_DATE, p.COMMUNITY_DATE, 'year') >= 5
+
+    const offenceInLast5Years = getDateDiff(p.ASSESSMENT_DATE, p.MOST_RECENT_OFFENCE, 'year')
+    p.offenceInLast5Years = offenceInLast5Years == null ? false : offenceInLast5Years < 5
+    const sexualOffenceInLast5Years = getDateDiff(p.ASSESSMENT_DATE, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
+    p.sexualOffenceInLast5Years = sexualOffenceInLast5Years == null ? false : sexualOffenceInLast5Years < 5
+
+    if (!p.CONTACT_ADULT_SANCTIONS || !p.CONTACT_CHILD_SANCTIONS || !p.INDECENT_IMAGE_SANCTIONS || !p.PARAPHILIA_SANCTIONS) {
+        p.totalSexualSanctionCount = null
+    } else {
+        p.totalSexualSanctionCount = p.CONTACT_ADULT_SANCTIONS + p.CONTACT_CHILD_SANCTIONS + p.INDECENT_IMAGE_SANCTIONS + p.PARAPHILIA_SANCTIONS
+    }
 }

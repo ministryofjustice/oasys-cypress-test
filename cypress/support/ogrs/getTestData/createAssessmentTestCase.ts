@@ -6,6 +6,7 @@ import { OgrsOffenceCat, TestCaseParameters } from '../types'
 import { OgrsAssessment } from './dbClasses'
 import { dateFormat } from '../orgsTest'
 import { offenceCats, offences } from '../data/offences'
+import { addCalculatedInputParameters } from '../loadTestData'
 
 export function createAssessmentTestCase(assessment: OgrsAssessment): TestCaseParameters {
 
@@ -88,25 +89,7 @@ export function createAssessmentTestCase(assessment: OgrsAssessment): TestCasePa
         CUSTODY_IND: getString(assessment.prisonInd) == 'C' ? 'Y' : 'N',
     }
 
-    p.age = getDateDiff(p.DOB, p.COMMUNITY_DATE, 'year')
-    p.ageAtLastSanction = getDateDiff(p.DOB, p.LAST_SANCTION_DATE, 'year')
-    p.ageAtLastSanctionSexual = getDateDiff(p.DOB, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
-    p.ofm = getDateDiff(p.COMMUNITY_DATE, p.ASSESSMENT_DATE, 'month', true)
-    p.offenceCat = getOffenceCat(p.OFFENCE_CODE)
-    p.firstSanction = p.TOTAL_SANCTIONS_COUNT == 1
-    p.secondSanction = p.TOTAL_SANCTIONS_COUNT == 2
-    p.yearsBetweenFirstTwoSanctions = p.secondSanction ? p.ageAtLastSanction - p.AGE_AT_FIRST_SANCTION : 0
-    p.neverSanctionedViolence = p.TOTAL_VIOLENT_SANCTIONS == 0
-    p.onceViolent = p.TOTAL_VIOLENT_SANCTIONS == 1
-    p.male = p.GENDER == 'M'
-    p.female = p.GENDER == 'F'
-    p.out5Years = getDateDiff(p.ASSESSMENT_DATE, p.COMMUNITY_DATE, 'year') >= 5
-
-    const offenceInLast5Years = getDateDiff(p.ASSESSMENT_DATE, p.MOST_RECENT_OFFENCE, 'year')
-    p.offenceInLast5Years = offenceInLast5Years == null ? false : offenceInLast5Years < 5
-    const sexualOffenceInLast5Years = getDateDiff(p.ASSESSMENT_DATE, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
-    p.sexualOffenceInLast5Years = sexualOffenceInLast5Years == null ? false : sexualOffenceInLast5Years < 5
-
+    addCalculatedInputParameters(p)
     return p
 }
 
@@ -118,25 +101,6 @@ function getDate(param: string): dayjs.Dayjs {
 
     const result = dayjs.utc(param, dateFormat)
     return !result.isValid() ? null : result
-}
-
-function getDateDiff(firstDate: dayjs.Dayjs, secondDate: dayjs.Dayjs, unit: 'year' | 'month', ofm: boolean = false): number {
-
-    if (firstDate == null || secondDate == null) {
-        return null
-    }
-    const diff = secondDate.diff(firstDate, unit)
-
-    if (ofm) {
-        return diff < 0 ? 0 : diff > 36 ? 36 : diff
-    } else {
-        return diff >= 0 ? diff : null
-    }
-}
-
-function getOffenceCat(offence: string): OgrsOffenceCat {
-    const cat = offenceCats[offences[offence]]
-    return cat == undefined ? null : cat
 }
 
 function getSingleAnswer(data: string[][], section: string, question: string, lookupDictionary: {} = {}): string {
