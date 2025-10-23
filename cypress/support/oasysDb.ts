@@ -225,7 +225,7 @@ export async function getOgrsResult(query: string): Promise<string> {
                     result.OGP2_CRACK || '|' ||
                     result.OGP2_COCAINE || '|' ||
                     result.OGP2_MISUSE_PRESCRIBED || '|' ||
-                    result.OGP2_BENZOS || '|' ||
+                    result.OGP2_BENZODIAZEPINES || '|' ||
                     result.OGP2_AMPHETAMINES || '|' ||
                     result.OGP2_ECSTASY || '|' ||
                     result.OGP2_CANNABIS || '|' ||
@@ -268,7 +268,7 @@ export async function getOgrsResult(query: string): Promise<string> {
                     result.OVP2_CRACK || '|' ||
                     result.OVP2_COCAINE || '|' ||
                     result.OVP2_MISUSE_PRESCRIBED || '|' ||
-                    result.OVP2_BENZOS || '|' ||
+                    result.OVP2_BENZODIAZEPINES || '|' ||
                     result.OVP2_AMPHETAMINES || '|' ||
                     result.OVP2_ECSTASY || '|' ||
                     result.OVP2_CANNABIS || '|' ||

@@ -93,7 +93,7 @@ export function createOutputObject(): OutputParameters {
         OGP2_CRACK: null,
         OGP2_COCAINE: null,
         OGP2_MISUSE_PRESCRIBED: null,
-        OGP2_BENZOS: null,
+        OGP2_BENZODIAZEPINES: null,
         OGP2_AMPHETAMINES: null,
         OGP2_ECSTASY: null,
         OGP2_CANNABIS: null,
@@ -136,7 +136,7 @@ export function createOutputObject(): OutputParameters {
         OVP2_CRACK: null,
         OVP2_COCAINE: null,
         OVP2_MISUSE_PRESCRIBED: null,
-        OVP2_BENZOS: null,
+        OVP2_BENZODIAZEPINES: null,
         OVP2_AMPHETAMINES: null,
         OVP2_ECSTASY: null,
         OVP2_CANNABIS: null,
@@ -227,7 +227,7 @@ export function addOutputParameter(outputParams: OutputParameters, scoreType: Sc
     const parameterName = getOutputParameterName(scoreType, item)
     if (parameterName != null && parameterName in outputParams) {
         outputParams[parameterName] = value
-    } // else if (scoreType == 'general_extended')   console.log(`${item} ${outputItemName[parameterName]} ${value}`)
+    } // else if (scoreType == 'violence_extended')   console.log(`${item} ${outputItemName[parameterName]} ${value}`)
 }
 
 function getOutputParameterName(scoreType: ScoreType, item: string): string {
@@ -299,7 +299,7 @@ const outputItemName = {
     drug_use_flag_v411_crack: 'CRACK',
     drug_use_flag_v411_cokepowder: 'COCAINE',
     drug_use_flag_v411_prescribed: 'MISUSE_PRESCRIBED',
-    drug_use_flag_v411_benzo: 'BENZOS',
+    drug_use_flag_v411_benzo: 'BENZODIAZEPINES',
     drug_use_flag_v411_amphetamine: 'AMPHETAMINES',
     drug_use_flag_v411_ecstasy: 'ECSTASY',
     drug_use_flag_v411_cannabis: 'CANNABIS',
