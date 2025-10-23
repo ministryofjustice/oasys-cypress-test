@@ -1,16 +1,26 @@
 import { OgrsTestParameters } from '../../cypress/support/ogrs/types'
 import { runTest } from './testLib'
 
-describe('OGRS calculator test', () => {
+const count = 10000
 
-    const staticFlag = 'Y'
+describe('OGRS calculator test - static flag = N', () => {
+
+    runTests('N')
+})
+
+describe('OGRS calculator test - static flag = Y', () => {
+
+    runTests('Y')
+})
+
+function runTests(staticFlag: 'Y' | 'N') {
 
     const dbTestParams: OgrsTestParameters = {
         testType: 'db',
         dbDetails: {
             type: 'assessment',
-            whereClause: `deleted_date is null and ref_ass_version_code = 'LAYER3' and version_number = 1 and assessment_status_elm = 'COMPLETE'`,
-            count: 10000,
+            whereClause: '',
+            count: count,
         },
         staticFlag: staticFlag,
         reportMode: 'minimal',
@@ -50,4 +60,4 @@ describe('OGRS calculator test', () => {
         dbTestParams.dbDetails.whereClause = `deleted_date is null and rsr_status = 'COMPLETE'`
         runTest(dbTestParams, '', false, false)
     })
-})
+}
