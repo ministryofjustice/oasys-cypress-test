@@ -145,10 +145,11 @@ export function loadExpectedValues(values: string[]): OutputParameters {
 
 export function addCalculatedInputParameters(p: TestCaseParameters) {
 
-    p.age = getDateDiff(p.DOB, p.COMMUNITY_DATE, 'year')
+    p.effectiveAssessmentDate = p.COMMUNITY_DATE == null ? p.LAST_SANCTION_DATE : p.COMMUNITY_DATE
+    p.age = getDateDiff(p.DOB, p.effectiveAssessmentDate, 'year')
     p.ageAtLastSanction = getDateDiff(p.DOB, p.LAST_SANCTION_DATE, 'year')
     p.ageAtLastSanctionSexual = getDateDiff(p.DOB, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
-    p.ofm = getDateDiff(p.COMMUNITY_DATE, p.ASSESSMENT_DATE, 'month', true)
+    p.ofm = getDateDiff(p.effectiveAssessmentDate, p.ASSESSMENT_DATE, 'month', true)
     p.offenceCat = getOffenceCat(p.OFFENCE_CODE)
     p.firstSanction = p.TOTAL_SANCTIONS_COUNT == 1
     p.secondSanction = p.TOTAL_SANCTIONS_COUNT == 2

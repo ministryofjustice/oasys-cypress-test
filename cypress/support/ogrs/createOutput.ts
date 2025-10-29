@@ -219,10 +219,7 @@ export function reportScores(outputParams: OutputParameters, scoreType: ScoreTyp
 
     addOutputParameter(outputParams, scoreType, 'missingCount', missingCount)
 
-    addOutputParameter(outputParams, scoreType, 'missingQuestions',
-        missingQuestions.replace('Offence Code Invalid\nLast Sanction Date', 'Last Sanction Date\nOffence Code Invalid')
-            .replace('Offence Code\nLast Sanction Date', 'Last Sanction Date\nOffence Code')
-    )
+    addOutputParameter(outputParams, scoreType, 'missingQuestions', missingQuestions)
 }
 
 export function addOutputParameter(outputParams: OutputParameters, scoreType: ScoreType, item: string, value: string | Decimal | number | ScoreStatus | ScoreBand) {

@@ -107,6 +107,7 @@ export type TestCaseParameters = {
     ROBBERY: number,
     WEAPONS_NOT_FIREARMS: number,
     CUSTODY_IND: string,
+    effectiveAssessmentDate?: dayjs.Dayjs,
     age?: number,
     ageAtLastSanction?: number,
     ageAtLastSanctionSexual?: number,
@@ -125,8 +126,13 @@ export type TestCaseParameters = {
     totalSexualSanctionCount?: number,
 }
 
-
 export type ScoreStatus = 'Y' | 'N' | 'E' | 'A'
+
+export type MissingQuestionsResult = {
+    status: ScoreStatus,
+    count: number,
+    errorText: string
+}
 
 export type OutputParameters = {
     OGRS4G_CALCULATED: ScoreStatus,

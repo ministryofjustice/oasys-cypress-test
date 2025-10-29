@@ -3,8 +3,8 @@ import { Decimal } from 'decimal.js'
 import { coefficients } from './data/coefficients'
 import { TestCaseParameters, ScoreType, OutputParameters, ScoreBand } from './types'
 import { OgrsOffenceCat, OgrsFeatures } from './types'
-import { addOutputParameter, outputScoreName, reportScores } from './createOutput'
-
+import { addOutputParameter, reportScores } from './createOutput'
+import { checkMissingQuestions } from './missingQuestions'
 
 export function calculate(scoreType: ScoreType, params: TestCaseParameters, outputParams: OutputParameters, skipCalculation: boolean = false) {
 
@@ -23,13 +23,9 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
     }
 
     // Check for missing parameters or invalid gender
-    if (!params.male && !params.female && params.GENDER != null) {
-        reportScores(outputParams, scoreType, null, null, null, 'E', 0, `'${outputScoreName[scoreType]} can't be calculated on gender other than Male and Female.'`)
-        return
-    }
     const missing = checkMissingQuestions(scoreType, params)
-    if (missing.count > 0) {
-        reportScores(outputParams, scoreType, null, null, null, 'E', missing.count, missing.result)
+    if (missing.status != 'Y') {
+        reportScores(outputParams, scoreType, null, null, null, missing.status, missing.count, missing.errorText)
         return
     }
 
@@ -235,191 +231,4 @@ export function calculateBand(scoreType: ScoreType, probability: Decimal): Score
             return probability.greaterThanOrEqualTo(73) ? 'Very High' : probability.greaterThanOrEqualTo(60) ? 'High' : probability.greaterThanOrEqualTo(42) ? 'Medium' : 'Low'
     }
     return null
-}
-
-export function checkMissingQuestions(scoreType: ScoreType, params: TestCaseParameters): { count: number, result: string } {
-
-    const missing: string[] = []
-
-    // Invalid offence code
-    if (params.OFFENCE_CODE && !params.offenceCat) {
-        missing.push(scoreType == 'serious_violence_brief' ? 'Offence Code' : 'Offence Code Invalid')
-    }
-
-    requiredParams[scoreType].forEach((param) => {
-        if (params[param] == null) {
-            const text = missingText[param]
-            missing.push(text == undefined ? param : text)
-        }
-    })
-    const result = missing.length == 0 ? `''` : `'${missing.join('\n')}\n'`
-    return { count: missing.length, result: result }
-}
-
-export const requiredParams = {
-
-    serious_violence_brief: [
-        'DOB',
-        'LAST_SANCTION_DATE',
-        'AGE_AT_FIRST_SANCTION',
-        'GENDER',
-        'OFFENCE_CODE',
-        'TOTAL_SANCTIONS_COUNT',
-        'COMMUNITY_DATE',
-        'TOTAL_VIOLENT_SANCTIONS',
-    ],
-    serious_violence_extended: [
-        'DOB',
-        'LAST_SANCTION_DATE',
-        'AGE_AT_FIRST_SANCTION',
-        'GENDER',
-        'OFFENCE_CODE',
-        'TOTAL_SANCTIONS_COUNT',
-        'COMMUNITY_DATE',
-        'TOTAL_VIOLENT_SANCTIONS',
-        'TWO_POINT_TWO',
-        'THREE_POINT_FOUR',
-        'FOUR_POINT_TWO',
-        'SIX_POINT_FOUR',
-        'SIX_POINT_SEVEN',
-        'NINE_POINT_ONE',
-        'NINE_POINT_TWO',
-        'ELEVEN_POINT_TWO',
-        'ELEVEN_POINT_FOUR',
-        'TWELVE_POINT_ONE',
-        'HOMICIDE',
-        'GBH',
-        'KIDNAP',
-        'FIREARMS',
-        'ROBBERY',
-        'AGGRAVATED_BURGLARY',
-        'WEAPONS_NOT_FIREARMS',
-        'CRIMINAL_DAMAGE_LIFE',
-        'ARSON',
-    ],
-    general_brief: [
-        'DOB',
-        'LAST_SANCTION_DATE',
-        'AGE_AT_FIRST_SANCTION',
-        'GENDER',
-        'OFFENCE_CODE',
-        'TOTAL_SANCTIONS_COUNT',
-        'COMMUNITY_DATE',
-    ],
-    violence_brief: [
-        'DOB',
-        'LAST_SANCTION_DATE',
-        'AGE_AT_FIRST_SANCTION',
-        'GENDER',
-        'OFFENCE_CODE',
-        'TOTAL_SANCTIONS_COUNT',
-        'COMMUNITY_DATE',
-        'TOTAL_VIOLENT_SANCTIONS',
-    ],
-    general_extended: [
-        'DOB',
-        'LAST_SANCTION_DATE',
-        'AGE_AT_FIRST_SANCTION',
-        'GENDER',
-        'OFFENCE_CODE',
-        'TOTAL_SANCTIONS_COUNT',
-        'COMMUNITY_DATE',
-        'THREE_POINT_FOUR',
-        'FOUR_POINT_TWO',
-        'SIX_POINT_FOUR',
-        'SIX_POINT_SEVEN',
-        'SIX_POINT_EIGHT',
-        'SEVEN_POINT_TWO',
-        'DAILY_DRUG_USER',
-        'EIGHT_POINT_EIGHT',
-        'NINE_POINT_ONE',
-        'NINE_POINT_TWO',
-        'ELEVEN_POINT_TWO',
-        'TWELVE_POINT_ONE',
-
-    ],
-    violence_extended: [
-        'DOB',
-        'LAST_SANCTION_DATE',
-        'AGE_AT_FIRST_SANCTION',
-        'GENDER',
-        'OFFENCE_CODE',
-        'TOTAL_SANCTIONS_COUNT',
-        'COMMUNITY_DATE',
-        'TOTAL_VIOLENT_SANCTIONS',
-        'THREE_POINT_FOUR',
-        'FOUR_POINT_TWO',
-        'SIX_POINT_FOUR',
-        'SIX_POINT_SEVEN',
-        'SIX_POINT_EIGHT',
-        'SEVEN_POINT_TWO',
-        'EIGHT_POINT_EIGHT',
-        'NINE_POINT_ONE',
-        'NINE_POINT_TWO',
-        'ELEVEN_POINT_TWO',
-        'ELEVEN_POINT_FOUR',
-        'TWELVE_POINT_ONE',
-    ],
-    osp_c: [
-        'ONE_POINT_THIRTY',
-        'DOB',
-        'GENDER',
-        'TOTAL_SANCTIONS_COUNT',
-        'COMMUNITY_DATE',
-        'CONTACT_ADULT_SANCTIONS',
-        'CONTACT_CHILD_SANCTIONS',
-        'PARAPHILIA_SANCTIONS',
-        'DATE_RECENT_SEXUAL_OFFENCE',
-        'CURR_SEX_OFF_MOTIVATION',
-    ],
-    osp_i: [
-        'ONE_POINT_THIRTY',
-        'GENDER',
-        'CONTACT_ADULT_SANCTIONS',
-        'CONTACT_CHILD_SANCTIONS',
-        'PARAPHILIA_SANCTIONS',
-        'INDECENT_IMAGE_SANCTIONS',
-    ],
-}
-
-export const missingText = {
-    DOB: 'Date of birth',
-    LAST_SANCTION_DATE: 'Last Sanction Date',
-    AGE_AT_FIRST_SANCTION: 'Age at first sanction',
-    GENDER: 'Gender',
-    OFFENCE_CODE: 'Offence Code',
-    TOTAL_SANCTIONS_COUNT: '1.32 Total number of sanctions for all offences',
-    COMMUNITY_DATE: '1.38 Date of commencement of community sentence or earliest possible release from custody',
-    TOTAL_VIOLENT_SANCTIONS: '1.40 How many of the total number of sanctions involved violent offences?',
-    ONE_POINT_THIRTY: '1.30 Have they ever committed a sexual or sexually motivated offence?',
-    TWO_POINT_TWO: '2.2 Did the offence involve carrying or using a weapon',
-    THREE_POINT_FOUR: '3.4 Is the offender living in suitable accommodation?',
-    FOUR_POINT_TWO: '4.2 Is the person unemployed, or will be unemployed on release?',
-    SIX_POINT_FOUR: `6.4 What is the person's current relationship with partner?`,
-    SIX_POINT_SEVEN: '6.7 Perpetrator of domestic abuse?',
-    SIX_POINT_EIGHT: '6.8 Current Relationship Status',
-    SEVEN_POINT_TWO: '7.2 Regular activities encourage offending',
-    DAILY_DRUG_USER: '8.1 Drugs ever misused (in custody and community)',
-    EIGHT_POINT_EIGHT: '8.8 Motivation to tackle drug misuse',
-    NINE_POINT_ONE: '9.1 Is current alcohol use a problem',
-    NINE_POINT_TWO: '9.2 Binge drinking or excessive use of alcohol in last 6 months',
-    ELEVEN_POINT_TWO: '11.2 Impulsivity',
-    ELEVEN_POINT_FOUR: '11.4 Temper control',
-    TWELVE_POINT_ONE: '12.1 Pro-criminal attitudes',
-    HOMICIDE: 'R1.2 Murder / attempted murder / threat or conspiracy to murder / manslaughter',
-    GBH: 'R1.2 Wounding / GBH',
-    KIDNAP: 'R1.2 Kidnapping / false imprisonment',
-    FIREARMS: 'R1.2 Possession of a firearm with intent to endanger life or resist arrest',
-    ROBBERY: 'R1.2 Robbery',
-    AGGRAVATED_BURGLARY: 'R1.2 Aggravated burglary',
-    WEAPONS_NOT_FIREARMS: 'R1.2 Any offence involving possession and / or use of weapons',
-    CRIMINAL_DAMAGE_LIFE: 'R1.2 Criminal damage with the intent to endanger life',
-    ARSON: 'R1.2 Arson',
-    CONTACT_ADULT_SANCTIONS: '1.34 Number of previous/current sanctions involving contact adult sexual/sexually motivated offences',
-    CONTACT_CHILD_SANCTIONS: '1.45 Number of previous/current sanctions involving direct contact child sexual/sexually motivated offences',
-    PARAPHILIA_SANCTIONS: '1.37 Number of previous/current sanctions involving other non-contact sexual/sexually motivated offences',
-    DATE_RECENT_SEXUAL_OFFENCE: '1.33 Date of most recent sanction involving a sexual/sexually motivated offence',
-    CURR_SEX_OFF_MOTIVATION: '1.41 Does the current offence have a sexual motivation?',
-    STRANGER_VICTIM: '1.44 Does the current offence involve actual/attempted direct contact against a victim who was a stranger?',
-    INDECENT_IMAGE_SANCTIONS: '1.46 Number of previous/current sanctions involving indecent child image or indirect child contact sexual/sexually motivated offences',
 }
