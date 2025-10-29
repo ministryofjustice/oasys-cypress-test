@@ -157,7 +157,7 @@ export function addCalculatedInputParameters(p: TestCaseParameters) {
     p.onceViolent = p.TOTAL_VIOLENT_SANCTIONS == 1
     p.male = p.GENDER == 'M'
     p.female = p.GENDER == 'F'
-    p.out5Years = getDateDiff(p.ASSESSMENT_DATE, p.COMMUNITY_DATE, 'year') >= 5
+    p.out5Years = getDateDiff(p.COMMUNITY_DATE, p.ASSESSMENT_DATE, 'year') >= 5
 
     const offenceInLast5Years = getDateDiff(p.ASSESSMENT_DATE, p.MOST_RECENT_OFFENCE, 'year')
     p.offenceInLast5Years = offenceInLast5Years == null ? false : offenceInLast5Years < 5
