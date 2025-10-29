@@ -35,7 +35,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
     })
 
     // Get OGRS4 package deployment timestamp
-    const pkgTimestamp = await db.selectSingleValue(`select timestamp from user_objects where object_name = 'NEW_GEN_PREDICTORS_PKG'`)
+    const pkgTimestamp = await db.selectSingleValue(`select timestamp from dba_objects where object_name = 'NEW_GEN_PREDICTORS_PKG' and object_type = 'PACKAGE BODY'`)
     if (pkgTimestamp.error != null) {
         throw new Error(pkgTimestamp.error)
     }
