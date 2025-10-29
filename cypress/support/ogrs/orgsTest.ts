@@ -22,6 +22,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
         cases: 0,
         failures: 0,
         offenceCodeErrors: [],
+        packageTimestamp: '',
     }
 
     // Load offence codes from OASys
@@ -32,6 +33,13 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
     (offenceCodeData.data as string[][]).forEach(offence => {
         offences[offence[0]] = offence[1]
     })
+
+    // Get OGRS4 package deployment timestamp
+    const pkgTimestamp = await db.selectSingleValue(`select timestamp from user_objects where object_name = 'NEW_GEN_PREDICTORS_PKG'`)
+    if (pkgTimestamp.error != null) {
+        throw new Error(pkgTimestamp.error)
+    }
+    scriptResults.packageTimestamp = pkgTimestamp.data as string
 
     // Load input parameters from a CSV file
     if (testParams.testType == 'csv') {

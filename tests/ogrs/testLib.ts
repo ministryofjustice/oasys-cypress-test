@@ -30,6 +30,7 @@ function report(testParams: OgrsTestParameters, result: OgrsTestScriptResult, ou
     } else {
         cy.groupedLogStart(`Test data from OASys`)
     }
+    cy.groupedLog(`OGRS4 package deployment date: ${result.packageTimestamp}`)
     cy.groupedLog(`Cases: ${result.cases}, failures: ${result.failures}.  ${result.failures > 0 ? 'FAILED' : 'PASSED'}`)
     
     result.testCaseResults.forEach((testCase) => {
