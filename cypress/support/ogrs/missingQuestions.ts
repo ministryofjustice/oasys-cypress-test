@@ -9,7 +9,7 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
     // OSP special rules
     if (['osp_c', 'osp_i'].includes(scoreType)) {
         if (params.female) {
-            if (params.ONE_POINT_THIRTY == 'Y' && params.totalSexualSanctionCount == 0) {
+            if (params.ONE_POINT_THIRTY == 'Y' && params.zeroSexualSanctions) {
                 return { status: 'E', count: 1, errorText: `'${errorTextScoreName['SEXUAL_SANCTION_SCORES']}\n'` }
             } else {
                 return { status: 'A', count: 0, errorText: `''` }
@@ -34,13 +34,8 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
     }
 
     // RSR special rules
-    if (scoreType == 'rsr') {
-        if (params.female && params.ONE_POINT_THIRTY == 'Y' && params.totalSexualSanctionCount == 0) {
-            return { status: 'E', count: 1, errorText: `'${errorTextScoreName['SEXUAL_SANCTION_SCORES']}\n'` }
-        }
-        if (params.GENDER == null) {
-            return { status: 'E', count: 1, errorText: `'Gender\n'` }
-        }
+    if (scoreType == 'rsr' && params.female && params.ONE_POINT_THIRTY == 'Y' && params.zeroSexualSanctions) {
+        return { status: 'E', count: 1, errorText: `'${errorTextScoreName['SEXUAL_SANCTION_SCORES']}\n'` }
     }
 
     // Standard missing questions
@@ -90,7 +85,7 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
     standardCheck(params, required, missing, 'CRIMINAL_DAMAGE_LIFE')
     standardCheck(params, required, missing, 'ARSON')
 
-    if (['osp_c', 'osp_i', 'rsr'].includes(scoreType) && params.male && params.ONE_POINT_THIRTY == 'Y' && params.totalSexualSanctionCount == 0) {
+    if (['osp_c', 'osp_i', 'rsr'].includes(scoreType) && params.male && params.ONE_POINT_THIRTY == 'Y' && params.zeroSexualSanctions) {
         missing.push(getErrorText('SEXUAL_SANCTION_SCORES'))
     }
     if (scoreType != 'rsr' || (params.male && params.ONE_POINT_THIRTY == 'Y')) {
