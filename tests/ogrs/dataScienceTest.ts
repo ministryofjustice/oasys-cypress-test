@@ -24,6 +24,6 @@ function test(part: number, staticFlag: 'Y' | 'N') {
             reportMode: 'minimal',
         }
 
-        runTest(csvTestParams, `dsOutput${staticFlag}${part}`, true, true)
+        runTest(csvTestParams, `dsOutput${staticFlag}${part}`, true, false)
     })
 }

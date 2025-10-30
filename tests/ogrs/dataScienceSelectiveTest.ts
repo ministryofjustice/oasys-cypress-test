@@ -4,7 +4,7 @@ import { runTest } from './testLib'
 describe('OGRS calculator test - data science test cases', () => {
 
     const start = 0
-    const end  = 1000
+    const end  = 1999
 
     it('Data science test cases - static flag = N', () => {
 
@@ -14,12 +14,12 @@ describe('OGRS calculator test - data science test cases', () => {
                 dataFile: 'dsTestCases',
             },
             staticFlag: 'N',
-            reportMode: 'minimal',
+            reportMode: 'normal',
         }
 
         csvTestParams.csvDetails.start = start
         csvTestParams.csvDetails.end = end
-        runTest(csvTestParams, null, false, false)
+        runTest(csvTestParams, 'dsOutputN', true, false)
     })
 
     it('Data science test cases - static flag = Y', () => {
@@ -35,6 +35,6 @@ describe('OGRS calculator test - data science test cases', () => {
 
         csvTestParams.csvDetails.start = start
         csvTestParams.csvDetails.end = end
-        runTest(csvTestParams, null, false, false)
+        runTest(csvTestParams, 'dsOutputY', true, false)
     })
 })
