@@ -10,7 +10,7 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
     if (['osp_c', 'osp_i'].includes(scoreType)) {
         if (params.female) {
             if (params.ONE_POINT_THIRTY == 'Y' && params.zeroSexualSanctions) {
-                return { status: 'E', count: 1, errorText: `'${errorTextScoreName['SEXUAL_SANCTION_SCORES']}\n'` }
+                return { status: 'E', count: 1, errorText: `'${getErrorText('SEXUAL_SANCTION_SCORES')}\n'` }
             } else {
                 return { status: 'A', count: 0, errorText: `''` }
             }
@@ -35,7 +35,7 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
 
     // RSR special rules
     if (scoreType == 'rsr' && params.female && params.ONE_POINT_THIRTY == 'Y' && params.zeroSexualSanctions) {
-        return { status: 'E', count: 1, errorText: `'${errorTextScoreName['SEXUAL_SANCTION_SCORES']}\n'` }
+        return { status: 'E', count: 1, errorText: `'${getErrorText('SEXUAL_SANCTION_SCORES')}\n'` }
     }
 
     // Standard missing questions
@@ -52,7 +52,7 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
         missing.push(getErrorText('OFFENCE_CODE'))
     } else if (params.OFFENCE_CODE && !params.offenceCat) {
         // Invalid offence code
-        missing.push(scoreType == 'serious_violence_brief' ? 'Offence Code' : 'Offence Code Invalid')
+        missing.push('Offence Code Invalid')
     }
 
     standardCheck(params, required, missing, 'TOTAL_SANCTIONS_COUNT')
