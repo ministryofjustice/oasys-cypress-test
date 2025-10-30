@@ -1,4 +1,4 @@
-import { TestCaseParameters, ScoreType, OutputParameters, MissingQuestionsResult } from './types'
+import { TestCaseParameters, ScoreType, MissingQuestionsResult } from './types'
 
 export function checkMissingQuestions(scoreType: ScoreType, params: TestCaseParameters, rsrDynamic: boolean = false): MissingQuestionsResult {
 
@@ -44,21 +44,14 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
     }
 
     // Standard missing questions
-    if (params.ONE_POINT_THIRTY == null && required.includes('ONE_POINT_THIRTY')) {
-        missing.push(getErrorText('ONE_POINT_THIRTY'))
-    }
-    if (params.DOB == null && required.includes('DOB')) {
-        missing.push(getErrorText('DOB'))
-    }
+    standardCheck(params, required, missing, 'ONE_POINT_THIRTY')
+    standardCheck(params, required, missing, 'DOB')
+
     if (params.LAST_SANCTION_DATE == null && (required.includes('LAST_SANCTION_DATE') || (scoreType == 'osp_c' && params.COMMUNITY_DATE == null))) {
         missing.push(getErrorText('LAST_SANCTION_DATE'))
     }
-    if (params.AGE_AT_FIRST_SANCTION == null && required.includes('AGE_AT_FIRST_SANCTION')) {
-        missing.push(getErrorText('AGE_AT_FIRST_SANCTION'))
-    }
-    if (params.GENDER == null && required.includes('GENDER')) {
-        missing.push(getErrorText('GENDER'))
-    }
+    standardCheck(params, required, missing, 'AGE_AT_FIRST_SANCTION')
+    standardCheck(params, required, missing, 'GENDER')
 
     if (params.OFFENCE_CODE == null && required.includes('OFFENCE_CODE')) {
         missing.push(getErrorText('OFFENCE_CODE'))
@@ -67,115 +60,60 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
         missing.push(scoreType == 'serious_violence_brief' ? 'Offence Code' : 'Offence Code Invalid')
     }
 
-    if (params.TOTAL_SANCTIONS_COUNT == null && required.includes('TOTAL_SANCTIONS_COUNT')) {
-        missing.push(getErrorText('TOTAL_SANCTIONS_COUNT'))
+    standardCheck(params, required, missing, 'TOTAL_SANCTIONS_COUNT')
+
+    if (params.COMMUNITY_DATE == null && required.includes('COMMUNITY_DATE') && params.LAST_SANCTION_DATE == null) {
+        missing.push(getErrorText('COMMUNITY_DATE'))
     }
-    if (params.COMMUNITY_DATE == null && required.includes('COMMUNITY_DATE')) {
-        if (params.LAST_SANCTION_DATE == null) {
-            missing.push(getErrorText('COMMUNITY_DATE'))
-        }
-    }
-    if (params.TOTAL_VIOLENT_SANCTIONS == null && required.includes('TOTAL_VIOLENT_SANCTIONS')) {
-        missing.push(getErrorText('TOTAL_VIOLENT_SANCTIONS'))
-    }
-    if (params.TWO_POINT_TWO == null && required.includes('TWO_POINT_TWO')) {
-        missing.push(getErrorText('TWO_POINT_TWO'))
-    }
-    if (params.THREE_POINT_FOUR == null && required.includes('THREE_POINT_FOUR')) {
-        missing.push(getErrorText('THREE_POINT_FOUR'))
-    }
-    if (params.FOUR_POINT_TWO == null && required.includes('FOUR_POINT_TWO')) {
-        missing.push(getErrorText('FOUR_POINT_TWO'))
-    }
-    if (params.SIX_POINT_FOUR == null && required.includes('SIX_POINT_FOUR')) {
-        missing.push(getErrorText('SIX_POINT_FOUR'))
-    }
-    if (params.SIX_POINT_SEVEN == null && required.includes('SIX_POINT_SEVEN')) {
-        missing.push(getErrorText('SIX_POINT_SEVEN'))
-    }
-    if (params.SIX_POINT_EIGHT == null && required.includes('SIX_POINT_EIGHT')) {
-        missing.push(getErrorText('SIX_POINT_EIGHT'))
-    }
-    if (params.SEVEN_POINT_TWO == null && required.includes('SEVEN_POINT_TWO')) {
-        missing.push(getErrorText('SEVEN_POINT_TWO'))
-    }
-    if (params.DAILY_DRUG_USER == null && required.includes('DAILY_DRUG_USER')) {
-        missing.push(getErrorText('DAILY_DRUG_USER'))
-    }
-    if (params.EIGHT_POINT_EIGHT == null && required.includes('EIGHT_POINT_EIGHT')) {
-        missing.push(getErrorText('EIGHT_POINT_EIGHT'))
-    }
-    if (params.NINE_POINT_ONE == null && required.includes('NINE_POINT_ONE')) {
-        missing.push(getErrorText('NINE_POINT_ONE'))
-    }
-    if (params.NINE_POINT_TWO == null && required.includes('NINE_POINT_TWO')) {
-        missing.push(getErrorText('NINE_POINT_TWO'))
-    }
-    if (params.ELEVEN_POINT_TWO == null && required.includes('ELEVEN_POINT_TWO')) {
-        missing.push(getErrorText('ELEVEN_POINT_TWO'))
-    }
-    if (params.ELEVEN_POINT_FOUR == null && required.includes('ELEVEN_POINT_FOUR')) {
-        missing.push(getErrorText('ELEVEN_POINT_FOUR'))
-    }
-    if (params.TWELVE_POINT_ONE == null && required.includes('TWELVE_POINT_ONE')) {
-        missing.push(getErrorText('TWELVE_POINT_ONE'))
-    }
-    if (params.HOMICIDE == null && required.includes('HOMICIDE')) {
-        missing.push(getErrorText('HOMICIDE'))
-    }
-    if (params.GBH == null && required.includes('GBH')) {
-        missing.push(getErrorText('GBH'))
-    }
-    if (params.KIDNAP == null && required.includes('KIDNAP')) {
-        missing.push(getErrorText('KIDNAP'))
-    }
-    if (params.FIREARMS == null && required.includes('FIREARMS')) {
-        missing.push(getErrorText('FIREARMS'))
-    }
-    if (params.ROBBERY == null && required.includes('ROBBERY')) {
-        missing.push(getErrorText('ROBBERY'))
-    }
-    if (params.AGGRAVATED_BURGLARY == null && required.includes('AGGRAVATED_BURGLARY')) {
-        missing.push(getErrorText('AGGRAVATED_BURGLARY'))
-    }
-    if (params.WEAPONS_NOT_FIREARMS == null && required.includes('WEAPONS_NOT_FIREARMS')) {
-        missing.push(getErrorText('WEAPONS_NOT_FIREARMS'))
-    }
-    if (params.CRIMINAL_DAMAGE_LIFE == null && required.includes('CRIMINAL_DAMAGE_LIFE')) {
-        missing.push(getErrorText('CRIMINAL_DAMAGE_LIFE'))
-    }
-    if (params.ARSON == null && required.includes('ARSON')) {
-        missing.push(getErrorText('ARSON'))
+    standardCheck(params, required, missing, 'TOTAL_VIOLENT_SANCTIONS')
+    standardCheck(params, required, missing, 'TWO_POINT_TWO')
+    standardCheck(params, required, missing, 'THREE_POINT_FOUR')
+    standardCheck(params, required, missing, 'FOUR_POINT_TWO')
+    standardCheck(params, required, missing, 'SIX_POINT_FOUR')
+    standardCheck(params, required, missing, 'SIX_POINT_SEVEN')
+    standardCheck(params, required, missing, 'SIX_POINT_EIGHT')
+    standardCheck(params, required, missing, 'SEVEN_POINT_TWO')
+    standardCheck(params, required, missing, 'DAILY_DRUG_USER')
+    standardCheck(params, required, missing, 'EIGHT_POINT_EIGHT')
+    standardCheck(params, required, missing, 'NINE_POINT_ONE')
+    standardCheck(params, required, missing, 'NINE_POINT_TWO')
+    standardCheck(params, required, missing, 'ELEVEN_POINT_TWO')
+    standardCheck(params, required, missing, 'ELEVEN_POINT_FOUR')
+    standardCheck(params, required, missing, 'TWELVE_POINT_ONE')
+    standardCheck(params, required, missing, 'HOMICIDE')
+    standardCheck(params, required, missing, 'GBH')
+    standardCheck(params, required, missing, 'KIDNAP')
+    standardCheck(params, required, missing, 'FIREARMS')
+    standardCheck(params, required, missing, 'ROBBERY')
+    standardCheck(params, required, missing, 'AGGRAVATED_BURGLARY')
+    standardCheck(params, required, missing, 'WEAPONS_NOT_FIREARMS')
+    standardCheck(params, required, missing, 'CRIMINAL_DAMAGE_LIFE')
+    standardCheck(params, required, missing, 'ARSON')
+
+    if (['osp_c', 'osp_i', 'rsr'].includes(scoreType) && params.male && params.ONE_POINT_THIRTY == 'Y' && params.totalSexualSanctionCount == 0) {
+        missing.push(getErrorText('SEXUAL_SANCTION_SCORES'))
     }
     if (scoreType != 'rsr' || (params.male && params.ONE_POINT_THIRTY == 'Y')) {
-        if (params.CONTACT_ADULT_SANCTIONS == null && required.includes('CONTACT_ADULT_SANCTIONS')) {
-            missing.push(getErrorText('CONTACT_ADULT_SANCTIONS'))
-        }
-        if (params.CONTACT_CHILD_SANCTIONS == null && required.includes('CONTACT_CHILD_SANCTIONS')) {
-            missing.push(getErrorText('CONTACT_CHILD_SANCTIONS'))
-        }
-        if (params.INDECENT_IMAGE_SANCTIONS == null && required.includes('INDECENT_IMAGE_SANCTIONS')) {
-            missing.push(getErrorText('INDECENT_IMAGE_SANCTIONS'))
-        }
-        if (params.PARAPHILIA_SANCTIONS == null && required.includes('PARAPHILIA_SANCTIONS')) {
-            missing.push(getErrorText('PARAPHILIA_SANCTIONS'))
-        }
-        if (params.DATE_RECENT_SEXUAL_OFFENCE == null && required.includes('DATE_RECENT_SEXUAL_OFFENCE')) {
-            missing.push(getErrorText('DATE_RECENT_SEXUAL_OFFENCE'))
-        }
-        if (params.CURR_SEX_OFF_MOTIVATION == null && required.includes('CURR_SEX_OFF_MOTIVATION')) {
-            missing.push(getErrorText('CURR_SEX_OFF_MOTIVATION'))
-        }
+        standardCheck(params, required, missing, 'CONTACT_ADULT_SANCTIONS')
+        standardCheck(params, required, missing, 'CONTACT_CHILD_SANCTIONS')
+        standardCheck(params, required, missing, 'INDECENT_IMAGE_SANCTIONS')
+        standardCheck(params, required, missing, 'PARAPHILIA_SANCTIONS')
+        standardCheck(params, required, missing, 'DATE_RECENT_SEXUAL_OFFENCE')
+        standardCheck(params, required, missing, 'CURR_SEX_OFF_MOTIVATION')
     }
     if (['osp_c', 'rsr'].includes(scoreType) && params.male && params.CURR_SEX_OFF_MOTIVATION == 'Y' && params.STRANGER_VICTIM == null) {
         missing.push(getErrorText('STRANGER_VICTIM'))
     }
-    if (['osp_c', 'osp_i', 'rsr'].includes(scoreType) && params.male && params.ONE_POINT_THIRTY == 'Y' && params.totalSexualSanctionCount == 0) {
-        missing.push(getErrorText('SEXUAL_SANCTION_SCORES'))
-    }
 
+    // Convert to string with line breaks
     const result = missing.length == 0 ? `''` : `'${missing.join('\n')}\n'`
     return { status: missing.length > 0 ? 'E' : 'Y', count: missing.length, errorText: result }
+}
+
+function standardCheck(params: TestCaseParameters, required: string[], missing: string[], param: string) {
+    if (params[param] == null && required.includes(param)) {
+        missing.push(getErrorText(param))
+    }
 }
 
 function getErrorText(param: string): string {
@@ -403,7 +341,7 @@ export const missingText = {
     CURR_SEX_OFF_MOTIVATION: '1.41 Does the current offence have a sexual motivation?',
     STRANGER_VICTIM: '1.44 Does the current offence involve actual/attempted direct contact against a victim who was a stranger?',
     INDECENT_IMAGE_SANCTIONS: '1.46 Number of previous/current sanctions involving indecent child image or indirect child contact sexual/sexually motivated offences',
-    SEXUAL_SANCTION_SCORES: 'Sexual motivation/offending identified - please complete sexual offence counts.',
+    SEXUAL_SANCTION_SCORES: 'Sexual or sexually motivated offence(s) with no sexual sanction counts.',
 }
 
 const errorTextScoreName = {
