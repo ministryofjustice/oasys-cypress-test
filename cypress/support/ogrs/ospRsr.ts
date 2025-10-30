@@ -74,8 +74,9 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
     // Both failed, report the error with no scores
     if (rsrMissingStatic.status == 'E') {
         reportScores(outputParams, 'rsr', null, null, null, 'E', reportedMissing.count, reportedMissing.errorText)
-        addOutputParameter(outputParams, 'rsr', 'dynamic', outputParams.SNSV_CALCULATED_DYNAMIC == 'Y' ? 'Y' : 'N')
-
+        if (rsrMissingStatic.count != 0) {
+            addOutputParameter(outputParams, 'rsr', 'dynamic', outputParams.SNSV_CALCULATED_DYNAMIC == 'Y' ? 'Y' : 'N')
+        }
     } else {
         // Otherwise, report the score, with errors depending on what type of score was requested
         let percentageRsr = outputParams.SNSV_CALCULATED_DYNAMIC == 'Y' ? outputParams.SNSV_PERCENTAGE_DYNAMIC : outputParams.SNSV_PERCENTAGE_STATIC
