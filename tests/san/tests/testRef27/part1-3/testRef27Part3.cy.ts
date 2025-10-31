@@ -84,11 +84,11 @@ describe('SAN integration - test ref 27', () => {
                     oasys.login(oasys.Users.probSanUnappr)
                     oasys.Nav.history(offender)
                     oasys.Assessment.openLatest()
-                    oasys.San.gotoSan()
+                    oasys.San.gotoReadOnlySan()
                     oasys.San.checkSanEditMode(false)
                     oasys.San.returnToOASys()
 
-                    oasys.San.gotoSentencePlan()
+                    oasys.San.gotoReadOnlySentencePlan()
                     oasys.San.checkSentencePlanEditMode(false)
                     oasys.San.returnToOASys()
 

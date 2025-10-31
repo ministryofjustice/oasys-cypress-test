@@ -49,10 +49,10 @@ describe('SAN integration - test ref 15 part 3', () => {
                 oasys.San.checkSanCountersigningCall(pk, oasys.Users.prisSanHomds, 'DOUBLE_COUNTERSIGNED', 0, 0)
 
                 oasys.Nav.history()
-                oasys.San.gotoSan()
+                oasys.San.gotoReadOnlySan()
                 oasys.San.checkSanEditMode(false)
                 oasys.San.returnToOASys()
-                oasys.San.gotoSentencePlan()
+                oasys.San.gotoReadOnlySentencePlan()
                 oasys.San.checkSentencePlanEditMode(false)
                 oasys.San.returnToOASys()
 

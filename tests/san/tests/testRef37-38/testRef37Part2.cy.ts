@@ -20,7 +20,7 @@ describe('SAN integration - test ref 37 part 2', () => {
                 oasys.Offender.searchAndSelectByPnc(offender.pnc)
                 oasys.Assessment.openLatest()
 
-                oasys.San.gotoSan()
+                oasys.San.gotoReadOnlySan()
 
                 oasys.San.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,

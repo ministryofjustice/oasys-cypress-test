@@ -47,6 +47,7 @@ describe('SAN integration - test ref 27', () => {
 
                 oasys.Nav.clickButton('Close')
                 oasys.Nav.clickButton('Open S&N')
+                oasys.San.clearSANPrivacyDeclaration()
                 oasys.San.populateSanSections('Test 27 part 4 SAN Alcohol', testData.test4ModifyAlcohol)
                 oasys.San.returnToOASys()
 
@@ -55,6 +56,7 @@ describe('SAN integration - test ref 27', () => {
                     Return back to the Offender record`)
 
                 oasys.Nav.clickButton('Open SP')
+                oasys.San.clearSentencePlanPrivacyDeclaration()
                 oasys.San.populateSanSections('Test 27 part 4 SP one goal', testData.test2SpCreateGoal)
                 oasys.San.returnToOASys()
                 oasys.logout()
@@ -137,7 +139,7 @@ describe('SAN integration - test ref 27', () => {
                         Close the assessment - back to the offender record`)
 
                     oasys.Assessment.openLatest()
-                    oasys.San.gotoSan()
+                    oasys.San.gotoReadOnlySan()
                     oasys.San.checkSanEditMode(false)
                     oasys.San.goto('Alcohol use')
                     oasys.San.checkReadonlyText(
@@ -145,7 +147,7 @@ describe('SAN integration - test ref 27', () => {
                         'Evidence of binge drinking or excessive alcohol use')
                     oasys.San.returnToOASys()
 
-                    oasys.San.gotoSentencePlan()
+                    oasys.San.gotoReadOnlySentencePlan()
                     oasys.San.checkSentencePlanEditMode(false)
                     oasys.San.checkSPGoalCount(1, 1)
                     oasys.San.returnToOASys()

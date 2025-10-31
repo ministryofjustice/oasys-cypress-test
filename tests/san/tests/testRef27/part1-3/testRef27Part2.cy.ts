@@ -32,6 +32,7 @@ describe('SAN integration - test ref 27', () => {
 
                 oasys.Nav.clickButton('Close')
                 oasys.Nav.clickButton('Open S&N')
+                oasys.San.clearSANPrivacyDeclaration()
                 oasys.San.populateSanSections('Test 27 part 2 SAN Alcohol', testData.test2SanAlcohol)
                 oasys.San.returnToOASys()
 
@@ -40,6 +41,7 @@ describe('SAN integration - test ref 27', () => {
                     Return back to the Offender record`)
 
                 oasys.Nav.clickButton('Open SP')
+                oasys.San.clearSentencePlanPrivacyDeclaration()
                 oasys.San.populateSanSections('Test 27 part SP one goal', testData.test2SpCreateGoal)
                 oasys.San.returnToOASys()
 
@@ -85,11 +87,11 @@ describe('SAN integration - test ref 27', () => {
                         Close the assessment - back to the offender record`)
 
                     oasys.Assessment.openLatest()
-                    oasys.San.gotoSan()
+                    oasys.San.gotoReadOnlySan()
                     oasys.San.checkSanEditMode(false)
                     oasys.San.returnToOASys()
 
-                    oasys.San.gotoSentencePlan()
+                    oasys.San.gotoReadOnlySentencePlan()
                     oasys.San.checkSentencePlanEditMode(false)
                     oasys.San.returnToOASys()
 

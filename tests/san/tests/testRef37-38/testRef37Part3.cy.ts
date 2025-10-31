@@ -21,7 +21,7 @@ describe('SAN integration - test ref 37 part 3', () => {
 
                 oasys.Assessment.openLatest()
 
-                oasys.San.gotoSan()
+                oasys.San.gotoReadOnlySan()
                 oasys.San.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,

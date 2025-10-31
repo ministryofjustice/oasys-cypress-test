@@ -142,6 +142,7 @@ describe('SAN integration - test ref 23', () => {
                 oasys.Nav.history(offender)
                 const offenderDetails = new oasys.Pages.Offender.OffenderDetails()
                 offenderDetails.openSan.click()
+                oasys.San.clearSANPrivacyDeclaration()
                 oasys.San.populateSanSections('Test ref 23 modification', testData.modifySan)
                 oasys.San.returnToOASys()
 
@@ -150,6 +151,7 @@ describe('SAN integration - test ref 23', () => {
                     Return back to the OASys Offender record screen`)
 
                 offenderDetails.openSp.click()
+                oasys.San.clearSentencePlanPrivacyDeclaration()
                 oasys.San.populateSanSections('Test ref 23 SP modification', testData.addGoal)
                 oasys.San.returnToOASys()
 

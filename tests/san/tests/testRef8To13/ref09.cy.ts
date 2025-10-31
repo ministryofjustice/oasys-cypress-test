@@ -1,5 +1,6 @@
 import * as oasys from 'oasys'
 import * as testData from '../../data/testRef9'
+import { clearSANPrivacyDeclaration } from 'lib/san'
 
 
 describe('SAN integration - test ref 09', () => {
@@ -28,6 +29,7 @@ describe('SAN integration - test ref 09', () => {
 
                 const offenderDetails = new oasys.Pages.Offender.OffenderDetails()
                 offenderDetails.openSan.click()
+                clearSANPrivacyDeclaration()
                 oasys.San.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
@@ -53,7 +55,7 @@ describe('SAN integration - test ref 09', () => {
                     Log out.`)
 
                 oasys.Assessment.openLatest()
-                oasys.San.gotoSan()
+                oasys.San.gotoReadOnlySan()
                 oasys.San.checkSanEditMode(false)
                 cy.get('#main-content').then((container) => {
                     expect(container.find('.summary__answer:contains("Settled"):visible').length).equal(1)

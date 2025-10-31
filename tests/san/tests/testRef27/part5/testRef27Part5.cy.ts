@@ -99,11 +99,11 @@ describe('SAN integration - test ref 27', () => {
                         Close the assessment - back to the offender record`)
 
                     oasys.Assessment.openLatest()
-                    oasys.San.gotoSan()
+                    oasys.San.gotoReadOnlySan()
                     oasys.San.checkSanEditMode(false)
                     oasys.San.returnToOASys()
 
-                    oasys.San.gotoSentencePlan()
+                    oasys.San.gotoReadOnlySentencePlan()
                     oasys.San.checkSentencePlanEditMode(false)
                     oasys.San.returnToOASys()
 

@@ -17,7 +17,7 @@ describe('SAN integration - test ref 17 part 3', () => {
 
             oasys.login(oasys.Users.probSanPo)
             oasys.Nav.history()
-            oasys.San.gotoSan()
+            oasys.San.gotoReadOnlySan()
             oasys.San.checkSanEditMode(false)
             oasys.San.returnToOASys()
 

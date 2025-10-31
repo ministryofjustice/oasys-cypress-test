@@ -85,7 +85,7 @@ describe('SAN integration - test ref 49', () => {
 
                 oasys.Assessment.openLatest()
 
-                oasys.San.gotoSan()
+                oasys.San.gotoReadOnlySan()
                 oasys.San.checkSanOtlCall(pk1, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
@@ -103,7 +103,7 @@ describe('SAN integration - test ref 49', () => {
 
                 oasys.San.returnToOASys()
 
-                oasys.San.gotoSentencePlan()
+                oasys.San.gotoReadOnlySentencePlan()
                 oasys.San.checkSanOtlCall(pk1, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
@@ -173,76 +173,76 @@ describe('SAN integration - test ref 49', () => {
                     predictors.o1_32.setValue(3)
                     predictors.o1_40.setValue(0)
                     predictors.o1_29.setValue({ days: -10 })
-                predictors.o1_30.setValue('No')
-                predictors.o1_38.setValue({ months: 6 })
-            const section2 = new oasys.Pages.Assessment.Section2().goto()
-            section2.briefOffenceDetails.checkValue('Offence description') // Confirms cloning from historic SAN
-            section2.o2_14.setValue('No')
-            oasys.Populate.Layer3Pages.Section3.noIssues()
-            oasys.Populate.Layer3Pages.Section4.noIssues()
-            oasys.Populate.Layer3Pages.Section5.noIssues()
-            oasys.Populate.Layer3Pages.Section6.noIssues()
-            oasys.Populate.Layer3Pages.Section7.noIssues()
-            oasys.Populate.Layer3Pages.Section9.noIssues()
-            oasys.Populate.Layer3Pages.Section10.noIssues()
-            oasys.Populate.Layer3Pages.Section11.noIssues()
-            oasys.Populate.Layer3Pages.Section12.noIssues()
-            oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
-            oasys.Populate.SentencePlanPages.IspSection52to8.minimal()
-            oasys.Assessment.signAndLock()
+                    predictors.o1_30.setValue('No')
+                    predictors.o1_38.setValue({ months: 6 })
+                    const section2 = new oasys.Pages.Assessment.Section2().goto()
+                    section2.briefOffenceDetails.checkValue('Offence description') // Confirms cloning from historic SAN
+                    section2.o2_14.setValue('No')
+                    oasys.Populate.Layer3Pages.Section3.noIssues()
+                    oasys.Populate.Layer3Pages.Section4.noIssues()
+                    oasys.Populate.Layer3Pages.Section5.noIssues()
+                    oasys.Populate.Layer3Pages.Section6.noIssues()
+                    oasys.Populate.Layer3Pages.Section7.noIssues()
+                    oasys.Populate.Layer3Pages.Section9.noIssues()
+                    oasys.Populate.Layer3Pages.Section10.noIssues()
+                    oasys.Populate.Layer3Pages.Section11.noIssues()
+                    oasys.Populate.Layer3Pages.Section12.noIssues()
+                    oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
+                    oasys.Populate.SentencePlanPages.IspSection52to8.minimal()
+                    oasys.Assessment.signAndLock()
 
-            cy.log(`Now check the access to the SAN and Sentence Plan service again, now that we have a 3.1 assessment
+                    cy.log(`Now check the access to the SAN and Sentence Plan service again, now that we have a 3.1 assessment
                         Open up the offender record
                         Click on the <Open S&N> button - SAN opens in READ ONLY mode
                         Ensure the OTL passes across READ_ONLY for the accessMode and the assessment version number is NULL
                         Return to OASys`)
 
-            oasys.Nav.history(offender)
-            oasys.Nav.clickButton('Open S&N')
-            oasys.San.checkSanEditMode(false)
+                    oasys.Nav.history(offender)
+                    oasys.Nav.clickButton('Open S&N')
+                    oasys.San.checkSanEditMode(false)
 
-            oasys.San.checkSanOtlCall(pk1, {
-                'crn': offender.probationCrn,
-                'pnc': offender.pnc,
-                'nomisId': null,
-                'givenName': offender.forename1,
-                'familyName': offender.surname,
-                'dateOfBirth': offender.dateOfBirth,
-                'gender': '1',
-                'location': 'COMMUNITY',
-                'sexuallyMotivatedOffenceHistory': 'NO',
-            },
-                { 'displayName': oasys.Users.probSanHeadPdu.forenameSurname, 'accessMode': 'READ_ONLY', },
-                'san', null
-            )
+                    oasys.San.checkSanOtlCall(pk1, {
+                        'crn': offender.probationCrn,
+                        'pnc': offender.pnc,
+                        'nomisId': null,
+                        'givenName': offender.forename1,
+                        'familyName': offender.surname,
+                        'dateOfBirth': offender.dateOfBirth,
+                        'gender': '1',
+                        'location': 'COMMUNITY',
+                        'sexuallyMotivatedOffenceHistory': 'NO',
+                    },
+                        { 'displayName': oasys.Users.probSanHeadPdu.forenameSurname, 'accessMode': 'READ_ONLY', },
+                        'san', null
+                    )
 
-            oasys.San.returnToOASys()
+                    oasys.San.returnToOASys()
 
-            cy.log(`Click on the <Open SP> button - Sentence Plan opens in READ ONLY mode
+                    cy.log(`Click on the <Open SP> button - Sentence Plan opens in READ ONLY mode
                         Ensure the OTL passes across READ_ONLY for the accessMode and the sentence plan version number is NULL
                         Return to OASys`)
 
-            oasys.Nav.clickButton('Open SP')
-            oasys.San.checkSentencePlanEditMode(false)
+                    oasys.Nav.clickButton('Open SP')
+                    oasys.San.checkSentencePlanEditMode(false)
 
-            oasys.San.checkSanOtlCall(pk1, {
-                'crn': offender.probationCrn,
-                'pnc': offender.pnc,
-                'nomisId': null,
-                'givenName': offender.forename1,
-                'familyName': offender.surname,
-                'dateOfBirth': offender.dateOfBirth,
-                'gender': '1',
-                'location': 'COMMUNITY',
-                'sexuallyMotivatedOffenceHistory': 'NO',
-            },
-                { 'displayName': oasys.Users.probSanHeadPdu.forenameSurname, 'planAccessMode': 'READ_ONLY', },
-                'san', null
-            )
+                    oasys.San.checkSanOtlCall(pk1, {
+                        'crn': offender.probationCrn,
+                        'pnc': offender.pnc,
+                        'nomisId': null,
+                        'givenName': offender.forename1,
+                        'familyName': offender.surname,
+                        'dateOfBirth': offender.dateOfBirth,
+                        'gender': '1',
+                        'location': 'COMMUNITY',
+                        'sexuallyMotivatedOffenceHistory': 'NO',
+                    },
+                        { 'displayName': oasys.Users.probSanHeadPdu.forenameSurname, 'planAccessMode': 'READ_ONLY', },
+                        'san', null
+                    )
 
-            oasys.San.returnToOASys()
+                    oasys.San.returnToOASys()
 
-            cy.log(`Open the historic 3.2 assessment
+                    cy.log(`Open the historic 3.2 assessment
                         Navigate out to the SAN Service via the screen - SAN opens in READ ONLY mode
                         Ensure the OTL passes across READ_ONLY for the accessMode and the assessment version number is 0 (or whatever number is held on the OASYS_SET record)
                         Return to OASys
@@ -250,55 +250,55 @@ describe('SAN integration - test ref 49', () => {
                         Ensure the OTL passes across READ_ONLY for the accessMode and the sentence plan version number is 0 (or whatever number is held on the OASYS_SET record)
                         Return to OASys`)
 
-            oasys.Assessment.open(2)  // Row 1 is the 3.1 assessment, row 2 is historic 3.2
+                    oasys.Assessment.open(2)  // Row 1 is the 3.1 assessment, row 2 is historic 3.2
 
-            oasys.San.gotoSan()
-            oasys.San.checkSanOtlCall(pk1, {
-                'crn': offender.probationCrn,
-                'pnc': offender.pnc,
-                'nomisId': null,
-                'givenName': offender.forename1,
-                'familyName': offender.surname,
-                'dateOfBirth': offender.dateOfBirth,
-                'gender': '1',
-                'location': 'COMMUNITY',
-                'sexuallyMotivatedOffenceHistory': 'NO',
-            }, {
-                'displayName': oasys.Users.probSanHeadPdu.forenameSurname,
-                'accessMode': 'READ_ONLY',
-            },
-                'san', 0
-            )
+                    oasys.San.gotoReadOnlySan()
+                    oasys.San.checkSanOtlCall(pk1, {
+                        'crn': offender.probationCrn,
+                        'pnc': offender.pnc,
+                        'nomisId': null,
+                        'givenName': offender.forename1,
+                        'familyName': offender.surname,
+                        'dateOfBirth': offender.dateOfBirth,
+                        'gender': '1',
+                        'location': 'COMMUNITY',
+                        'sexuallyMotivatedOffenceHistory': 'NO',
+                    }, {
+                        'displayName': oasys.Users.probSanHeadPdu.forenameSurname,
+                        'accessMode': 'READ_ONLY',
+                    },
+                        'san', 0
+                    )
 
-            oasys.San.returnToOASys()
+                    oasys.San.returnToOASys()
 
-            oasys.San.gotoSentencePlan()
-            oasys.San.checkSanOtlCall(pk1,
-                {
-                    'crn': offender.probationCrn,
-                    'pnc': offender.pnc,
-                    'nomisId': null,
-                    'givenName': offender.forename1,
-                    'familyName': offender.surname,
-                    'dateOfBirth': offender.dateOfBirth,
-                    'gender': '1',
-                    'location': 'COMMUNITY',
-                    'sexuallyMotivatedOffenceHistory': 'NO',
-                },
-                {
-                    'displayName': oasys.Users.probSanHeadPdu.forenameSurname,
-                    'planAccessMode': 'READ_ONLY',
-                },
+                    oasys.San.gotoReadOnlySentencePlan()
+                    oasys.San.checkSanOtlCall(pk1,
+                        {
+                            'crn': offender.probationCrn,
+                            'pnc': offender.pnc,
+                            'nomisId': null,
+                            'givenName': offender.forename1,
+                            'familyName': offender.surname,
+                            'dateOfBirth': offender.dateOfBirth,
+                            'gender': '1',
+                            'location': 'COMMUNITY',
+                            'sexuallyMotivatedOffenceHistory': 'NO',
+                        },
+                        {
+                            'displayName': oasys.Users.probSanHeadPdu.forenameSurname,
+                            'planAccessMode': 'READ_ONLY',
+                        },
 
-                'sp', 0
-            )
+                        'sp', 0
+                    )
 
-            oasys.San.returnToOASys()
+                    oasys.San.returnToOASys()
 
-            oasys.logout()
+                    oasys.logout()
 
+                })
+            })
         })
-    })
-})
     })
 })

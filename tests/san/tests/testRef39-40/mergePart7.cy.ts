@@ -25,14 +25,14 @@ describe('SAN integration - tests 39/40', () => {
 
             // Check first assessment
             assesmentTab.assessments.purposeOfAssessment.clickRowContaining('Start of Suspended Sentence Order (Full) ')
-            oasys.San.gotoSan('Offence analysis')
+            oasys.San.gotoReadOnlySan('Offence analysis')
             oasys.San.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description modified for offender 2')
             oasys.San.returnToOASys()
             oasys.Nav.clickButton('Close')
 
             // Check second assessment
             oasys.Assessment.openLatest()
-            oasys.San.gotoSan('Offence analysis')
+            oasys.San.gotoReadOnlySan('Offence analysis')
             oasys.San.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description modified for 3rd assessment on merged offender')
             oasys.San.returnToOASys()
             oasys.Nav.clickButton('Close')

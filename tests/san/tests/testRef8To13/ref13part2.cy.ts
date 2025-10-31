@@ -27,7 +27,7 @@ describe('SAN integration - test ref 13 part 2', () => {
 
             oasys.Assessment.openLatest()
 
-            oasys.San.gotoSan()
+            oasys.San.gotoReadOnlySan()
             oasys.San.checkSanEditMode(false)
             oasys.San.returnToOASys()
             oasys.Nav.clickButton('Close')

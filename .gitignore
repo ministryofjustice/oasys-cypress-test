@@ -8,4 +8,3 @@ cypress/downloads
 cypress/videos
 report
 /package-lock.json
-.DS_Store

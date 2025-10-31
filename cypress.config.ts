@@ -212,5 +212,6 @@ module.exports = defineConfig({
       })
     },
   },
+  experimentalStudio: true,
 })
 

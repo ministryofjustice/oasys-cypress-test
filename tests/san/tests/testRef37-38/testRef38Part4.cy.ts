@@ -27,7 +27,7 @@ describe('SAN integration - test ref 38 part 4', () => {
                 oasys.logout()
                 oasys.login(oasys.Users.probSanHeadPdu)
                 oasys.Nav.history()
-                oasys.San.gotoSan()
+                oasys.San.gotoReadOnlySan()
                 oasys.San.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,

@@ -24,7 +24,7 @@ describe('SAN integration - tests 39/40', () => {
             assesmentTab.assessments.checkData([{ name: 'purposeOfAssessment', values: ['Start of Community Order (Full) '] }])
 
             oasys.Assessment.openLatest()
-            oasys.San.gotoSan('Offence analysis')
+            oasys.San.gotoReadOnlySan('Offence analysis')
             oasys.San.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description for assessment 1')
             oasys.San.returnToOASys()
             oasys.Nav.clickButton('Close')
