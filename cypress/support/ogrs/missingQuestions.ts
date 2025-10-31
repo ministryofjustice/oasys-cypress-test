@@ -297,7 +297,7 @@ export const missingText = {
     LAST_SANCTION_DATE: 'Missing 1.29 Date of current conviction',
     AGE_AT_FIRST_SANCTION: 'Missing age at first sanction',
     GENDER: 'Gender',
-    OFFENCE_CODE: 'Missing offence Code',
+    OFFENCE_CODE: 'Missing Offence Code',
     TOTAL_SANCTIONS_COUNT: 'Missing 1.32 Total number of sanctions for all offences',
     COMMUNITY_DATE: 'Missing 1.38 Date of commencement of community sentence or earliest possible release from custody',
     TOTAL_VIOLENT_SANCTIONS: 'Missing 1.40 How many of the total number of sanctions involved violent offences?',
@@ -332,7 +332,7 @@ export const missingText = {
     CURR_SEX_OFF_MOTIVATION: 'Missing 1.41 Does the current offence have a sexual motivation?',
     STRANGER_VICTIM: 'Missing 1.44 Does the current offence involve actual/attempted direct contact against a victim who was a stranger?',
     INDECENT_IMAGE_SANCTIONS: 'Missing 1.46 Number of previous/current sanctions involving indecent child image or indirect child contact sexual/sexually motivated offences',
-    SEXUAL_SANCTION_SCORES: 'Missing Sexual or sexually motivated offence(s) with no sexual sanction counts.',
+    SEXUAL_SANCTION_SCORES: 'Sexual or sexually motivated offence(s) with no sexual sanction counts.',
 }
 
 const errorTextScoreName = {
