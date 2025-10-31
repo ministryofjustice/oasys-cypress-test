@@ -11,7 +11,7 @@ describe('Create assessments and check SNS messages - layer 3', () => {
         cy.get<OffenderDef>('@offender1').then((offender) => {
 
             oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
-            oasys.Populate.minimal({ layer: 'Layer 3' })
+            oasys.Populate.minimal({ layer: 'Layer 3', populate6_11: 'No' })
 
             // Sign assessment, then check SNS messages
             oasys.Assessment.signAndLock({ expectRsrWarning: true })
@@ -47,7 +47,7 @@ describe('Create assessments and check SNS messages - layer 3', () => {
             oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
             oasys.Populate.CommonPages.OffendingInformation.minimal()
             oasys.Populate.Layer3Pages.Predictors.minimal()
-            oasys.Populate.sections2To13NoIssues()
+            oasys.Populate.sections2To13NoIssues({ populate6_11: 'No' })
             oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
 
             // Set to Medium risk to get countersigner

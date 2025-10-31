@@ -16,7 +16,7 @@ export function minimal(params: PopulateAssessmentParams) {
             break
         case 'Layer 3':
             populate.Layer3Pages.Predictors.minimal()
-            sections2To13NoIssues()
+            sections2To13NoIssues(params)
             break
     }
 
@@ -83,20 +83,19 @@ export function fullyPopulated(params: PopulateAssessmentParams) {
     cy.log(`Fully populated assessment: ${JSON.stringify(params)}`)
 }
 
-export function sections2To13NoIssues() {
+export function sections2To13NoIssues(params?: PopulateAssessmentParams) {
 
     populate.Layer3Pages.Section2.noIssues()
     populate.Layer3Pages.Section3.noIssues()
     populate.Layer3Pages.Section4.noIssues()
     populate.Layer3Pages.Section5.noIssues()
-    populate.Layer3Pages.Section6.noIssues()
+    populate.Layer3Pages.Section6.noIssues(params?.populate6_11)
     populate.Layer3Pages.Section7.noIssues()
     populate.Layer3Pages.Section8.noIssues()
     populate.Layer3Pages.Section9.noIssues()
     populate.Layer3Pages.Section10.noIssues()
     populate.Layer3Pages.Section11.noIssues()
     populate.Layer3Pages.Section12.noIssues()
-    populate.Layer3Pages.Section13.noIssues()
 }
 
 export function sections2To13FullyPopulated(params: PopulateAssessmentParams) {

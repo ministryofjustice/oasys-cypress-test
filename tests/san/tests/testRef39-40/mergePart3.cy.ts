@@ -19,35 +19,23 @@ describe('SAN integration - tests 39/40', () => {
                 const offender2 = JSON.parse(offenderData as string)
 
                 // Get original assessment PKs
-                oasys.Db.getLatestSetPkByPnc(offender1.pnc, 'oldPk1')
-                oasys.Db.getLatestSetPkByPnc(offender2.pnc, 'oldPk2')
-                cy.get<number>('@oldPk1').then((oldPk1) => {
-                    cy.get<number>('@oldPk2').then((oldPk2) => {
+                oasys.Db.getAllSetPksByProbationCrn(offender1.probationCrn, 'oldPksOff1')
+                oasys.Db.getAllSetPksByProbationCrn(offender2.probationCrn, 'oldPksOff2')
+                oasys.login(oasys.Users.probSanHeadPdu)
+                oasys.Offender.searchAndSelectByPnc(offender1.pnc)
 
-                        oasys.login(oasys.Users.probSanHeadPdu)
-                        oasys.Offender.searchAndSelectByPnc(offender1.pnc)
+                // Set the PNC to trigger a merge
+                const offenderDetails = new oasys.Pages.Offender.OffenderDetails()
+                offenderDetails.pnc.setValue(offender2.pnc) // Cypress will automatically OK the alert
+                offenderDetails.save.click()
+                new oasys.Pages.Tasks.TaskManager().goto()
+                oasys.Task.grantMerge(offender2.surname)
 
-                        // Set the PNC to trigger a merge
-                        const offenderDetails = new oasys.Pages.Offender.OffenderDetails()
-                        offenderDetails.pnc.setValue(offender2.pnc) // Cypress will automatically OK the alert
-                        offenderDetails.save.click()
-                        new oasys.Pages.Tasks.TaskManager().goto()
-                        oasys.Task.grantMerge(offender2.surname)
-
-                        // Get new assessment PKs
-                        oasys.Db.getLatestSetPkByPnc(offender1.pnc, 'newPk1')
-                        oasys.Db.getLatestSetPkByPnc(offender2.pnc, 'newPk2')
-                        cy.get<number>('@newPk1').then((newPk1) => {
-                            cy.get<number>('@newPk2').then((newPk2) => {
-
-                                oasys.San.checkSanMergeCall(oasys.Users.probSanHeadPdu, [{ old: oldPk1, new: newPk1 }, { old: oldPk2, new: newPk2 }])
-
-                                oasys.logout()
-                            })
-                        })
-                    })
-
-                })
+                // Get new assessment PKs
+                oasys.Db.getAllSetPksByProbationCrn(offender1.probationCrn, 'newPksOff1')
+                oasys.Db.getAllSetPksByProbationCrn(offender2.probationCrn, 'newPksOff2')
+                oasys.San.checkSanMergeCall(oasys.Users.probSanHeadPdu, 3)
+                oasys.logout()
             })
         })
     })

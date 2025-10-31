@@ -73,6 +73,7 @@ describe('SAN integration - test ref 35', () => {
                 rsr.o1_30.checkValue('No')
                 rsr.o1_38.checkValue({})
                 rsr.o1_39.setValue('Yes') // Offender interview
+                rsr.o2_2.setValue('Yes')
                 rsr.o3_4.checkValue('0-No problems')
                 rsr.o4_2.checkValue('0-No')
                 rsr.o6_4.checkValue('2-Significant problems')
@@ -93,7 +94,7 @@ describe('SAN integration - test ref 35', () => {
                 rsr.o11_4.setValue('2-Significant problems')
                 rsr.o12_1.setValue('1-Some problems')
 
-                rsr.weaponCurrent.setValue('Yes')
+                rsr.weaponPrevious.setValue('Yes')
                 rsr.burglaryPrevious.setValue('Yes')
 
                 rsr.calculateRsrScore.click()

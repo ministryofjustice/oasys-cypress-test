@@ -1,10 +1,13 @@
 import * as oasys from 'oasys'
 
 
-export function noIssues() {
+export function noIssues(populate6_11?: 'Yes' | 'No') {
 
     const page = new oasys.Pages.Assessment.Section6().goto(true)
     page.noIssues.click()
+    if (populate6_11) {
+        page.o6_11.setValue(populate6_11)
+    }
     page.identifyIssues.setValue('Section 6 no issues')
 }
 

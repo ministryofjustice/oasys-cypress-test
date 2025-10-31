@@ -6,10 +6,9 @@ export class RspSection72to10 extends SentencePlan {
 
     name = 'RSPSection72to10'
     title = 'Review Sentence Plan'
-    menu: Menu = { type: 'Floating', level1: 'Review Sentence Plan', level2: 'Section 7.2 to 10' }
+    menu: Menu = { type: 'Floating', level1: 'Review Sentence Plan', level2: 'Section 8 to 10' }
 
-    liaisonArrangements = new Element.Textbox('#textarea_RP_47')
-    supervisionArrangements = new Element.Textbox('#textarea_RP_48')
+    supervisionArrangements = new Element.Textbox('#textarea_RP_113')
     agreeWithPlan = new Element.Select('#itm_RP_49')
     whyNotAgree = new Element.Textbox('#textarea_RP_49_t')
     offenderComments = new Element.Textbox('#textarea_RP_51')

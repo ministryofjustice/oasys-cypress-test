@@ -65,22 +65,24 @@ export function createProb(source: OffenderDef, alias: string) {
         maintainCmsStub.save.click()
 
         // Add the event/offence/sentence if included in the offender details
-        if (offender.event != null) {
+        if (offender.event) {
 
             maintainCmsStub.event.click()
             maintainCmsStub.sentenceTypeColumn.clickFirstRow()
 
             const cmsStubEvent = new oasys.Pages.Stub.CmsStubEvent()
-            cmsStubEvent.setValues(offender.event.eventDetails, true)
+            if (offender.event.eventDetails) {
+                cmsStubEvent.setValues(offender.event.eventDetails, true)
+            }
             cmsStubEvent.save.click()
 
-            if (offender.event.sentenceDetails != null) {
+            if (offender.event.sentenceDetails) {
 
                 cmsStubEvent.sentenceDetail.click()
                 enterSentenceDetails(cmsStubEvent, offender.event.sentenceDetails)
             }
 
-            if (offender.event.offences != null) {
+            if (offender.event.offences) {
 
                 cmsStubEvent.offences.click()
                 enterOffences(cmsStubEvent, offender.event.offences)
@@ -89,7 +91,7 @@ export function createProb(source: OffenderDef, alias: string) {
             cmsStubEvent.close.click()
         }
 
-        if (offender.aliases != null) {
+        if (offender.aliases) {
 
             maintainCmsStub.offenderAlias.click()
             enterAliases(maintainCmsStub, offender.aliases)
@@ -106,7 +108,7 @@ export function createProb(source: OffenderDef, alias: string) {
         new oasys.Pages.Offender.CmsSearchResults().cmsEventNumberColumn.clickFirstRow()
         new oasys.Pages.Offender.CmsOffenderDetails().createOffender.click()
 
-        cy.log(`Created offender with PNC: ${offender.pnc}, surname: '${offender.surname}', CRN: ${offender.probationCrn}, date of birth: ${offender.dateOfBirth}`)
+        cy.log(`Created offender with PNC: ${offender.pnc}, surname: '${offender.surname}', forename: '${offender.forename1}', CRN: ${offender.probationCrn}, date of birth: ${offender.dateOfBirth}`)
 
         // Reinstate the NOMIS ID on the offender object
         if (nomisId != undefined) {
@@ -150,7 +152,7 @@ export function createPris(source: OffenderDef, alias: string) {
         enterPrisonStubDetailsAndCreateReceptionEvent(offender)
         searchAndSelectByNomisId(offender.nomisId, true)
 
-        cy.log(`Created offender with PNC: ${offender.pnc}, surname: '${offender.surname}', NOMISId: ${offender.nomisId}, date of birth: ${offender.dateOfBirth}`)
+        cy.log(`Created offender with PNC: ${offender.pnc}, surname: '${offender.surname}', forename: '${offender.forename1}', NOMISId: ${offender.nomisId}, date of birth: ${offender.dateOfBirth}`)
     })
 }
 

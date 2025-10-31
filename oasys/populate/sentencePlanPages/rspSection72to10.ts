@@ -11,7 +11,6 @@ export function minimal() {
 export function fullyPopulated(maxStrings: boolean = false) {
 
     const page = new oasys.Pages.SentencePlan.RspSection72to10().goto(true)
-    page.liaisonArrangements.setValue(maxStrings ? oasys.oasysString(4000) : 'Liaison arrangements')
     page.supervisionArrangements.setValue(maxStrings ? oasys.oasysString(4000) : 'Supervision arrangements')
     page.agreeWithPlan.setValue('No')
     page.whyNotAgree.setValue(maxStrings ? oasys.oasysString(4000) : 'Why not agree')

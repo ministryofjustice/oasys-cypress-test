@@ -57,7 +57,7 @@ describe('SAN integration - test ref 08 part 5', () => {
 
                     cy.log(`Check the OASYS_SET record.  Ensure the fields 'LASTUPD_FROM_SAN' and 'SAN_ASSESSMENT_VERSION_NO' remain the same as noted above
                         Ensure the OASys database for this assessment has questions in Sections 2 to 12 from the SAN Assessment
-                        Ensure there is no Section 13 (apart from 13.1 which is returned from SAN)
+                        Ensure there is no Section 13
                         Ensure that the new SAN section has questions in it from the SAN assessment`)
 
                     oasys.Db.getData(sanColumnsQuery, 'oasysSetData')
@@ -68,7 +68,7 @@ describe('SAN integration - test ref 08 part 5', () => {
                     cy.get<boolean>('@sectionAnswersResult').then((failed) => {
                         expect(failed).equal(false)
                     })
-                    oasys.San.checkCountOfQuestionsInSection(pk, '13', 1) // 13.1 is the only mapped question that gets returned by SAN
+                    oasys.San.checkCountOfQuestionsInSection(pk, '13', 0)
                     oasys.San.checkCountOfQuestionsInSection(pk, 'SAN', 12)
 
                     cy.log(`Open up the completed OASys-SAN asessment - now shows all READ ONLY.  

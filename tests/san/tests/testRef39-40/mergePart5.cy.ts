@@ -19,9 +19,9 @@ describe('SAN integration - tests 39/40', () => {
                 const offender2 = JSON.parse(offenderData as string)
 
                 // Get current assessment PKs
-                oasys.Db.getLatestSetPkByPnc(offender1.pnc, 'currentOff1Pk')
-                oasys.Db.getAllSetPksByPnc(offender2.pnc, 'currentOff2Pks', true)
-                cy.get<number>('@currentOff1Pk').then((currentOff1Pk) => {
+                oasys.Db.getAllSetPksByProbationCrn(offender1.probationCrn, 'currentOff1Pks')
+                oasys.Db.getAllSetPksByProbationCrn(offender2.probationCrn, 'currentOff2Pks')
+                cy.get<number[]>('@currentOff1Pks').then((currentOff1Pks) => {
                     cy.get<number[]>('@currentOff2Pks').then((currentOff2Pks) => {
 
                         oasys.login(oasys.Users.admin, oasys.Users.probationSan)
@@ -36,16 +36,12 @@ describe('SAN integration - tests 39/40', () => {
                         oasys.logout()
 
                         // Get new assessment PKs
-                        oasys.Db.getLatestSetPkByPnc(offender1.pnc, 'newOff1Pk')
-                        oasys.Db.getAllSetPksByPnc(offender2.pnc, 'newOff2Pks', true)
-                        cy.get<number>('@newOff1Pk').then((newOff1Pk) => {
+                        oasys.Db.getAllSetPksByProbationCrn(offender1.probationCrn, 'newOff1Pks')
+                        oasys.Db.getAllSetPksByProbationCrn(offender2.probationCrn, 'newOff2Pks')
+                        cy.get<number[]>('@newOff1Pks').then((newOff1Pks) => {
                             cy.get<number[]>('@newOff2Pks').then((newOff2Pks) => {
 
-                                oasys.San.checkSanMergeCall(oasys.Users.admin, [
-                                    { old: currentOff1Pk, new: newOff1Pk },
-                                    { old: currentOff2Pks[1], new: newOff2Pks[1] },
-                                ])
-
+                                oasys.San.checkSanMergeCall(oasys.Users.admin, 3)
                             })
                         })
 

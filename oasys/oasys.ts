@@ -13,5 +13,5 @@ export * as Populate from './populate'
 export * as San from './lib/san'
 export * as Sns from './lib/sns'
 export * as Task from './lib/task'
-export * as Users from './users'
+export * from './users'
 

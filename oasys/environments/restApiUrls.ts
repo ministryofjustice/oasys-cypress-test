@@ -37,6 +37,7 @@ export const restApiUrls: EndpointUrl[] = [
     { endpoint: 'v4RiskIndividual', url: 'ass/sectionriskindiv/{laoPrivilege}/{assessmentPk}' },
     { endpoint: 'v4RiskScoresAss', url: 'ass/riskscrass/{laoPrivilege}/{assessmentPk}' },
     { endpoint: 'v4RiskScoresRsr', url: 'ass/riskscrrsr/{laoPrivilege}/{assessmentPk}' },
+    { endpoint: 'crimNeeds', url: 'ass/crimneeds/{laoPrivilege}/{assessmentPk}' },
 ]
 
 export const restErrorResults: RestErrorResults = {

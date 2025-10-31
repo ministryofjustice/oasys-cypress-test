@@ -22,39 +22,18 @@ describe('SAN integration - test ref 22 part 1', () => {
             cy.task('retrieveValue', 'offender2').then((offenderData) => {
                 const offender2 = JSON.parse(offenderData as string)
 
-                // Get current assessment PKs
-                oasys.Db.getLatestSetPkByPnc(offender1.pnc, 'currentOff1Pk')
-                oasys.Db.getAllSetPksByPnc(offender2.pnc, 'currentOff2Pks', true)
-                cy.get<number>('@currentOff1Pk').then((currentOff1Pk) => {
-                    cy.get<number[]>('@currentOff2Pks').then((currentOff2Pks) => {
+                oasys.login(oasys.Users.admin, oasys.Users.probationSan)
+                oasys.Offender.searchAndSelectByPnc(offender2.pnc)
 
-                        oasys.login(oasys.Users.admin, oasys.Users.probationSan)
-                        oasys.Offender.searchAndSelectByPnc(offender2.pnc)
+                // Demerge
+                oasys.Nav.clickButton('Demerge')
+                oasys.Nav.clickButton('Confirm Demerge')
+                oasys.Nav.clickButton('Demerge')
+                cy.get('#apexConfirmBtn').click()
+                oasys.Nav.clickButton('Close')
+                oasys.logout()
 
-                        // Demerge
-                        oasys.Nav.clickButton('Demerge')
-                        oasys.Nav.clickButton('Confirm Demerge')
-                        oasys.Nav.clickButton('Demerge')
-                        cy.get('#apexConfirmBtn').click()
-                        oasys.Nav.clickButton('Close')
-                        oasys.logout()
-
-                        // Get new assessment PKs
-                        oasys.Db.getLatestSetPkByPnc(offender1.pnc, 'newOff1Pk')
-                        oasys.Db.getAllSetPksByPnc(offender2.pnc, 'newOff2Pks', true)
-                        cy.get<number>('@newOff1Pk').then((newOff1Pk) => {
-                            cy.get<number[]>('@newOff2Pks').then((newOff2Pks) => {
-                                oasys.San.checkSanMergeCall(oasys.Users.admin, [
-                                    { old: currentOff2Pks[4], new: newOff2Pks[4] },
-                                    { old: currentOff2Pks[2], new: newOff2Pks[2] },
-                                    { old: currentOff2Pks[1], new: newOff2Pks[1] },
-                                ])
-
-                            })
-                        })
-
-                    })
-                })
+                oasys.San.checkSanMergeCall(oasys.Users.admin, 3)
             })
         })
     })

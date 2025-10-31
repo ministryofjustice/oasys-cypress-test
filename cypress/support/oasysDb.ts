@@ -198,3 +198,105 @@ export async function setPassword(username: string, password: string): Promise<D
     }
 }
 
+/**
+ * Check expected answers in a single section in the OASys database, using an alias to return a boolean failure status.
+ */
+export async function checkSectionAnswers(parameters: { assessmentPk: number, section: string, expectedAnswers: OasysAnswer[] }): Promise<CheckDbSectionResponse> {
+
+    const query = sectionQuery(parameters.assessmentPk, parameters.section)
+
+    const result = await selectData(query)
+    if (result.error) {
+        throw new Error(result.error)
+    }
+
+    let failed = false
+    const data = result.data as string[][]
+    const report: string[] = []
+
+    parameters.expectedAnswers.forEach((answerToCheck) => {
+        let actualResult: string = null
+        const dataRow = data.filter((row) => row[0] == answerToCheck.q)
+        const answerType = getAnswerType(answerToCheck.q)  // NOTE check the answer types below if no value is returned, as not all questions have been listed here
+        let expectedAnswer = answerToCheck.a
+        if (dataRow.length > 0) {
+            if (answerType == 'multipleRefAnswer') {
+                actualResult = ''
+                dataRow.forEach(r => { actualResult += `${r[1]},` })
+                if (actualResult == 'null,') { actualResult = null }
+            } else {
+                actualResult = answerType == 'refAnswer' ? dataRow[0][1] : answerType == 'freeFormat' ? dataRow[0][2] : dataRow[0][3]
+            }
+        }
+        const match = actualResult?.replaceAll('\r\n', '\n') == expectedAnswer?.replaceAll('\r\n', '\n')
+        const failureMessage = match ? '          ' : 'FAILED    '
+
+        const expDisplayString = expectedAnswer == null ? '' : expectedAnswer.length > 50 ? expectedAnswer.substring(0, 50) + '...' : expectedAnswer
+        const actDisplayString = actualResult == null ? '' : actualResult.length > 50 ? actualResult.substring(0, 50) + '...' : actualResult
+        report.push(`    ${failureMessage}${answerToCheck.q} - expected '${expDisplayString}', actual '${actDisplayString}'`)
+        if (!match) { failed = true }
+    })
+
+    return { failed: failed, report: report }
+}
+
+// Identify any OASys answers that are not the default refAnswer type.  NOTE this list is not complete and will need updating.  // TODO
+function getAnswerType(answer: string): AnswerType {
+
+    const answerType = answerTypes[answer]
+    return answerType ?? 'refAnswer'
+}
+
+const answerTypes: { [keys: string]: AnswerType } = {
+    '1.32': 'freeFormat',
+    '1.40': 'freeFormat',
+    '1.29': 'freeFormat',
+    '1.38': 'freeFormat',
+    '2.1': 'additionalNote',
+    '2.3': 'multipleRefAnswer',
+    '2.4.1': 'additionalNote',
+    '2.4.2': 'additionalNote',
+    '2.5': 'additionalNote',
+    '2.7.3': 'additionalNote',
+    '2.8': 'additionalNote',
+    '2.9.t_V2': 'additionalNote',
+    '2.11.t': 'additionalNote',
+    '2.12': 'additionalNote',
+    '2.98': 'additionalNote',
+    '4.7.1': 'multipleRefAnswer',
+    '8.2.14.t': 'additionalNote',
+    '9.1.t': 'additionalNote',
+    'SC0': 'freeFormat',
+    'SC1.t': 'additionalNote',
+    'SC2.t': 'additionalNote',
+    'SC3.t': 'additionalNote',
+    'SC4.t': 'additionalNote',
+    'SC7.t': 'additionalNote',
+    'SC8.t': 'additionalNote',
+    'SC9.t': 'additionalNote',
+    'SC10.t': 'additionalNote',
+    '3.97': 'additionalNote',
+    '4.94': 'additionalNote',
+    '5.97': 'additionalNote',
+    '6.97': 'additionalNote',
+    '7.97': 'additionalNote',
+    '8.97': 'additionalNote',
+    '9.97': 'additionalNote',
+    '10.97': 'additionalNote',
+    '11.97': 'additionalNote',
+    '12.97': 'additionalNote',
+    'SAN_CRIM_NEED_SCORE': 'freeFormat',
+
+}
+
+function sectionQuery(pk: number, section: string): string {
+
+    return `select q.ref_question_code, a.ref_answer_code, q.free_format_answer, q.additional_note
+                    from oasys_set st, oasys_section s, oasys_question q, oasys_answer a
+                    where st.oasys_set_pk = s.oasys_set_pk
+                    and s.oasys_section_pk = q.oasys_section_pk
+                    and q.oasys_question_pk = a.oasys_question_pk(+)
+                    and s.ref_section_code = '${section}'
+                    and st.oasys_set_pk = ${pk} 
+                    order by q.ref_question_code, a.ref_answer_code`
+}

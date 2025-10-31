@@ -117,7 +117,7 @@ export const clonedData: OasysAnswer[] = [
     { section: '4', q: '4.4', a: `0` },
     { section: '4', q: '4.7', a: `0` },
     { section: '4', q: '4.8', a: `1` },
-    { section: '4', q: '4.9', a: `0` },
+    { section: '4', q: '4.9', a: `2` },
     { section: '4', q: '4.10', a: null },
     {
         section: '4', q: '4.94', a: null
@@ -244,7 +244,7 @@ export const clonedAndModifiedData: OasysAnswer[] = [
     { section: '4', q: '4.4', a: `0` },
     { section: '4', q: '4.7', a: `0` },
     { section: '4', q: '4.8', a: `1` },
-    { section: '4', q: '4.9', a: `0` },
+    { section: '4', q: '4.9', a: `2` },
     { section: '4', q: '4.10', a: null },
     {
         section: '4', q: '4.94', a: null

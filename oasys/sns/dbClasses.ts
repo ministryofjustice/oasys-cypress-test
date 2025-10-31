@@ -1,4 +1,4 @@
-import * as dayjs from "dayjs"
+import * as dayjs from 'dayjs'
 
 /**
  * This module contains the classes used to extract data from the OASys database.

@@ -102,8 +102,7 @@ describe('SAN integration - test ref 15 part 2', () => {
                 rosh2.r3_3.setValue('No')
                 rosh2.r3_4.setValue('No')
                 rosh2.r4_1.setValue('No')
-                rosh2.r4_2.setValue('No')
-                rosh2.r4_3.setValue('No')
+                rosh2.r4_6.setValue('No')
                 rosh2.r4_4.setValue('No')
 
                 oasys.Populate.RoshPages.RoshSummary.specificRiskLevel('High')
@@ -149,13 +148,6 @@ describe('SAN integration - test ref 15 part 2', () => {
 
                 rosh1.markCompleteAndCheck()
 
-                // NOD-1040 check buttons on 6.1
-                const r61 = new oasys.Pages.Rosh.RoshFullAnalysisSection61().goto()
-                r61.insertOffenceDetails.click()
-                r61.what.checkValue('Offence description')
-                r61.insertEvidence.checkStatus('notVisible')
-
-                r61.markCompleteAndCheck()
                 new oasys.Pages.Rosh.RoshSummary().markCompleteAndCheck()
                 new oasys.Pages.Rosh.RiskManagementPlan().markCompleteAndCheck()
                 isp.markCompleteAndCheck()

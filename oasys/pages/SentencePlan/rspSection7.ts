@@ -32,8 +32,7 @@ export class RspSection7 extends SentencePlan {
     ospDc = new Element.Textbox('#textarea_D4')
     rsrScore = new Element.Textbox('#textarea_D3')
     r10_3 = new Element.Textbox('#textarea_SUM3')
-    r10_4 = new Element.Textbox('#textarea_SUM4')
-    r10_5 = new Element.Textbox('#textarea_SUM5')
+    r10_5 = new Element.Textbox('#textarea_SUM10')
 
     r11_1a = new Element.Select('#itm_RM1')
     r11_1b = new Element.Select('#itm_RM2')
@@ -74,10 +73,9 @@ export class RspSection7 extends SentencePlan {
     furtherConsiderations = new Element.Textbox('#textarea_RM28')
     supervision = new Element.Textbox('#textarea_RM30')
     monitoring = new Element.Textbox('#textarea_RM31')
-    reduceRisk = new Element.Textbox('#textarea_SUM5')
+    mitigateRisk = new Element.Textbox('#textarea_SUM10')
     interventions = new Element.Textbox('#textarea_RM32')
     victimSafety = new Element.Textbox('#textarea_RM33')
-    increaseRisk = new Element.Textbox('#textarea_SUM4')
     contingency = new Element.Textbox('#textarea_RM34')
     additionalComments = new Element.Textbox('#textarea_RM35')
 }

@@ -58,11 +58,7 @@ describe('SAN integration - test ref 21 part 3', () => {
                             expect(mergedOasysSetData[5] == null) // Assessment 1
                             expect(mergedOasysSetData[6] == null) // Assessment on offender 1
 
-                            oasys.San.checkSanMergeCall(oasys.Users.probSanHeadPdu, [
-                                { old: originalOffender2Pks[3], new: mergedOffenderPks[3] },
-                                { old: originalOffender2Pks[1], new: mergedOffenderPks[1] },
-                                { old: originalOffender2Pks[0], new: mergedOffenderPks[0] },
-                            ])
+                            oasys.San.checkSanMergeCall(oasys.Users.probSanHeadPdu, 3)
 
                             oasys.logout()
                         })

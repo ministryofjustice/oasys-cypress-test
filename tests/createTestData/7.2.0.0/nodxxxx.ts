@@ -47,5 +47,3 @@ describe('NODxxxx', () => {
     })
 
 })
-
-oasys.Assessment.open

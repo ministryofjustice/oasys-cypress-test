@@ -44,7 +44,6 @@ describe('SAN integration - test ref 23', () => {
                 oasys.Nav.history(offender)
                 oasys.Assessment.openLatest()
 
-                new oasys.Pages.Rosh.RoshFullAnalysisSection61().checkIsOnMenu()
                 new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkIsOnMenu()
                 oasys.Populate.RoshPages.RoshSummary.specificRiskLevel('Low')
                 oasys.Populate.RoshPages.RiskManagementPlan.minimal()

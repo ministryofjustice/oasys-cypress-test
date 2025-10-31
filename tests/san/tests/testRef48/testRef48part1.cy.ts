@@ -16,7 +16,7 @@ describe('SAN integration - test ref 48 part 1', () => {
 
             // Create and complete layer 3
             oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'No' })
-            oasys.Populate.minimal({ layer: 'Layer 3' })
+            oasys.Populate.minimal({ layer: 'Layer 3', populate6_11: 'No' })
             new oasys.Pages.SentencePlan.IspSection1to4().goto()
             oasys.Assessment.signAndLock({ expectRsrWarning: true })
 
