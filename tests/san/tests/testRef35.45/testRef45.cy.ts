@@ -33,11 +33,6 @@ describe('SAN integration - test ref 45', () => {
                 oasys.Nav.history(offender)
                 oasys.Assessment.createProb({ purposeOfAssessment: 'Review', includeSanSections: 'No' })
 
-                // NOD-1040 check buttons on 6.1
-                const r61 = new oasys.Pages.Rosh.RoshFullAnalysisSection61().goto()
-                r61.insertOffenceDetails.checkStatus('enabled')
-                r61.insertEvidence.checkStatus('enabled')
-
                 oasys.Nav.clickButton('Close')
 
                 cy.log(`From the offender record click on the <Open S&N> button

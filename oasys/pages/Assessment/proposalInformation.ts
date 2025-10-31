@@ -8,12 +8,6 @@ export class ProposalInformation extends BaseAssessmentPage {
     title = 'Case ID - Proposal Information'
     menu: Menu = { type: 'Floating', level1: 'Case ID', level2: 'Proposal Information' }
 
-    purpose0 = new Element.Checkbox('#P3_PURPOSE_OF_ASSESSMENT_ELM_0')
-    purpose1 = new Element.Checkbox('#P3_PURPOSE_OF_ASSESSMENT_ELM_1')
-    purpose2 = new Element.Checkbox('#P3_PURPOSE_OF_ASSESSMENT_ELM_2')
-    purpose3 = new Element.Checkbox('#P3_PURPOSE_OF_ASSESSMENT_ELM_3')
-    purpose4 = new Element.Checkbox('#P3_PURPOSE_OF_ASSESSMENT_ELM_4')
-    purpose5 = new Element.Checkbox('#P3_PURPOSE_OF_ASSESSMENT_ELM_5')
     sources0 = new Element.Checkbox('#P3_SOURCES_INFORMATON_ELM_0')
     sources1 = new Element.Checkbox('#P3_SOURCES_INFORMATON_ELM_1')
     sources2 = new Element.Checkbox('#P3_SOURCES_INFORMATON_ELM_2')

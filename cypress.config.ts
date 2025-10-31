@@ -2,8 +2,6 @@ import { defineConfig } from 'cypress'
 import { populateAutoData } from './cypress/support/autoData'
 import * as oasysDb from './cypress/support/oasysDb'
 import * as restApi from './cypress/support/restApi'
-import * as restApiDb from './cypress/support/restApiDb'
-import { DbOffenderWithAssessments } from 'restApi/dbClasses'
 import * as fs from 'fs-extra'
 import * as pdf from './cypress/support/pdf'
 import { getLatestElogAndUnprocEventTime } from './cypress/support/oasysDb'
@@ -92,6 +90,18 @@ module.exports = defineConfig({
         },
 
         /**
+         * Checks answers in a single assessment section against the provided set of expected answers.  Returns a failure status and reporting output
+         */
+        checkSectionAnswers(parameters: { assessmentPk: number, section: string, expectedAnswers: OasysAnswer[] }): Promise<CheckDbSectionResponse> {
+
+          return new Promise((resolve) => {
+            oasysDb.checkSectionAnswers(parameters).then((result) => {
+              resolve(result)
+            })
+          })
+        },
+
+        /**
          * Set the password for a user, and activate the profile.
          */
         setPassword(user: { username: string, password: string }) {
@@ -128,24 +138,12 @@ module.exports = defineConfig({
         },
 
         /**
-         * Call multiple RestAPI endpoints defined by the EndpointParams object array, and return a RestResponse object array including the return data, status and messages for each.
+         * Call all RestApi endpoints for a single offender.
          */
-        getMultipleRestData(parameters: EndpointParams[]): Promise<RestResponse[]> {
+        testApisForOffender(parameters: { crn: string, crnSource: Provider, skipPkOnlyCalls: boolean, stats: EndpointStat[] }): Promise<OffenderApisResult> {
 
           return new Promise((resolve) => {
-            restApi.getMultipleRestData(parameters).then((response) => {
-              resolve(response)
-            })
-          })
-        },
-
-        /**
-         * Get the data required to generate an expected set of RestAPI endpoint responses for an offender.
-         */
-        getOffenderWithAssessments(crnDetails: { crnSource: 'pris' | 'prob', crn: string }): Promise<DbOffenderWithAssessments> {
-
-          return new Promise((resolve) => {
-            restApiDb.getOffenderWithAssessments(crnDetails).then((response) => {
+            restApi.testOneOffender(parameters).then((response) => {
               resolve(response)
             })
           })
@@ -224,8 +222,7 @@ module.exports = defineConfig({
 
       on('before:browser:launch', (browser, launchOptions) => {
         launchOptions.preferences.default = { plugins: { always_open_pdf_externally: true } }
-        // launchOptions.args.push('--disable-features=OptimizationGuideModelDownloading,OptimizationHintsFetching,OptimizationTargetPrediction,OptimizationHints')
-        // launchOptions.args.push('--js-flags="--max_old_space_size=1024 --max_semi_space_size=1024"')
+        launchOptions.args.push("--inprivate")
         return launchOptions
       })
     },

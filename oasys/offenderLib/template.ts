@@ -50,7 +50,7 @@ export const templateProbationOffender: OffenderDef = {
                 {
                     offence: '028',
                     subcode: '01',
-                    additionalOffence: 'false',
+                    additionalOffence: false,
                 },
             ],
     },

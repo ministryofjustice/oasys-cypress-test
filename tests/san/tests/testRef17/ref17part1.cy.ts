@@ -72,7 +72,6 @@ describe('SAN integration - test ref 17 part 1', () => {
                 oasys.San.returnToOASys()
                 oasys.Nav.clickButton('Next')
                 new oasys.Pages.Assessment.SanSections().checkCompletionStatus(true)
-                new oasys.Pages.Rosh.RoshFullAnalysisSection61().checkIsOnMenu()
                 new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkIsOnMenu()
                 new oasys.Pages.Rosh.RoshSummary().checkIsOnMenu()
                 new oasys.Pages.Rosh.RiskManagementPlan().checkIsOnMenu()
@@ -91,8 +90,8 @@ describe('SAN integration - test ref 17 part 1', () => {
 
                 const rosh1 = new oasys.Pages.Rosh.RoshScreeningSection1().goto()
                 rosh1.mark1_2AsNo.click()
-                rosh1.r1_2_7C.setValue('Yes')
-                rosh1.r1_2_13C.setValue('Yes')
+                rosh1.r1_2_7P.setValue('Yes')
+                rosh1.r1_2_13P.setValue('Yes')
                 rosh1.mark1_3AsNo.click()
                 rosh1.r1_4.setValue('No')
 
@@ -105,8 +104,7 @@ describe('SAN integration - test ref 17 part 1', () => {
                 rosh2.r3_3.setValue('No')
                 rosh2.r3_4.setValue('No')
                 rosh2.r4_1.setValue('No')
-                rosh2.r4_2.setValue('No')
-                rosh2.r4_3.setValue('No')
+                rosh2.r4_6.setValue('No')
                 rosh2.r4_4.setValue('No')
 
                 const rosh5 = new oasys.Pages.Rosh.RoshScreeningSection5().goto()
@@ -155,7 +153,7 @@ describe('SAN integration - test ref 17 part 1', () => {
                 const summarySheet = new oasys.Pages.Assessment.SummarySheet().goto()
                 summarySheet.opd.checkValue('This individual meets the criteria for the OPD pathway.')
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
-                    OPD_SCORE: '13',
+                    OPD_SCORE: '11',
                     OPD_RESULT: 'SCREEN IN',
                 })
 

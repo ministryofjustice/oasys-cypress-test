@@ -45,7 +45,7 @@ describe('SAN integration - test ref 11', () => {
             oasys.Assessment.createProb({ purposeOfAssessment: 'Review' })
 
             oasys.San.checkLayer3Menu(false)
-            new oasys.Pages.Rosh.RoshFullAnalysisSection61().checkIsOnMenu()
+            new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkIsOnMenu()
 
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'pks')
             cy.get<number[]>('@pks').then((pks) => {

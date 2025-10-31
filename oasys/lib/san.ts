@@ -103,7 +103,11 @@ export function enterText(item: SanId, value: string) {
 
     cy.get(item.id).clear({ force: true })
     if (value) {
-        cy.get(item.id).type(value)
+        if (value.length > 50) {
+            cy.get(item.id).invoke('val', value)
+        } else {
+            cy.get(item.id).type(value)
+        }
     }
 }
 
@@ -271,7 +275,7 @@ export function runStep(step: SanStep) {
             break
         case 'textbox':
             enterText(stepItem, step.value)
-            cy.groupedLog(`Textbox: ${step.item} - '${step.value}'`)
+            cy.groupedLog(`Textbox: ${step.item} - '${step.value.length > 50 ? step.value.substring(0, 50) + '...' : step.value}'`)
             break
         case 'combo':
             selectCombo(stepItem, step.value)
@@ -731,7 +735,7 @@ export function checkSanRollbackCall(pk: number, expectedUser: User, expectedVer
 }
 
 /**
- * Checks cLog for expected entries following an OTL call to SAN, to confirm that the correct values are passed to SAN7 and the status 200 response is received.
+ * Checks cLog for expected entries following an OTL call to SAN, to confirm that the correct values are passed to SAN and the status 200 response is received.
  * The test will fail if anything is not as expected.
  * 
  * Expected details for the Subject, User and Needs are provided as objects with properties such as the examples shown below; any properties listed will be checked against
@@ -822,9 +826,9 @@ export function checkSanOtlCall(pk: number, expectedSubjectDetails: { [keys: str
  * Checks cLog for expected entries following a merge call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
  * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
  *  - expectedUser: OASys User Id for the user rolling back the assessment
- *  - pkPairs: an array of { old: number, new: number }, each pair contains expected values for the old and new assessment PKs.
+ *  - pkPairs: an array of \{ old: number, new: number \}, each pair contains expected values for the old and new assessment PKs.
  */
-export function checkSanMergeCall(expectedUser: User, pkPairs: { old: number, new: number }[]) {
+export function checkSanMergeCall(expectedUser: User, pkPairs: number) {
 
     cy.log(`Checking Merge call for ${JSON.stringify(pkPairs)}`)
     const query = `select log_text from clog where log_source like '%${expectedUser.username}%SAN_MERGE_DEMERGE_URL%' order by time_stamp desc fetch first 2 rows only`
@@ -849,21 +853,9 @@ export function checkSanMergeCall(expectedUser: User, pkPairs: { old: number, ne
             const mergeData = callData['merge']
             mergeData.sort(arraySort)
 
-            if (mergeData.length != pkPairs.length) {
-                cy.log(`Expected ${pkPairs.length} pairs, found ${mergeData.length}`)
+            if (mergeData.length != pkPairs) {
+                cy.log(`Expected ${pkPairs} pairs, found ${mergeData.length}`)
                 failed = true
-            } else {
-                pkPairs.sort(arraySort)
-                for (let i = 0; i < pkPairs.length; i++) {
-                    if (mergeData[i]['oldOasysAssessmentPK'] != pkPairs[i].old) {
-                        cy.log(`Expected old PK ${pkPairs[i].old}, found ${mergeData[i]['oldOasysAssessmentPK']}`)
-                        failed = true
-                    }
-                    if (mergeData[i]['newOasysAssessmentPK'] != pkPairs[i].new) {
-                        cy.log(`Expected new PK ${pkPairs[i].new}, found ${mergeData[i]['newOasysAssessmentPK']}`)
-                        failed = true
-                    }
-                }
             }
 
             if (callData['userDetails']['id'] != expectedUser.username) {

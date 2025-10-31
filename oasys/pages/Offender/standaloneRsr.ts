@@ -40,15 +40,15 @@ export class StandaloneRsr extends Page {
     /**
      *  Ever committed a sexual offence
      */
-    o1_30 = new Element.Select('#P5_QU_1_30')
+    o1_30 = new Element.Select<YesNoAnswer>('#P5_QU_1_30')
     /**
      *  Does of the current offence have sexual motivation
      */
-    o1_41 = new Element.Select('#P5_QU_1_41')
+    o1_41 = new Element.Select<YesNoAnswer>('#P5_QU_1_41')
     /**
      *  Does the current offence involve a victim who was a stranger?
      */
-    o1_42 = new Element.Select('#P5_QU_1_42')
+    o1_42 = new Element.Select<YesNoAnswer>('#P5_QU_1_42')
     /**
      *  Date of most recent sexual offence
      */
@@ -76,58 +76,65 @@ export class StandaloneRsr extends Page {
     /**
      *  Have you completed an Offender interview?
      */
-    o1_39 = new Element.Select('#P5_QU_1_39')
+    o1_39 = new Element.Select<YesNoAnswer>('#P5_QU_1_39')
+    /**
+     * Did the offence involve carrying or using a weapon
+    */
+    o2_2 = new Element.Select<YesNoAnswer>('#P5_QU_2_2')
+    /**
+     * Specify which weapon
+    */
+    o2_2Weapon = new Element.Textbox('#P5_QU_2_2_TXT')
     /**
      *  Is the offender living in suitable accommodation?
      */
-    o3_4 = new Element.Select('#P5_QU_3_4')
+    o3_4 = new Element.Select<ProblemsMissingAnswer>('#P5_QU_3_4')
     /**
      *  Is the person unemployed?
      */
-    o4_2 = new Element.Select('#P5_QU_4_2')
+    o4_2 = new Element.Select<'0-No' | '0-Not available for work' | '2-Yes' | 'Missing'>('#P5_QU_4_2')
     /**
      *  What is the person's current relationship with partner?
      */
-    o6_4 = new Element.Select('#P5_QU_6_4')
+    o6_4 = new Element.Select<ProblemsMissingAnswer>('#P5_QU_6_4')
     /**
      *  Is there evidence of current or previous domestic abuse?
      */
-    o6_7 = new Element.Select('#P5_QU_6_7DA')
-    o6_7VictimPartner = new Element.Select('#P5_QU_6_7_1_1DA')
-    o6_7VictimFamily = new Element.Select('#P5_QU_6_7_1_2DA')
-    o6_7PerpetratorPartner = new Element.Select('#P5_QU_6_7_2_1DA')
-    o6_7PerpetratorFamily = new Element.Select('#P5_QU_6_7_2_2DA')
+    o6_7 = new Element.Select<YesNoAnswer>('#P5_QU_6_7DA')
+    o6_7VictimPartner = new Element.Select<YesNoAnswer>('#P5_QU_6_7_1_1DA')
+    o6_7VictimFamily = new Element.Select<YesNoAnswer>('#P5_QU_6_7_1_2DA')
+    o6_7PerpetratorPartner = new Element.Select<YesNoAnswer>('#P5_QU_6_7_2_1DA')
+    o6_7PerpetratorFamily = new Element.Select<YesNoAnswer>('#P5_QU_6_7_2_2DA')
     /**
      * Is the person's current use of alcohol a problem
      */
-    o9_1 = new Element.Select('#P5_QU_9_1')
+    o9_1 = new Element.Select<ProblemsMissingAnswer>('#P5_QU_9_1')
     /**
      * Is there evidence of binge drinking
      */
-    o9_2 = new Element.Select('#P5_QU_9_2')
+    o9_2 = new Element.Select<ProblemsMissingAnswer>('#P5_QU_9_2')
     /**
      * Is impulsivity a problem for the offender
      */
-    o11_2 = new Element.Select('#P5_QU_11_2')
+    o11_2 = new Element.Select<ProblemsAnswer>('#P5_QU_11_2')
     /**
      * Is temper control a problem for the offender
      */
-    o11_4 = new Element.Select('#P5_QU_11_4')
+    o11_4 = new Element.Select<ProblemsAnswer>('#P5_QU_11_4')
     /**
      * Does the offender have pro-criminal attitudes
      */
-    o12_1 = new Element.Select('#P5_QU_12_1')
-    weaponCurrent = new Element.Select('#P5_WEAPON_CURR')
-    weaponPrevious = new Element.Select('#P5_WEAPON_PREV')
-    murderPrevious = new Element.Select('#P5_MURDER_PREV')
-    woundingPrevious = new Element.Select('#P5_WOUND_PREV')
-    burglaryPrevious = new Element.Select('#P5_BURGLARY_PREV')
-    arsonPrevious = new Element.Select('#P5_ARSON_PREV')
-    damagePrevious = new Element.Select('#P5_CRIMINAL_PREV')
-    kidnappingPrevious = new Element.Select('#P5_KIDNAP_PREV')
-    firearmCurrent = new Element.Select('#P5_FIREARM_CURR')
-    firearmPrevious = new Element.Select('#P5_FIREARM_PREV')
-    robberyPrevious = new Element.Select('#P5_ROBBERY_PREV')
+    o12_1 = new Element.Select<ProblemsAnswer>('#P5_QU_12_1')
+
+    weaponPrevious = new Element.Select<YesNoAnswer>('#P5_WEAPON_PREV')
+    murderPrevious = new Element.Select<YesNoAnswer>('#P5_MURDER_PREV')
+    woundingPrevious = new Element.Select<YesNoAnswer>('#P5_WOUND_PREV')
+    burglaryPrevious = new Element.Select<YesNoAnswer>('#P5_BURGLARY_PREV')
+    arsonPrevious = new Element.Select<YesNoAnswer>('#P5_ARSON_PREV')
+    damagePrevious = new Element.Select<YesNoAnswer>('#P5_CRIMINAL_PREV')
+    kidnappingPrevious = new Element.Select<YesNoAnswer>('#P5_KIDNAP_PREV')
+    firearmPrevious = new Element.Select<YesNoAnswer>('#P5_FIREARM_PREV')
+    robberyPrevious = new Element.Select<YesNoAnswer>('#P5_ROBBERY_PREV')
     /**
      * OSP - Indecent Image and Indirect Sexual Reoffending Risk
      */

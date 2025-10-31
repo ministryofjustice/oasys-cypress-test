@@ -35,11 +35,15 @@ declare type PurposeOfAssessment =
     'Non-statutory' |
     'Other' |
     'Re-categorisation to Open Conditions' |
-    'Pre-handover'
+    'Pre-handover' |
+    'Impact Cohort Assessment'
 
 declare type YesNoAnswer = 'Yes' | 'No' | ''
+declare type YesNoDKAnswer = 'Yes' | 'No' |`Don't Know` | ''
+declare type YesNoDkAnswer = 'Yes' | 'No' |`Don't know` | ''
 declare type YesNoMissingAnswer = 'Yes' | 'No' | 'Missing' | ''
-declare type ProblemsAnswer = '0-No problems' | '1-Some problems' | '2-Significant problems' | 'Missing' | ''
+declare type ProblemsAnswer = '0-No problems' | '1-Some problems' | '2-Significant problems' | ''
+declare type ProblemsMissingAnswer = '0-No problems' | '1-Some problems' | '2-Significant problems' | 'Missing' | ''
 declare type OasysDate = string | { days?: number, weeks?: number, months?: number, years?: number, workingDays?: number }
 
 declare type CreateAssessmentDetails = {
@@ -47,7 +51,7 @@ declare type CreateAssessmentDetails = {
     purposeOfAssessment: PurposeOfAssessment
     otherPleaseSpecify?: string
     assessmentLayer?: AssessmentLayer
-    sentencePlanType?: string
+    sentencePlanType?: SentencePlan
     includeCourtReportTemplate?: string
     includeSanSections?: YesNoAnswer
     selectTeam?: string
@@ -67,6 +71,7 @@ declare type PopulateAssessmentParams = {
     sentencePlan?: SentencePlan,
     r1_30PrePopulated?: boolean,
     r1_41PrePopulated?: boolean,
+    populate6_11?: 'Yes' | 'No'
 }
 
 declare type SentencePlan = 'Initial' | 'Review' | 'PSR Outline' | 'Basic'

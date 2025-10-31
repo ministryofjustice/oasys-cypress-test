@@ -39,6 +39,7 @@ export class Predictors extends BaseAssessmentPage {
     /** Date of offence since 1.38 date
      *  Note: might not work if you try to go to it straight after 1.38 as field isn't necessarily visible yet */
     o1_43 = new Element.Textbox<OasysDate>('#itm_1_43')
+
     oneYearScore = new Element.Text("td:contains('General offending % within 1 year of community sentence/discharge')+td")
     twoYearScore = new Element.Text("td:contains('General offending % within 2 years of community sentence/discharge')+td")
     ospIic = new Element.Textbox<string>('#textarea_D5')

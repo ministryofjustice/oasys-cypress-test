@@ -9,7 +9,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/oracledb": "^6.0.4",
     "@types/pdf-parse": "^1.1.4",
-    "cypress": "^13.15.0",
+    "cypress": "^14.1.0",
     "dayjs": "^1.11.10",
     "decimal.js": "^10.6.0",
     "fs-extra": "^11.2.0",
@@ -23,8 +23,7 @@
   },
   "dependencies": {
     "@badgateway/oauth2-client": "^2.2.3",
-    "@types/flat": "^5.0.5",
     "axios": "^1.6.2",
-    "flat": "^5.0.2"
+    "flat": "^6.0.1"
   }
 }

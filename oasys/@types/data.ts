@@ -3,7 +3,7 @@ declare type DbResponse = { data: number | string | string[] | string[][], error
 declare type SnsMessageType = 'AssSumm' | 'OGRS' | 'OPD' | 'RSR'
 declare type AssessmentOrRsr = 'assessment' | 'rsr'
 
-declare type EndpointStat = { endpoint: Endpoint | 'database', responseTimes: number[] }
+declare type EndpointStat = { endpoint: Endpoint | 'database', responseTime: number }
 
 declare type EndpointParams = {
     endpoint: Endpoint,
@@ -54,11 +54,18 @@ declare type Endpoint =
     'v4Victim' |
     'v4RiskIndividual' |
     'v4RiskScoresAss' |
-    'v4RiskScoresRsr'
+    'v4RiskScoresRsr' |
+    'crimNeeds'
 
 declare type CheckAPIResult = {
     failed: boolean,
     output: string[]
+}
+
+declare type OffenderApisResult = {
+    failed: boolean,
+    report: string[],
+    stats: EndpointStat[],
 }
 
 declare type RestResponse = {
@@ -84,3 +91,4 @@ declare type RestErrorResults = {
 declare type OasysAnswer = { section: string, q: string, a: string }
 declare type AnswerType = 'refAnswer' | 'freeFormat' | 'additionalNote' | 'multipleRefAnswer'
 declare type Victim = { age: string, gender: string, ethnicCat: string, relationship: string }
+declare type CheckDbSectionResponse = { failed: boolean, report: string[] }

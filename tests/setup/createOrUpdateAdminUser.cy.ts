@@ -31,6 +31,8 @@ describe('Create or update admin user', () => {
 
                     userProfile.providerEstablishment.setValue('<All Provider / Establishments>')
                     userProfile.userName.setValue(oasys.Users.admin.username)
+                    userProfile.surname.setValue('') 
+                    userProfile.forename1.setValue('') 
                     userProfile.search.click()
                     userProfile.userNameColumn.clickFirstRow()
                 }

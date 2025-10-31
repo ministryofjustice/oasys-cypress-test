@@ -428,7 +428,7 @@ export const script: SanScript = {
                 { section: '4', q: '4.5', a: null },
                 { section: '4', q: '4.7', a: `0` },
                 { section: '4', q: '4.7.1', a: null },
-                { section: '4', q: '4.9', a: `2` },
+                { section: '4', q: '4.9', a: `0` },
                 { section: '4', q: '4.10', a: `0` },
                 { section: '4', q: '4.90', a: null },
                 { section: '4', q: '4.91', a: null },
@@ -482,7 +482,7 @@ export const script: SanScript = {
                 { section: '4', q: '4.5', a: null },
                 { section: '4', q: '4.7', a: `0` },
                 { section: '4', q: '4.7.1', a: null },
-                { section: '4', q: '4.9', a: `0` },
+                { section: '4', q: '4.9', a: `2` },
                 { section: '4', q: '4.10', a: `0` },
                 { section: '4', q: '4.90', a: null },
                 { section: '4', q: '4.91', a: null },
@@ -536,7 +536,7 @@ export const script: SanScript = {
                 { section: '4', q: '4.5', a: null },
                 { section: '4', q: '4.7', a: `0` },
                 { section: '4', q: '4.7.1', a: null },
-                { section: '4', q: '4.9', a: `0` },
+                { section: '4', q: '4.9', a: null },
                 { section: '4', q: '4.10', a: `1` },
                 { section: '4', q: '4.90', a: null },
                 { section: '4', q: '4.91', a: null },
@@ -572,7 +572,7 @@ export const script: SanScript = {
                 { item: 'change' },
                 { item: 'employmentStatus', value: `selfEmployed` },
                 { item: 'saveAndContinue' },
-                { item: 'employmentHistory', value: `unstable` },
+                { item: 'employmentHistory', value: `unknown` },
                 { item: 'additionalCommitments', value: `none` },
                 { item: 'highestQual', value: `level3` },
                 { item: 'professionalQual', value: `yes` },
@@ -587,7 +587,7 @@ export const script: SanScript = {
             ],
             oasysAnswers: [
                 { section: '4', q: '4.2', a: `NO` },
-                { section: '4', q: '4.3', a: `2` },
+                { section: '4', q: '4.3', a: `M` },
                 { section: '4', q: '4.4', a: `2` },
                 { section: '4', q: '4.5', a: null },
                 { section: '4', q: '4.7', a: `1` },
@@ -647,7 +647,7 @@ export const script: SanScript = {
                 { section: '4', q: '4.5', a: null },
                 { section: '4', q: '4.7', a: `1` },
                 { section: '4', q: '4.7.1', a: `WRITING,` },
-                { section: '4', q: '4.9', a: `0` },
+                { section: '4', q: '4.9', a: `2` },
                 { section: '4', q: '4.10', a: `2` },
                 { section: '4', q: '4.90', a: null },
                 { section: '4', q: '4.91', a: null },
@@ -702,7 +702,7 @@ export const script: SanScript = {
                 { section: '4', q: '4.5', a: null },
                 { section: '4', q: '4.7', a: `1` },
                 { section: '4', q: '4.7.1', a: `NUMERACY,` },
-                { section: '4', q: '4.9', a: `0` },
+                { section: '4', q: '4.9', a: null },
                 { section: '4', q: '4.10', a: null },
                 { section: '4', q: '4.90', a: null },
                 { section: '4', q: '4.91', a: null },
@@ -817,7 +817,7 @@ export const script: SanScript = {
                 { section: '4', q: '4.5', a: null },
                 { section: '4', q: '4.7', a: `2` },
                 { section: '4', q: '4.7.1', a: `NUMERACY,READING,WRITING,` },
-                { section: '4', q: '4.9', a: `0` },
+                { section: '4', q: '4.9', a: `2` },
                 { section: '4', q: '4.10', a: `0` },
                 { section: '4', q: '4.90', a: null },
                 { section: '4', q: '4.91', a: null },
@@ -875,7 +875,7 @@ export const script: SanScript = {
                 { section: '4', q: '4.5', a: null },
                 { section: '4', q: '4.7', a: `2` },
                 { section: '4', q: '4.7.1', a: `NUMERACY,READING,WRITING,` },
-                { section: '4', q: '4.9', a: `0` },
+                { section: '4', q: '4.9', a: null },
                 { section: '4', q: '4.10', a: `1` },
                 { section: '4', q: '4.90', a: null },
                 { section: '4', q: '4.91', a: null },
@@ -933,7 +933,7 @@ export const script: SanScript = {
                 { section: '4', q: '4.5', a: null },
                 { section: '4', q: '4.7', a: `2` },
                 { section: '4', q: '4.7.1', a: `NUMERACY,READING,WRITING,` },
-                { section: '4', q: '4.9', a: null },
+                { section: '4', q: '4.9', a: `0` },
                 { section: '4', q: '4.10', a: `2` },
                 { section: '4', q: '4.90', a: null },
                 { section: '4', q: '4.91', a: null },
@@ -987,7 +987,7 @@ export const script: SanScript = {
                 { section: '4', q: '4.5', a: null },
                 { section: '4', q: '4.7', a: `0` },
                 { section: '4', q: '4.7.1', a: null },
-                { section: '4', q: '4.9', a: null },
+                { section: '4', q: '4.9', a: `2` },
                 { section: '4', q: '4.10', a: `2` },
                 { section: '4', q: '4.90', a: null },
                 { section: '4', q: '4.91', a: null },
@@ -1033,7 +1033,8 @@ export const script: SanScript = {
                 { item: 'markAsComplete' },
             ],
             oasysAnswers: [
-                { section: '4', q: '4.94', a: `Strengths and protective factor notes - There are some strengths
+                {
+                    section: '4', q: '4.94', a: `Strengths and protective factor notes - There are some strengths
 Area not linked to serious harm notes - No risk of serious harm
 Area not linked to reoffending notes - No risk of reoffending` },
                 { section: '4', q: '4.96', a: `NO` },
@@ -1056,7 +1057,8 @@ Area not linked to reoffending notes - No risk of reoffending` },
                 { item: 'markAsComplete' },
             ],
             oasysAnswers: [
-                { section: '4', q: '4.94', a: `Area not linked to strengths and positive factors notes - There are no strengths
+                {
+                    section: '4', q: '4.94', a: `Area not linked to strengths and positive factors notes - There are no strengths
 Area linked to serious harm notes - There is a risk of serious harm
 Area not linked to reoffending notes - No risk of reoffending` },
                 { section: '4', q: '4.96', a: `YES` },
@@ -1079,7 +1081,8 @@ Area not linked to reoffending notes - No risk of reoffending` },
                 { item: 'markAsComplete' },
             ],
             oasysAnswers: [
-                { section: '4', q: '4.94', a: `Area not linked to strengths and positive factors notes - There are no strengths
+                {
+                    section: '4', q: '4.94', a: `Area not linked to strengths and positive factors notes - There are no strengths
 Area not linked to serious harm notes - No risk of serious harm
 Risk of reoffending notes - High risk of reoffending` },
                 { section: '4', q: '4.96', a: `NO` },
@@ -1102,7 +1105,8 @@ Risk of reoffending notes - High risk of reoffending` },
                 { item: 'markAsComplete' },
             ],
             oasysAnswers: [
-                { section: '4', q: '4.94', a: `Area not linked to strengths and positive factors notes - There are no strengths
+                {
+                    section: '4', q: '4.94', a: `Area not linked to strengths and positive factors notes - There are no strengths
 Area not linked to serious harm notes - No risk of serious harm
 Area not linked to reoffending notes - No risk of reoffending` },
                 { section: '4', q: '4.96', a: `NO` },
@@ -1117,23 +1121,27 @@ Area not linked to reoffending notes - No risk of reoffending` },
                 { item: 'practitionerAnalysis' },
                 { item: 'changeAnalysis' },
                 { item: 'employmentStrengths', value: `yes` },
-                { item: 'employmentStrengthsYesDetails', value: `ABCD efg10ABCD efg20ABCD efg30ABCD efg40ABCD efg50ABCD efg60ABCD efg70ABCD efg80ABCD efg90ABCD ef100ABCD ef110ABCD ef120ABCD ef130ABCD ef140ABCD ef150ABCD ef160ABCD ef170ABCD ef180ABCD ef190ABCD ef200ABCD ef210ABCD ef220ABCD ef230ABCD ef240ABCD ef250ABCD ef260ABCD ef270ABCD ef280ABCD ef290ABCD ef300ABCD ef310ABCD ef320ABCD ef330ABCD ef340ABCD ef350ABCD ef360ABCD ef370ABCD ef380ABCD ef390ABCD ef400
+                {
+                    item: 'employmentStrengthsYesDetails', value: `ABCD efg10ABCD efg20ABCD efg30ABCD efg40ABCD efg50ABCD efg60ABCD efg70ABCD efg80ABCD efg90ABCD ef100ABCD ef110ABCD ef120ABCD ef130ABCD ef140ABCD ef150ABCD ef160ABCD ef170ABCD ef180ABCD ef190ABCD ef200ABCD ef210ABCD ef220ABCD ef230ABCD ef240ABCD ef250ABCD ef260ABCD ef270ABCD ef280ABCD ef290ABCD ef300ABCD ef310ABCD ef320ABCD ef330ABCD ef340ABCD ef350ABCD ef360ABCD ef370ABCD ef380ABCD ef390ABCD ef400
 ABCD ef412ABCD ef422ABCD ef432ABCD ef442ABCD ef452ABCD ef462ABCD ef472ABCD ef482ABCD ef492ABCD ef502ABCD ef512ABCD ef522ABCD ef532ABCD ef542ABCD ef552ABCD ef562ABCD ef572ABCD ef582ABCD ef592ABCD ef602ABCD ef612ABCD ef622ABCD ef632ABCD ef642ABCD ef652ABCD ef662ABCD ef672ABCD ef682ABCD ef692ABCD ef702ABCD ef712ABCD ef722ABCD ef732ABCD ef742ABCD ef752ABCD ef762ABCD ef772ABCD ef782ABCD ef792ABCD ef802
 ABCD ef814ABCD ef824ABCD ef834ABCD ef844ABCD ef854ABCD ef864ABCD ef874ABCD ef884ABCD ef894ABCD ef904ABCD ef914ABCD ef924ABCD ef934ABCD ef944ABCD ef954ABCD ef964ABCD ef974ABCD ef984ABCD ef994......ABCD efg10ABCD efg20ABCD efg30ABCD efg40ABCD efg50ABCD efg60ABCD efg70ABCD efg80ABCD efg90ABCD ef100ABCD ef110ABCD ef120ABCD ef130ABCD ef140ABCD ef150ABCD ef160ABCD ef170ABCD ef180ABCD ef190ABCD ef200ABCD ef210ABCD ef220ABCD ef230ABCD ef240ABCD ef250ABCD ef260ABCD ef270ABCD ef280ABCD ef290ABCD ef300ABCD ef310ABCD ef320ABCD ef330ABCD ef340ABCD ef350ABCD ef360ABCD ef370ABCD ef380ABCD ef390ABCD ef400
 ABCD ef412ABCD ef422ABC` },
                 { item: 'employmentRiskSeriousHarm', value: `yes` },
-                { item: 'employmentRiskSeriousHarmYesDetails', value: `ABCD efg10ABCD efg20ABCD efg30ABCD efg40ABCD efg50ABCD efg60ABCD efg70ABCD efg80ABCD efg90ABCD ef100ABCD ef110ABCD ef120ABCD ef130ABCD ef140ABCD ef150ABCD ef160ABCD ef170ABCD ef180ABCD ef190ABCD ef200ABCD ef210ABCD ef220ABCD ef230ABCD ef240ABCD ef250ABCD ef260ABCD ef270ABCD ef280ABCD ef290ABCD ef300ABCD ef310ABCD ef320ABCD ef330ABCD ef340ABCD ef350ABCD ef360ABCD ef370ABCD ef380ABCD ef390ABCD ef400
+                {
+                    item: 'employmentRiskSeriousHarmYesDetails', value: `ABCD efg10ABCD efg20ABCD efg30ABCD efg40ABCD efg50ABCD efg60ABCD efg70ABCD efg80ABCD efg90ABCD ef100ABCD ef110ABCD ef120ABCD ef130ABCD ef140ABCD ef150ABCD ef160ABCD ef170ABCD ef180ABCD ef190ABCD ef200ABCD ef210ABCD ef220ABCD ef230ABCD ef240ABCD ef250ABCD ef260ABCD ef270ABCD ef280ABCD ef290ABCD ef300ABCD ef310ABCD ef320ABCD ef330ABCD ef340ABCD ef350ABCD ef360ABCD ef370ABCD ef380ABCD ef390ABCD ef400
 ABCD ef412ABCD ef422ABCD ef432ABCD ef442ABCD ef452ABCD ef462ABCD ef472ABCD ef482ABCD ef492ABCD ef502ABCD ef512ABCD ef522ABCD ef532ABCD ef542ABCD ef552ABCD ef562ABCD ef572ABCD ef582ABCD ef592ABCD ef602ABCD ef612ABCD ef622ABCD ef632ABCD ef642ABCD ef652ABCD ef662ABCD ef672ABCD ef682ABCD ef692ABCD ef702ABCD ef712ABCD ef722ABCD ef732ABCD ef742ABCD ef752ABCD ef762ABCD ef772ABCD ef782ABCD ef792ABCD ef802
 ABCD ef814ABCD ef824ABCD ef834ABCD ef844ABCD ef854ABCD ef864ABCD ef874ABCD ef884ABCD ef894ABCD ef904ABCD ef914ABCD ef924ABCD ef934ABCD ef944ABCD ef954ABCD ef964ABCD ef974ABCD ef984ABCD ef994......ABCD efg10ABCD efg20ABCD efg30ABCD efg40ABCD efg50ABCD efg60ABCD efg70ABCD efg80ABCD efg90ABCD ef100ABCD ef110ABCD ef120ABCD ef130ABCD ef140ABCD ef150ABCD ef160ABCD ef170ABCD ef180ABCD ef190ABCD ef200ABCD ef210ABCD ef220ABCD ef230ABCD ef240ABCD ef250ABCD ef260ABCD ef270ABCD ef280ABCD ef290ABCD ef300ABCD ef310ABCD ef320ABCD ef330ABCD ef340ABCD ef350ABCD ef360ABCD ef370ABCD ef380ABCD ef390ABCD ef400
 ABCD ef412ABCD ef422ABC` },
                 { item: 'employmentRiskReoffending', value: `yes` },
-                { item: 'employmentRiskReoffendingYesDetails', value: `ABCD efg10ABCD efg20ABCD efg30ABCD efg40ABCD efg50ABCD efg60ABCD efg70ABCD efg80ABCD efg90ABCD ef100ABCD ef110ABCD ef120ABCD ef130ABCD ef140ABCD ef150ABCD ef160ABCD ef170ABCD ef180ABCD ef190ABCD ef200ABCD ef210ABCD ef220ABCD ef230ABCD ef240ABCD ef250ABCD ef260ABCD ef270ABCD ef280ABCD ef290ABCD ef300ABCD ef310ABCD ef320ABCD ef330ABCD ef340ABCD ef350ABCD ef360ABCD ef370ABCD ef380ABCD ef390ABCD ef400
+                {
+                    item: 'employmentRiskReoffendingYesDetails', value: `ABCD efg10ABCD efg20ABCD efg30ABCD efg40ABCD efg50ABCD efg60ABCD efg70ABCD efg80ABCD efg90ABCD ef100ABCD ef110ABCD ef120ABCD ef130ABCD ef140ABCD ef150ABCD ef160ABCD ef170ABCD ef180ABCD ef190ABCD ef200ABCD ef210ABCD ef220ABCD ef230ABCD ef240ABCD ef250ABCD ef260ABCD ef270ABCD ef280ABCD ef290ABCD ef300ABCD ef310ABCD ef320ABCD ef330ABCD ef340ABCD ef350ABCD ef360ABCD ef370ABCD ef380ABCD ef390ABCD ef400
 ABCD ef412ABCD ef422ABCD ef432ABCD ef442ABCD ef452ABCD ef462ABCD ef472ABCD ef482ABCD ef492ABCD ef502ABCD ef512ABCD ef522ABCD ef532ABCD ef542ABCD ef552ABCD ef562ABCD ef572ABCD ef582ABCD ef592ABCD ef602ABCD ef612ABCD ef622ABCD ef632ABCD ef642ABCD ef652ABCD ef662ABCD ef672ABCD ef682ABCD ef692ABCD ef702ABCD ef712ABCD ef722ABCD ef732ABCD ef742ABCD ef752ABCD ef762ABCD ef772ABCD ef782ABCD ef792ABCD ef802
 ABCD ef814ABCD ef824ABCD ef834ABCD ef844ABCD ef854ABCD ef864ABCD ef874ABCD ef884ABCD ef894ABCD ef904ABCD ef914ABCD ef924ABCD ef934ABCD ef944ABCD ef954ABCD ef964ABCD ef974ABCD ef984ABCD ef994......` },
                 { item: 'markAsComplete' },
             ],
             oasysAnswers: [
-                { section: '4', q: '4.94', a: `Strengths and protective factor notes - ABCD efg10ABCD efg20ABCD efg30ABCD efg40ABCD efg50ABCD efg60ABCD efg70ABCD efg80ABCD efg90ABCD ef100ABCD ef110ABCD ef120ABCD ef130ABCD ef140ABCD ef150ABCD ef160ABCD ef170ABCD ef180ABCD ef190ABCD ef200ABCD ef210ABCD ef220ABCD ef230ABCD ef240ABCD ef250ABCD ef260ABCD ef270ABCD ef280ABCD ef290ABCD ef300ABCD ef310ABCD ef320ABCD ef330ABCD ef340ABCD ef350ABCD ef360ABCD ef370ABCD ef380ABCD ef390ABCD ef400
+                {
+                    section: '4', q: '4.94', a: `Strengths and protective factor notes - ABCD efg10ABCD efg20ABCD efg30ABCD efg40ABCD efg50ABCD efg60ABCD efg70ABCD efg80ABCD efg90ABCD ef100ABCD ef110ABCD ef120ABCD ef130ABCD ef140ABCD ef150ABCD ef160ABCD ef170ABCD ef180ABCD ef190ABCD ef200ABCD ef210ABCD ef220ABCD ef230ABCD ef240ABCD ef250ABCD ef260ABCD ef270ABCD ef280ABCD ef290ABCD ef300ABCD ef310ABCD ef320ABCD ef330ABCD ef340ABCD ef350ABCD ef360ABCD ef370ABCD ef380ABCD ef390ABCD ef400
 ABCD ef412ABCD ef422ABCD ef432ABCD ef442ABCD ef452ABCD ef462ABCD ef472ABCD ef482ABCD ef492ABCD ef502ABCD ef512ABCD ef522ABCD ef532ABCD ef542ABCD ef552ABCD ef562ABCD ef572ABCD ef582ABCD ef592ABCD ef602ABCD ef612ABCD ef622ABCD ef632ABCD ef642ABCD ef652ABCD ef662ABCD ef672ABCD ef682ABCD ef692ABCD ef702ABCD ef712ABCD ef722ABCD ef732ABCD ef742ABCD ef752ABCD ef762ABCD ef772ABCD ef782ABCD ef792ABCD ef802
 ABCD ef814ABCD ef824ABCD ef834ABCD ef844ABCD ef854ABCD ef864ABCD ef874ABCD ef884ABCD ef894ABCD ef904ABCD ef914ABCD ef924ABCD ef934ABCD ef944ABCD ef954ABCD ef964ABCD ef974ABCD ef984ABCD ef994......ABCD efg10ABCD efg20ABCD efg30ABCD efg40ABCD efg50ABCD efg60ABCD efg70ABCD efg80ABCD efg90ABCD ef100ABCD ef110ABCD ef120ABCD ef130ABCD ef140ABCD ef150ABCD ef160ABCD ef170ABCD ef180ABCD ef190ABCD ef200ABCD ef210ABCD ef220ABCD ef230ABCD ef240ABCD ef250ABCD ef260ABCD ef270ABCD ef280ABCD ef290ABCD ef300ABCD ef310ABCD ef320ABCD ef330ABCD ef340ABCD ef350ABCD ef360ABCD ef370ABCD ef380ABCD ef390ABCD ef400
 ABCD ef412ABCD ef422ABC

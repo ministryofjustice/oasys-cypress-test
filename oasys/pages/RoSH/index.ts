@@ -1,5 +1,4 @@
 ﻿export { RiskManagementPlan } from './riskManagementPlan'
-export { RoshFullAnalysisSection61 } from './roshFullAnalysisSection61'
 export { RoshFullAnalysisSection62 } from './roshFullAnalysisSection62'
 export { RoshFullAnalysisSection7 } from './roshFullAnalysisSection7'
 export { RoshFullAnalysisSection8 } from './roshFullAnalysisSection8'

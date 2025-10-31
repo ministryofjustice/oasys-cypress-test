@@ -13,7 +13,7 @@ describe('SAN integration - test ref 16 part 2', () => {
 
             cy.log(`Log out and log back in as the newly assigned assessor.
                         Open up the Offender record and open the WIP OASys-SAN assessment - ensure the assessment is in full edit mode
-                        Navigate to the RoSH screening Section 1 and set R1.2 'Aggravated Burglary' Current column to 'Yes' - this will invoke a full analysis`)
+                        Navigate to the RoSH screening Section 1 and set R1.2 'Aggravated Burglary' Previous column to 'Yes' - this will invoke a full analysis`)
 
             oasys.login(oasys.Users.prisSanPom)
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
@@ -22,7 +22,7 @@ describe('SAN integration - test ref 16 part 2', () => {
             oasys.San.checkSanEditMode(true)
             oasys.San.returnToOASys()
 
-            new oasys.Pages.Rosh.RoshScreeningSection1().goto().r1_2_6C.setValue('Yes')
+            new oasys.Pages.Rosh.RoshScreeningSection1().goto().r1_2_6P.setValue('Yes')
 
             cy.log(`Navigate to the Summary Sheet screen 
                 The Learning Screening Tool states 'Not enough items have been scored to identify whether this individual has a learning disability and/or learning challenges.'

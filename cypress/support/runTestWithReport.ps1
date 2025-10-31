@@ -1,7 +1,7 @@
-$filePath = $args[0]
+$runCommand = $args[0]
+$location = Get-Location
 
-
-./node_modules/.bin/cypress run --e2e --browser electron --spec "'$filePath'" | Out-Default
+./node_modules/.bin/cypress run --e2e --browser edge --spec "'$runCommand'" --env "runCommand=$runCommand,location=$location" | Out-Default
 # Out-Default hopefully ensures that the tests complete before trying to complile the report.
 
 npx mochawesome-merge ./report/*.json -o ./report/merged.json

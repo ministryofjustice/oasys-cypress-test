@@ -12,10 +12,6 @@ describe('RestAPI regression tests', () => {
     const startTime = dayjs().format('YYYY-MM-DD HH:mm:ss')
 
     let stats: EndpointStat[] = []
-    restApiUrls.forEach((endpoint) => {
-        stats.push({ endpoint: endpoint.endpoint, responseTimes: [] })
-    })
-    stats.push({ endpoint: 'database', responseTimes: [] })
 
     // Number of offenders for each date range
     const offenderCountEarly = 10  // Used for pre-2023, not many offenders available
@@ -137,27 +133,21 @@ describe('RestAPI regression tests', () => {
     }
 
     // Report the total number of API calls from the log from this IP address since the test started
+
+    let totalApiCount = 0
+    let totalApiTimeMs = 0
+    let totalDbTimeMs = 0
+
     it('Summary info', () => {
 
-        let totalApiCount = 0
-        let totalApiTimeMs = 0
-        let totalDbTimeMs: number
-
         cy.groupedLogStart('Timing stats')
-        stats.forEach((stat) => {
-            let statResults = reportStats(stat)
-            if (stat.endpoint == 'database') {
-                totalDbTimeMs = statResults.totalTime
-            } else {
-                totalApiCount += statResults.count
-                totalApiTimeMs += statResults.totalTime
-            }
-        })
+
+        reportStats()
         cy.groupedLogEnd()
 
         let elapsedTimeS = Math.round(dayjs().diff(startTime) / 1000)
         cy.groupedLogStart('Totals')
-        cy.groupedLog(`Offenders: ${offenderCount * 10 + extraTestCases.length}`)
+        cy.groupedLog(`Offenders: ${offenderCount * 2 + offenderCountEarly * 8 + extraTestCases.length}`)
         cy.groupedLog(`API calls: ${totalApiCount}`)
         cy.groupedLog(`Database query time: ${Math.round(totalDbTimeMs / 1000)}s`)
         cy.groupedLog(`API response time: ${Math.round(totalApiTimeMs / 1000)}s`)
@@ -168,24 +158,43 @@ describe('RestAPI regression tests', () => {
         cy.groupedLogEnd()
     })
 
-    function reportStats(stat: EndpointStat): { count: number, totalTime: number } {
+    function reportStats() {
 
-        let count = stat.responseTimes.length
+        const endpoints = stats.map((stat) => stat.endpoint).filter(onlyUnique)
+        endpoints.forEach((endpoint) => {
+            const responseTimes = stats.filter((stat) => stat.endpoint == endpoint).map((stat) => stat.responseTime)
+            const result = reportStat(endpoint, responseTimes)
+
+            if (endpoint == 'database') {
+                totalDbTimeMs += result.totalTime
+            } else {
+                totalApiCount += result.count
+                totalApiTimeMs += result.totalTime
+            }
+        })
+    }
+
+    function reportStat(endpoint: string, responseTimes: number[]): { count: number, totalTime: number } {
+
+        let count = responseTimes.length
         let total = 0
 
-        let name = stat.endpoint == 'database' ? 'database' : `${stat.endpoint}`
-        let reportString = `${name}: count ${count}`
+        let reportString = `${endpoint}: count ${count}`
         if (count > 0) {
-            total = stat.responseTimes.reduce((a, b) => a + b, 0)
-            let max = Math.max(...stat.responseTimes)
-            let maxHighlight = max > 99 && stat.endpoint != 'database' ? ' **** ' : ''
+            total = responseTimes.reduce((a, b) => a + b, 0)
+            let max = Math.max(...responseTimes)
+            let maxHighlight = max > 99 && endpoint != 'database' ? ' **** ' : ''
             let average = Math.round(total / count)
-            let averageHighlight = average > 99 && stat.endpoint != 'database' ? ' **** ' : ''
-            reportString = `${reportString}, min ${Math.min(...stat.responseTimes)}ms, ${maxHighlight}max ${max}ms${maxHighlight}, ${averageHighlight}average ${average}ms${averageHighlight}`
+            let averageHighlight = average > 99 && endpoint != 'database' ? ' **** ' : ''
+            reportString = `${reportString}, min ${Math.min(...responseTimes)}ms, ${maxHighlight}max ${max}ms${maxHighlight}, ${averageHighlight}average ${average}ms${averageHighlight}`
+            cy.groupedLog(reportString)
         }
 
-        cy.groupedLog(reportString)
         return { count: count, totalTime: total }
+    }
+
+    function onlyUnique(value, index, array) {
+        return array.indexOf(value) === index;
     }
 
 })

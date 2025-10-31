@@ -8,8 +8,11 @@ let pdfFile = null
  * Starts a file watcher to check for a PDF download.
  */
 export async function startPdfWatcher() {
-    
+
     pdfFile = null
+    if (!fs.existsSync(downloadFolder)) {
+        fs.mkdirSync(downloadFolder);
+    }
     fs.watch(downloadFolder, (eventType, filename) => {
         if (filename.length > 4 && filename.substring(filename.length - 3).toUpperCase() == 'PDF') {
             pdfFile = filename
