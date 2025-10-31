@@ -37,7 +37,7 @@ export function calculateTestCase(testCaseParams: TestCaseParameters, expectedRe
     const logText: string[] = []
     testCaseResult.failed = checkResults(expectedResults, testCaseResult.outputParams, testParams, logText)
 
-    if (testCaseResult.failed || testParams.reportMode != 'minimal') {
+    if ((testCaseResult.failed || testParams.reportMode != 'minimal') && testParams.reportMode != 'none') {
         testCaseResult.logText.push('')
         testCaseResult.logText.push(`Test case ${testCaseRef} ${testCaseResult.failed ? ' *** FAILED ***' : ' PASSED'}`)
         testCaseResult.logText.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
@@ -50,7 +50,7 @@ export function calculateTestCase(testCaseParams: TestCaseParameters, expectedRe
     }
 
     // Report invalid offence codes
-    if (testCaseParams.OFFENCE_CODE && !testCaseParams.offenceCat) {
+    if (testCaseParams.OFFENCE_CODE && !testCaseParams.offenceCat && testParams.reportMode != 'none') {
         if (testParams.reportMode == 'minimal') {
             testCaseResult.logText.push(`Test case ${testCaseRef}: invalid offence code ${testCaseParams.OFFENCE_CODE}`)
         } else {
@@ -90,7 +90,7 @@ function checkResults(expectedResults: OutputParameters, actualResults: OutputPa
                 if (mode == 'tolerance' || (mode == 'decimal' && diff.greaterThan(0))) {
                     logText.push(`      ${param} *** failed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}, difference: ${diff}`)
                 }
-            } else if (mode == 'tolerance' && testParams.reportMode != 'minimal') {
+            } else if (mode == 'tolerance' && testParams.reportMode != 'minimal' && testParams.reportMode != 'none') {
                 logText.push(`      ${param} passed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}, difference: ${diff}`)
             } else if (testParams.reportMode == 'verbose') {
                 logText.push(`      ${param} passed: Oracle ${expectedResults[param]}, Cypress ${actualResults[param]}`)

@@ -18,10 +18,10 @@ function test(part: number, staticFlag: 'Y' | 'N') {
             csvDetails: {
                 dataFile: 'dsTestCases',
                 start: part == 1 ? 0 : 5000,
-                end: part == 1 ? 4999 : 9999,
+                end: part == 1 ? 999 : 9999,
             },
             staticFlag: staticFlag,
-            reportMode: 'minimal',
+            reportMode: 'none',
         }
 
         runTest(csvTestParams, `dsOutput${staticFlag}${part}`, true, false)

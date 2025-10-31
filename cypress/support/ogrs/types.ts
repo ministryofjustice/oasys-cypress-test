@@ -1,7 +1,7 @@
 import { Decimal } from 'decimal.js'
 import * as dayjs from 'dayjs'
 
-export type ReportMode = 'verbose' | 'normal' | 'minimal'
+export type ReportMode = 'verbose' | 'normal' | 'minimal' | 'none'
 
 export type OgrsTestParameters = {
     testType: 'csv' | 'db'

@@ -83,9 +83,11 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                 }
             } catch (e) {
                 const logText: string[] = ['']
-                logText.push(`Test case ${i}  ERROR *** FAILED ***`)
-                logText.push(`    Error:   ${e}`)
-                errorLog.forEach((line) => logText.push(line))
+                if (testParams.reportMode != 'none') {
+                    logText.push(`Test case ${i}  ERROR *** FAILED ***`)
+                    logText.push(`    Error:   ${e}`)
+                    errorLog.forEach((line) => logText.push(line))
+                }
                 scriptResults.testCaseResults.push({
                     logText: logText,
                     inputParams: null,
@@ -132,9 +134,11 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                 }
             } catch (e) {
                 const logText: string[] = ['']
-                logText.push(`Test case ${assessmentOrRsr.pk.toString()}  ERROR *** FAILED ***`)
-                logText.push(`    Error:   ${e}`)
-                errorLog.forEach((line) => logText.push(line))
+                if (testParams.reportMode != 'none') {
+                    logText.push(`Test case ${assessmentOrRsr.pk.toString()}  ERROR *** FAILED ***`)
+                    logText.push(`    Error:   ${e}`)
+                    errorLog.forEach((line) => logText.push(line))
+                }
                 scriptResults.testCaseResults.push({
                     logText: logText,
                     inputParams: null,
