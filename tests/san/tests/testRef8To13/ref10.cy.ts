@@ -55,15 +55,14 @@ describe('SAN integration - test ref 10', () => {
                         CLONED_FROM_PREV_OASYS_SAN_PK: prevPk.toString(),
                         SAN_ASSESSMENT_VERSION_NO: null,
                         LASTUPD_FROM_SAN: sanDataTime,
-                        RSR_PERCENTAGE_SCORE: '10.02',
+                        RSR_PERCENTAGE_SCORE: '10.11',
                         RSR_STATIC_OR_DYNAMIC: 'DYNAMIC',
                         RSR_ERROR_COUNT: '0',
                         OSP_IIC_PERCENTAGE_SCORE: '3.33',
                         OSP_DC_PERCENTAGE_SCORE: '6.18',
                     })
                 })
-                const r61 = new oasys.Pages.Rosh.RoshFullAnalysisSection61().checkIsNotOnMenu()
-                const r62 = new oasys.Pages.Rosh.RoshFullAnalysisSection61().checkIsNotOnMenu()
+                const r62 = new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkIsNotOnMenu()
                 const rmp = new oasys.Pages.Rosh.RiskManagementPlan().checkIsNotOnMenu()
                 const san = new oasys.Pages.Assessment.SanSections().checkCompletionStatus(true)
 
@@ -76,7 +75,6 @@ describe('SAN integration - test ref 10', () => {
                 oasys.San.populateSanSections('TestRef10 modify SAN', testData.modifySan)
                 oasys.San.returnToOASys()
                 san.next.click()
-                r61.checkIsOnMenu()
                 r62.checkIsOnMenu()
                 san.checkCompletionStatus(true)
 
@@ -115,7 +113,7 @@ describe('SAN integration - test ref 10', () => {
                 const screening2To4 = new oasys.Pages.Rosh.RoshScreeningSection2to4().goto()
                 screening2To4.rationale.setValue('Rationale')
                 new oasys.Pages.Rosh.RoshScreeningSection1().markCompleteAndCheck()
-                new oasys.Pages.Rosh.RoshFullAnalysisSection61().markCompleteAndCheck()
+                new oasys.Pages.Rosh.RoshFullAnalysisSection62().markCompleteAndCheck()
                 new oasys.Pages.Rosh.RoshSummary().markCompleteAndCheck()
                 new oasys.Pages.Rosh.RiskManagementPlan().markCompleteAndCheck()
 

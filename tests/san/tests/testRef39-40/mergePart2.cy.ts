@@ -11,7 +11,7 @@ describe('SAN integration - tests 39/40', () => {
      * The carry out a De-merge - check it posts the correct MERGE API
      */
 
-    it('Merge tests part 2 - create and complete 3.2 assessment on offender 2', () => {
+    it('Merge tests part 2 - create and complete two 3.2 assessments on offender 2, delete the second', () => {
 
         // Get offender details
         cy.task('retrieveValue', 'offender2').then((offenderData) => {
@@ -57,17 +57,14 @@ describe('SAN integration - tests 39/40', () => {
             new oasys.Pages.SentencePlan.IspSection52to8().goto()
             oasys.Assessment.signAndLock()
 
-            /* TODO
-            **************  Following section generates SAN defect ARN-2427 - add back in for regression test when they have fixed it
-            
+            // Deleted assessment added for testing of SAN defect ARN-2427
             oasys.Nav.history(offender)
-            oasys.Assessments.createProbationAssessment({purposeOfAssessment: 'Review'})
+            oasys.Assessment.createProb({ purposeOfAssessment: 'Review' })
             oasys.logout()
-            
+
             oasys.login(oasys.Users.admin, oasys.Users.probationSan)
-            oasys.OffenderUtils.searchAndSelectOffenderByPnc(offender.pnc)
-            oasys.Assessments.deleteLatest()
-            */
+            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.Assessment.deleteLatest()
 
             oasys.logout()
         })

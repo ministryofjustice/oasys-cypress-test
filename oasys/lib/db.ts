@@ -173,6 +173,19 @@ export function getAllSetPksByPnc(pnc: string, resultAlias: string, ignoreDelete
     getPk(query, resultAlias, true)
 }
 
+/**
+ * Finds all oasys_set records for a given offender CRN (including deleted, unless optional parameter is true).
+ * 
+ * Returns the pks as a number[] (most recent first) using the resultAlias.
+ */
+export function getAllSetPksByProbationCrn(probationCrn: string, resultAlias: string, ignoreDeleted: boolean = false) {
+
+    const query = ignoreDeleted ?
+        `select oasys_set_pk from oasys_set where cms_prob_number = '${probationCrn}' and deleted_date is null order by create_date desc`
+        : `select oasys_set_pk from oasys_set where cms_prob_number = '${probationCrn}' order by create_date desc`
+    getPk(query, resultAlias, true)
+}
+
 function getPk(query: string, resultAlias: string, returnAll: boolean = false) {
 
     cy.task('getData', query).then((result: DbResponse) => {
@@ -338,95 +351,20 @@ function onlyUnique(value, index, array) {
  */
 export function checkSectionAnswers(assessmentPk: number, section: string, expectedAnswers: OasysAnswer[], failedAlias: string) {
 
-    const query = sectionQuery(assessmentPk, section)
+    cy.task('checkSectionAnswers', { assessmentPk: assessmentPk, section: section, expectedAnswers: expectedAnswers }).then((result: CheckDbSectionResponse) => {
 
-    cy.task('getData', query).then((result: DbResponse) => {
-        if (result.error != null) { // database error
-            throw new Error(result.error)
-        } else {
-            let failed = false
-            cy.groupedLogStart(`Checking section ${section} answers:`)
+        cy.groupedLogStart(`Checking section ${section} answers:`)
+        result.report.forEach((line) => cy.groupedLog(line))
+        cy.groupedLogEnd()
 
-            const data = result.data as string[][]
-            expectedAnswers.forEach((answerToCheck) => {
-                let actualResult: string = null
-                const dataRow = data.filter((row) => row[0] == answerToCheck.q)
-                const answerType = getAnswerType(answerToCheck.q)  // NOTE check the answer types below if no value is returned, as not all questions have been listed here
-                let expectedAnswer = answerToCheck.a
-                if (dataRow.length > 0) {
-                    if (answerType == 'multipleRefAnswer') {
-                        actualResult = ''
-                        dataRow.forEach(r => { actualResult += `${r[1]},` })
-                        if (actualResult == 'null,') { actualResult = null }
-                    } else {
-                        actualResult = answerType == 'refAnswer' ? dataRow[0][1] : answerType == 'freeFormat' ? dataRow[0][2] : dataRow[0][3]
-                    }
-                }
-                const match = actualResult?.replaceAll('\r\n', '\n') == expectedAnswer?.replaceAll('\r\n', '\n')
-                const failureMessage = match ? '          ' : 'FAILED    '
-                cy.groupedLog(`    ${failureMessage}${answerToCheck.q} - expected '${expectedAnswer}', actual '${actualResult}'`)
-                if (!match) { failed = true }
-            })
-            cy.groupedLogEnd()
-
-            cy.get<boolean>(`@${failedAlias}`).then((aliasValue) => {  // Need to refresh the alias even if not changing to indicate completion
-                const newValue = failed ? true : aliasValue
-                cy.wrap(newValue).as(failedAlias)
-                if (failed) {
-                    cy.task('consoleLog', `${section} failed`)
-                }
-            })
-        }
+        cy.get<boolean>(`@${failedAlias}`).then((aliasValue) => {  // Need to refresh the alias even if not changing to indicate completion
+            const newValue = result.failed ? true : aliasValue
+            cy.wrap(newValue).as(failedAlias)
+            if (result.failed) {
+                cy.task('consoleLog', `${section} failed`)
+            }
+        })
     })
-}
-
-// Identify any OASys answers that are not the default refAnswer type.  NOTE this list is not complete and will need updating.  // TODO
-function getAnswerType(answer: string): AnswerType {
-
-    const answerType = answerTypes[answer]
-    return answerType ?? 'refAnswer'
-}
-
-const answerTypes: { [keys: string]: AnswerType } = {
-    '1.32': 'freeFormat',
-    '1.40': 'freeFormat',
-    '1.29': 'freeFormat',
-    '1.38': 'freeFormat',
-    '2.1': 'additionalNote',
-    '2.3': 'multipleRefAnswer',
-    '2.4.1': 'additionalNote',
-    '2.4.2': 'additionalNote',
-    '2.5': 'additionalNote',
-    '2.7.3': 'additionalNote',
-    '2.8': 'additionalNote',
-    '2.9.t_V2': 'additionalNote',
-    '2.11.t': 'additionalNote',
-    '2.12': 'additionalNote',
-    '2.98': 'additionalNote',
-    '4.7.1': 'multipleRefAnswer',
-    '8.2.14.t': 'additionalNote',
-    '9.1.t': 'additionalNote',
-    'SC0': 'freeFormat',
-    'SC1.t': 'additionalNote',
-    'SC2.t': 'additionalNote',
-    'SC3.t': 'additionalNote',
-    'SC4.t': 'additionalNote',
-    'SC7.t': 'additionalNote',
-    'SC8.t': 'additionalNote',
-    'SC9.t': 'additionalNote',
-    'SC10.t': 'additionalNote',
-    '3.97': 'additionalNote',
-    '4.94': 'additionalNote',
-    '5.97': 'additionalNote',
-    '6.97': 'additionalNote',
-    '7.97': 'additionalNote',
-    '8.97': 'additionalNote',
-    '9.97': 'additionalNote',
-    '10.97': 'additionalNote',
-    '11.97': 'additionalNote',
-    '12.97': 'additionalNote',
-    'SAN_CRIM_NEED_SCORE': 'freeFormat',
-
 }
 
 /**

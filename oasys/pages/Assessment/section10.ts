@@ -13,7 +13,7 @@ export class Section10 extends BaseAssessmentPage {
     o10_2 = new Element.Select<ProblemsAnswer>('#itm_10_2')
     o10_3 = new Element.Select<ProblemsAnswer>('#itm_10_3')
     o10_4 = new Element.Select<ProblemsAnswer>('#itm_10_4')
-    o10_5 = new Element.Select('#itm_10_5')
+    o10_5 = new Element.Select<'No -0'|'Yes - 2'>('#itm_10_5')
     o10_6 = new Element.Select<ProblemsAnswer>('#itm_10_6')
     o10_7Childhood = new Element.Select<YesNoAnswer>('#itm_10_7_V2_CHILDHOOD')
     o10_7HeadInjuries = new Element.Select<YesNoAnswer>('#itm_10_7_V2_HISTHEADINJ')

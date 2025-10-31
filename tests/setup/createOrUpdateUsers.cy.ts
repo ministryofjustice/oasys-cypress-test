@@ -44,6 +44,8 @@ function createOrUpdateUser(user: User) {
                 maintainUser.close.click()
                 const userProfile = new oasys.Pages.Maintenance.UserProfile().goto()
                 userProfile.userName.setValue(user.username)
+                userProfile.surname.setValue('') 
+                userProfile.forename1.setValue('')
                 userProfile.search.click()
                 userProfile.userNameColumn.clickFirstRow()
             }

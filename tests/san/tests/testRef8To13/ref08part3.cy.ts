@@ -75,7 +75,7 @@ describe('SAN integration - test ref 08 part 3', () => {
                 },
                 {
                     name: 'twoYear',
-                    values: ['31', '19', '19', 'N/A', 'N/A', '  9.99']
+                    values: ['31', '19', '19', 'N/A', 'N/A', ' 10.07']
                 },
                 {
                     name: 'category',

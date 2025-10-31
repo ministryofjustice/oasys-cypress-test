@@ -49,7 +49,7 @@ export const sanIds: SanIds = {
     livingWith: {
         type: 'checkbox',
         id: '#living_with',
-        options: ['family', 'friends', 'partner', 'child', 'other', '-', 'alone'],
+        options: ['family', 'friends', 'partner', 'child', 'other', 'unknown', '-', 'alone'],
     },
 
     accommodationStrengths: {
@@ -708,7 +708,7 @@ export const sanIds: SanIds = {
     employmentHistory: {
         type: 'radio',
         id: '#employment_history',
-        options: ['continuous', 'generallyEmployed', 'unstable'],
+        options: ['continuous', 'generallyEmployed', 'unstable', 'unknown'],
     },
     highestQual: {
         type: 'radio',
@@ -758,7 +758,7 @@ export const sanIds: SanIds = {
     additionalCommitments: {
         type: 'checkbox',
         id: '#employment_other_responsibilities',
-        options: ['caring', 'child', 'studying', 'volunteering', 'other', '-', 'none'],
+        options: ['caring', 'child', 'studying', 'volunteering', 'other', 'unknown', '-', 'none'],
     },
     difficulties: {
         type: 'checkbox',
@@ -807,7 +807,7 @@ export const sanIds: SanIds = {
     overReliant: {
         type: 'radio',
         id: '#family_or_friends_details',
-        options: ['yes', 'no'],
+        options: ['yes', 'no', 'unknown'],
     },
     ownAccount: {
         type: 'radio',
@@ -827,7 +827,7 @@ export const sanIds: SanIds = {
     incomeSource: {
         type: 'checkbox',
         id: '#finance_income',
-        options: ['carersAllowance', 'disabilityBenefits', 'employment', 'family', 'offending', 'pension', 'studentLoan', 'undeclared', 'workBenefits', 'other', '-', 'noMoney'],
+        options: ['carersAllowance', 'disabilityBenefits', 'employment', 'family', 'offending', 'pension', 'studentLoan', 'undeclared', 'workBenefits', 'other', 'unknown', '-', 'noMoney'],
     },
     gambling: {
         type: 'checkbox',
@@ -1250,7 +1250,7 @@ export const sanIds: SanIds = {
     },
 
     victimRace: {
-        type: 'combo', id: '#offence_analysis_victim_race'
+        type: 'select', id: '#offence_analysis_victim_race'
     },
 
     /*

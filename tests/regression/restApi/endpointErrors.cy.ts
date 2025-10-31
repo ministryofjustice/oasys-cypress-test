@@ -55,6 +55,7 @@ describe('RestAPI regression tests', () => {
             'v4Victim',
             'v4RiskIndividual',
             'v4RiskScoresAss',
+            'crimNeeds',
         ]
 
         v1Endpoints.forEach((endpoint) => {

@@ -4,11 +4,29 @@ import dayjs from 'dayjs'
 var screenshotCount = 0
 var logGroup = ""
 
+/**
+ * Gets the correct relative path for a screenshot in the report
+ */
+function getSpecPath() {
+
+    const runCommand = Cypress.env('runCommand')
+    const location = Cypress.env('location')
+
+    // If running a single test, just need the filename part
+    if (runCommand.length > 3 && runCommand.substring(runCommand.length - 3) == '.ts') {
+        return runCommand.substring(runCommand.lastIndexOf('/') + 1)
+    } else {
+        const runCommandRelativePath = runCommand.replace(`${location}/`, '')
+        return Cypress.spec.relative.replace(`${runCommandRelativePath}/`, '')
+    }
+}
+
 Cypress.on("test:after:run", (test, runnable) => {
 
+    // Add failure screenshot to the report
     if (test.state === "failed") {
 
-        const screenshot = `screenshots/${Cypress.spec.name}/${runnable.parent.title} -- ${test.title} (failed).png`
+        const screenshot = `screenshots/${getSpecPath()}/${runnable.parent.title} -- ${test.title} (failed).png`
         const timestamp = dayjs().format('HH:mm:ss.SSS')
 
         cy.once('test:after:run', (test) => addContext({ test }, `${timestamp}:  TEST FAILED`))
@@ -35,6 +53,12 @@ Cypress.Commands.overwrite('log', (originalFn, message, args) => {
     return null
 })
 
+/**
+ * Modified version of the screenshot command, to provide filenames as:
+ *   - sequentially numbered
+ *   - specified name
+ *   - timestamp (pass 'TIMESTAMP' as the parameter)
+ */
 Cypress.Commands.overwrite('screenshot', (originalFn, subject, name, options) => {
 
     // If name is not defined, generate a unique filename
@@ -47,7 +71,7 @@ Cypress.Commands.overwrite('screenshot', (originalFn, subject, name, options) =>
 
     let timestamp = dayjs().format('HH:mm:ss.SSS')
     cy.once('test:after:run', (test) => addContext({ test }, `${timestamp}: Screenshot '${screenshotName}.png'`))
-    cy.once('test:after:run', (test) => addContext({ test }, `screenshots/${Cypress.spec.name}/${screenshotName}.png`))
+    cy.once('test:after:run', (test) => addContext({ test }, `screenshots/${getSpecPath()}/${screenshotName}.png`))
 
     return originalFn(subject, screenshotName, options)
 })

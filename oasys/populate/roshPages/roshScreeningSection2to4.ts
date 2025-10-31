@@ -12,8 +12,7 @@ export function noRisks(withRationale: boolean = false) {
     page.r3_3.setValue('No')
     page.r3_4.setValue('No')
     page.r4_1.setValue('No')
-    page.r4_2.setValue('No')
-    page.r4_3.setValue('No')
+    page.r4_6.setValue('No')
     page.r4_4.setValue('No')
 }
 
@@ -28,7 +27,6 @@ export function fullyPopulated() {
     page.r3_3.setValue('Yes')
     page.r3_4.setValue('Yes')
     page.r4_1.setValue('Yes')
-    page.r4_2.setValue('Yes')
-    page.r4_3.setValue('Yes')
+    page.r4_6.setValue('Yes')
     page.r4_4.setValue('Yes')
 }

@@ -31,6 +31,13 @@ declare type OffenderDef = {
     postcode?: string;
     receptionCode?: string;
     dischargeCode?: string;
+    dischargeAddressLine1?: string;
+    dischargeAddressLine2?: string;
+    dischargeAddressLine3?: string;
+    dischargeAddressLine4?: string;
+    dischargeAddressLine5?: string;
+    dischargePostcode?: string;
+    dischargeTelephoneNumber?: string;
     event?: CmsEvent;
     aliases?: Alias | Alias[];
 }
@@ -69,7 +76,7 @@ declare type Offence = {
 
     offence: string,
     subcode: string,
-    additionalOffence?: string,
+    additionalOffence?: boolean,
 }
 
 declare type Alias = {

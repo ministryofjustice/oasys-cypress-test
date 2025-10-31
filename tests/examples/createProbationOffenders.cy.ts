@@ -49,7 +49,12 @@ describe('This is a sample test to create some probation offenders', () => {
                     {
                         offence: '028',
                         subcode: '01',
-                        additionalOffence: 'false',
+                        additionalOffence: false,
+                    },
+                    {
+                        offence: '030',
+                        subcode: '01',
+                        additionalOffence: true,
                     },
                 ],
         },

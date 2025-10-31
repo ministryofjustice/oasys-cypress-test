@@ -43,7 +43,7 @@ export const twoOffencesWithAliases: OffenderDef = {
             {
                 offence: '030',
                 subcode: '01',
-                additionalOffence: 'true',
+                additionalOffence: true,
             },
         ],
     },

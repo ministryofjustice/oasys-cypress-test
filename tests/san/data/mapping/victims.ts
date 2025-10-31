@@ -678,7 +678,7 @@ export const script: SanScript = {
                 { item: 'victimRelationship', value: `child` },
                 { item: 'victimAge', value: `12to15` },
                 { item: 'victimSex', value: `intersex` },
-                { item: 'victimRace', value: `Not stated` },
+                { item: 'victimRace', value: `Unknown` },
                 { item: 'saveAndContinue' },
                 { item: 'change2' },
                 { item: 'victimRelationship', value: `partner` },

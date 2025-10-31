@@ -38,7 +38,7 @@ describe('Create assessments and check SNS messages - layer 1', () => {
 
             new oasys.Pages.SentencePlan.BasicSentencePlan().goto().terminationDate.setValue({})
             oasys.Assessment.signAndLock()
-            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS'])
+            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
 
             // Second RoSHA
             oasys.Nav.history(offender)

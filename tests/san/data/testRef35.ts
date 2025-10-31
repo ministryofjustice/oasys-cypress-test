@@ -152,8 +152,6 @@ export const sanPopulation1: SanPopulation = [
             { item: 'ableSolveProblems', value: 'limited' },
             { item: 'understandOthers', value: 'no' },
             { item: 'manipulativeBehaviour', value: 'some' },
-            { item: 'riskOfSexualHarm', value: 'no' },
-            { item: 'saveAndContinue' },
             { item: 'manageTemper', value: 'sometimes' },
             { item: 'violence', value: 'yes' },
             { item: 'impulse', value: 'yes' },
@@ -162,6 +160,8 @@ export const sanPopulation1: SanPopulation = [
             { item: 'acceptSupervision', value: 'no' },
             { item: 'supportCriminalBehaviour', value: 'yes' },
             { item: 'wantChangesThinking', value: 'madeChanges' },
+            { item: 'saveAndContinue' },
+            { item: 'riskOfSexualHarm', value: 'no' },
             { item: 'saveAndContinue' },
             { item: 'practitionerAnalysis' },
             { item: 'thinkingStrengths', value: 'no' },
@@ -210,7 +210,7 @@ export const preRsrDataCheck: OasysAnswer[] = [
     { section: '11', q: '11.4', a: `1` },
     { section: '12', q: '12.1', a: `2` },
     { section: 'ROSH', q: 'R1.2.6.2_V2', a: 'NO' },   // Burglary previous
-    { section: 'ROSH', q: 'R1.2.13.1_V2', a: 'NO' },  // Weapon current
+    { section: 'ROSH', q: 'R1.2.13.2_V2', a: 'NO' },  // Weapon previous
 
 ]
 
@@ -228,6 +228,6 @@ export const postRsrDataCheck: OasysAnswer[] = [
     { section: '11', q: '11.4', a: `1` },
     { section: '12', q: '12.1', a: `2` },
     { section: 'ROSH', q: 'R1.2.6.2_V2', a: 'YES' },   // Burglary previous
-    { section: 'ROSH', q: 'R1.2.13.1_V2', a: 'YES' },  // Weapon current
+    { section: 'ROSH', q: 'R1.2.13.2_V2', a: 'YES' },  // Weapon previous
 
 ]

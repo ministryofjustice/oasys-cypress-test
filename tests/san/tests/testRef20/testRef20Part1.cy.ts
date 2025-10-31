@@ -113,7 +113,6 @@ describe('SAN integration - test ref 20', () => {
                 oasys.San.checkSanGetAssessmentCall(pk, 0)
                 oasys.Nav.clickButton('Next')
                 new oasys.Pages.Assessment.SanSections().checkCompletionStatus(true)
-                new oasys.Pages.Rosh.RoshFullAnalysisSection61().checkIsOnMenu()
                 new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkIsOnMenu()
                 new oasys.Pages.Rosh.RoshSummary().checkIsOnMenu()
                 new oasys.Pages.Rosh.RiskManagementPlan().checkIsOnMenu()

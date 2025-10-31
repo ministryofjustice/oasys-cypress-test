@@ -12,11 +12,11 @@ export class Section3 extends BaseAssessmentPage {
     /** No fixed abode */
     o3_3 = new Element.Select<YesNoMissingAnswer>('#itm_3_3')
     /** Suitability of accommodation */
-    o3_4 = new Element.Select<ProblemsAnswer>('#itm_3_4')
+    o3_4 = new Element.Select<ProblemsMissingAnswer>('#itm_3_4')
     /** Permanence of accommodation*/
-    o3_5 = new Element.Select<ProblemsAnswer>('#itm_3_5')
+    o3_5 = new Element.Select<ProblemsMissingAnswer>('#itm_3_5')
     /** Suitability of location */
-    o3_6 = new Element.Select<ProblemsAnswer>('#itm_3_6')
+    o3_6 = new Element.Select<ProblemsMissingAnswer>('#itm_3_6')
     identifyIssues = new Element.Textbox('#textarea_3_97')
     linkedToRisk = new Element.Select('#itm_3_98')
     linkedToBehaviour = new Element.Select('#itm_3_99')

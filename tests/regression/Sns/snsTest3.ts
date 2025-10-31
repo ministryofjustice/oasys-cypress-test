@@ -36,8 +36,7 @@ describe('Create assessments and check SNS messages - RoSHA plus layer 1', () =>
             roshScreening2.r3_3.setValue(`Don't Know`)
             roshScreening2.r3_4.setValue(`Don't know`)
             roshScreening2.r4_1.setValue(`Don't Know`)
-            roshScreening2.r4_2.setValue(`Don't Know`)
-            roshScreening2.r4_3.setValue(`Don't Know`)
+            roshScreening2.r4_6.setValue(`Don't Know`)
             roshScreening2.r4_4.setValue(`Don't know`)
             roshScreening2.next.click()
 
@@ -66,7 +65,7 @@ describe('Create assessments and check SNS messages - RoSHA plus layer 1', () =>
             oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
 
             oasys.Assessment.signAndLock({ page: oasys.Pages.SentencePlan.BasicSentencePlan, })
-            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS'])
+            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
 
         })
 
