@@ -25,6 +25,7 @@ function runTests(staticFlag: 'Y' | 'N') {
         },
         staticFlag: staticFlag,
         reportMode: reportMode,
+        includeObjects: false,
     }
 
     it(`Assessment pk ${pk}`, () => {

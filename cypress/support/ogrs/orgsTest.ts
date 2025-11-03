@@ -73,6 +73,11 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                 const testCaseIdentifier = (i)?.toString() ?? 'null'
 
                 const testCaseResult = calculateTestCase(testCaseParams, oracleTestCaseResult, testCaseIdentifier, testParams)
+                
+                if (!testParams.includeObjects) {
+                    testCaseResult.inputParams = null
+                    testCaseResult.outputParams = null
+                }
                 scriptResults.testCaseResults.push(testCaseResult)
                 if (testCaseResult.failed) {
                     scriptResults.failures++
@@ -128,6 +133,11 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                 errorLog.push(`    Oracle  result object:   ${JSON.stringify(oracleTestCaseResult)}`)
 
                 const testCaseResult = calculateTestCase(testCaseParams, oracleTestCaseResult, assessmentOrRsr.pk.toString(), testParams)
+                
+                if (!testParams.includeObjects) {
+                    testCaseResult.inputParams = null
+                    testCaseResult.outputParams = null
+                }
                 scriptResults.testCaseResults.push(testCaseResult)
                 if (testCaseResult.failed) {
                     scriptResults.failures++

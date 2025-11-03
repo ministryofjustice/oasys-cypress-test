@@ -4,7 +4,7 @@ import { runTest } from './testLib'
 describe('OGRS calculator test - data science test cases', () => {
 
     const start = 0
-    const end  = 1999
+    const end = 1999
 
     it('Data science test cases - static flag = N', () => {
 
@@ -15,6 +15,7 @@ describe('OGRS calculator test - data science test cases', () => {
             },
             staticFlag: 'N',
             reportMode: 'normal',
+            includeObjects: false
         }
 
         csvTestParams.csvDetails.start = start
@@ -31,6 +32,7 @@ describe('OGRS calculator test - data science test cases', () => {
             },
             staticFlag: 'Y',
             reportMode: 'normal',
+            includeObjects: false
         }
 
         csvTestParams.csvDetails.start = start
