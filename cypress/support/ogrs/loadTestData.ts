@@ -160,9 +160,9 @@ export function addCalculatedInputParameters(p: TestCaseParameters) {
     p.female = p.GENDER == 'F'
     p.out5Years = getDateDiff(p.COMMUNITY_DATE, p.ASSESSMENT_DATE, 'year') >= 5
 
-    const offenceInLast5Years = getDateDiff(p.ASSESSMENT_DATE, p.MOST_RECENT_OFFENCE, 'year')
+    const offenceInLast5Years = getDateDiff(p.MOST_RECENT_OFFENCE, p.ASSESSMENT_DATE, 'year')
     p.offenceInLast5Years = offenceInLast5Years == null ? false : offenceInLast5Years < 5
-    const sexualOffenceInLast5Years = getDateDiff(p.ASSESSMENT_DATE, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
+    const sexualOffenceInLast5Years = getDateDiff(p.DATE_RECENT_SEXUAL_OFFENCE, p.ASSESSMENT_DATE, 'year')
     p.sexualOffenceInLast5Years = sexualOffenceInLast5Years == null ? false : sexualOffenceInLast5Years < 5
 
     p.zeroSexualSanctions = p.CONTACT_ADULT_SANCTIONS == 0 && p.CONTACT_CHILD_SANCTIONS == 0 && p.INDECENT_IMAGE_SANCTIONS == 0 && p.PARAPHILIA_SANCTIONS == 0
