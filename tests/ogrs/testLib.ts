@@ -53,7 +53,7 @@ function report(testParams: OgrsTestParameters, result: OgrsTestScriptResult, ou
     }
 
     if (outputFile) {
-        cy.writeFile(`./cypress/downloads/${outputFile}.csv`, outputData.slice(0, -1), { encoding: null })
+        cy.writeFile(`./cypress/downloads/${outputFile}.csv`, outputData, { encoding: null, flag: 'a+' })  // append to existing file (or create if it's not there)
     }
 }
 
