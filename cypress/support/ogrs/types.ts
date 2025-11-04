@@ -136,6 +136,7 @@ export type MissingQuestionsResult = {
 }
 
 export type OutputParameters = {
+    ASSESSMENT_DATE: string,
     OGRS4G_CALCULATED: ScoreStatus,
     OGRS4G_YEAR_TWO: Decimal,
     OGRS4G_AAEAD: Decimal,

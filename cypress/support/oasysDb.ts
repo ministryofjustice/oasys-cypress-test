@@ -137,6 +137,7 @@ export async function getOgrsResult(query: string): Promise<string> {
             BEGIN
                 result := ${query};
                 :ret := 
+                    '''' || result.ASSESSMENT_DATE || '''|' ||
                     result.OGRS4G_CALCULATED || '|' ||
                     result.OGRS4G_YEAR_TWO || '|' ||
                     result.OGRS4G_AAEAD || '|' ||

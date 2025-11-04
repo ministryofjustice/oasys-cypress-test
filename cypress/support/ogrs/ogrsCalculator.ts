@@ -18,6 +18,7 @@ export function calculateTestCase(testCaseParams: TestCaseParameters, expectedRe
         outputParams: createOutputObject(),
         identifier: testCaseRef,
     }
+    testCaseResult.outputParams.ASSESSMENT_DATE = `'${testCaseParams.ASSESSMENT_DATE.format('DD-MMM-YY').toUpperCase()}'`
 
     // Calculate individual scores
     // Extended versions for SNSV, OGP and OVP if possible

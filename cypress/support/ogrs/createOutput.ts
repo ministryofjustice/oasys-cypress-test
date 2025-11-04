@@ -5,6 +5,7 @@ import { OutputParameters, ScoreBand, ScoreStatus, ScoreType } from './types'
 export function createOutputObject(): OutputParameters {
 
     return {
+        ASSESSMENT_DATE: null,
         OGRS4G_CALCULATED: 'N',
         OGRS4G_YEAR_TWO: null,
         OGRS4G_AAEAD: null,
