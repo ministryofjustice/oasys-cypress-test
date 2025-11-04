@@ -5,6 +5,9 @@ import * as restApi from './cypress/support/restApi'
 import * as fs from 'fs-extra'
 import * as pdf from './cypress/support/pdf'
 import { getLatestElogAndUnprocEventTime } from './cypress/support/oasysDb'
+import { noDatabaseConnection } from './localSettings'
+import { ogrsTest } from './cypress/support/ogrs/orgsTest'
+import { OgrsTestParameters, OgrsTestScriptResult } from './cypress/support/ogrs/types'
 
 const reportFolder = 'report'
 const persistedData = {}
@@ -55,7 +58,7 @@ module.exports = defineConfig({
         getAppVersion(): Promise<DbResponse> {
 
           return new Promise((resolve) => {
-            const query = `select version_number from system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc fetch first 1 row only`
+            const query = `select version_number from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc fetch first 1 row only`
             oasysDb.selectSingleValue(query).then((result) => {
               resolve(result)
             })
@@ -190,19 +193,31 @@ module.exports = defineConfig({
           return new Promise((resolve) => {
             resolve(persistedData[key] ?? null)
           })
+        },
+
+        ogrsAssessmentCalcTest(parameters: OgrsTestParameters): Promise<OgrsTestScriptResult> {
+          return new Promise((resolve) => {
+            ogrsTest(parameters).then((response) => {
+              resolve(response)
+            })
+          })
         }
 
       })
 
       on('before:run', (details) => {
-        getLatestElogAndUnprocEventTime('store')
+        if (!noDatabaseConnection) {
+          getLatestElogAndUnprocEventTime('store')
+        }
         fs.remove(reportFolder)
       })
 
       on('after:run', (results) => {
-        getLatestElogAndUnprocEventTime('check').then(() => {
-          oasysDb.closeConnection()
-        })
+        if (!noDatabaseConnection) {
+          getLatestElogAndUnprocEventTime('check').then(() => {
+            oasysDb.closeConnection()
+          })
+        }
       })
 
       on('before:browser:launch', (browser, launchOptions) => {
