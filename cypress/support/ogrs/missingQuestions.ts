@@ -29,11 +29,6 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
         return { status: 'E', count: 0, errorText: `'${errorTextScoreName[scoreType]} can't be calculated on gender other than Male and Female.'` }
     }
 
-    // RSR special rules
-    if (scoreType == 'rsr' && params.female && params.ONE_POINT_THIRTY == 'Y' && params.zeroSexualSanctions) {
-        return { status: 'E', count: 1, errorText: `'${getErrorText('SEXUAL_SANCTION_SCORES')}\n'` }
-    }
-
     // Standard missing questions
     standardCheck(params, required, missing, 'ONE_POINT_THIRTY')
     standardCheck(params, required, missing, 'DOB')
@@ -81,7 +76,7 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
     standardCheck(params, required, missing, 'CRIMINAL_DAMAGE_LIFE')
     standardCheck(params, required, missing, 'ARSON')
 
-    if (['osp_c', 'osp_i', 'rsr'].includes(scoreType) && params.male && params.ONE_POINT_THIRTY == 'Y' && params.zeroSexualSanctions) {
+    if (['osp_c', 'osp_i', 'rsr'].includes(scoreType) && params.ONE_POINT_THIRTY == 'Y' && params.zeroSexualSanctions) {
         missing.push(getErrorText('SEXUAL_SANCTION_SCORES'))
     }
     if (scoreType != 'rsr' || (params.male && params.ONE_POINT_THIRTY == 'Y')) {
