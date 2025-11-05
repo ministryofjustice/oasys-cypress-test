@@ -114,7 +114,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
 
         for (const assessmentOrRsr of oasysData) {
             const errorLog: string[] = []
-            // try {
+            try {
             const testCaseParams = testParams.dbDetails.type == 'assessment' ?
                 createAssessmentTestCase(assessmentOrRsr as OgrsAssessment) : createRsrTestCase(assessmentOrRsr as OgrsRsr)
             errorLog.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
@@ -145,22 +145,22 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                     scriptResults.failures++
                 }
             }
-            // } catch (e) {
-            //     const logText: string[] = ['']
-            //     if (testParams.reportMode != 'none') {
-            //         logText.push(`Test case ${assessmentOrRsr.pk.toString()}  ERROR *** FAILED ***`)
-            //         logText.push(`    Error:   ${e}`)
-            //         errorLog.forEach((line) => logText.push(line))
-            //     }
-            //     scriptResults.testCaseResults.push({
-            //         logText: logText,
-            //         inputParams: null,
-            //         outputParams: null,
-            //         failed: true,
-            //         identifier: null,
-            //     })
-            //     scriptResults.failures++
-            // }
+            } catch (e) {
+                const logText: string[] = ['']
+                if (testParams.reportMode != 'none') {
+                    logText.push(`Test case ${assessmentOrRsr.pk.toString()}  ERROR *** FAILED ***`)
+                    logText.push(`    Error:   ${e}`)
+                    errorLog.forEach((line) => logText.push(line))
+                }
+                scriptResults.testCaseResults.push({
+                    logText: logText,
+                    inputParams: null,
+                    outputParams: null,
+                    failed: true,
+                    identifier: null,
+                })
+                scriptResults.failures++
+            }
         }
     }
 
