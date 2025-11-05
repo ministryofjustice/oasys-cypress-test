@@ -9,7 +9,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/oracledb": "^6.10.0",
     "@types/pdf-parse": "^1.1.4",
-    "cypress": "^14.1.0",
+    "cypress": "^15.6.0",
     "dayjs": "^1.11.19",
     "decimal.js": "^10.6.0",
     "fs-extra": "^11.3.2",

@@ -1,6 +1,6 @@
-import * as dayjs from 'dayjs'
-import * as customParseFormat from 'dayjs/plugin/customParseFormat'
-import * as utc from 'dayjs/plugin/utc'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import utc from 'dayjs/plugin/utc'
 
 import { OgrsOffenceCat, TestCaseParameters } from '../types'
 import { OgrsRsr } from './dbClasses'

@@ -1,4 +1,3 @@
-import * as dayjs from 'dayjs'
 import * as customParseFormat from 'dayjs/plugin/customParseFormat'
 
 import * as dbClasses from './dbClasses'
@@ -112,8 +111,8 @@ export function getReformattedDateAnswer(data: string[][], section: string, ques
 
     let dateString = getTextAnswer(data, section, question)
 
-    dayjs.extend(customParseFormat)
-    let date = dayjs(dateString, 'DD/MM/YYYY')
+    Cypress.dayjs.extend(customParseFormat)
+    let date = Cypress.dayjs(dateString, 'DD/MM/YYYY')
     return date.isValid() ? date.format('YYYY-MM-DD') : ''
 }
 

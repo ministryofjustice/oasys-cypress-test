@@ -8,8 +8,6 @@
 
 
 import { User } from 'classes'
-import * as dayjs from 'dayjs'
-import * as customParseFormat from 'dayjs/plugin/customParseFormat'
 
 import * as oasys from 'oasys'
 import { sanIds } from '../../tests/data/sanIds'
@@ -550,9 +548,8 @@ export function checkLastUpdateTime(pk: number, resultAlias: string) {
 
     oasys.Db.getData(query, 'updateTimes')
     cy.get<string[][]>('@updateTimes').then((updateTimes) => {
-        dayjs.extend(customParseFormat)
-        const updated = dayjs(updateTimes[0][0], 'YYYY-MM-DD HH:mm:ss')
-        const timeNow = dayjs(updateTimes[0][1], 'YYYY-MM-DD HH:mm:ss')
+        const updated = Cypress.dayjs(updateTimes[0][0], 'YYYY-MM-DD HH:mm:ss')
+        const timeNow = Cypress.dayjs(updateTimes[0][1], 'YYYY-MM-DD HH:mm:ss')
         const diff = timeNow.diff(updated)  // ms
         let failed = false
         if (diff > 30000) {  // 30 seconds - allows time from updating SAN, returning to OASys and updating the db.
@@ -572,9 +569,9 @@ export function getSanApiTime(pk: number, type: 'SAN_GET_ASSESSMENT' | 'SAN_CREA
     oasys.Db.getData(query, 'clogData')
     cy.get<string[][]>('@clogData').then((clogData) => {
         cy.log(JSON.stringify(clogData))
-        let result: dayjs.Dayjs = null
+        let result: Dayjs = null
         if (clogData.length > 0) {
-            result = dayjs(clogData[0][0], 'YYYY-MM-DD HH:mm:ss.SSS')
+            result = Cypress.dayjs(clogData[0][0], 'YYYY-MM-DD HH:mm:ss.SSS')
         }
 
         cy.wrap(result).as(resultAlias)
@@ -754,8 +751,7 @@ export function checkSanOtlCall(pk: number, expectedSubjectDetails: { [keys: str
 
     cy.log(`Checking OTL call for ${pk}`)
     if (expectedSubjectDetails['dateOfBirth']) {  // reformat the date
-        dayjs.extend(customParseFormat)
-        expectedSubjectDetails['dateOfBirth'] = dayjs(oasys.oasysDate(expectedSubjectDetails['dateOfBirth']), 'DD/MM/YYYY').format('YYYY-MM-DD')
+        expectedSubjectDetails['dateOfBirth'] = Cypress.dayjs(oasys.oasysDate(expectedSubjectDetails['dateOfBirth']), 'DD/MM/YYYY').format('YYYY-MM-DD')
     }
 
     const query = `select log_text from clog where log_source like '%${pk}%onetime%' order by time_stamp desc fetch first 2 rows only`

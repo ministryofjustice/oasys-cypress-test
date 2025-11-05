@@ -78,8 +78,8 @@ export function checkDbValues(table: string, where: string, values: { [keys: str
                         failed = true
                     }
                 } else {
-                    const actual = dayjs(data[0][col], 'YYYY-MM-DD HH:mm:ss')
-                    const expected = dayjs(expectedValues[col], 'YYYY-MM-DD HH:mm:ss')
+                    const actual = Cypress.dayjs(data[0][col], 'YYYY-MM-DD HH:mm:ss')
+                    const expected = Cypress.dayjs(expectedValues[col], 'YYYY-MM-DD HH:mm:ss')
                     if (actual.diff(expected) > 15000) {  // TODO change this tolerance?
                         cy.groupedLog(`Expected ${columnNames[col]} to be ${expected}, got ${actual}`)
                         failed = true

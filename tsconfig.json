@@ -8,11 +8,14 @@
         "types": [
             "cypress",
             "node",
-            "./cypress/support/index.d.ts"
+            "./cypress/support/index.d.ts",
+            "./cypress/global.d.ts"
         ],
         "rootDir": ".",
         "baseUrl": "oasys",
-        "moduleResolution": "node"
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true
     },
     "include": [
         "**/*.ts",

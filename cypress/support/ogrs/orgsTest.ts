@@ -114,53 +114,53 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
 
         for (const assessmentOrRsr of oasysData) {
             const errorLog: string[] = []
-            try {
-                const testCaseParams = testParams.dbDetails.type == 'assessment' ?
-                    createAssessmentTestCase(assessmentOrRsr as OgrsAssessment) : createRsrTestCase(assessmentOrRsr as OgrsRsr)
-                errorLog.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
+            // try {
+            const testCaseParams = testParams.dbDetails.type == 'assessment' ?
+                createAssessmentTestCase(assessmentOrRsr as OgrsAssessment) : createRsrTestCase(assessmentOrRsr as OgrsRsr)
+            errorLog.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
 
-                // Run generate two sets of scores, for static flag Y and N
-                for (let staticFlag of ['Y', 'N']) {
-                    scriptResults.cases++
-                    testCaseParams.STATIC_CALC = staticFlag
+            // Run generate two sets of scores, for static flag Y and N
+            for (let staticFlag of ['Y', 'N']) {
+                scriptResults.cases++
+                testCaseParams.STATIC_CALC = staticFlag
 
-                    // Call the calculator in Oracle
-                    const functionCall = getFunctionCall(testCaseParams)
-                    errorLog.push(`    Oracle call:    ${JSON.stringify(functionCall)}`)
-                    const oracleTestCaseValues = await getOgrsResult(functionCall)
-                    errorLog.push(`    Oracle  results:   ${oracleTestCaseValues}`)
+                // Call the calculator in Oracle
+                const functionCall = getFunctionCall(testCaseParams)
+                errorLog.push(`    Oracle call:    ${JSON.stringify(functionCall)}`)
+                const oracleTestCaseValues = await getOgrsResult(functionCall)
+                errorLog.push(`    Oracle  results:   ${oracleTestCaseValues}`)
 
-                    const oracleTestCaseResult = loadExpectedValues(oracleTestCaseValues.split('|'))
-                    errorLog.push(`    Oracle  result object:   ${JSON.stringify(oracleTestCaseResult)}`)
+                const oracleTestCaseResult = loadExpectedValues(oracleTestCaseValues.split('|'))
+                errorLog.push(`    Oracle  result object:   ${JSON.stringify(oracleTestCaseResult)}`)
 
-                    // Call the calculator in Cypress and compare against the Oracle result
-                    const testCaseResult = calculateTestCase(testCaseParams, oracleTestCaseResult, assessmentOrRsr.pk.toString(), testParams)
+                // Call the calculator in Cypress and compare against the Oracle result
+                const testCaseResult = calculateTestCase(testCaseParams, oracleTestCaseResult, assessmentOrRsr.pk.toString(), testParams)
 
-                    if (!testParams.includeObjects) {
-                        testCaseResult.inputParams = null
-                        testCaseResult.outputParams = null
-                    }
-                    scriptResults.testCaseResults.push(testCaseResult)
-                    if (testCaseResult.failed) {
-                        scriptResults.failures++
-                    }
+                if (!testParams.includeObjects) {
+                    testCaseResult.inputParams = null
+                    testCaseResult.outputParams = null
                 }
-            } catch (e) {
-                const logText: string[] = ['']
-                if (testParams.reportMode != 'none') {
-                    logText.push(`Test case ${assessmentOrRsr.pk.toString()}  ERROR *** FAILED ***`)
-                    logText.push(`    Error:   ${e}`)
-                    errorLog.forEach((line) => logText.push(line))
+                scriptResults.testCaseResults.push(testCaseResult)
+                if (testCaseResult.failed) {
+                    scriptResults.failures++
                 }
-                scriptResults.testCaseResults.push({
-                    logText: logText,
-                    inputParams: null,
-                    outputParams: null,
-                    failed: true,
-                    identifier: null,
-                })
-                scriptResults.failures++
             }
+            // } catch (e) {
+            //     const logText: string[] = ['']
+            //     if (testParams.reportMode != 'none') {
+            //         logText.push(`Test case ${assessmentOrRsr.pk.toString()}  ERROR *** FAILED ***`)
+            //         logText.push(`    Error:   ${e}`)
+            //         errorLog.forEach((line) => logText.push(line))
+            //     }
+            //     scriptResults.testCaseResults.push({
+            //         logText: logText,
+            //         inputParams: null,
+            //         outputParams: null,
+            //         failed: true,
+            //         identifier: null,
+            //     })
+            //     scriptResults.failures++
+            // }
         }
     }
 

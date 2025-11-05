@@ -16,6 +16,16 @@
 import './commands'
 import { testEnvironment, noDatabaseConnection, noOasys } from '../../localSettings'
 
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import utc from 'dayjs/plugin/utc'
+import isLeapYear from 'dayjs/plugin/isLeapYear'
+
+Cypress.dayjs = dayjs
+Cypress.dayjs.extend(customParseFormat)
+Cypress.dayjs.extend(utc)
+Cypress.dayjs.extend(isLeapYear)
+
 beforeEach(() => {
 
     if (noDatabaseConnection) {

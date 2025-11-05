@@ -1,7 +1,3 @@
-import * as dayjs from 'dayjs'
-import * as customParseFormat from 'dayjs/plugin/customParseFormat'
-import * as utc from 'dayjs/plugin/utc'
-import * as isLeapYear from 'dayjs/plugin/isLeapYear'
 import { Decimal } from 'decimal.js'
 
 import { TestCaseParameters, OgrsOffenceCat, OutputParameters } from './types'
@@ -13,10 +9,6 @@ export function loadParameterSet(parameterLine: string): TestCaseParameters {
 
     const parameters = parameterLine.split(',')
     let i = 0
-
-    dayjs.extend(customParseFormat)
-    dayjs.extend(utc)
-    dayjs.extend(isLeapYear)
 
     const p: TestCaseParameters = {
         ASSESSMENT_DATE: getDate(parameters[i++]),
@@ -94,9 +86,9 @@ function getString(param: string): string {
     return param == '' || param == 'null' || param == null ? null : param
 }
 
-function getDate(param: string): dayjs.Dayjs {
+function getDate(param: string): Dayjs {
 
-    const result = dayjs.utc(param, dateFormat)
+    const result = Cypress.dayjs.utc(param, dateFormat)
     return !result.isValid() ? null : result
 }
 
@@ -104,7 +96,7 @@ function getInteger(param: string): number {
     return param == '' || param == null || param.toLowerCase() == 'null' ? null : Number.parseInt(param)
 }
 
-function getDateDiff(firstDate: dayjs.Dayjs, secondDate: dayjs.Dayjs, unit: 'year' | 'month', ofm: boolean = false): number {
+function getDateDiff(firstDate: Dayjs, secondDate: Dayjs, unit: 'year' | 'month', ofm: boolean = false): number {
 
     if (firstDate == null || secondDate == null) {
         return null

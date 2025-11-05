@@ -1,5 +1,3 @@
-import * as dayjs from 'dayjs'
-
 import * as oasys from 'oasys'
 import { restApiUrls } from 'environments'
 
@@ -9,7 +7,7 @@ import { restApiUrls } from 'environments'
  */
 describe('RestAPI regression tests', () => {
 
-    const startTime = dayjs().format('YYYY-MM-DD HH:mm:ss')
+    const startTime = Cypress.dayjs().format('YYYY-MM-DD HH:mm:ss')
 
     let stats: EndpointStat[] = []
 
@@ -145,7 +143,7 @@ describe('RestAPI regression tests', () => {
         reportStats()
         cy.groupedLogEnd()
 
-        let elapsedTimeS = Math.round(dayjs().diff(startTime) / 1000)
+        let elapsedTimeS = Math.round(Cypress.dayjs().diff(startTime) / 1000)
         cy.groupedLogStart('Totals')
         cy.groupedLog(`Offenders: ${offenderCount * 2 + offenderCountEarly * 8 + extraTestCases.length}`)
         cy.groupedLog(`API calls: ${totalApiCount}`)
