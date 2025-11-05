@@ -4,7 +4,7 @@ import { runTest } from './testLib'
 const count = 10000
 const reportMode: ReportMode = 'minimal'
 
-describe('OGRS calculator test - static flag = N', () => {
+describe('OGRS calculator test', () => {
 
     const dbTestParams: OgrsTestParameters = {
         testType: 'db',
