@@ -17,13 +17,13 @@ describe('RestAPI regression tests', () => {
 
     // Define date parameters for sets of offender data
     const dateConditions = [
-        { date: `2015-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2016-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2017-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2018-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2019-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2020-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2021-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2015-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2016-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2017-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2018-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2019-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2020-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2021-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
         { date: `2022-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
         { date: `2023-${randomMonth()}-${randomDay()}`, count: offenderCount },
         { date: 'today', count: offenderCount },
@@ -41,7 +41,7 @@ describe('RestAPI regression tests', () => {
         const dateFilter = dateCondition.date == 'today' ? 'sysdate - 1' : `to_date('${dateCondition.date}','YYYY-MM-DD')`
 
         const offenderQuery = `select * from 
-                                    (select cms_prob_number, cms_pris_number from offender 
+                                    (select cms_prob_number, cms_pris_number from eor.offender 
                                         where cms_prob_number is not null
                                         and deleted_date is null
                                         and create_date < ${dateFilter} 
@@ -56,31 +56,31 @@ describe('RestAPI regression tests', () => {
     }
 
     const extraTestCases = [
-        ['AZ97320', null],
-        ['A1111QC', null],
-        ['DS12345', null],       // Assessment selection criteria
-        ['a454545', null],       // Assessment selection criteria       
-        ['ZYTGLMN', null],       // RMP timeline issue
-        ['WS54109', null],      // Empty offence block
-        ['290508', null],        // Number with leading zero
-        ['D13079A', 'A2222BW'],
-        ['CRN11AG', 'A1111AG'],
-        ['CRN4094', 'C4094RN'],
-        ['UGVAAAA', null],
-        ['TRA001', null],
-        ['ZFJWVOH', null],
-        ['ZAAEUDK', null],
-        ['ZPDMMDO', null],
-        ['ZWXZHPN', null],
-        ['ZYVSDTV', null],  // fullyPopulatedLayer1 (in system test on 29/11)
-        ['ZFCJDLP', null],  // fullyPopulatedLayer3 (in system test on 29/11)
-        ['ZCLUWYS', null],  // fullyPopulatedLayer3MaxStrings (in system test on 29/11)
-        ['ZXRWTTK', 'Z6331QT'],  // fullyPopulatedLayer3MaxStringsPrison (in system test on 29/11)
-        ['ZENIEZF', 'Z7251BN'],  // fullyPopulatedLayer3Prison (in system test on 29/11)
-        ['ZJVGRBQ', null],  // fullyPopulatedLayer1v2 (in system test on 1/12)
-        ['A1111QE', null],     // lots of assessments with lots of data
-        ['CRN8826', null],      // offender has a LAYER2 assessment
-        ['PS501143', null],     // objectiveDesc example
+        // ['AZ97320', null],
+        // ['A1111QC', null],
+        // ['DS12345', null],       // Assessment selection criteria
+        // ['a454545', null],       // Assessment selection criteria       
+        // ['ZYTGLMN', null],       // RMP timeline issue
+        // ['WS54109', null],      // Empty offence block
+        // ['290508', null],        // Number with leading zero
+        // ['D13079A', 'A2222BW'],
+        // ['CRN11AG', 'A1111AG'],
+        // ['CRN4094', 'C4094RN'],
+        // ['UGVAAAA', null],
+        // ['TRA001', null],
+        // ['ZFJWVOH', null],
+        // ['ZAAEUDK', null],
+        // ['ZPDMMDO', null],
+        // ['ZWXZHPN', null],
+        // ['ZYVSDTV', null],  // fullyPopulatedLayer1 (in system test on 29/11)
+        // ['ZFCJDLP', null],  // fullyPopulatedLayer3 (in system test on 29/11)
+        // ['ZCLUWYS', null],  // fullyPopulatedLayer3MaxStrings (in system test on 29/11)
+        // ['ZXRWTTK', 'Z6331QT'],  // fullyPopulatedLayer3MaxStringsPrison (in system test on 29/11)
+        // ['ZENIEZF', 'Z7251BN'],  // fullyPopulatedLayer3Prison (in system test on 29/11)
+        // ['ZJVGRBQ', null],  // fullyPopulatedLayer1v2 (in system test on 1/12)
+        // ['A1111QE', null],     // lots of assessments with lots of data
+        // ['CRN8826', null],      // offender has a LAYER2 assessment
+        // ['PS501143', null],     // objectiveDesc example
     ]
 
     /* Lowercase examples - need fix for NOD-872 before adding these

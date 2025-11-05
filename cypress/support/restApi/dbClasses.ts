@@ -40,7 +40,7 @@ export class DbOffenderWithAssessments {
     static query(crnSource: Provider, crn: string): string {
         return `select offender_pk, cms_prob_number, cms_pris_number, risk_to_others_elm, limited_access_offender, 
                     pnc, forename_1, family_name, gender_elm, custody_ind
-                    from offender where deleted_date is null 
+                    from eor.offender where deleted_date is null 
                     and ${crnSource == 'prob' ? 'cms_prob_number' : 'cms_pris_number'} = '${crn}'`
     }
 }
@@ -137,7 +137,7 @@ export class DbAssessment extends DbAssessmentOrRsr {
                     s.cms_event_number, s.purpose_assessment_elm, s.purpose_assmt_other_ftxt, assessor_name, s.version_number, s.parent_oasys_set_pk, 
                     s.osp_iic_risk_recon_elm, s.osp_iic_percentage_score, s.osp_dc_risk_recon_elm, s.osp_dc_percentage_score,
                     s.san_assessment_linked_ind     
-                    from offender o, oasys_assessment_group g, oasys_set s, oasys_set_change c 
+                    from eor.offender o, eor.oasys_assessment_group g, eor.oasys_set s, eor.oasys_set_change c 
                     where ${crnSource == 'prob' ? 'o.cms_prob_number' : 'o.cms_pris_number'} = '${crn}'
                     and o.offender_pk = g.offender_PK and g.oasys_assessment_group_PK = s.oasys_assessment_group_PK 
                     and c.oasys_set_pk = s.oasys_set_pk 
@@ -148,7 +148,7 @@ export class DbAssessment extends DbAssessmentOrRsr {
     static courtQuery(assessmentPk: number): string {
 
         return `select c.court_code, c.court_name, c.court_type_elm 
-                    from court c, offence_block o 
+                    from eor.court c, eor.offence_block o 
                     where o.oasys_set_pk = ${assessmentPk} and o.offence_block_type_elm = 'CURRENT' 
                     and c.court_pk = o.court_pk`
     }
@@ -156,8 +156,8 @@ export class DbAssessment extends DbAssessmentOrRsr {
     static qaQuery(assessmentPk: number): string {
 
         return `select q.ref_section_code, q.ref_question_code, ra.ref_section_answer
-                    from oasys_question q, oasys_answer a, ref_answer ra
-                    where q.oasys_section_pk in (select oasys_section_pk from oasys_Section where oasys_set_pk = ${assessmentPk} and currently_hidden_ind <> 'Y')
+                    from eor.oasys_question q, eor.oasys_answer a, eor.ref_answer ra
+                    where q.oasys_section_pk in (select oasys_section_pk from eor.oasys_Section where oasys_set_pk = ${assessmentPk} and currently_hidden_ind <> 'Y')
                     and q.oasys_question_pk = a.oasys_question_pk
                     and ra.ref_ass_version_code = a.ref_ass_version_code
                     and ra.version_number = a.version_number
@@ -171,8 +171,8 @@ export class DbAssessment extends DbAssessmentOrRsr {
     static textAnswerQuery(assessmentPk: number): string {
 
         return `select ref_section_code, ref_question_code, free_format_answer, additional_note, currently_hidden_ind  
-                    from oasys_question
-                    where oasys_section_pk in (select oasys_section_pk from oasys_Section where oasys_set_pk = ${assessmentPk} and currently_hidden_ind <> 'Y')
+                    from eor.oasys_question
+                    where oasys_section_pk in (select oasys_section_pk from eor.oasys_Section where oasys_set_pk = ${assessmentPk} and currently_hidden_ind <> 'Y')
                     and (free_format_answer is not null or additional_note is not null)`
     }
 }
@@ -200,7 +200,7 @@ export class DbRsr extends DbAssessmentOrRsr {
                             r.osp_i_percentage_score, r.osp_c_percentage_score, r.osp_i_risk_recon_elm, r.osp_c_risk_recon_elm,
                             o.cms_event_number,
                             r.osp_iic_risk_recon_elm, r.osp_iic_percentage_score, r.osp_dc_risk_recon_elm, r.osp_dc_percentage_score  
-                            from offender_rsr_scores r, offender o 
+                            from eor.offender_rsr_scores r, eor.offender o 
                             where r.offender_pk = o.offender_pk and ${crnSource == 'prob' ? 'o.cms_prob_number' : 'o.cms_pris_number'} = '${crn}' 
                             and o.deleted_date is null and r.deleted_date is null 
                             order by r.initiation_date`
@@ -350,13 +350,13 @@ export class DbOffence {
     static query(assessmentPk: number): string {
 
         return `select offence_block_pk, offence_block_type_elm, to_char(offence_date, 'YYYY-MM-DD\"T\"HH24:MI:SS') 
-                    from offence_block 
+                    from eor.offence_block 
                     where oasys_set_pk = ${assessmentPk} and offence_block_type_elm in ('CURRENT', 'CONCURRENT', 'PRINCIPAL_PROPOSAL')`
     }
 
     static pivotQuery(offenceBlockPk: string): string {
         return `select p.offence_group_code, p.sub_code, o.offence_group_desc, o.sub_offence_desc, p.additional_offence_ind 
-                    from ct_offence_pivot p, ct_offence o
+                    from eor.ct_offence_pivot p, eor.ct_offence o
                     where o.offence_group_code = p.offence_group_code and o.sub_code = p.sub_code
                     and p.offence_block_pk = ${offenceBlockPk}`
     }
@@ -381,11 +381,11 @@ export class DbVictim {
     }
 
     static query(assessmentPk: number): string {
-        return `select v.display_sort, ar.ref_element_desc, gr.ref_element_desc, er.ref_element_desc, rr.ref_element_desc from victim v
-                        left outer join ref_element ar on v.age_of_victim_elm = ar.ref_element_code and ar.ref_category_code = 'AGE_OF_VICTIM'
-                        left outer join ref_element gr on v.gender_elm = gr.ref_element_code and gr.ref_category_code = 'GENDER'
-                        left outer join ref_element er on v.ethnic_category_elm = er.ref_element_code and er.ref_category_code = 'ETHNIC_CATEGORY'
-                        left outer join ref_element rr on v.victim_relation_elm = rr.ref_element_code and rr.ref_category_code = 'VICTIM_PERPETRATOR_RELATIONSHIP'
+        return `select v.display_sort, ar.ref_element_desc, gr.ref_element_desc, er.ref_element_desc, rr.ref_element_desc from eor.victim v
+                        left outer join eor.ref_element ar on v.age_of_victim_elm = ar.ref_element_code and ar.ref_category_code = 'AGE_OF_VICTIM'
+                        left outer join eor.ref_element gr on v.gender_elm = gr.ref_element_code and gr.ref_category_code = 'GENDER'
+                        left outer join eor.ref_element er on v.ethnic_category_elm = er.ref_element_code and er.ref_category_code = 'ETHNIC_CATEGORY'
+                        left outer join eor.ref_element rr on v.victim_relation_elm = rr.ref_element_code and rr.ref_category_code = 'VICTIM_PERPETRATOR_RELATIONSHIP'
                         where v.oasys_set_pk = ${assessmentPk}`
     }
 
@@ -411,7 +411,7 @@ export class DbSection {
     static query(assessmentPk: number): string {
 
         return `select s.ref_section_code, s.oasys_section_pk, s.sect_other_weighted_score, s.low_score_need_attn_ind, r.crim_need_score_threshold
-                    from oasys_section s, ref_section r 
+                    from eor.oasys_section s, eor.ref_section r 
                     where s.oasys_set_pk = ${assessmentPk}
                     and r.ref_section_code = s.ref_section_code
                     and r.ref_ass_version_code = s.ref_ass_version_code
@@ -435,7 +435,7 @@ export class DbBspObjective {
     static query(assessmentPk: number): string {
 
         return `select offence_behav_link_elm, r.ref_element_desc 
-                    from basic_sentence_plan_obj o, ref_element r
+                    from eor.basic_sentence_plan_obj o, eor.ref_element r
                     where o.oasys_set_pk = ${assessmentPk}
                     and r.ref_category_code = o.offence_behav_link_cat
                     and r.ref_element_code = o.offence_behav_link_elm`
@@ -471,7 +471,7 @@ export class DbObjective {
 
         return `select ois.ssp_objectives_in_set_pk, o.objective_desc, m.objective_status_elm, ois.display_sort, so.objective_code, 
                     REPLACE( so.objective_desc, chr(2),''), r.ref_element_desc  
-                    from ssp_objectives_in_set ois, ssp_objective so, objective o, ssp_objective_measure m, ref_element r 
+                    from eor.ssp_objectives_in_set ois, eor.ssp_objective so, eor.objective o, eor.ssp_objective_measure m, eor.ref_element r 
                     where so.ssp_objectives_in_set_pk = ois.ssp_objectives_in_set_pk
                     and m.ssp_objectives_in_set_pk = ois.ssp_objectives_in_set_pk
                     and o.objective_code = so.objective_code
@@ -496,7 +496,7 @@ export class DbNeed {
     static query(objectivePk: string): string {
 
         return `select c.criminogenic_need_elm, r.ref_element_desc
-                    from ssp_crim_need_obj_pivot c, ref_element r
+                    from eor.ssp_crim_need_obj_pivot c, eor.ref_element r
                     where c.ssp_objectives_in_set_pk = ${objectivePk}
                     and r.ref_category_code = c.criminogenic_need_cat and r.ref_element_code = c.criminogenic_need_elm`
     }
@@ -519,7 +519,7 @@ export class DbAction {
     static query(objectivePk: string): string {
 
         return `select i.intervention_elm, r.ref_element_desc, i.intervention_comment
-                    from ssp_intervention_in_set i, ssp_obj_intervene_pivot p, ref_element r
+                    from eor.ssp_intervention_in_set i, eor.ssp_obj_intervene_pivot p, eor.ref_element r
                     where p.ssp_intervention_in_set_pk = i.ssp_intervention_in_set_pk
                     and p.ssp_objectives_in_set_pk = ${objectivePk}
                     and r.ref_category_code = i.intervention_cat and r.ref_element_code = i.intervention_elm`

@@ -1,3 +1,5 @@
+import dayjs from 'dayjs'
+
 import * as db from '../oasysDb'
 import { DbOffenderWithAssessments, DbAssessment, DbVictim, DbOffence, DbRsr, DbSection, DbAction, DbObjective, DbBspObjective, DbNeed } from './dbClasses'
 
@@ -14,12 +16,12 @@ export async function getOffenderWithAssessments(crnSource: Provider, crn: strin
 
     // Database queries are (mostly) defined in the relevant class definitions
 
-    let start = Cypress.dayjs()
+    let start = dayjs()
 
     // Get application versions
     if (versionTable == null) {
         const versionTableData = await db.selectData(`select version_number, to_char(release_date, 'YYYY-MM-DD\"T\"HH24:MI:SS') 
-        from system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc`)
+        from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc`)
         if (versionTableData.error != null) throw new Error(versionTableData.error)
         versionTable = versionTableData.data as string[][]
     }
@@ -134,6 +136,6 @@ export async function getOffenderWithAssessments(crnSource: Provider, crn: strin
     dbOffender.assessments.sort((a, b) => (a.initiationDate > b.initiationDate) ? 1 : ((b.initiationDate > a.initiationDate) ? -1 : 0))
 
     // Record time elapsed in database load
-    dbOffender.dbElapsedTime = Cypress.dayjs().diff(start)
+    dbOffender.dbElapsedTime = dayjs().diff(start)
     return dbOffender
 }
