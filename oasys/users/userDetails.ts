@@ -1,4 +1,5 @@
 import { User } from 'classes/user'
+import { testEnvironment } from '../../localSettings'
 
 /**
  * Defines a standard set of users and providers for regression testing
@@ -7,6 +8,8 @@ import { User } from 'classes/user'
  * The separate createOrUpdateAdminUser script will create or update the admin user profiles.
  * 
  * All users will be configured to use the first LAU and Team in the select lists.
+ * 
+ * Passwords are held in the localSettings file
  * 
 */
 
@@ -22,21 +25,21 @@ import { User } from 'classes/user'
  *  - Case Admin Prison
  */
 
+const t2 = testEnvironment.name.includes('T2')
+
 /////////////// Providers //////////////
 export const probationNonSan = 'Bedfordshire'
 export const probationNonSanCode = 'BED'
 export const probationSan = 'Durham'
 export const probationSanCode = 'DRH'
-export const prisonNonSan = 'Kirklevington (HMP)'
-export const prisonNonSanCode = '680'
-export const prisonSan = 'Altcourse (HMP)'
-export const prisonSanCode = '520'
+export const prisonNonSan = t2 ? 'Risley (HMP)' : 'Kirklevington (HMP)'
+export const prisonNonSanCode = t2 ? '560' : '680'
+export const prisonSan = t2 ? '730' : 'Altcourse (HMP)'
+export const prisonSanCode = t2 ? 'Leeds (HMP)' : '520'
 
 ///////////// GLOBAL ADMIN //////
 // This user is used only for setting up the admin users that will be used by Cypress
-export const globalAdminUser = 'OASYS_ADMIN'
-export const globalAdminPassword = 'password'
-
+export const globalAdminUser = t2 ? 'CENTRALSUPPORTONE' : 'OASYS_ADMIN'
 
 /**
  * AUTOADMIN-xx
@@ -46,10 +49,10 @@ export const globalAdminPassword = 'password'
 export const admin: User = new User({ username: 'AUTOADMIN', forename1: 'Autotest', surname: 'ADMIN' })
 
 export const adminProfiles: { provider: string, frameworkRole: FrameworkRole, defaultCountersigner: User, roles: string[] }[] = [
-    { provider: probationNonSan, frameworkRole: 'Not Allocated', defaultCountersigner: null, roles: ['Sys Admin (Central)'] },
-    { provider: probationSan, frameworkRole: 'Not Allocated', defaultCountersigner: null, roles: ['Sys Admin (Central)'] },
-    { provider: prisonNonSan, frameworkRole: 'Not Allocated', defaultCountersigner: null, roles: ['Sys Admin (Central)'] },
-    { provider: prisonSan, frameworkRole: 'Not Allocated', defaultCountersigner: null, roles: ['Sys Admin (Central)'] },
+    { provider: probationNonSan, frameworkRole: null, defaultCountersigner: null, roles: ['Sys Admin (Central)'] },
+    { provider: probationSan, frameworkRole: null, defaultCountersigner: null, roles: ['Sys Admin (Central)'] },
+    { provider: prisonNonSan, frameworkRole: null, defaultCountersigner: null, roles: ['Sys Admin (Central)'] },
+    { provider: prisonSan, frameworkRole: null, defaultCountersigner: null, roles: ['Sys Admin (Central)'] },
 ]
 
 
@@ -58,14 +61,14 @@ export const adminProfiles: { provider: string, frameworkRole: FrameworkRole, de
 /**
  * AUTOHEADPDU-xx
  *   - Forename/surname: Autotest HEADPDU-xx
- *   - Framework role: Head of PDU
+ *   - Framework role: Head of PDU - No Countersigning required
  *   - Provider: Probation non-SAN
  *   - Default countersigner: none
  *   - Roles: NPS Assessor, Trainer, SARA
  */
 export const probHeadPdu: User = new User(
     { username: 'AUTOHEADPDU', forename1: 'Autotest', surname: 'HEADPDU' },
-    { provider: probationNonSan, frameworkRole: 'Head of PDU', defaultCountersigner: null, roles: ['NPS Assessor', 'Trainer', 'SARA'] }
+    { provider: probationNonSan, frameworkRole: 'Legacy - Head of PDU', defaultCountersigner: null, roles: ['NPS Assessor', 'Trainer', 'SARA'] }
 )
 
 /**
@@ -78,7 +81,7 @@ export const probHeadPdu: User = new User(
  */
 export const probPso: User = new User(
     { username: 'AUTOPSO', forename1: 'Autotest', surname: 'PSO' },
-    { provider: probationNonSan, frameworkRole: 'Approved PSO, approved PQiP, NQO or unapproved PO', defaultCountersigner: null, roles: ['NPS Assessor', 'Trainer'] }
+    { provider: probationNonSan, frameworkRole: 'Legacy - Approved PSO, approved PQiP, NQO or unapproved PO', defaultCountersigner: null, roles: ['NPS Assessor', 'Trainer'] }
 )
 
 
@@ -110,7 +113,7 @@ export const prisHomds: User = new User(
  */
 export const probSanHeadPdu: User = new User(
     { username: 'AUTOSANHEADPDU', forename1: 'Autotest', surname: 'SANHEADPDU' },
-    { provider: probationSan, frameworkRole: 'Head of PDU', defaultCountersigner: null, roles: ['NPS Assessor', 'SAN Service', 'Trainer'] })
+    { provider: probationSan, frameworkRole: 'Legacy - Head of PDU', defaultCountersigner: null, roles: ['NPS Assessor', 'SAN Service', 'Trainer'] })
 
 /**
  * AUTOSANPO-xx
@@ -122,7 +125,7 @@ export const probSanHeadPdu: User = new User(
  */
 export const probSanPo: User = new User(
     { username: 'AUTOSANPO', forename1: 'Autotest', surname: 'SANPO' },
-    { provider: probationSan, frameworkRole: 'Approved PO', defaultCountersigner: null, roles: ['NPS Assessor', 'SAN Service', 'SARA', 'Trainer'] }
+    { provider: probationSan, frameworkRole: 'Legacy - Approved PO', defaultCountersigner: null, roles: ['NPS Assessor', 'SAN Service', 'SARA', 'Trainer'] }
 )
 
 /**
@@ -135,7 +138,7 @@ export const probSanPo: User = new User(
  */
 export const probSanPso: User = new User(
     { username: 'AUTOSANPSO', forename1: 'Autotest', surname: 'SANPSO' },
-    { provider: probationSan, frameworkRole: 'Approved PSO, approved PQiP, NQO or unapproved PO', defaultCountersigner: probSanPo, roles: ['NPS Assessor', 'SAN Service', 'Trainer'] }
+    { provider: probationSan, frameworkRole: 'Legacy - Approved PSO, approved PQiP, NQO or unapproved PO', defaultCountersigner: probSanPo, roles: ['NPS Assessor', 'SAN Service', 'Trainer'] }
 )
 
 /**
@@ -148,7 +151,7 @@ export const probSanPso: User = new User(
  */
 export const probSanUnappr: User = new User(
     { username: 'AUTOSANUNAPPR', forename1: 'Autotest', surname: 'SANUNAPPR' },
-    { provider: probationSan, frameworkRole: 'Unapproved PSO & unapproved PQiP', defaultCountersigner: null, roles: ['NPS Assessor', 'SAN Service', 'Trainer'] })
+    { provider: probationSan, frameworkRole: 'Legacy - Unapproved PSO & unapproved PQiP', defaultCountersigner: null, roles: ['NPS Assessor', 'SAN Service', 'Trainer'] })
 
 
 ///////////// PRISON SAN /////////////
@@ -205,7 +208,7 @@ export const prisSanUnappr: User = new User(
  */
 export const prisSanCAdm: User = new User(
     { username: 'AUTOSANPRISCADM', forename1: 'Autotest', surname: 'SANPRISCADM' },
-    { provider: prisonSan, frameworkRole: 'Not Allocated', defaultCountersigner: null, roles: ['Case Admin Prison', 'Trainer'] }
+    { provider: prisonSan, frameworkRole: null, defaultCountersigner: null, roles: ['Case Admin Prison', 'Trainer'] }
 )
 
 // List of users used by create/update script

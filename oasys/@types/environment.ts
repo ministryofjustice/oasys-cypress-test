@@ -12,4 +12,6 @@ declare type Environment = {
         baseUrl: string
     },
     iomStub: string,
+    standardUserPassword: string,
+    globalAdminUserPassword: string,
 }

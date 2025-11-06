@@ -1,1 +1,1 @@
-export * as Users from './users'
+export * as Users from './userDetails'

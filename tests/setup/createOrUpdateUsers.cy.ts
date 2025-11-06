@@ -1,9 +1,12 @@
 import * as oasys from 'oasys'
-import { User, standardPassword } from 'classes/user'
+import { User } from 'classes/user'
+import { testEnvironment } from '../../localSettings'
+
+
+const t2 = testEnvironment.name.includes('T2')
+
 
 describe('Create or update users', () => {
-
-
 
     it('Create or update users', () => {
 
@@ -36,7 +39,7 @@ function createOrUpdateUser(user: User) {
             }
             maintainUser.surname.setValue(user.surname)
             maintainUser.forename1.setValue(user.forename1)
-            maintainUser.emailAddress.setValue(`${user.username}@eor.local`)
+            maintainUser.emailAddress.setValue(`${user.username}@eor.${t2 ? 'localdomain' : 'local'}`)
             maintainUser.save.click()
 
             // New account goes to profile automatically.  Open profile if editing existing user.
@@ -44,7 +47,7 @@ function createOrUpdateUser(user: User) {
                 maintainUser.close.click()
                 const userProfile = new oasys.Pages.Maintenance.UserProfile().goto()
                 userProfile.userName.setValue(user.username)
-                userProfile.surname.setValue('') 
+                userProfile.surname.setValue('')
                 userProfile.forename1.setValue('')
                 userProfile.search.click()
                 userProfile.userNameColumn.clickFirstRow()
@@ -53,7 +56,9 @@ function createOrUpdateUser(user: User) {
             const maintainProfile = new oasys.Pages.Maintenance.MaintainFullUserProfile()
             maintainProfile.lau.setValueByIndex(1)
             maintainProfile.mainTeam.setValueByIndex(1)
-            maintainProfile.frameworkRole.setValue(user.profile.frameworkRole)
+            if (user.profile.frameworkRole != null) {
+                maintainProfile.frameworkRole.setValue(user.profile.frameworkRole)
+            }
             maintainProfile.defaultCountersigner.setValue(user.profile.defaultCountersigner?.lovLookup ?? '%')
 
             maintainProfile.roles.clickButton('removeall')
@@ -63,7 +68,9 @@ function createOrUpdateUser(user: User) {
             maintainProfile.close.click()
             oasys.logout()
 
-            oasys.Db.setPassword(user.username, standardPassword)
+            if (!t2) {
+                oasys.Db.setPassword(user.username, testEnvironment.standardUserPassword)
+            }
         })
     }
 
