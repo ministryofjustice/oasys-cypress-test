@@ -39,8 +39,8 @@ declare type PurposeOfAssessment =
     'Impact Cohort Assessment'
 
 declare type YesNoAnswer = 'Yes' | 'No' | ''
-declare type YesNoDKAnswer = 'Yes' | 'No' |`Don't Know` | ''
-declare type YesNoDkAnswer = 'Yes' | 'No' |`Don't know` | ''
+declare type YesNoDKAnswer = 'Yes' | 'No' | `Don't Know` | ''
+declare type YesNoDkAnswer = 'Yes' | 'No' | `Don't know` | ''
 declare type YesNoMissingAnswer = 'Yes' | 'No' | 'Missing' | ''
 declare type ProblemsAnswer = '0-No problems' | '1-Some problems' | '2-Significant problems' | ''
 declare type ProblemsMissingAnswer = '0-No problems' | '1-Some problems' | '2-Significant problems' | 'Missing' | ''
@@ -60,7 +60,7 @@ declare type CreateAssessmentDetails = {
 
 declare type Layer = 'Layer 1' | 'Layer 1V2' | 'Layer 3'
 declare type RiskLevel = 'Low' | 'Medium' | 'High' | 'Very High' | ''
-declare type FrameworkRole = 'Not Allocated' | 'Unapproved PSO & unapproved PQiP' | 'Approved PSO, approved PQiP, NQO or unapproved PO' | 'Approved PO' | 'SPO' | 'Head of PDU' |
+declare type FrameworkRole = 'Legacy - Unapproved PSO & unapproved PQiP' | 'Legacy - Approved PSO, approved PQiP, NQO or unapproved PO' | 'Legacy - Approved PO' | 'Legacy - SPO' | 'Legacy - Head of PDU' |
     'Unapproved Prison POM & unapproved PQiP' | 'Approved Prison POM, approved PQiP, NQO or unapproved Probation POM' | 'Approved Probation POM' | 'HOMDs'
 
 declare type PopulateAssessmentParams = {

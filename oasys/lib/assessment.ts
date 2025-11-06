@@ -131,7 +131,7 @@ export function checkNotDeleted(pk: number) {
 
 function checkIfDeleted(pk: number, expectDeleted: boolean) {
 
-    oasys.Db.getData(`select deleted_date from oasys_set where oasys_set_pk = ${pk}`, 'data')
+    oasys.Db.getData(`select deleted_date from eor.oasys_set where oasys_set_pk = ${pk}`, 'data')
     cy.get<string[][]>('@data').then((data) => {
         if (expectDeleted) {
             expect(data[0][0]).to.not.be.null
@@ -307,7 +307,7 @@ export function countersign(params?: { page?: IPage, offender?: OffenderDef, com
  */
 export function checkSigningRecord(pk: number, expectedActions: AssessmentSigning[]) {
 
-    oasys.Db.getData(`select signing_action_elm from oasys_signing where oasys_set_pk = ${pk} order by create_date desc`, 'data')
+    oasys.Db.getData(`select signing_action_elm from eor.oasys_signing where oasys_set_pk = ${pk} order by create_date desc`, 'data')
     cy.get<string[][]>('@data').then((data) => {
 
         cy.log(`Checking OASYS_SIGNING actions for ${pk}: ${JSON.stringify(data)}`)

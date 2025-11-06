@@ -84,7 +84,7 @@ describe('SAN integration - test ref 08 part 1', () => {
                 oasys.Assessment.countersign({ offender: offender, comment: 'Test comment' })
 
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, { SAN_ASSESSMENT_LINKED_IND: 'N' })
-                oasys.Db.selectCount(`select count(*) from oasys_section where oasys_set_pk = ${pk} and ref_section_code = 'SAN'`, 'count')
+                oasys.Db.selectCount(`select count(*) from eor.oasys_section where oasys_set_pk = ${pk} and ref_section_code = 'SAN'`, 'count')
                 cy.get<number>('@count').then((count) => {
                     if (count! > 0) {
                         throw new Error(`Unexpected SAN section found for pk ${pk}`)

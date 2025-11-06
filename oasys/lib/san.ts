@@ -388,7 +388,7 @@ export function checkLayer3Menu(sanMode: boolean) {
  */
 export function checkNoQuestionsCreated(pk: number) {
 
-    const query = `select count(*) from oasys_set st, oasys_section s, oasys_question q, oasys_answer a
+    const query = `select count(*) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q, eor.oasys_answer a
                     where st.oasys_set_pk = s.oasys_set_pk
                     and s.oasys_section_pk = q.oasys_section_pk
                     and q.oasys_question_pk = a.oasys_question_pk(+)
@@ -411,7 +411,7 @@ export function checkNoQuestionsCreated(pk: number) {
  */
 export function checkNoIspQuestions1Or2(pk: number) {
 
-    const query = `select count(*) from oasys_set st, oasys_section s, oasys_question q
+    const query = `select count(*) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
                         where st.oasys_set_pk = s.oasys_set_pk
                         and s.oasys_section_pk = q.oasys_section_pk
                         and s.ref_section_code = 'ISP'
@@ -544,7 +544,7 @@ function findGoalCount(linkText: string) {
 export function checkLastUpdateTime(pk: number, resultAlias: string) {
 
     const query = `select to_char(lastupd_from_san, 'YYYY-MM-DD HH24:MI:SS'), to_char(sysdate, 'YYYY-MM-DD HH24:MI:SS') 
-                    from oasys_set where oasys_set_pk = ${pk}`
+                    from eor.oasys_set where oasys_set_pk = ${pk}`
 
     oasys.Db.getData(query, 'updateTimes')
     cy.get<string[][]>('@updateTimes').then((updateTimes) => {
@@ -565,7 +565,7 @@ export function checkLastUpdateTime(pk: number, resultAlias: string) {
  */
 export function getSanApiTime(pk: number, type: 'SAN_GET_ASSESSMENT' | 'SAN_CREATE_ASSESSMENT' | 'SAN_LOCK_INCOMPLETE', resultAlias: string) {
 
-    const query = `select to_char(time_stamp, 'YYYY-MM-DD HH24:MI:SS.FF3') from clog where log_source like '%${pk}%${type}%' order by time_stamp desc`
+    const query = `select to_char(time_stamp, 'YYYY-MM-DD HH24:MI:SS.FF3') from eor.clog where log_source like '%${pk}%${type}%' order by time_stamp desc`
     oasys.Db.getData(query, 'clogData')
     cy.get<string[][]>('@clogData').then((clogData) => {
         cy.log(JSON.stringify(clogData))
@@ -593,7 +593,7 @@ export function checkSanCreateAssessmentCall(pk: number, previousPk: number, exp
     expectedVersion: number, expectedSpVersion: number) {
 
     cy.log(`Check CreateAssessment API call for ${pk}, previous ${previousPk}`)
-    const query = `select log_text from clog where log_source like '%${pk}%SAN_CREATE%' order by time_stamp desc`
+    const query = `select log_text from eor.clog where log_source like '%${pk}%SAN_CREATE%' order by time_stamp desc`
     oasys.Db.getData(query, 'clogData')
     cy.get<string[][]>('@clogData').then((clogData) => {
         let failed = false
@@ -754,7 +754,7 @@ export function checkSanOtlCall(pk: number, expectedSubjectDetails: { [keys: str
         expectedSubjectDetails['dateOfBirth'] = Cypress.dayjs(oasys.oasysDate(expectedSubjectDetails['dateOfBirth']), 'DD/MM/YYYY').format('YYYY-MM-DD')
     }
 
-    const query = `select log_text from clog where log_source like '%${pk}%onetime%' order by time_stamp desc fetch first 2 rows only`
+    const query = `select log_text from eor.clog where log_source like '%${pk}%onetime%' order by time_stamp desc fetch first 2 rows only`
     oasys.Db.getData(query, 'clogData')
     cy.get<string[][]>('@clogData').then((clogData) => {
 
@@ -827,7 +827,7 @@ export function checkSanOtlCall(pk: number, expectedSubjectDetails: { [keys: str
 export function checkSanMergeCall(expectedUser: User, pkPairs: number) {
 
     cy.log(`Checking Merge call for ${JSON.stringify(pkPairs)}`)
-    const query = `select log_text from clog where log_source like '%${expectedUser.username}%SAN_MERGE_DEMERGE_URL%' order by time_stamp desc fetch first 2 rows only`
+    const query = `select log_text from eor.clog where log_source like '%${expectedUser.username}%SAN_MERGE_DEMERGE_URL%' order by time_stamp desc fetch first 2 rows only`
     oasys.Db.getData(query, 'clogData')
     cy.get<string[][]>('@clogData').then((clogData) => {
         let failed = false
@@ -884,7 +884,7 @@ export function checkSanMergeCall(expectedUser: User, pkPairs: number) {
 export function checkSanGetAssessmentCall(pk: number, expectedVersion: number) {
 
     cy.log(`Checking GetAssessment call for ${pk}`)
-    const query = `select log_text from clog where log_source like '%${pk}%SAN_GET_ASS%' order by time_stamp desc fetch first 2 rows only`
+    const query = `select log_text from eor.clog where log_source like '%${pk}%SAN_GET_ASS%' order by time_stamp desc fetch first 2 rows only`
     oasys.Db.getData(query, 'clogData')
     cy.get<string[][]>('@clogData').then((clogData) => {
         let failed = false
@@ -917,7 +917,7 @@ export function checkSanGetAssessmentCall(pk: number, expectedVersion: number) {
  */
 export function checkNoSanCall(pk: number) {
 
-    const query = `select log_text from clog where log_source like '%${pk}%' and log_text <> 'lv_previous_layer [LAYER3_1] || lv_current_layer [LAYER3_1]'`
+    const query = `select log_text from eor.clog where log_source like '%${pk}%' and log_text <> 'lv_previous_layer [LAYER3_1] || lv_current_layer [LAYER3_1]'`
     oasys.Db.getData(query, 'clogData')
     cy.get<string[][]>('@clogData').then((clogData) => {
         if (clogData && clogData.length > 0) {
@@ -930,7 +930,7 @@ export function checkNoSanCall(pk: number) {
  * Checks that the expected number of questions has a non-null answer for the given pk and OASys section.  Fails the test if there is a mismatch.
  */
 export function checkCountOfQuestionsInSection(pk: number, section: string, expectedCount: number) {
-    const sanSectionQuery = `select count(*) from oasys_set st, oasys_section s, oasys_question q, oasys_answer a
+    const sanSectionQuery = `select count(*) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q, eor.oasys_answer a
                                 where st.oasys_set_pk = s.oasys_set_pk
                                 and s.oasys_section_pk = q.oasys_section_pk
                                 and q.oasys_question_pk = a.oasys_question_pk(+)
@@ -967,7 +967,7 @@ function checkSanCall(name: string, sourceFilter: string, url: string, pk: numbe
 
     cy.log(`Checking ${name} call for ${pk}`)
 
-    const query = `select log_text from clog where log_source like '%${pk}%SAN_${sourceFilter}%' order by time_stamp desc`
+    const query = `select log_text from eor.clog where log_source like '%${pk}%SAN_${sourceFilter}%' order by time_stamp desc`
     oasys.Db.getData(query, 'clogData')
     cy.get<string[][]>('@clogData').then((clogData) => {
         let failed = false

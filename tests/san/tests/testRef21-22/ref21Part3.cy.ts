@@ -14,7 +14,7 @@ describe('SAN integration - test ref 21 part 3', () => {
                 oasys.Db.getAllSetPksByPnc(offender2.pnc, 'originalOffender2Pks')
 
                 cy.get<number[]>('@originalOffender2Pks').then((originalOffender2Pks) => {
-                    const oasysSetQuery = `select cloned_from_prev_oasys_san_pk from oasys_set 
+                    const oasysSetQuery = `select cloned_from_prev_oasys_san_pk from eor.oasys_set 
                                                 where cms_prob_number = '${offender2.probationCrn}'
                                                 and deleted_date is null order by initiation_date desc`
                     oasys.Db.getData(oasysSetQuery, 'originalOffender2OasysSetData')

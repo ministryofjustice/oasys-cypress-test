@@ -18,7 +18,7 @@ describe('SAN integration - test ref 08 part 5', () => {
 
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {
-                const sanColumnsQuery = `select LASTUPD_FROM_SAN, SAN_ASSESSMENT_VERSION_NO from oasys_set where oasys_set_pk = ${pk}`
+                const sanColumnsQuery = `select LASTUPD_FROM_SAN, SAN_ASSESSMENT_VERSION_NO from eor.oasys_set where oasys_set_pk = ${pk}`
                 oasys.Db.getData(sanColumnsQuery, 'oasysSetData')
                 cy.get<string[][]>('@oasysSetData').then((sanColumnsQuery1) => {
 

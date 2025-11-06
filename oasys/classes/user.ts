@@ -1,11 +1,9 @@
 import { userSuffix } from '../../localSettings'
 
 /**
- * The User class is used to define standard users for regression testing, including username, name and password.
+ * The User class is used to define standard users for regression testing.
  * 
  */
-
-export const standardPassword = 'password'
 
 export class User {
 

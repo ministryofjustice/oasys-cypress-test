@@ -75,7 +75,7 @@ describe('SAN integration - test ref 29/30', () => {
 
             cy.get<number>('@pk').then((pk) => {
 
-                oasys.Db.getData(`select oasys_set_pk from oasys_set where parent_oasys_set_pk = ${pk}`, 'saraData')
+                oasys.Db.getData(`select oasys_set_pk from eor.oasys_set where parent_oasys_set_pk = ${pk}`, 'saraData')
                 cy.get<string[][]>('@saraData').then((saraData) => {
                     const saraPk = Number.parseInt(saraData[0][0])
                     cy.log(`SARA PK: ${saraPk}`)

@@ -9,7 +9,7 @@
  * The actual database interaction is in cypress/support/oasysDb.ts, called via cy.task functions defined in cypress.config.ts; this module provides a set of functions to
  * handle the cy.task calls.  Most either fail the test if checks find the wrong values, or require the use of Cypress aliases to get results back, e.g.
  * 
- *  > `oasys.Db.selectCount(``select count(*) from offender where family_name = '${surname}'``, 'count')`  
+ *  > `oasys.Db.selectCount(``select count(*) from eor.offender where family_name = '${surname}'``, 'count')`  
  *  > `cy.get<number>('@count').then((count) => {`  
  *  > &nbsp;&nbsp;&nbsp;&nbsp;`cy.log(count.toString())`  
  *  > &nbsp;&nbsp;&nbsp;&nbsp;`if (count > 1) {`  
@@ -20,7 +20,7 @@
  * @module Database
 */
 
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs'
 
 /**
  * Checks a set of values against the result of a single-row database query, test fails if there are any mismatches.  Parameters are:
@@ -133,7 +133,7 @@ export function getLatestSetPk(offenderAlias: string, resultAlias: string) {
 
     cy.get<OffenderDef>(offenderAlias).then((offender) => {
 
-        const query = `select oasys_set_pk from oasys_set where pnc = '${offender.pnc}' and deleted_date is null order by initiation_date desc`
+        const query = `select oasys_set_pk from eor.oasys_set where pnc = '${offender.pnc}' and deleted_date is null order by initiation_date desc`
         getPk(query, resultAlias)
     })
 }
@@ -145,7 +145,7 @@ export function getLatestSetPk(offenderAlias: string, resultAlias: string) {
  */
 export function getLatestSetPkByName(surname: string, forename: string, resultAlias: string) {
 
-    const query = `select oasys_set_pk from oasys_set where family_name = '${surname}' and forename_1 = '${forename}' and deleted_date is null order by initiation_date desc`
+    const query = `select oasys_set_pk from eor.oasys_set where family_name = '${surname}' and forename_1 = '${forename}' and deleted_date is null order by initiation_date desc`
     getPk(query, resultAlias)
 }
 
@@ -156,7 +156,7 @@ export function getLatestSetPkByName(surname: string, forename: string, resultAl
  */
 export function getLatestSetPkByPnc(pnc: string, resultAlias: string) {
 
-    const query = `select oasys_set_pk from oasys_set where pnc = '${pnc}' and deleted_date is null order by create_date desc`
+    const query = `select oasys_set_pk from eor.oasys_set where pnc = '${pnc}' and deleted_date is null order by create_date desc`
     getPk(query, resultAlias)
 }
 
@@ -168,8 +168,8 @@ export function getLatestSetPkByPnc(pnc: string, resultAlias: string) {
 export function getAllSetPksByPnc(pnc: string, resultAlias: string, ignoreDeleted: boolean = false) {
 
     const query = ignoreDeleted ?
-        `select oasys_set_pk from oasys_set where pnc = '${pnc}' and deleted_date is null order by initiation_date desc`
-        : `select oasys_set_pk from oasys_set where pnc = '${pnc}' order by initiation_date desc`
+        `select oasys_set_pk from eor.oasys_set where pnc = '${pnc}' and deleted_date is null order by initiation_date desc`
+        : `select oasys_set_pk from eor.oasys_set where pnc = '${pnc}' order by initiation_date desc`
     getPk(query, resultAlias, true)
 }
 
@@ -181,8 +181,8 @@ export function getAllSetPksByPnc(pnc: string, resultAlias: string, ignoreDelete
 export function getAllSetPksByProbationCrn(probationCrn: string, resultAlias: string, ignoreDeleted: boolean = false) {
 
     const query = ignoreDeleted ?
-        `select oasys_set_pk from oasys_set where cms_prob_number = '${probationCrn}' and deleted_date is null order by create_date desc`
-        : `select oasys_set_pk from oasys_set where cms_prob_number = '${probationCrn}' order by create_date desc`
+        `select oasys_set_pk from eor.oasys_set where cms_prob_number = '${probationCrn}' and deleted_date is null order by create_date desc`
+        : `select oasys_set_pk from eor.oasys_set where cms_prob_number = '${probationCrn}' order by create_date desc`
     getPk(query, resultAlias, true)
 }
 

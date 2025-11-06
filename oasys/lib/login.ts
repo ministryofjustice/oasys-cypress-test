@@ -5,7 +5,8 @@
  */
 
 import * as oasys from 'oasys'
-import { User, standardPassword } from 'classes/user'
+import { User } from 'classes/user'
+import { testEnvironment } from '../../localSettings'
 
 /**
  * Log in to OASys, assuming you are already on the login screen.  Can be called with either:
@@ -22,7 +23,7 @@ export function login(p1: User | string, p2?: string, p3?: string) {
 
     if (p1 instanceof User) {
         username = p1.username
-        password = standardPassword
+        password = testEnvironment.standardUserPassword
         provider = p2
     }
     else if (typeof p1 == 'string') {

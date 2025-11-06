@@ -420,7 +420,7 @@ export async function setPassword(username: string, password: string): Promise<D
     }
 
     const update = `BEGIN
-                        update oasys_user set password_encrypted = authentication_pkg.encrypt_password('${password}'), 
+                        update eor.oasys_user set password_encrypted = eor.authentication_pkg.encrypt_password('${password}'), 
                             password_change_date = sysdate, user_status_elm = 'ACTIVE' where oasys_user_code = '${username}';
                         COMMIT;
                     END;`
@@ -528,7 +528,7 @@ const answerTypes: { [keys: string]: AnswerType } = {
 function sectionQuery(pk: number, section: string): string {
 
     return `select q.ref_question_code, a.ref_answer_code, q.free_format_answer, q.additional_note
-                    from oasys_set st, oasys_section s, oasys_question q, oasys_answer a
+                    from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q, eor.oasys_answer a
                     where st.oasys_set_pk = s.oasys_set_pk
                     and s.oasys_section_pk = q.oasys_section_pk
                     and q.oasys_question_pk = a.oasys_question_pk(+)

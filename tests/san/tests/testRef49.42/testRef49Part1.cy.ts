@@ -150,14 +150,14 @@ describe('SAN integration - test ref 49', () => {
                         Check that on any cloned through OASYS_SECTION records the fields 'SAN_CRIM_NEED_SCORE' have been nulled out
                         Check that the OASys sections has data cloned from the historic 3.2 assessment (confirmed by GetAssessment call and completion of some mandatory questions)`)
 
-                    oasys.Db.selectCount(`select count(*) from oasys_section where oasys_set_pk = ${pk2} and ref_section_code in ('SAN','SSP')`, 'count')
+                    oasys.Db.selectCount(`select count(*) from eor.oasys_section where oasys_set_pk = ${pk2} and ref_section_code in ('SAN','SSP')`, 'count')
                     cy.get<number>('@count').then((count) => {
                         if (count! > 0) {
                             throw new Error(`Unexpected SAN/SSP section found for pk ${pk2}`)
                         }
                     })
 
-                    oasys.Db.selectCount(`select count(*) from oasys_section where san_crim_need_score is not null and oasys_set_pk = ${pk2};`, 'count')
+                    oasys.Db.selectCount(`select count(*) from eor.oasys_section where san_crim_need_score is not null and oasys_set_pk = ${pk2};`, 'count')
                     cy.get<number>('@count').then((count) => {
                         if (count! > 0) {
                             throw new Error(`Unexpected san_crim_need_score found for pk ${pk2}`)
