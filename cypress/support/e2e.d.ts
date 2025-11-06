@@ -1,5 +1,9 @@
+import * as dayjs from 'dayjs'
+
 declare namespace Cypress {
     interface Cypress {
-        dayjs: any
+        dayjs: dayjs.Dayjs
     }
 }
+
+export {}

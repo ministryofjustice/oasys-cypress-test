@@ -1,6 +1,7 @@
 import { OAuth2Client } from '@badgateway/oauth2-client'     //  See https://github.com/badgateway/oauth2-client#readme for documentation
 import axios from 'axios'                                    //      https://www.npmjs.com/package/axios
 import { flatten } from 'flat'                               //      https://www.npmjs.com/package/flat
+import dayjs from 'dayjs'
 
 import * as rest from '.'
 import { restApiUrls } from 'environments'
@@ -41,7 +42,7 @@ export async function getRestData(parameters: EndpointParams): Promise<RestRespo
 
     try {
         await getTokenIfRequired()
-        let start = Cypress.dayjs()
+        let start = dayjs()
         const response = await axios.request({
             baseURL: restConfig.baseUrl,
             url: url,
@@ -54,7 +55,7 @@ export async function getRestData(parameters: EndpointParams): Promise<RestRespo
         if (response.status != 200) {
             restResponse.message = response.data.message
         }
-        restResponse.responseTime = Cypress.dayjs().diff(start)
+        restResponse.responseTime = dayjs().diff(start)
     }
     catch (err) {
         restResponse.statusCode = 'error'

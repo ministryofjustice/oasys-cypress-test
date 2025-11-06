@@ -1,3 +1,5 @@
+import dayjs from 'dayjs'
+
 import * as common from '../common'
 import * as dbClasses from '../dbClasses'
 import * as env from 'environments'
@@ -7,7 +9,7 @@ export function assessmentFilter(dbAssessment: dbClasses.DbAssessmentOrRsr): boo
     if (dbAssessment.assessmentType != 'LAYER3') return false
     if (!['COMPLETE', 'LOCKED_INCOMPLETE'].includes(dbAssessment.status)) return true
 
-    const dateLimit = Cypress.dayjs().subtract(6, 'month').format('YYYY-MM-DDTHH:mm:ss')
+    const dateLimit = dayjs().subtract(6, 'month').format('YYYY-MM-DDTHH:mm:ss')
     return dbAssessment.completedDate > dateLimit
 }
 
