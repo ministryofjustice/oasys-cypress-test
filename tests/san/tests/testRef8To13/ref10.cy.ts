@@ -127,7 +127,7 @@ describe('SAN integration - test ref 10', () => {
                 oasys.logout()
 
                 // Check that the correct number of sections have been completed
-                const sectionQuery = `select count(*) from oasys_section 
+                const sectionQuery = `select count(*) from eor.oasys_section 
                                     where oasys_set_pk = ${pk} and section_status_elm = 'COMPLETE_LOCKED'`
                 cy.log(sectionQuery)
                 oasys.Db.selectCount(sectionQuery, 'sectionCount')

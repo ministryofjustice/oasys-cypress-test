@@ -90,7 +90,7 @@ describe('SAN integration - test ref 27', () => {
                     Ensure the SAN section and the SSP section have both been set to 'COMPLETE_LOCKED'
                     Ensure an 'AssSumm' SNS Message has been created containing a ULR link for 'asssummsan'`)
 
-                oasys.Db.getData(`select to_char(lastupd_date, 'YYYY-MM-DD HH24:MI:SS') from oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate')
+                oasys.Db.getData(`select to_char(lastupd_date, 'YYYY-MM-DD HH24:MI:SS') from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate')
                 cy.get<string[][]>('@lastUpdDate').then((initialData) => {
 
                     const lastUpdDate = Cypress.dayjs(initialData[0][0], 'YYYY-MM-DD HH:mm:ss')
@@ -115,7 +115,7 @@ describe('SAN integration - test ref 27', () => {
                         SSP_PLAN_VERSION_NO: '0',
                     })
 
-                    const sectionQuery = `select count(*) from oasys_section where oasys_set_pk = ${pk} 
+                    const sectionQuery = `select count(*) from eor.oasys_section where oasys_set_pk = ${pk} 
                                                 and section_status_elm = 'COMPLETE_LOCKED' and ref_section_code in ('SAN', 'SSP')`
 
                     oasys.Db.selectCount(sectionQuery, 'sections')
@@ -154,7 +154,7 @@ describe('SAN integration - test ref 27', () => {
                     cy.log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
                              and also on the OASYS_SET record and ensure they are NOT after the date and time noted above`)
 
-                    const questionsQuery = `select max(to_char(q.lastupd_date, 'YYYY-MM-DD HH24:MI:SS')) from oasys_set st, oasys_section s, oasys_question q
+                    const questionsQuery = `select max(to_char(q.lastupd_date, 'YYYY-MM-DD HH24:MI:SS')) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
                              where st.oasys_set_pk = s.oasys_set_pk and s.oasys_section_pk = q.oasys_section_pk
                              and st.oasys_set_pk = ${pk}`
 

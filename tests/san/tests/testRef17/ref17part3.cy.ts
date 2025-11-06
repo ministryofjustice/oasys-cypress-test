@@ -50,7 +50,7 @@ describe('SAN integration - test ref 17 part 3', () => {
 
                 cy.task('retrieveValue', 'sanColumnsQuery1').then((sanColumnsQuery1) => {
 
-                    const sanColumnsQuery = `select LASTUPD_FROM_SAN, SAN_ASSESSMENT_VERSION_NO, SSP_PLAN_VERSION_NO from oasys_set where cms_prob_number = '${offender.probationCrn}'`
+                    const sanColumnsQuery = `select LASTUPD_FROM_SAN, SAN_ASSESSMENT_VERSION_NO, SSP_PLAN_VERSION_NO from eor.oasys_set where cms_prob_number = '${offender.probationCrn}'`
                     oasys.Db.getData(sanColumnsQuery, 'oasysSetData')
                     cy.get<string[][]>('@oasysSetData').then((sanColumnsQuery2) => {
                         expect(JSON.stringify(sanColumnsQuery2)).equal(sanColumnsQuery1)

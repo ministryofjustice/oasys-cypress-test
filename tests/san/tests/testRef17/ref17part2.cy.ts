@@ -37,7 +37,7 @@ describe('SAN integration - test ref 17 part 2', () => {
 
             oasys.logout()
 
-            const sanColumnsQuery = `select LASTUPD_FROM_SAN, SAN_ASSESSMENT_VERSION_NO, SSP_PLAN_VERSION_NO from oasys_set where cms_prob_number = '${offender.probationCrn}'`
+            const sanColumnsQuery = `select LASTUPD_FROM_SAN, SAN_ASSESSMENT_VERSION_NO, SSP_PLAN_VERSION_NO from eor.oasys_set where cms_prob_number = '${offender.probationCrn}'`
             oasys.Db.getData(sanColumnsQuery, 'oasysSetData')
             cy.get<string[][]>('@oasysSetData').then((sanColumnsQuery1) => {
 

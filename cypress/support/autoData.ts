@@ -53,7 +53,7 @@ async function generateSurname(): Promise<string> {
             surname += getRandomChar()
         }
 
-        const result: DbResponse = await oasysDb.selectCount(`select count(*) from offender where family_name = '${surname}'`);
+        const result: DbResponse = await oasysDb.selectCount(`select count(*) from eor.offender where family_name = '${surname}'`);
         if (result.error != null) { // database error
             return null
         }
@@ -81,7 +81,7 @@ async function generatePnc(): Promise<string> {
         let check_val = ((pnc_year * 10000000) + pnc_number) % 23;
         pnc = `${pnc_year}/${pnc_number}${check_digits[check_val]}`
 
-        const result: DbResponse = await oasysDb.selectCount(`select count(*) from offender where pnc = '${pnc}'`);
+        const result: DbResponse = await oasysDb.selectCount(`select count(*) from eor.offender where pnc = '${pnc}'`);
         if (result.error != null) { // database error
             return null
         }
@@ -107,7 +107,7 @@ async function generateCrn(): Promise<string> {
             crn += getRandomChar()
         }
 
-        const result: DbResponse = await oasysDb.selectCount(`select count(*) from offender where cms_prob_number = '${crn}'`)
+        const result: DbResponse = await oasysDb.selectCount(`select count(*) from eor.offender where cms_prob_number = '${crn}'`)
         if (result.error != null) { // database error
             return null
         }
@@ -133,7 +133,7 @@ async function generateNomisId(): Promise<string> {
         nomisID += getRandomInt(0, 9999).toString().padStart(4, '0')
         nomisID += getRandomChar() + getRandomChar()
 
-        const result: DbResponse = await oasysDb.selectCount(`select count(*) from offender where cms_pris_number = '${nomisID}'`)
+        const result: DbResponse = await oasysDb.selectCount(`select count(*) from eor.offender where cms_pris_number = '${nomisID}'`)
         if (result.error != null) { // database error
             return null
         }

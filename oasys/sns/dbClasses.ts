@@ -106,7 +106,7 @@ export class DbAssessmentOrRsr {
                     s.opd_result, s.opd_screen_out_override, 
                     to_char(s.assessor_signed_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'), s.ref_ass_version_code, r.ref_element_desc,
                     to_char(s.countersigner_signed_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'), s.san_assessment_linked_ind  
-                    from offender o, oasys_assessment_group g, oasys_set s, ref_element r 
+                    from eor.offender o, eor.oasys_assessment_group g, eor.oasys_set s, eor.ref_element r 
                     where o.cms_prob_number = '${crn}'
                     and o.offender_pk = g.offender_PK and g.oasys_assessment_group_PK = s.oasys_assessment_group_PK 
                     and s.assessment_status_elm in ('COMPLETE', 'SIGNED', 'LOCKED_INCOMPLETE') and s.deleted_date is null 
@@ -116,7 +116,7 @@ export class DbAssessmentOrRsr {
 
     static roshaQuestionQuery(pk: number): string {
 
-        return `select a.ref_answer_code from oasys_answer a, oasys_question q, oasys_section s
+        return `select a.ref_answer_code from eor.oasys_answer a, eor.oasys_question q, eor.oasys_section s
                     where s.oasys_set_pk = ${pk} and s.ref_section_code = 'RSR'
                     and q.oasys_section_pk = s.oasys_section_pk and a.oasys_question_pk = q.oasys_question_pk and q.ref_question_code = 'RA'`
     }
@@ -130,7 +130,7 @@ export class DbAssessmentOrRsr {
                     r.osp_i_percentage_score, r.osp_c_percentage_score, r.osp_i_risk_recon_elm, r.osp_c_risk_recon_elm, 
                     r.osp_iic_percentage_score, r.osp_iic_risk_recon_elm, r.osp_dc_percentage_score, r.osp_dc_risk_recon_elm  
                      
-                    from offender_rsr_scores r, offender o 
+                    from eor.offender_rsr_scores r, eor.offender o 
                     where r.offender_pk = o.offender_pk and o.cms_prob_number = '${crn}' and o.deleted_date is null and r.deleted_date is null 
                     order by r.initiation_date desc`
     }
@@ -158,7 +158,7 @@ export class DbSns {
 
     static query(assessmentPk: number, type: AssessmentOrRsr, maxDelay: number) {
 
-        return `select message_type, translate(message_data, 'x' || CHR(13) || CHR(10), 'x'), message_subject from sns_message 
+        return `select message_type, translate(message_data, 'x' || CHR(13) || CHR(10), 'x'), message_subject from eor.sns_message 
                     where ${type == 'assessment' ? 'oasys_set_pk' : 'offender_rsr_scores_pk'} = ${assessmentPk}
                     and message_date > sysdate - interval '${maxDelay}' second 
                     order by message_date desc`
