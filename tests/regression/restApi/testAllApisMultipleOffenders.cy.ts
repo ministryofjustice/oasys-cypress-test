@@ -1,7 +1,5 @@
-import * as dayjs from 'dayjs'
-
 import * as oasys from 'oasys'
-import { restApiUrls } from 'environments'
+import { testEnvironment } from '../../../localSettings'
 
 /**
  * Tests all endpoints against a randomish set of 400 offenders based on specified date conditions covering 2015 to yesterday.
@@ -9,9 +7,10 @@ import { restApiUrls } from 'environments'
  */
 describe('RestAPI regression tests', () => {
 
-    const startTime = dayjs().format('YYYY-MM-DD HH:mm:ss')
+    const startTime = Cypress.dayjs().format('YYYY-MM-DD HH:mm:ss')
 
     let stats: EndpointStat[] = []
+    let offendersTested = 0
 
     // Number of offenders for each date range
     const offenderCountEarly = 10  // Used for pre-2023, not many offenders available
@@ -28,6 +27,7 @@ describe('RestAPI regression tests', () => {
         { date: `2021-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
         { date: `2022-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
         { date: `2023-${randomMonth()}-${randomDay()}`, count: offenderCount },
+        { date: `2024-${randomMonth()}-${randomDay()}`, count: offenderCount },
         { date: 'today', count: offenderCount },
     ]
 
@@ -43,7 +43,7 @@ describe('RestAPI regression tests', () => {
         const dateFilter = dateCondition.date == 'today' ? 'sysdate - 1' : `to_date('${dateCondition.date}','YYYY-MM-DD')`
 
         const offenderQuery = `select * from 
-                                    (select cms_prob_number, cms_pris_number from offender 
+                                    (select cms_prob_number, cms_pris_number from eor.offender 
                                         where cms_prob_number is not null
                                         and deleted_date is null
                                         and create_date < ${dateFilter} 
@@ -57,6 +57,7 @@ describe('RestAPI regression tests', () => {
         })
     }
 
+    // Extra cases specific to Capita environments
     const extraTestCases = [
         ['AZ97320', null],
         ['A1111QC', null],
@@ -91,7 +92,9 @@ describe('RestAPI regression tests', () => {
     */
 
     it(`All endpoint regression tests - extra test for specific cases`, () => {
-        runTest(extraTestCases)
+        if (testEnvironment.name.includes('system') || testEnvironment.name.includes('informal')) {
+            runTest(extraTestCases)
+        }
     })
 
     function runTest(offenders: string[][]) {
@@ -101,6 +104,7 @@ describe('RestAPI regression tests', () => {
 
         offenders.forEach((offender) => {
             cy.task('consoleLog', `Offender ${count++}: ${offender[0]} / ${offender[1]}`)
+            offendersTested++
 
             if (offender[0] != null) {  // call with probation CRN
                 oasys.Api.testOneOffender(offender[0], 'prob', 'probationFailedAlias', false, stats)
@@ -145,9 +149,9 @@ describe('RestAPI regression tests', () => {
         reportStats()
         cy.groupedLogEnd()
 
-        let elapsedTimeS = Math.round(dayjs().diff(startTime) / 1000)
+        let elapsedTimeS = Math.round(Cypress.dayjs().diff(startTime) / 1000)
         cy.groupedLogStart('Totals')
-        cy.groupedLog(`Offenders: ${offenderCount * 2 + offenderCountEarly * 8 + extraTestCases.length}`)
+        cy.groupedLog(`Offenders: ${offendersTested}`)
         cy.groupedLog(`API calls: ${totalApiCount}`)
         cy.groupedLog(`Database query time: ${Math.round(totalDbTimeMs / 1000)}s`)
         cy.groupedLog(`API response time: ${Math.round(totalApiTimeMs / 1000)}s`)

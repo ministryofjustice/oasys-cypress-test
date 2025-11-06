@@ -1,5 +1,3 @@
-import * as dayjs from 'dayjs'
-
 /**
  * This module contains the classes used to extract data from the OASys database.
  * 
@@ -45,7 +43,7 @@ export class DbAssessmentOrRsr {
 
     constructor(assessmentData: string[], type: AssessmentOrRsr) {
 
-        const tzOffset = dayjs().utcOffset() == 60 ? '+01:00' : '+00:00'
+        const tzOffset = Cypress.dayjs().utcOffset() == 60 ? '+01:00' : '+00:00'
 
         this.type = type
         this.pk = Number.parseInt(assessmentData[0])

@@ -1,4 +1,3 @@
-import * as dayjs from 'dayjs'
 import * as oasys from 'oasys'
 import * as testData from '../../../data/testRef27'
 
@@ -94,15 +93,15 @@ describe('SAN integration - test ref 27', () => {
                 oasys.Db.getData(`select to_char(lastupd_date, 'YYYY-MM-DD HH24:MI:SS') from oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate')
                 cy.get<string[][]>('@lastUpdDate').then((initialData) => {
 
-                    const lastUpdDate = dayjs(initialData[0][0], 'YYYY-MM-DD HH:mm:ss')
+                    const lastUpdDate = Cypress.dayjs(initialData[0][0], 'YYYY-MM-DD HH:mm:ss')
 
                     oasys.San.checkSanGetAssessmentCall(pk, 0)
                     oasys.San.checkSanLockIncompleteCall(pk, oasys.Users.prisHomds, 0, 0)
 
                     oasys.San.getSanApiTime(pk, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
                     oasys.San.getSanApiTime(pk, 'SAN_LOCK_INCOMPLETE', 'lockIncompleteTime')
-                    cy.get<dayjs.Dayjs>('@getSanDataTime').then((getSanDataTime) => {
-                        cy.get<dayjs.Dayjs>('@lockIncompleteTime').then((lockIncompleteTime) => {
+                    cy.get<Dayjs>('@getSanDataTime').then((getSanDataTime) => {
+                        cy.get<Dayjs>('@lockIncompleteTime').then((lockIncompleteTime) => {
                             expect(lockIncompleteTime.diff(getSanDataTime)).gt(0)
                         })
                     })
@@ -164,9 +163,9 @@ describe('SAN integration - test ref 27', () => {
                     cy.get<string[][]>('@questions').then((questions) => {
                         cy.get<string[][]>('@lastUpdDate2').then((updatedSetData) => {
 
-                            const latestQuestionUpdDate = dayjs(questions[0][0], 'YYYY-MM-DD HH:mm:ss')
-                            const lastUpdFromSan = dayjs(updatedSetData[0][0], 'YYYY-MM-DD HH:mm:ss')
-                            const lastUpdDate2 = dayjs(updatedSetData[0][1], 'YYYY-MM-DD HH:mm:ss')
+                            const latestQuestionUpdDate = Cypress.dayjs(questions[0][0], 'YYYY-MM-DD HH:mm:ss')
+                            const lastUpdFromSan = Cypress.dayjs(updatedSetData[0][0], 'YYYY-MM-DD HH:mm:ss')
+                            const lastUpdDate2 = Cypress.dayjs(updatedSetData[0][1], 'YYYY-MM-DD HH:mm:ss')
 
                             expect(latestQuestionUpdDate.diff(lastUpdDate)).lte(0)
                             expect(lastUpdFromSan.diff(lastUpdDate)).lte(0)

@@ -2,19 +2,9 @@ import { OgrsTestParameters, ReportMode } from '../../cypress/support/ogrs/types
 import { runTest } from './testLib'
 
 const count = 10000
-const reportMode: ReportMode = 'minimal' 
+const reportMode: ReportMode = 'minimal'
 
-describe('OGRS calculator test - static flag = N', () => {
-
-    runTests('N')
-})
-
-describe('OGRS calculator test - static flag = Y', () => {
-
-    runTests('Y')
-})
-
-function runTests(staticFlag: 'Y' | 'N') {
+describe('OGRS calculator test', () => {
 
     const dbTestParams: OgrsTestParameters = {
         testType: 'db',
@@ -23,7 +13,7 @@ function runTests(staticFlag: 'Y' | 'N') {
             whereClause: '',
             count: count,
         },
-        staticFlag: staticFlag,
+        staticFlag: null,
         reportMode: reportMode,
         includeObjects: false,
     }
@@ -62,4 +52,4 @@ function runTests(staticFlag: 'Y' | 'N') {
         dbTestParams.dbDetails.whereClause = `deleted_date is null and rsr_status = 'COMPLETE'`
         runTest(dbTestParams, '', false, false)
     })
-}
+})

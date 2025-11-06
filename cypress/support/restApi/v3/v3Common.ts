@@ -1,4 +1,5 @@
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs'
+
 import * as common from '../common'
 import * as dbClasses from '../dbClasses'
 import * as env from 'environments'

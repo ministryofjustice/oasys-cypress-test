@@ -1,4 +1,5 @@
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs'
+
 import * as db from '../oasysDb'
 import { DbOffenderWithAssessments, DbAssessment, DbVictim, DbOffence, DbRsr, DbSection, DbAction, DbObjective, DbBspObjective, DbNeed } from './dbClasses'
 
@@ -20,7 +21,7 @@ export async function getOffenderWithAssessments(crnSource: Provider, crn: strin
     // Get application versions
     if (versionTable == null) {
         const versionTableData = await db.selectData(`select version_number, to_char(release_date, 'YYYY-MM-DD\"T\"HH24:MI:SS') 
-        from system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc`)
+        from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc`)
         if (versionTableData.error != null) throw new Error(versionTableData.error)
         versionTable = versionTableData.data as string[][]
     }

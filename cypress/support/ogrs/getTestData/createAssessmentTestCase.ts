@@ -1,11 +1,10 @@
-import * as dayjs from 'dayjs'
-import * as customParseFormat from 'dayjs/plugin/customParseFormat'
-import * as utc from 'dayjs/plugin/utc'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import utc from 'dayjs/plugin/utc'
 
-import { OgrsOffenceCat, TestCaseParameters } from '../types'
+import { TestCaseParameters } from '../types'
 import { OgrsAssessment } from './dbClasses'
 import { dateFormat } from '../orgsTest'
-import { offenceCats, offences } from '../data/offences'
 import { addCalculatedInputParameters } from '../loadTestData'
 
 export function createAssessmentTestCase(assessment: OgrsAssessment): TestCaseParameters {
@@ -97,7 +96,7 @@ function getString(param: string): string {
     return param == '' || param == null ? null : param
 }
 
-function getDate(param: string): dayjs.Dayjs {
+function getDate(param: string): Dayjs {
 
     const result = dayjs.utc(param, dateFormat)
     return !result.isValid() ? null : result

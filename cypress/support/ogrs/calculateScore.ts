@@ -221,7 +221,7 @@ export function calculateBand(scoreType: ScoreType, probability: Decimal): Score
         case 'rsr':
         case 'serious_violence_brief':
         case 'serious_violence_extended':
-            return probability.greaterThanOrEqualTo(6.9) ? 'High' : probability.greaterThanOrEqualTo(3) ? 'Medium' : 'Low'
+            return probability.greaterThanOrEqualTo(6.9) ? 'Very High' : probability.greaterThanOrEqualTo(3) ? 'High' : probability.greaterThanOrEqualTo(1) ? 'Medium' : 'Low'
         case 'general_brief':
         case 'violence_brief':
             return probability.greaterThanOrEqualTo(90) ? 'Very High' : probability.greaterThanOrEqualTo(75) ? 'High' : probability.greaterThanOrEqualTo(50) ? 'Medium' : 'Low'

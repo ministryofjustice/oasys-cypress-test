@@ -1,4 +1,3 @@
-import * as dayjs from 'dayjs'
 import * as oasys from 'oasys'
 
 
@@ -23,7 +22,7 @@ describe('SAN integration - test ref 08 part 4', () => {
             countersigningOverview.header.checkStatus('visible')
             countersigningOverview.details.checkValue('3.2 assessment needs countersigning', true)
             countersigningOverview.details.checkValue(`Countersigning required, Assessor's role at time of signing the assessment was 'Unapproved'`, true)
-            const today = dayjs().format('DD/MM/YYYY')
+            const today = Cypress.dayjs().format('DD/MM/YYYY')
             countersigningOverview.details.checkValue(`The previous assessment was countersigned for the same risk attributes by ${oasys.Users.probSanHeadPdu.forenameSurname} on the ${today}`, true)
 
             countersigningOverview.returnToAssessment.click()

@@ -1,4 +1,3 @@
-import * as dayjs from 'dayjs'
 import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 27', () => {
@@ -40,7 +39,7 @@ describe('SAN integration - test ref 27', () => {
                 oasys.Db.getData(`select to_char(lastupd_date, 'YYYY-MM-DD HH24:MI:SS')  from oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate')
                 cy.get<string[][]>('@lastUpdDate').then((initialData) => {
 
-                    const lastUpdDate = dayjs(initialData[0][0], 'YYYY-MM-DD HH:mm:ss')
+                    const lastUpdDate = Cypress.dayjs(initialData[0][0], 'YYYY-MM-DD HH:mm:ss')
 
                     cy.log(`A Lock API has been sent to the SAN Service - parameters of OASYS_SET_PK, user ID and name - a 200 response has been received back
                         Check that the OASYS_SET record has the field 'SAN_ASSESSMENT_VERSION_NO' and 'SSP_PLAN_VERSION_NO' populated by the return API response
@@ -97,9 +96,9 @@ describe('SAN integration - test ref 27', () => {
                     cy.get<string[][]>('@questions').then((questions) => {
                         cy.get<string[][]>('@lastUpdDate2').then((updatedSetData) => {
 
-                            const latestQuestionUpdDate = dayjs(questions[0][0], 'YYYY-MM-DD HH:mm:ss')
-                            const lastUpdFromSan = dayjs(updatedSetData[0][0], 'YYYY-MM-DD HH:mm:ss')
-                            const lastUpdDate2 = dayjs(updatedSetData[0][1], 'YYYY-MM-DD HH:mm:ss')
+                            const latestQuestionUpdDate = Cypress.dayjs(questions[0][0], 'YYYY-MM-DD HH:mm:ss')
+                            const lastUpdFromSan = Cypress.dayjs(updatedSetData[0][0], 'YYYY-MM-DD HH:mm:ss')
+                            const lastUpdDate2 = Cypress.dayjs(updatedSetData[0][1], 'YYYY-MM-DD HH:mm:ss')
 
                             expect(latestQuestionUpdDate.diff(lastUpdDate)).lte(0)
                             expect(lastUpdFromSan.diff(lastUpdDate)).lte(0)

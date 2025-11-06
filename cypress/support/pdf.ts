@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra'
-import * as pdf from 'pdf-parse'
+import pdf from 'pdf-parse'
 
 const downloadFolder = 'cypress/downloads'
 let pdfFile = null

@@ -9,7 +9,7 @@
 import * as dayjs from 'dayjs'
 
 const dateFormat = 'DD/MM/YYYY'
-let testStartDate = dayjs()
+let testStartDate = Cypress.dayjs()
 
 /**
  * Calculate a date based on the test start date (i.e. today unless the test runs over midnight), using an OasysDate object which can contain any of the following (all optional):

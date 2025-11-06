@@ -1,7 +1,7 @@
 import { OAuth2Client } from '@badgateway/oauth2-client'     //  See https://github.com/badgateway/oauth2-client#readme for documentation
 import axios from 'axios'                                    //      https://www.npmjs.com/package/axios
-import * as dayjs from 'dayjs'
 import { flatten } from 'flat'                               //      https://www.npmjs.com/package/flat
+import dayjs from 'dayjs'
 
 import * as rest from '.'
 import { restApiUrls } from 'environments'

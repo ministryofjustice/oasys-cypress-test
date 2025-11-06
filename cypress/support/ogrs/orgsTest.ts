@@ -73,7 +73,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                 const testCaseIdentifier = (i)?.toString() ?? 'null'
 
                 const testCaseResult = calculateTestCase(testCaseParams, oracleTestCaseResult, testCaseIdentifier, testParams)
-                
+
                 if (!testParams.includeObjects) {
                     testCaseResult.inputParams = null
                     testCaseResult.outputParams = null
@@ -113,17 +113,18 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                 : await getRsrTestData(testParams.dbDetails.count, testParams.dbDetails.whereClause)
 
         for (const assessmentOrRsr of oasysData) {
-            scriptResults.cases++
             const errorLog: string[] = []
             try {
-                const testCaseParams = testParams.dbDetails.type == 'assessment' ?
-                    createAssessmentTestCase(assessmentOrRsr as OgrsAssessment) : createRsrTestCase(assessmentOrRsr as OgrsRsr)
-                errorLog.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
+            const testCaseParams = testParams.dbDetails.type == 'assessment' ?
+                createAssessmentTestCase(assessmentOrRsr as OgrsAssessment) : createRsrTestCase(assessmentOrRsr as OgrsRsr)
+            errorLog.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
 
-                if (testParams.staticFlag) {
-                    testCaseParams.STATIC_CALC = testParams.staticFlag
-                }
+            // Run generate two sets of scores, for static flag Y and N
+            for (let staticFlag of ['Y', 'N']) {
+                scriptResults.cases++
+                testCaseParams.STATIC_CALC = staticFlag
 
+                // Call the calculator in Oracle
                 const functionCall = getFunctionCall(testCaseParams)
                 errorLog.push(`    Oracle call:    ${JSON.stringify(functionCall)}`)
                 const oracleTestCaseValues = await getOgrsResult(functionCall)
@@ -132,8 +133,9 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                 const oracleTestCaseResult = loadExpectedValues(oracleTestCaseValues.split('|'))
                 errorLog.push(`    Oracle  result object:   ${JSON.stringify(oracleTestCaseResult)}`)
 
+                // Call the calculator in Cypress and compare against the Oracle result
                 const testCaseResult = calculateTestCase(testCaseParams, oracleTestCaseResult, assessmentOrRsr.pk.toString(), testParams)
-                
+
                 if (!testParams.includeObjects) {
                     testCaseResult.inputParams = null
                     testCaseResult.outputParams = null
@@ -142,6 +144,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                 if (testCaseResult.failed) {
                     scriptResults.failures++
                 }
+            }
             } catch (e) {
                 const logText: string[] = ['']
                 if (testParams.reportMode != 'none') {
