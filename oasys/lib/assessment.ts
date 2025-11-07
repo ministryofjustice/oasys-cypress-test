@@ -68,12 +68,17 @@ export function createPris(assessmentDetails: CreateAssessmentDetails) {
  */
 export function getToCreateAssessmentPage(suppressLog: boolean = false) {
 
-    new oasys.Pages.Offender.OffenderDetails().createAssessment.click()
-    new oasys.Pages.Offender.CrnAmendment().ok.click()
-    new oasys.Pages.Offender.CmsSearchResults().cmsEventNumberColumn.clickFirstRow()
-    new oasys.Pages.Offender.CmsOffenderDetails().updateOffender.click()
+    cy.get<string>('@probForceCrn').then((probForceCrn) => {
 
-    if (!suppressLog) cy.log('Navigated to CreateAssessment page')
+        new oasys.Pages.Offender.OffenderDetails().createAssessment.click()
+        if (probForceCrn == 'Y') {
+            new oasys.Pages.Offender.CrnAmendment().ok.click()
+            new oasys.Pages.Offender.CmsSearchResults().cmsEventNumberColumn.clickFirstRow()
+            new oasys.Pages.Offender.CmsOffenderDetails().updateOffender.click()
+        }
+
+        if (!suppressLog) cy.log('Navigated to CreateAssessment page')
+    })
 }
 
 /**
