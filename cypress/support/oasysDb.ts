@@ -122,6 +122,22 @@ export async function selectData(query: string): Promise<DbResponse> {
 }
 
 /** 
+ * Get the application version and config items.  Returns a string array containing version number and PROB_FORCE_CRN parameter
+ */
+export async function getAppInfo(): Promise<DbResponse> {
+
+    const versionData = await selectSingleValue(`select version_number from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc fetch first 1 row only`)
+    if (versionData.error != null) {
+        return versionData
+    }
+    const configData = await selectSingleValue(`select system_parameter_value from eor.system_parameter_mv where system_parameter_code ='PROB_FORCE_CRN'`)
+    if (configData.error != null) {
+        return configData
+    }
+    return { data: [versionData.data as string, configData.data as string], error: null }
+}
+
+/** 
  * 
  */
 export async function getOgrsResult(query: string): Promise<string> {
@@ -195,7 +211,6 @@ export async function getLatestElogAndUnprocEventTime(mode: 'store' | 'check') {
 
 }
 
-
 /** 
  * Executes an Oracle update to set a password for a given user.
  * 
@@ -203,120 +218,120 @@ export async function getLatestElogAndUnprocEventTime(mode: 'store' | 'check') {
  */
 export async function setPassword(username: string, password: string): Promise<DbResponse> {
 
-        if (connection == null) {
-            const connectError = await connect()
-            if (connectError != null) return { data: null, error: connectError }
-        }
+    if (connection == null) {
+        const connectError = await connect()
+        if (connectError != null) return { data: null, error: connectError }
+    }
 
-        const update = `BEGIN
+    const update = `BEGIN
                         update eor.oasys_user set password_encrypted = eor.authentication_pkg.encrypt_password('${password}'), 
                             password_change_date = sysdate, user_status_elm = 'ACTIVE' where oasys_user_code = '${username}';
                         COMMIT;
                     END;`
 
-        try {
-            let result = await connection.execute(update)
-            return { data: null, error: null }
-        }
-        catch (e) {
-            return { data: null, error: `Error running password update '${update}': ${e}` }
-        }
+    try {
+        let result = await connection.execute(update)
+        return { data: null, error: null }
+    }
+    catch (e) {
+        return { data: null, error: `Error running password update '${update}': ${e}` }
+    }
+}
+
+/**
+ * Check expected answers in a single section in the OASys database, using an alias to return a boolean failure status.
+ */
+export async function checkSectionAnswers(parameters: { assessmentPk: number, section: string, expectedAnswers: OasysAnswer[] }): Promise<CheckDbSectionResponse> {
+
+    const query = sectionQuery(parameters.assessmentPk, parameters.section)
+
+    const result = await selectData(query)
+    if (result.error) {
+        throw new Error(result.error)
     }
 
-    /**
-     * Check expected answers in a single section in the OASys database, using an alias to return a boolean failure status.
-     */
-    export async function checkSectionAnswers(parameters: { assessmentPk: number, section: string, expectedAnswers: OasysAnswer[] }): Promise<CheckDbSectionResponse> {
+    let failed = false
+    const data = result.data as string[][]
+    const report: string[] = []
 
-        const query = sectionQuery(parameters.assessmentPk, parameters.section)
-
-        const result = await selectData(query)
-        if (result.error) {
-            throw new Error(result.error)
-        }
-
-        let failed = false
-        const data = result.data as string[][]
-        const report: string[] = []
-
-        parameters.expectedAnswers.forEach((answerToCheck) => {
-            let actualResult: string = null
-            const dataRow = data.filter((row) => row[0] == answerToCheck.q)
-            const answerType = getAnswerType(answerToCheck.q)  // NOTE check the answer types below if no value is returned, as not all questions have been listed here
-            let expectedAnswer = answerToCheck.a
-            if (dataRow.length > 0) {
-                if (answerType == 'multipleRefAnswer') {
-                    actualResult = ''
-                    dataRow.forEach(r => { actualResult += `${r[1]},` })
-                    if (actualResult == 'null,') { actualResult = null }
-                } else {
-                    actualResult = answerType == 'refAnswer' ? dataRow[0][1] : answerType == 'freeFormat' ? dataRow[0][2] : dataRow[0][3]
-                }
+    parameters.expectedAnswers.forEach((answerToCheck) => {
+        let actualResult: string = null
+        const dataRow = data.filter((row) => row[0] == answerToCheck.q)
+        const answerType = getAnswerType(answerToCheck.q)  // NOTE check the answer types below if no value is returned, as not all questions have been listed here
+        let expectedAnswer = answerToCheck.a
+        if (dataRow.length > 0) {
+            if (answerType == 'multipleRefAnswer') {
+                actualResult = ''
+                dataRow.forEach(r => { actualResult += `${r[1]},` })
+                if (actualResult == 'null,') { actualResult = null }
+            } else {
+                actualResult = answerType == 'refAnswer' ? dataRow[0][1] : answerType == 'freeFormat' ? dataRow[0][2] : dataRow[0][3]
             }
-            const match = actualResult?.replaceAll('\r\n', '\n') == expectedAnswer?.replaceAll('\r\n', '\n')
-            const failureMessage = match ? '          ' : 'FAILED    '
+        }
+        const match = actualResult?.replaceAll('\r\n', '\n') == expectedAnswer?.replaceAll('\r\n', '\n')
+        const failureMessage = match ? '          ' : 'FAILED    '
 
-            const expDisplayString = expectedAnswer == null ? '' : expectedAnswer.length > 50 ? expectedAnswer.substring(0, 50) + '...' : expectedAnswer
-            const actDisplayString = actualResult == null ? '' : actualResult.length > 50 ? actualResult.substring(0, 50) + '...' : actualResult
-            report.push(`    ${failureMessage}${answerToCheck.q} - expected '${expDisplayString}', actual '${actDisplayString}'`)
-            if (!match) { failed = true }
-        })
+        const expDisplayString = expectedAnswer == null ? '' : expectedAnswer.length > 50 ? expectedAnswer.substring(0, 50) + '...' : expectedAnswer
+        const actDisplayString = actualResult == null ? '' : actualResult.length > 50 ? actualResult.substring(0, 50) + '...' : actualResult
+        report.push(`    ${failureMessage}${answerToCheck.q} - expected '${expDisplayString}', actual '${actDisplayString}'`)
+        if (!match) { failed = true }
+    })
 
-        return { failed: failed, report: report }
-    }
+    return { failed: failed, report: report }
+}
 
-    // Identify any OASys answers that are not the default refAnswer type.  NOTE this list is not complete and will need updating.  // TODO
-    function getAnswerType(answer: string): AnswerType {
+// Identify any OASys answers that are not the default refAnswer type.  NOTE this list is not complete and will need updating.  // TODO
+function getAnswerType(answer: string): AnswerType {
 
-        const answerType = answerTypes[answer]
-        return answerType ?? 'refAnswer'
-    }
+    const answerType = answerTypes[answer]
+    return answerType ?? 'refAnswer'
+}
 
-    const answerTypes: { [keys: string]: AnswerType } = {
-        '1.32': 'freeFormat',
-        '1.40': 'freeFormat',
-        '1.29': 'freeFormat',
-        '1.38': 'freeFormat',
-        '2.1': 'additionalNote',
-        '2.3': 'multipleRefAnswer',
-        '2.4.1': 'additionalNote',
-        '2.4.2': 'additionalNote',
-        '2.5': 'additionalNote',
-        '2.7.3': 'additionalNote',
-        '2.8': 'additionalNote',
-        '2.9.t_V2': 'additionalNote',
-        '2.11.t': 'additionalNote',
-        '2.12': 'additionalNote',
-        '2.98': 'additionalNote',
-        '4.7.1': 'multipleRefAnswer',
-        '8.2.14.t': 'additionalNote',
-        '9.1.t': 'additionalNote',
-        'SC0': 'freeFormat',
-        'SC1.t': 'additionalNote',
-        'SC2.t': 'additionalNote',
-        'SC3.t': 'additionalNote',
-        'SC4.t': 'additionalNote',
-        'SC7.t': 'additionalNote',
-        'SC8.t': 'additionalNote',
-        'SC9.t': 'additionalNote',
-        'SC10.t': 'additionalNote',
-        '3.97': 'additionalNote',
-        '4.94': 'additionalNote',
-        '5.97': 'additionalNote',
-        '6.97': 'additionalNote',
-        '7.97': 'additionalNote',
-        '8.97': 'additionalNote',
-        '9.97': 'additionalNote',
-        '10.97': 'additionalNote',
-        '11.97': 'additionalNote',
-        '12.97': 'additionalNote',
-        'SAN_CRIM_NEED_SCORE': 'freeFormat',
+const answerTypes: { [keys: string]: AnswerType } = {
+    '1.32': 'freeFormat',
+    '1.40': 'freeFormat',
+    '1.29': 'freeFormat',
+    '1.38': 'freeFormat',
+    '2.1': 'additionalNote',
+    '2.3': 'multipleRefAnswer',
+    '2.4.1': 'additionalNote',
+    '2.4.2': 'additionalNote',
+    '2.5': 'additionalNote',
+    '2.7.3': 'additionalNote',
+    '2.8': 'additionalNote',
+    '2.9.t_V2': 'additionalNote',
+    '2.11.t': 'additionalNote',
+    '2.12': 'additionalNote',
+    '2.98': 'additionalNote',
+    '4.7.1': 'multipleRefAnswer',
+    '8.2.14.t': 'additionalNote',
+    '9.1.t': 'additionalNote',
+    'SC0': 'freeFormat',
+    'SC1.t': 'additionalNote',
+    'SC2.t': 'additionalNote',
+    'SC3.t': 'additionalNote',
+    'SC4.t': 'additionalNote',
+    'SC7.t': 'additionalNote',
+    'SC8.t': 'additionalNote',
+    'SC9.t': 'additionalNote',
+    'SC10.t': 'additionalNote',
+    '3.97': 'additionalNote',
+    '4.94': 'additionalNote',
+    '5.97': 'additionalNote',
+    '6.97': 'additionalNote',
+    '7.97': 'additionalNote',
+    '8.97': 'additionalNote',
+    '9.97': 'additionalNote',
+    '10.97': 'additionalNote',
+    '11.97': 'additionalNote',
+    '12.97': 'additionalNote',
+    'SAN_CRIM_NEED_SCORE': 'freeFormat',
 
-    }
+}
 
-    function sectionQuery(pk: number, section: string): string {
+function sectionQuery(pk: number, section: string): string {
 
-        return `select q.ref_question_code, a.ref_answer_code, q.free_format_answer, q.additional_note
+    return `select q.ref_question_code, a.ref_answer_code, q.free_format_answer, q.additional_note
                     from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q, eor.oasys_answer a
                     where st.oasys_set_pk = s.oasys_set_pk
                     and s.oasys_section_pk = q.oasys_section_pk
@@ -324,4 +339,4 @@ export async function setPassword(username: string, password: string): Promise<D
                     and s.ref_section_code = '${section}'
                     and st.oasys_set_pk = ${pk} 
                     order by q.ref_question_code, a.ref_answer_code`
-    }
+}

@@ -4,7 +4,7 @@ import * as oasysDb from './cypress/support/oasysDb'
 import * as restApi from './cypress/support/restApi'
 import * as fs from 'fs-extra'
 import * as pdf from './cypress/support/pdf'
-import { getLatestElogAndUnprocEventTime } from './cypress/support/oasysDb'
+import { getLatestElogAndUnprocEventTime, getAppInfo } from './cypress/support/oasysDb'
 import { noDatabaseConnection } from './localSettings'
 import { ogrsTest } from './cypress/support/ogrs/orgsTest'
 import { OgrsTestParameters, OgrsTestScriptResult } from './cypress/support/ogrs/types'
@@ -55,11 +55,10 @@ module.exports = defineConfig({
         /**
          * Get the current application version number from the database. Returns a DbResponse type object including the version or error message.
          */
-        getAppVersion(): Promise<DbResponse> {
+        getAppInfo(): Promise<DbResponse> {
 
           return new Promise((resolve) => {
-            const query = `select version_number from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc fetch first 1 row only`
-            oasysDb.selectSingleValue(query).then((result) => {
+            oasysDb.getAppInfo().then((result) => {
               resolve(result)
             })
           })
