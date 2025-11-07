@@ -2,6 +2,7 @@ var oracledb = require('oracledb')
 var connection
 
 import { testEnvironment, userSuffix } from '../../localSettings'
+import { ogrsFunctionCall } from './ogrs/getTestData/oracleFunctionCall'
 
 /** 
  * Connect to the Oracle database using parameters configured in environments.ts and localSettings.ts, returns a null string for success, or an error for failure.
@@ -132,219 +133,7 @@ export async function getOgrsResult(query: string): Promise<string> {
 
     try {
 
-        const result = await connection.execute(`
-            DECLARE result eor.ogrs4_output_typ;
-            BEGIN
-                result := ${query};
-                :ret := 
-                    '''' || result.ASSESSMENT_DATE || '''|' ||
-                    result.OGRS4G_CALCULATED || '|' ||
-                    result.OGRS4G_YEAR_TWO || '|' ||
-                    result.OGRS4G_AAEAD || '|' ||
-                    result.OGRS4G_FEMALE || '|' ||
-                    result.OGRS4G_OFFENCE || '|' ||
-                    result.OGRS4G_FIRST_SANCTION || '|' ||
-                    result.OGRS4G_SECOND_SANCTION || '|' ||
-                    result.OGRS4G_TOTAL_SANCTIONS || '|' ||
-                    result.OGRS4G_SECOND_SANCTION_GAP || '|' ||
-                    result.OGRS4G_OFM || '|' ||
-                    result.OGRS4G_COPASG || '|' ||
-                    result.OGRS4G_COPASG_SQUARED || '|' ||
-                    result.OGRS4G_SCORE || '|' ||
-                    result.OGRS4G_PERCENTAGE || '|' ||
-                    result.OGRS4G_BAND || '|' ||
-                    '''' || result.OGRS4G_MISSING_QUESTIONS || '''|' ||
-                    result.OGRS4G_MISSING_COUNT || '|' ||
-                    result.OGRS4V_CALCULATED || '|' ||
-                    result.OGRS4V_YEAR_TWO || '|' ||
-                    result.OGRS4V_AAEAD || '|' ||
-                    result.OGRS4V_FEMALE || '|' ||
-                    result.OGRS4V_OFFENCE || '|' ||
-                    result.OGRS4V_FIRST_SANCTION || '|' ||
-                    result.OGRS4V_SECOND_SANCTION || '|' ||
-                    result.OGRS4V_TOTAL_SANCTIONS || '|' ||
-                    result.OGRS4V_SECOND_SANCTION_GAP || '|' ||
-                    result.OGRS4V_OFM || '|' ||
-                    result.OGRS4V_COPASV || '|' ||
-                    result.OGRS4V_NEVER_VIOLENT || '|' ||
-                    result.OGRS4V_ONCE_VIOLENT || '|' ||
-                    result.OGRS4V_TOT_VIOLENT_SANCTIONS || '|' ||
-                    result.OGRS4V_COPAS_VIOLENT || '|' ||
-                    result.OGRS4V_SCORE || '|' ||
-                    result.OGRS4V_PERCENTAGE || '|' ||
-                    result.OGRS4V_BAND || '|' ||
-                    '''' || result.OGRS4V_MISSING_QUESTIONS || '''|' ||
-                    result.OGRS4V_MISSING_COUNT || '|' ||
-                    result.SNSV_CALCULATED_STATIC || '|' ||
-                    result.SNSV_YEAR_TWO_STATIC || '|' ||
-                    result.SNSV_AAEAD_STATIC || '|' ||
-                    result.SNSV_FEMALE_STATIC || '|' ||
-                    result.SNSV_OFFENCE_STATIC || '|' ||
-                    result.SNSV_FIRST_SANCTION_STATIC || '|' ||
-                    result.SNSV_SECOND_SANCTION_STATIC || '|' ||
-                    result.SNSV_TOTAL_SANCTIONS_STATIC || '|' ||
-                    result.SNSV_SECOND_SANC_GAP_STATIC || '|' ||
-                    result.SNSV_OFM_STATIC || '|' ||
-                    result.SNSV_COPASV_STATIC || '|' ||
-                    result.SNSV_NEVER_VIOLENT_STATIC || '|' ||
-                    result.SNSV_ONCE_VIOLENT_STATIC || '|' ||
-                    result.SNSV_TOT_VIOLENT_SANC_STATIC || '|' ||
-                    result.SNSV_COPAS_VIOLENT_STATIC || '|' ||
-                    result.SNSV_SCORE_STATIC || '|' ||
-                    result.SNSV_PERCENTAGE_STATIC || '|' ||
-                    result.SNSV_BAND_STATIC || '|' ||
-                    '''' || result.SNSV_MISSING_QUESTIONS_STATIC || '''|' ||
-                    result.SNSV_MISSING_COUNT_STATIC || '|' ||
-                    result.OGP2_CALCULATED || '|' ||
-                    result.OGP2_YEAR_TWO || '|' ||
-                    result.OGP2_AAEAD || '|' ||
-                    result.OGP2_FEMALE || '|' ||
-                    result.OGP2_OFFENCE || '|' ||
-                    result.OGP2_FIRST_SANCTION || '|' ||
-                    result.OGP2_SECOND_SANCTION || '|' ||
-                    result.OGP2_TOTAL_SANCTIONS || '|' ||
-                    result.OGP2_SECOND_SANCTION_GAP || '|' ||
-                    result.OGP2_OFM || '|' ||
-                    result.OGP2_COPASG || '|' ||
-                    result.OGP2_COPASG_SQUARED || '|' ||
-                    result.OGP2_SUITABLE_ACC || '|' ||
-                    result.OGP2_UNEMPLOYED || '|' ||
-                    result.OGP2_LIVE_IN_RELATIONSHIP || '|' ||
-                    result.OGP2_RELATIONSHIP || '|' ||
-                    result.OGP2_MULTIPLIC_RELATIONSHIP || '|' ||
-                    result.OGP2_DV || '|' ||
-                    result.OGP2_REGULAR_ACTIVITIES || '|' ||
-                    result.OGP2_DAILY_DRUG_USER || '|' ||
-                    result.OGP2_DRUG_MOTIVATION || '|' ||
-                    result.OGP2_CHRONIC_DRINKER || '|' ||
-                    result.OGP2_BINGE_DRINKER || '|' ||
-                    result.OGP2_IMPULSIVE || '|' ||
-                    result.OGP2_CRIMINAL_ATTITUDE || '|' ||
-                    result.OGP2_HEROIN || '|' ||
-                    result.OGP2_METHADONE || '|' ||
-                    result.OGP2_OTHER_OPIATE || '|' ||
-                    result.OGP2_CRACK || '|' ||
-                    result.OGP2_COCAINE || '|' ||
-                    result.OGP2_MISUSE_PRESCRIBED || '|' ||
-                    result.OGP2_BENZODIAZEPINES || '|' ||
-                    result.OGP2_AMPHETAMINES || '|' ||
-                    result.OGP2_ECSTASY || '|' ||
-                    result.OGP2_CANNABIS || '|' ||
-                    result.OGP2_STEROIDS || '|' ||
-                    result.OGP2_OTHER_DRUGS || '|' ||
-                    result.OGP2_TOTAL_SCORE || '|' ||
-                    result.OGP2_PERCENTAGE || '|' ||
-                    result.OGP2_BAND || '|' ||
-                    '''' || result.OGP2_MISSING_QUESTIONS || '''|' ||
-                    result.OGP2_MISSING_COUNT || '|' ||
-                    result.OVP2_CALCULATED || '|' ||
-                    result.OVP2_YEAR_TWO || '|' ||
-                    result.OVP2_AAEAD || '|' ||
-                    result.OVP2_FEMALE || '|' ||
-                    result.OVP2_OFFENCE || '|' ||
-                    result.OVP2_FIRST_SANCTION || '|' ||
-                    result.OVP2_SECOND_SANCTION || '|' ||
-                    result.OVP2_TOTAL_SANCTIONS || '|' ||
-                    result.OVP2_SECOND_SANCTION_GAP || '|' ||
-                    result.OVP2_OFM || '|' ||
-                    result.OVP2_COPASV || '|' ||
-                    result.OVP2_NEVER_VIOLENT || '|' ||
-                    result.OVP2_ONCE_VIOLENT || '|' ||
-                    result.OVP2_TOTAL_VIOLENT_SANCTIONS || '|' ||
-                    result.OVP2_COPAS_VIOLENT || '|' ||
-                    result.OVP2_SUITABLE_ACC || '|' ||
-                    result.OVP2_UNEMPLOYED || '|' ||
-                    result.OVP2_RELATIONSHIP || '|' ||
-                    result.OVP2_LIVE_IN_RELATIONSHIP || '|' ||
-                    result.OVP2_MULTIPLIC_RELATIONSHIP || '|' ||
-                    result.OVP2_DV || '|' ||
-                    result.OVP2_REGULAR_ACTIVITIES || '|' ||
-                    result.OVP2_DRUG_MOTIVATION || '|' ||
-                    result.OVP2_CHRONIC_DRINKER || '|' ||
-                    result.OVP2_BINGE_DRINKER || '|' ||
-                    result.OVP2_IMPULSIVE || '|' ||
-                    result.OVP2_TEMPER || '|' ||
-                    result.OVP2_CRIMINAL_ATTITUDE || '|' ||
-                    result.OVP2_HEROIN || '|' ||
-                    result.OVP2_CRACK || '|' ||
-                    result.OVP2_COCAINE || '|' ||
-                    result.OVP2_MISUSE_PRESCRIBED || '|' ||
-                    result.OVP2_BENZODIAZEPINES || '|' ||
-                    result.OVP2_AMPHETAMINES || '|' ||
-                    result.OVP2_ECSTASY || '|' ||
-                    result.OVP2_CANNABIS || '|' ||
-                    result.OVP2_OTHER_OPIATE || '|' ||
-                    result.OVP2_OTHER_DRUG || '|' ||
-                    result.OVP2_METHADONE || '|' ||
-                    result.OVP2_STEROIDS || '|' ||
-                    result.OVP2_TOTAL_SCORE || '|' ||
-                    result.OVP2_PERCENTAGE || '|' ||
-                    result.OVP2_BAND || '|' ||
-                    '''' || result.OVP2_MISSING_QUESTIONS || '''|' ||
-                    result.OVP2_MISSING_COUNT || '|' ||
-                    result.SNSV_CALCULATED_DYNAMIC || '|' ||
-                    result.SNSV_YEAR_TWO_DYNAMIC || '|' ||
-                    result.SNSV_AAEAD_DYNAMIC || '|' ||
-                    result.SNSV_FEMALE_DYNAMIC || '|' ||
-                    result.SNSV_OFFENCE_DYNAMIC || '|' ||
-                    result.SNSV_FIRST_SANCTION_DYNAMIC || '|' ||
-                    result.SNSV_SECOND_SANCTION_DYNAMIC || '|' ||
-                    result.SNSV_TOTAL_SANCTIONS_DYNAMIC || '|' ||
-                    result.SNSV_SECOND_SANC_GAP_DYNAMIC || '|' ||
-                    result.SNSV_OFM_DYNAMIC || '|' ||
-                    result.SNSV_COPASV_DYNAMIC || '|' ||
-                    result.SNSV_NEVER_VIOLENT_DYNAMIC || '|' ||
-                    result.SNSV_ONCE_VIOLENT_DYNAMIC || '|' ||
-                    result.SNSV_TOT_VIOLENT_SANC_DYNAMIC || '|' ||
-                    result.SNSV_COPAS_VIOLENT_DYNAMIC || '|' ||
-                    result.SNSV_WEAPON_DYNAMIC || '|' ||
-                    result.SNSV_SUITABLE_ACC_DYNAMIC || '|' ||
-                    result.SNSV_UNEMPLOYED_DYNAMIC || '|' ||
-                    result.SNSV_RELATION_QUALITY_DYNAMIC || '|' ||
-                    result.SNSV_DV_DYNAMIC || '|' ||
-                    result.SNSV_CHRONIC_DRINKER_DYNAMIC || '|' ||
-                    result.SNSV_BINGE_DRINKER_DYNAMIC || '|' ||
-                    result.SNSV_IMPULSIVE_DYNAMIC || '|' ||
-                    result.SNSV_TEMPER_DYNAMIC || '|' ||
-                    result.SNSV_CRIM_ATTITUDE_DYNAMIC || '|' ||
-                    result.SNSV_HOMICIDE_DYNAMIC || '|' ||
-                    result.SNSV_GBH_DYNAMIC || '|' ||
-                    result.SNSV_KIDNAP_DYNAMIC || '|' ||
-                    result.SNSV_FIREARMS_DYNAMIC || '|' ||
-                    result.SNSV_ROBBERY_DYNAMIC || '|' ||
-                    result.SNSV_AGG_BURGLARY_DYNAMIC || '|' ||
-                    result.SNSV_WEAPONS_NOT_GUNS_DYNAMIC || '|' ||
-                    result.SNSV_CRIM_DAMAGE_LIFE_DYNAMIC || '|' ||
-                    result.SNSV_ARSON_DYNAMIC || '|' ||
-                    result.SNSV_SCORE_DYNAMIC || '|' ||
-                    result.SNSV_PERCENTAGE_DYNAMIC || '|' ||
-                    result.SNSV_BAND_DYNAMIC || '|' ||
-                    '''' || result.SNSV_MISSING_QUESTIONS_DYNAMIC || '''|' ||
-                    result.SNSV_MISSING_COUNT_DYNAMIC || '|' ||
-                    result.OSP_DC_CALCULATED || '|' ||
-                    result.OSP_DC_SCORE || '|' ||
-                    result.OSP_DC_PERCENTAGE || '|' ||
-                    result.OSP_DC_BAND || '|' ||
-                    result.OSP_DC_RISK_REDUCTION || '|' ||
-                    '''' || result.OSP_DC_MISSING_QUESTIONS || '''|' ||
-                    result.OSP_DC_MISSING_COUNT || '|' ||
-                    result.OSP_IIC_CALCULATED || '|' ||
-                    result.OSP_IIC_PERCENTAGE || '|' ||
-                    result.OSP_IIC_BAND || '|' ||
-                    '''' || result.OSP_IIC_MISSING_QUESTIONS || '''|' ||
-                    result.OSP_IIC_MISSING_COUNT || '|' ||
-                    result.RSR_CALCULATED || '|' ||
-                    result.RSR_DYNAMIC || '|' ||
-                    result.RSR_PERCENTAGE || '|' ||
-                    result.RSR_BAND || '|' ||
-                    '''' || result.RSR_MISSING_QUESTIONS || '''|' ||
-                    result.RSR_MISSING_COUNT
-                    ;
-                END;`,
-            {
-                ret: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 10000 }
-            }
-        )
+        const result = await connection.execute(ogrsFunctionCall(query), { ret: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 10000 } })
 
         return result.outBinds.ret
     }
@@ -414,120 +203,120 @@ export async function getLatestElogAndUnprocEventTime(mode: 'store' | 'check') {
  */
 export async function setPassword(username: string, password: string): Promise<DbResponse> {
 
-    if (connection == null) {
-        const connectError = await connect()
-        if (connectError != null) return { data: null, error: connectError }
-    }
+        if (connection == null) {
+            const connectError = await connect()
+            if (connectError != null) return { data: null, error: connectError }
+        }
 
-    const update = `BEGIN
+        const update = `BEGIN
                         update eor.oasys_user set password_encrypted = eor.authentication_pkg.encrypt_password('${password}'), 
                             password_change_date = sysdate, user_status_elm = 'ACTIVE' where oasys_user_code = '${username}';
                         COMMIT;
                     END;`
 
-    try {
-        let result = await connection.execute(update)
-        return { data: null, error: null }
-    }
-    catch (e) {
-        return { data: null, error: `Error running password update '${update}': ${e}` }
-    }
-}
-
-/**
- * Check expected answers in a single section in the OASys database, using an alias to return a boolean failure status.
- */
-export async function checkSectionAnswers(parameters: { assessmentPk: number, section: string, expectedAnswers: OasysAnswer[] }): Promise<CheckDbSectionResponse> {
-
-    const query = sectionQuery(parameters.assessmentPk, parameters.section)
-
-    const result = await selectData(query)
-    if (result.error) {
-        throw new Error(result.error)
-    }
-
-    let failed = false
-    const data = result.data as string[][]
-    const report: string[] = []
-
-    parameters.expectedAnswers.forEach((answerToCheck) => {
-        let actualResult: string = null
-        const dataRow = data.filter((row) => row[0] == answerToCheck.q)
-        const answerType = getAnswerType(answerToCheck.q)  // NOTE check the answer types below if no value is returned, as not all questions have been listed here
-        let expectedAnswer = answerToCheck.a
-        if (dataRow.length > 0) {
-            if (answerType == 'multipleRefAnswer') {
-                actualResult = ''
-                dataRow.forEach(r => { actualResult += `${r[1]},` })
-                if (actualResult == 'null,') { actualResult = null }
-            } else {
-                actualResult = answerType == 'refAnswer' ? dataRow[0][1] : answerType == 'freeFormat' ? dataRow[0][2] : dataRow[0][3]
-            }
+        try {
+            let result = await connection.execute(update)
+            return { data: null, error: null }
         }
-        const match = actualResult?.replaceAll('\r\n', '\n') == expectedAnswer?.replaceAll('\r\n', '\n')
-        const failureMessage = match ? '          ' : 'FAILED    '
+        catch (e) {
+            return { data: null, error: `Error running password update '${update}': ${e}` }
+        }
+    }
 
-        const expDisplayString = expectedAnswer == null ? '' : expectedAnswer.length > 50 ? expectedAnswer.substring(0, 50) + '...' : expectedAnswer
-        const actDisplayString = actualResult == null ? '' : actualResult.length > 50 ? actualResult.substring(0, 50) + '...' : actualResult
-        report.push(`    ${failureMessage}${answerToCheck.q} - expected '${expDisplayString}', actual '${actDisplayString}'`)
-        if (!match) { failed = true }
-    })
+    /**
+     * Check expected answers in a single section in the OASys database, using an alias to return a boolean failure status.
+     */
+    export async function checkSectionAnswers(parameters: { assessmentPk: number, section: string, expectedAnswers: OasysAnswer[] }): Promise<CheckDbSectionResponse> {
 
-    return { failed: failed, report: report }
-}
+        const query = sectionQuery(parameters.assessmentPk, parameters.section)
 
-// Identify any OASys answers that are not the default refAnswer type.  NOTE this list is not complete and will need updating.  // TODO
-function getAnswerType(answer: string): AnswerType {
+        const result = await selectData(query)
+        if (result.error) {
+            throw new Error(result.error)
+        }
 
-    const answerType = answerTypes[answer]
-    return answerType ?? 'refAnswer'
-}
+        let failed = false
+        const data = result.data as string[][]
+        const report: string[] = []
 
-const answerTypes: { [keys: string]: AnswerType } = {
-    '1.32': 'freeFormat',
-    '1.40': 'freeFormat',
-    '1.29': 'freeFormat',
-    '1.38': 'freeFormat',
-    '2.1': 'additionalNote',
-    '2.3': 'multipleRefAnswer',
-    '2.4.1': 'additionalNote',
-    '2.4.2': 'additionalNote',
-    '2.5': 'additionalNote',
-    '2.7.3': 'additionalNote',
-    '2.8': 'additionalNote',
-    '2.9.t_V2': 'additionalNote',
-    '2.11.t': 'additionalNote',
-    '2.12': 'additionalNote',
-    '2.98': 'additionalNote',
-    '4.7.1': 'multipleRefAnswer',
-    '8.2.14.t': 'additionalNote',
-    '9.1.t': 'additionalNote',
-    'SC0': 'freeFormat',
-    'SC1.t': 'additionalNote',
-    'SC2.t': 'additionalNote',
-    'SC3.t': 'additionalNote',
-    'SC4.t': 'additionalNote',
-    'SC7.t': 'additionalNote',
-    'SC8.t': 'additionalNote',
-    'SC9.t': 'additionalNote',
-    'SC10.t': 'additionalNote',
-    '3.97': 'additionalNote',
-    '4.94': 'additionalNote',
-    '5.97': 'additionalNote',
-    '6.97': 'additionalNote',
-    '7.97': 'additionalNote',
-    '8.97': 'additionalNote',
-    '9.97': 'additionalNote',
-    '10.97': 'additionalNote',
-    '11.97': 'additionalNote',
-    '12.97': 'additionalNote',
-    'SAN_CRIM_NEED_SCORE': 'freeFormat',
+        parameters.expectedAnswers.forEach((answerToCheck) => {
+            let actualResult: string = null
+            const dataRow = data.filter((row) => row[0] == answerToCheck.q)
+            const answerType = getAnswerType(answerToCheck.q)  // NOTE check the answer types below if no value is returned, as not all questions have been listed here
+            let expectedAnswer = answerToCheck.a
+            if (dataRow.length > 0) {
+                if (answerType == 'multipleRefAnswer') {
+                    actualResult = ''
+                    dataRow.forEach(r => { actualResult += `${r[1]},` })
+                    if (actualResult == 'null,') { actualResult = null }
+                } else {
+                    actualResult = answerType == 'refAnswer' ? dataRow[0][1] : answerType == 'freeFormat' ? dataRow[0][2] : dataRow[0][3]
+                }
+            }
+            const match = actualResult?.replaceAll('\r\n', '\n') == expectedAnswer?.replaceAll('\r\n', '\n')
+            const failureMessage = match ? '          ' : 'FAILED    '
 
-}
+            const expDisplayString = expectedAnswer == null ? '' : expectedAnswer.length > 50 ? expectedAnswer.substring(0, 50) + '...' : expectedAnswer
+            const actDisplayString = actualResult == null ? '' : actualResult.length > 50 ? actualResult.substring(0, 50) + '...' : actualResult
+            report.push(`    ${failureMessage}${answerToCheck.q} - expected '${expDisplayString}', actual '${actDisplayString}'`)
+            if (!match) { failed = true }
+        })
 
-function sectionQuery(pk: number, section: string): string {
+        return { failed: failed, report: report }
+    }
 
-    return `select q.ref_question_code, a.ref_answer_code, q.free_format_answer, q.additional_note
+    // Identify any OASys answers that are not the default refAnswer type.  NOTE this list is not complete and will need updating.  // TODO
+    function getAnswerType(answer: string): AnswerType {
+
+        const answerType = answerTypes[answer]
+        return answerType ?? 'refAnswer'
+    }
+
+    const answerTypes: { [keys: string]: AnswerType } = {
+        '1.32': 'freeFormat',
+        '1.40': 'freeFormat',
+        '1.29': 'freeFormat',
+        '1.38': 'freeFormat',
+        '2.1': 'additionalNote',
+        '2.3': 'multipleRefAnswer',
+        '2.4.1': 'additionalNote',
+        '2.4.2': 'additionalNote',
+        '2.5': 'additionalNote',
+        '2.7.3': 'additionalNote',
+        '2.8': 'additionalNote',
+        '2.9.t_V2': 'additionalNote',
+        '2.11.t': 'additionalNote',
+        '2.12': 'additionalNote',
+        '2.98': 'additionalNote',
+        '4.7.1': 'multipleRefAnswer',
+        '8.2.14.t': 'additionalNote',
+        '9.1.t': 'additionalNote',
+        'SC0': 'freeFormat',
+        'SC1.t': 'additionalNote',
+        'SC2.t': 'additionalNote',
+        'SC3.t': 'additionalNote',
+        'SC4.t': 'additionalNote',
+        'SC7.t': 'additionalNote',
+        'SC8.t': 'additionalNote',
+        'SC9.t': 'additionalNote',
+        'SC10.t': 'additionalNote',
+        '3.97': 'additionalNote',
+        '4.94': 'additionalNote',
+        '5.97': 'additionalNote',
+        '6.97': 'additionalNote',
+        '7.97': 'additionalNote',
+        '8.97': 'additionalNote',
+        '9.97': 'additionalNote',
+        '10.97': 'additionalNote',
+        '11.97': 'additionalNote',
+        '12.97': 'additionalNote',
+        'SAN_CRIM_NEED_SCORE': 'freeFormat',
+
+    }
+
+    function sectionQuery(pk: number, section: string): string {
+
+        return `select q.ref_question_code, a.ref_answer_code, q.free_format_answer, q.additional_note
                     from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q, eor.oasys_answer a
                     where st.oasys_set_pk = s.oasys_set_pk
                     and s.oasys_section_pk = q.oasys_section_pk
@@ -535,4 +324,4 @@ function sectionQuery(pk: number, section: string): string {
                     and s.ref_section_code = '${section}'
                     and st.oasys_set_pk = ${pk} 
                     order by q.ref_question_code, a.ref_answer_code`
-}
+    }
