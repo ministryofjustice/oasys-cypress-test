@@ -26,6 +26,7 @@ import { testEnvironment } from '../../localSettings'
  */
 
 const t2 = testEnvironment.name.includes('T2')
+const sanRole = t2 ? 'San Service' : 'SAN Service'
 
 /////////////// Providers //////////////
 export const probationNonSan = 'Bedfordshire'
@@ -113,7 +114,7 @@ export const prisHomds: User = new User(
  */
 export const probSanHeadPdu: User = new User(
     { username: 'AUTOSANHEADPDU', forename1: 'Autotest', surname: 'SANHEADPDU' },
-    { provider: probationSan, frameworkRole: 'Legacy - Head of PDU', defaultCountersigner: null, roles: ['NPS Assessor', 'SAN Service', 'Trainer'] })
+    { provider: probationSan, frameworkRole: 'Legacy - Head of PDU', defaultCountersigner: null, roles: ['NPS Assessor', sanRole, 'Trainer'] })
 
 /**
  * AUTOSANPO-xx
@@ -125,7 +126,7 @@ export const probSanHeadPdu: User = new User(
  */
 export const probSanPo: User = new User(
     { username: 'AUTOSANPO', forename1: 'Autotest', surname: 'SANPO' },
-    { provider: probationSan, frameworkRole: 'Legacy - Approved PO', defaultCountersigner: null, roles: ['NPS Assessor', 'SAN Service', 'SARA', 'Trainer'] }
+    { provider: probationSan, frameworkRole: 'Legacy - Approved PO', defaultCountersigner: null, roles: ['NPS Assessor', sanRole, 'SARA', 'Trainer'] }
 )
 
 /**
@@ -138,7 +139,7 @@ export const probSanPo: User = new User(
  */
 export const probSanPso: User = new User(
     { username: 'AUTOSANPSO', forename1: 'Autotest', surname: 'SANPSO' },
-    { provider: probationSan, frameworkRole: 'Legacy - Approved PSO, approved PQiP, NQO or unapproved PO', defaultCountersigner: probSanPo, roles: ['NPS Assessor', 'SAN Service', 'Trainer'] }
+    { provider: probationSan, frameworkRole: 'Legacy - Approved PSO, approved PQiP, NQO or unapproved PO', defaultCountersigner: probSanPo, roles: ['NPS Assessor', sanRole, 'Trainer'] }
 )
 
 /**
@@ -151,7 +152,7 @@ export const probSanPso: User = new User(
  */
 export const probSanUnappr: User = new User(
     { username: 'AUTOSANUNAPPR', forename1: 'Autotest', surname: 'SANUNAPPR' },
-    { provider: probationSan, frameworkRole: 'Legacy - Unapproved PSO & unapproved PQiP', defaultCountersigner: null, roles: ['NPS Assessor', 'SAN Service', 'Trainer'] })
+    { provider: probationSan, frameworkRole: 'Legacy - Unapproved PSO & unapproved PQiP', defaultCountersigner: null, roles: ['NPS Assessor', sanRole, 'Trainer'] })
 
 
 ///////////// PRISON SAN /////////////
@@ -166,7 +167,7 @@ export const probSanUnappr: User = new User(
  */
 export const prisSanHomds: User = new User(
     { username: 'AUTOSANPRISHOMDS', forename1: 'Autotest', surname: 'SANPRISHOMDS' },
-    { provider: prisonSan, frameworkRole: 'HOMDs', defaultCountersigner: null, roles: ['HMPS Assessor', 'SAN Service', 'Trainer'] }
+    { provider: prisonSan, frameworkRole: 'HOMDs', defaultCountersigner: null, roles: ['HMPS Assessor', sanRole, 'Trainer'] }
 )
 
 /**
@@ -181,7 +182,7 @@ export const prisSanPom: User = new User(
     { username: 'AUTOSANPRISPOM', forename1: 'Autotest', surname: 'SANPRISPOM' },
     {
         provider: prisonSan, frameworkRole: 'Approved Prison POM, approved PQiP, NQO or unapproved Probation POM',
-        defaultCountersigner: prisSanHomds, roles: ['HMPS Assessor', 'SAN Service', 'Trainer']
+        defaultCountersigner: prisSanHomds, roles: ['HMPS Assessor', sanRole, 'Trainer']
     }
 )
 
@@ -195,7 +196,7 @@ export const prisSanPom: User = new User(
  */
 export const prisSanUnappr: User = new User(
     { username: 'AUTOSANPRISUNAPPR', forename1: 'Autotest', surname: 'SANPRISUNAPPR' },
-    { provider: prisonSan, frameworkRole: 'Unapproved Prison POM & unapproved PQiP', defaultCountersigner: prisSanPom, roles: ['HMPS Assessor', 'SAN Service', 'Trainer'] }
+    { provider: prisonSan, frameworkRole: 'Unapproved Prison POM & unapproved PQiP', defaultCountersigner: prisSanPom, roles: ['HMPS Assessor', sanRole, 'Trainer'] }
 )
 
 /**

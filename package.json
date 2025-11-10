@@ -17,7 +17,7 @@
     "mochawesome-merge": "^5.0.0",
     "mochawesome-report-generator": "^6.3.2",
     "oracledb": "^6.10.0",
-    "pdf-parse": "^1.1.1",
+    "pdf-parse": "^2.4.5",
     "ts-loader": "^9.5.4",
     "typescript": "^5.9.3"
   },
