@@ -981,7 +981,7 @@ export const sanIds: SanIds = {
     // Relationships
     anyChildren: {
         type: 'checkbox', id: '#personal_relationships_community_children_details',
-        options: ['yesLiveWith', 'yesLiveElsewhere', 'yesVisitRegularly', 'no'],
+        options: ['yesLiveWith', 'yesLiveElsewhere', 'yesVisitRegularly', '-', 'no'],
     },
     happyWithStatus: {
         type: 'radio',
@@ -1204,7 +1204,7 @@ export const sanIds: SanIds = {
     offenceElements: {
         type: 'checkbox',
         id: '#offence_analysis_elements',
-        options: ['arson', 'domesticAbuse', 'excessiveViolence', 'hatred', 'physicalDamage', 'sexualElement', 'victimTargeted', 'violence', 'weapon', 'none']
+        options: ['arson', 'domesticAbuse', 'excessiveViolence', 'hatred', 'physicalDamage', 'sexualElement', 'victimTargeted', 'violence', 'weapon', '-', 'none']
     },
 
     victimTargetedDetails: {
@@ -1385,4 +1385,5 @@ export const sanIds: SanIds = {
     addChangeSteps: { type: 'button', id: 'Add or change steps' },
     addAnotherStep: { type: 'button', id: 'Add another step' },
     saveWithoutSteps: { type: 'button', id: 'Save without steps' },
+    continue: { type: 'action', id: '' },
 }

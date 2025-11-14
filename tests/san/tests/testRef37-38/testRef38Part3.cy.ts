@@ -29,7 +29,7 @@ describe('SAN integration - test ref 38 part 3', () => {
                 rmp.checkIsNotOnMenu()  // Shouldn't be there
 
                 // Check it's now read-write
-                oasys.San.gotoSan()
+                oasys.San.gotoSan('Accommodation','information')
                 oasys.San.checkSanOtlCall(pks[1], {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,

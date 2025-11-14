@@ -52,7 +52,7 @@ export function checkDbValues(table: string, where: string, values: { [keys: str
         expectedValues.push(values[name])
     })
 
-    query += ` from ${table} where ${where}`
+    query += ` from eor.${table} where ${where}`
 
     cy.task('getData', query).then((result: DbResponse) => {
         cy.groupedLogStart(`Checking database values`)
@@ -436,7 +436,7 @@ function checkSectionCloning(newPk: number, oldPk: number, section: string, resu
 function sectionQuery(pk: number, section: string): string {
 
     return `select q.ref_question_code, a.ref_answer_code, q.free_format_answer, q.additional_note
-                    from oasys_set st, oasys_section s, oasys_question q, oasys_answer a
+                    from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q, eor.oasys_answer a
                     where st.oasys_set_pk = s.oasys_set_pk
                     and s.oasys_section_pk = q.oasys_section_pk
                     and q.oasys_question_pk = a.oasys_question_pk(+)
