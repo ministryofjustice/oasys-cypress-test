@@ -84,11 +84,11 @@ describe('SAN integration - test ref 27', () => {
                     oasys.login(oasys.Users.probSanUnappr)
                     oasys.Nav.history(offender)
                     oasys.Assessment.openLatest()
-                    oasys.San.gotoSan()
+                    oasys.San.gotoSanReadOnly('Accommodation', 'information')
                     oasys.San.checkSanEditMode(false)
                     oasys.San.returnToOASys()
 
-                    oasys.San.gotoSentencePlan()
+                    oasys.San.gotoSentencePlanReadOnly()
                     oasys.San.checkSentencePlanEditMode(false)
                     oasys.San.returnToOASys()
 
@@ -102,7 +102,7 @@ describe('SAN integration - test ref 27', () => {
                                                 and st.oasys_set_pk = ${pks[0]}`
 
                     oasys.Db.getData(questionsQuery, 'questions')
-                    oasys.Db.getData(`select lastupd_from_san, lastupd_date from oasys_set where oasys_set_pk = ${pks[0]}`, 'lastUpdDate2')
+                    oasys.Db.getData(`select to_char(lastupd_from_san, 'YYYY-MM-DD HH24:MI:SS'), to_char(lastupd_date, 'YYYY-MM-DD HH24:MI:SS') from eor.oasys_set where oasys_set_pk = ${pks[0]}`, 'lastUpdDate2')
                     cy.get<string[][]>('@questions').then((questions) => {
                         cy.get<string[][]>('@lastUpdDate2').then((updatedSetData) => {
 

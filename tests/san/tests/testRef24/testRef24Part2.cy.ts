@@ -30,7 +30,7 @@ describe('SAN integration - test ref 24', () => {
                     Search for and open the LAO offender record - the user ONLY has LAO boilerplate (all read only and just access to the 'alias' tab)
                     The only buttons on the offender banner is <RFI> and <Close>.  There are NO buttons for 'Open S&N' or 'Open SP'`)
 
-            oasys.login(oasys.Users.admin, 'Durham')
+            oasys.login(oasys.Users.admin, oasys.Users.probationSan)
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
             offenderDetails.pnc.checkStatus('readonly')
             offenderDetails.assessmentsTab.checkStatus('notVisible')

@@ -31,6 +31,10 @@ describe('SAN integration - test ref 27', () => {
 
                 oasys.Nav.clickButton('Close')
                 oasys.Nav.clickButton('Open S&N')
+                const landingPage = new oasys.Pages.San.LandingPage()
+                landingPage.confirmCheck.setValue(true)
+                landingPage.confirm.click()
+
                 oasys.San.populateSanSections('Test 27 part 2 SAN Alcohol', testData.test2SanAlcohol)
                 oasys.San.returnToOASys()
 
@@ -39,6 +43,9 @@ describe('SAN integration - test ref 27', () => {
                     Return back to the Offender record`)
 
                 oasys.Nav.clickButton('Open SP')
+                const spLandingPage = new oasys.Pages.SanSp.LandingPage()
+                spLandingPage.confirmCheck.setValue(true)
+                spLandingPage.confirm.click()
                 oasys.San.populateSanSections('Test 27 part SP one goal', testData.test2SpCreateGoal)
                 oasys.San.returnToOASys()
 
@@ -84,11 +91,11 @@ describe('SAN integration - test ref 27', () => {
                         Close the assessment - back to the offender record`)
 
                     oasys.Assessment.openLatest()
-                    oasys.San.gotoSan()
+                    oasys.San.gotoSanReadOnly('Accommodation', 'information')
                     oasys.San.checkSanEditMode(false)
                     oasys.San.returnToOASys()
 
-                    oasys.San.gotoSentencePlan()
+                    oasys.San.gotoSentencePlanReadOnly()
                     oasys.San.checkSentencePlanEditMode(false)
                     oasys.San.returnToOASys()
 
@@ -102,7 +109,7 @@ describe('SAN integration - test ref 27', () => {
                          and st.oasys_set_pk = ${pk}`
 
                     oasys.Db.getData(questionsQuery, 'questions')
-                    oasys.Db.getData(`select lastupd_from_san, lastupd_date from oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate2')
+                    oasys.Db.getData(`select to_char(lastupd_from_san, 'YYYY-MM-DD HH24:MI:SS'), to_char(lastupd_date, 'YYYY-MM-DD HH24:MI:SS') from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate2')
                     cy.get<string[][]>('@questions').then((questions) => {
                         cy.get<string[][]>('@lastUpdDate2').then((updatedSetData) => {
 

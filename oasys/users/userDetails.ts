@@ -35,8 +35,8 @@ export const probationSan = 'Durham'
 export const probationSanCode = 'DRH'
 export const prisonNonSan = t2 ? 'Risley (HMP)' : 'Kirklevington (HMP)'
 export const prisonNonSanCode = t2 ? '560' : '680'
-export const prisonSan = t2 ? '730' : 'Altcourse (HMP)'
-export const prisonSanCode = t2 ? 'Leeds (HMP)' : '520'
+export const prisonSan = t2 ? 'Leeds (HMP)' : 'Altcourse (HMP)'
+export const prisonSanCode = t2 ? '730' : '520'
 
 ///////////// GLOBAL ADMIN //////
 // This user is used only for setting up the admin users that will be used by Cypress

@@ -221,7 +221,7 @@ function getPk(query: string, resultAlias: string, returnAll: boolean = false) {
 export function checkSingleAnswer(assessmentPk: number, section: string, questionRef: string, answerType: AnswerType, expectedResult: string, failedAlias: string = null) {
 
     const answerSelect = answerType == 'refAnswer' ? 'a.ref_answer_code' : answerType == 'freeFormat' ? 'q.free_format_answer' : 'q.additional_note'
-    const query = `select ${answerSelect} from oasys_set st, oasys_section s, oasys_question q, oasys_answer a
+    const query = `select ${answerSelect} from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q, eor.oasys_answer a
                     where st.oasys_set_pk = s.oasys_set_pk
                     and s.oasys_section_pk = q.oasys_section_pk
                     and q.oasys_question_pk = a.oasys_question_pk(+)
@@ -294,7 +294,7 @@ export function checkAnswers(assessmentPk: number, expectedAnswers: OasysAnswer[
 
 export function checkVictims(assessmentPk: number, expectedVictims: Victim[], failedAlias: string) {
 
-    const query = `select age_of_victim_elm, gender_elm, ethnic_category_elm, victim_relation_elm from victim where oasys_set_pk = ${assessmentPk} order by create_date desc`
+    const query = `select age_of_victim_elm, gender_elm, ethnic_category_elm, victim_relation_elm from eor.victim where oasys_set_pk = ${assessmentPk} order by create_date desc`
 
     cy.task('getData', query).then((result: DbResponse) => {
         if (result.error != null) { // database error
