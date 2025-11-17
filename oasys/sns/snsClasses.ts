@@ -1,3 +1,4 @@
+import { testEnvironment } from "../../localSettings"
 import { DbAssessmentOrRsr } from "./dbClasses"
 
 /**
@@ -53,12 +54,14 @@ export class AssSummMessageData extends SnsMessageData {
 
     constructor(assessment: DbAssessmentOrRsr, crn: string) {
 
+        const baseUrl = testEnvironment.name.includes('T2') ? 'https://t2-b.oasys.service.justice.gov.uk/eor/oasys/ass' : 'https://ords.justice.gov.uk/ords'
+
         super(crn)
         this.eventType = 'assessment.summary.produced'
         this.description = 'Assessment Summary has been produced'
         cy.log(JSON.stringify(assessment))
         const endPoint = assessment.sanIndicator == 'Y' ? 'asssummsan' : 'asssumm'
-        this.detailUrl = `https://ords.justice.gov.uk/ords/${endPoint}/${crn}/ALLOW/${assessment.pk}/${assessment.status}`
+        this.detailUrl = `${baseUrl}/${endPoint}/${crn}/ALLOW/${assessment.pk}/${assessment.status}`
     }
 }
 

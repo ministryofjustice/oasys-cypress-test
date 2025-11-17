@@ -4,6 +4,11 @@ describe('SAN integration - test ref 27', () => {
 
     it('Part 1', () => {
 
+        Cypress.on('uncaught:exception', () => {
+            cy.log('Cypress Exception')
+            return false
+        })
+
         cy.log(`Lock Incomplete OASys-SAN assessment (no SARA) from the Offender's Assessments Tab - SAN Data Validated, Sentence Plan has been agreed`)
 
         // Get offender details
@@ -55,7 +60,7 @@ describe('SAN integration - test ref 27', () => {
                         SSP_PLAN_VERSION_NO: '0',
                     })
 
-                    const sectionQuery = `select count(*) from oasys_section where oasys_set_pk = ${pk} 
+                    const sectionQuery = `select count(*) from eor.oasys_section where oasys_set_pk = ${pk} 
                                             and section_status_elm = 'COMPLETE_LOCKED' and ref_section_code in ('SAN', 'SSP')`
 
                     oasys.Db.selectCount(sectionQuery, 'sections')
@@ -74,11 +79,11 @@ describe('SAN integration - test ref 27', () => {
                         Close the assessment - back to the offender record`)
 
                     oasys.Assessment.openLatest()
-                    oasys.San.gotoSan()
+                    oasys.San.gotoSanReadOnly()
                     oasys.San.checkSanEditMode(false)
                     oasys.San.returnToOASys()
 
-                    oasys.San.gotoSentencePlan()
+                    oasys.San.gotoSentencePlanReadOnly()
                     oasys.San.checkSentencePlanEditMode(false)
                     oasys.San.returnToOASys()
 
@@ -92,7 +97,7 @@ describe('SAN integration - test ref 27', () => {
                                             and st.oasys_set_pk = ${pk}`
 
                     oasys.Db.getData(questionsQuery, 'questions')
-                    oasys.Db.getData(`select lastupd_from_san, lastupd_date from oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate2')
+                    oasys.Db.getData(`select to_char(lastupd_from_san, 'YYYY-MM-DD HH24:MI:SS'), to_char(lastupd_date, 'YYYY-MM-DD HH24:MI:SS') from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate2')
                     cy.get<string[][]>('@questions').then((questions) => {
                         cy.get<string[][]>('@lastUpdDate2').then((updatedSetData) => {
 

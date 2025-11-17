@@ -15,14 +15,44 @@ import { sanIds } from '../../tests/data/sanIds'
 /**
  * Navigates to the SAN assessment, assuming you are somewhere in the OASys assessment.
  * 
- * The optional parameter can be used to jump straight to a particular section.
+ * The optional parameters can be used to jump straight to a particular section, and optionally into the information or analysis subsections.
  */
-export function gotoSan(section: SanSection = null) {
+export function gotoSan(section: SanSection = null, subPage: 'information' | 'analysis' = null) {
 
     new oasys.Pages.Assessment.SanSections().goto().openSan.click()
-    cy.get('h1.govuk-heading-l').contains('Strengths and needs').should('be.visible')
+
+    const landingPage = new oasys.Pages.San.LandingPage()
+    landingPage.confirmCheck.setValue(true)
+    landingPage.confirm.click()
+
+    new oasys.Pages.San.SectionLandingPage('Accommodation').checkCurrent()
     if (section) {
-        goto(section)
+        goto(section, subPage)
+    }
+}
+/**
+ * Navigates to the SAN assessment in readonly mode (no landingPage), assuming you are somewhere in the OASys assessment.
+ * 
+ * The optional parameters can be used to jump straight to a particular section, and optionally into the information or analysis subsections.
+ */
+export function gotoSanReadOnly(section: SanSection = null, subPage: 'information' | 'analysis' = null) {
+
+    new oasys.Pages.Assessment.SanSections().goto().openSan.click()
+
+    new oasys.Pages.San.SectionLandingPage('Accommodation').checkCurrent()
+    if (section) {
+        goto(section, subPage)
+    }
+}
+
+/**
+ * Select a SAN section on the menu using the text label on the menu
+ */
+export function goto(section: SanSection, subPage: 'information' | 'analysis' = null) {
+
+    const page = new oasys.Pages.San.SectionLandingPage(section).goto()
+    if (subPage) {
+        page[subPage].click()
     }
 }
 
@@ -42,16 +72,19 @@ export function checkSanLoaded(probationCrn: string, pnc: string) {
 export function gotoSentencePlan() {
 
     new oasys.Pages.SentencePlan.SentencePlanService().goto().openSp.click()
+    const landingPage = new oasys.Pages.SanSp.LandingPage()
+    landingPage.confirmCheck.setValue(true)
+    landingPage.confirm.click()
     cy.get('h1.govuk-heading-l').contains('plan').should('be.visible')
 }
 
 /**
- * Select a SAN section on the menu using the text label on the menu
+ * Navigates to the Sentence Plan in readonly mode (no landingPage), assuming you are somewhere in the OASys assessment.
  */
-export function goto(section: SanSection) {
+export function gotoSentencePlanReadOnly() {
 
-    cy.get('.section-label').contains(section).click()
-    // cy.get('h2').contains(section).should('be.visible')  TODO removed this because sections are inconsistent in use of headers.  Might get fixed?
+    new oasys.Pages.SentencePlan.SentencePlanService().goto().openSp.click()
+    cy.get('h1.govuk-heading-l').contains('plan').should('be.visible')
 }
 
 /**
@@ -193,8 +226,7 @@ export function runScript(assessmentPk: number, script: SanScript, resultAlias: 
         let scenario = script.scenarios[i]
         cy.wrap(false).as(`failedAlias${i}`)
 
-        gotoSan()
-        goto(script.section)
+        gotoSan(script.section)
         cy.task('consoleLog', scenario.name)
         runScenario(scenario.name, scenario.steps)
         returnToOASys()
@@ -233,7 +265,7 @@ export function populateSanSections(name: string, script: SanPopulation) {
 
     script.forEach((section) => {
         if (section.section != 'Sentence plan') {
-            goto(section.section)
+            goto(section.section, section.section == 'Offence analysis' ? null : 'information')
         }
         runScenario(`${name} / ${section.section}`, section.steps)
     })
@@ -332,10 +364,13 @@ export function action(action: string) {
             })
             break
         case 'practitionerAnalysis':
-            cy.get('#tab_practitioner-analysis').eq(0).click()
+            cy.get('.summary-action-buttons .govuk-button').eq(0).click()
             break
         case 'changeAnalysis':
             cy.get('a[href*="practitioner-analysis"]').contains('Change').eq(0).click()
+            break
+        case 'continue':
+            cy.get('.questiongroup-action-buttons .govuk-button').eq(0).click()
             break
     }
 }
@@ -477,13 +512,14 @@ export function checkSanSectionsCompletionStatus(expectComplete: number) {
 }
 
 /**
- * Assuming you are in a SAN screen, checks that it is in edit mode (true) or readonly mode (false).  Test fails if not.
+ * Assuming you are in a SAN screen (not the section landing screen), checks that it is in edit mode (true) or readonly mode (false).  Test fails if not.
  */
 export function checkSanEditMode(expectEdit: boolean) {
 
     cy.get('#main-content').then((container) => {
         const saveButtons = container.find('.govuk-button:contains("Save and continue"):visible').length
         const changeLinks = container.find('.govuk-link:contains("Change"):visible').length
+
         if (expectEdit && saveButtons == 0 && changeLinks == 0) {
             throw new Error(`Expected SAN to be in edit mode`)
         }
@@ -568,7 +604,6 @@ export function getSanApiTime(pk: number, type: 'SAN_GET_ASSESSMENT' | 'SAN_CREA
     const query = `select to_char(time_stamp, 'YYYY-MM-DD HH24:MI:SS.FF3') from eor.clog where log_source like '%${pk}%${type}%' order by time_stamp desc`
     oasys.Db.getData(query, 'clogData')
     cy.get<string[][]>('@clogData').then((clogData) => {
-        cy.log(JSON.stringify(clogData))
         let result: Dayjs = null
         if (clogData.length > 0) {
             result = Cypress.dayjs(clogData[0][0], 'YYYY-MM-DD HH:mm:ss.SSS')

@@ -16,7 +16,7 @@ describe('SAN integration - test ref 27', () => {
             const offender: OffenderDef = JSON.parse(offenderData as string)
 
             // First delete the BCS as it prevents the transfer
-            oasys.login(oasys.Users.admin, 'Altcourse (HMP)')
+            oasys.login(oasys.Users.admin, oasys.Users.prisonSan)
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
             oasys.Assessment.deleteLatest()
             oasys.logout()
@@ -46,6 +46,9 @@ describe('SAN integration - test ref 27', () => {
 
                 oasys.Nav.clickButton('Close')
                 oasys.Nav.clickButton('Open S&N')
+                const landingPage = new oasys.Pages.San.LandingPage()
+                landingPage.confirmCheck.setValue(true)
+                landingPage.confirm.click()
                 oasys.San.populateSanSections('Test 27 part 4 SAN Alcohol', testData.test4ModifyAlcohol)
                 oasys.San.returnToOASys()
 
@@ -54,6 +57,9 @@ describe('SAN integration - test ref 27', () => {
                     Return back to the Offender record`)
 
                 oasys.Nav.clickButton('Open SP')
+                const spLandingPage = new oasys.Pages.SanSp.LandingPage()
+                spLandingPage.confirmCheck.setValue(true)
+                spLandingPage.confirm.click()
                 oasys.San.populateSanSections('Test 27 part 4 SP one goal', testData.test2SpCreateGoal)
                 oasys.San.returnToOASys()
                 oasys.logout()
@@ -136,7 +142,7 @@ describe('SAN integration - test ref 27', () => {
                         Close the assessment - back to the offender record`)
 
                     oasys.Assessment.openLatest()
-                    oasys.San.gotoSan()
+                    oasys.San.gotoSanReadOnly('Accommodation','information')
                     oasys.San.checkSanEditMode(false)
                     oasys.San.goto('Alcohol use')
                     oasys.San.checkReadonlyText(
@@ -144,7 +150,7 @@ describe('SAN integration - test ref 27', () => {
                         'Evidence of binge drinking or excessive alcohol use')
                     oasys.San.returnToOASys()
 
-                    oasys.San.gotoSentencePlan()
+                    oasys.San.gotoSentencePlanReadOnly()
                     oasys.San.checkSentencePlanEditMode(false)
                     oasys.San.checkSPGoalCount(1, 1)
                     oasys.San.returnToOASys()
@@ -159,7 +165,7 @@ describe('SAN integration - test ref 27', () => {
                              and st.oasys_set_pk = ${pk}`
 
                     oasys.Db.getData(questionsQuery, 'questions')
-                    oasys.Db.getData(`select lastupd_from_san, lastupd_date from oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate2')
+                    oasys.Db.getData(`select lastupd_from_san, lastupd_date from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate2')
                     cy.get<string[][]>('@questions').then((questions) => {
                         cy.get<string[][]>('@lastUpdDate2').then((updatedSetData) => {
 

@@ -34,7 +34,7 @@ export const modifySan2: SanPopulation = [
             { item: 'futureType', value: 'privateRent' },
             { item: 'saveAndContinue' },
             { item: 'practitionerAnalysis' },
-            { item: 'markAsComplete' },
+            { item: 'continue' },
         ],
     },
     {
@@ -48,7 +48,7 @@ export const modifySan2: SanPopulation = [
             { item: 'highestQual', value: 'level1' },
             { item: 'saveAndContinue' },
             { item: 'practitionerAnalysis' },
-            { item: 'markAsComplete' },
+            { item: 'continue' },
         ],
     },
     {
@@ -58,7 +58,7 @@ export const modifySan2: SanPopulation = [
             { item: 'incomeSource', value: 'offending,pension' },
             { item: 'saveAndContinue' },
             { item: 'practitionerAnalysis' },
-            { item: 'markAsComplete' },
+            { item: 'continue' },
         ],
     },
     {
@@ -68,7 +68,7 @@ export const modifySan2: SanPopulation = [
             { item: 'everDrank', value: 'no' },
             { item: 'saveAndContinue' },
             { item: 'practitionerAnalysis' },
-            { item: 'markAsComplete' },
+            { item: 'continue' },
         ],
     },
     {
@@ -79,7 +79,7 @@ export const modifySan2: SanPopulation = [
             { item: 'saveAndContinue' },
             { item: 'saveAndContinue' },
             { item: 'practitionerAnalysis' },
-            { item: 'markAsComplete' },
+            { item: 'continue' },
         ],
     },
     {
@@ -92,7 +92,7 @@ export const modifySan2: SanPopulation = [
             { item: 'history', value: 'stable' },
             { item: 'saveAndContinue' },
             { item: 'practitionerAnalysis' },
-            { item: 'markAsComplete' },
+            { item: 'continue' },
         ],
     },
     {

@@ -66,7 +66,7 @@ describe('SAN integration - test ref 14', () => {
                      - check the OTL plan accessmode parameter
                     Return back to the OASys assessment`)
 
-                oasys.San.gotoSan()
+                oasys.San.gotoSanReadOnly()
                 oasys.San.checkSanOtlCall(pk1,
                     {
                         'crn': offender.probationCrn,
@@ -89,7 +89,7 @@ describe('SAN integration - test ref 14', () => {
                 oasys.San.checkSanEditMode(false)
                 oasys.San.returnToOASys()
 
-                oasys.San.gotoSentencePlan()
+                oasys.San.gotoSentencePlanReadOnly()
                 oasys.San.checkSanOtlCall(pk1,
                     {
                         'crn': offender.probationCrn,
