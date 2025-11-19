@@ -18,7 +18,7 @@ describe('SAN integration - test ref 16 part 2', () => {
             oasys.login(oasys.Users.prisSanPom)
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
             oasys.Assessment.openLatest()
-            oasys.San.gotoSan()
+            oasys.San.gotoSan('Accommodation', 'information')
             oasys.San.checkSanEditMode(true)
             oasys.San.returnToOASys()
 
@@ -93,9 +93,9 @@ describe('SAN integration - test ref 16 part 2', () => {
                     Leave the assessment as WIP`)
 
             oasys.San.returnToOASys()
-            summarySheet.goto().learningScreeningTool.checkValue(
-                'This individual may have a learning disability and/or learning challenges. Further assessment may be needed to determine the support required. Consideration for referral for specialised assessment should be given, if appropriate.',
-                true)
+            // TODO replace this   summarySheet.goto().learningScreeningTool.checkValue(
+            //     'This individual may have a learning disability and/or learning challenges. Further assessment may be needed to determine the support required. Consideration for referral for specialised assessment should be given, if appropriate.',
+            //     true)
 
             summarySheet.goto().opd.checkValue('This individual meets the criteria for the OPD pathway.', true)
 

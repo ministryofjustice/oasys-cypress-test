@@ -21,7 +21,7 @@ describe('SAN integration - test ref 15 part 2', () => {
                     Navigate out to Sentence Plan section - check the OTL parameters (should go across as READ ONLY).  Check you cannot edit anything in the Sentence Plan
                     Return back to the OASys assessment.`)
 
-                oasys.San.gotoSan()
+                oasys.San.gotoSanReadOnly('Accommodation', 'information')
                 oasys.San.checkSanEditMode(false)
                 oasys.San.returnToOASys()
                 oasys.San.checkSanOtlCall(pk, {
@@ -41,7 +41,7 @@ describe('SAN integration - test ref 15 part 2', () => {
                     'san', null
                 )
 
-                oasys.San.gotoSentencePlan()
+                oasys.San.gotoSentencePlanReadOnly()
                 oasys.San.checkSentencePlanEditMode(false)
                 oasys.San.returnToOASys()
                 oasys.San.checkSanOtlCall(pk, {

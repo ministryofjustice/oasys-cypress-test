@@ -15,7 +15,7 @@ describe('SAN integration - test ref 21 part 1', () => {
 
             oasys.login(oasys.Users.probHeadPdu)
             oasys.Offender.searchAndSelectByPnc(offender1.pnc)
-            new oasys.Pages.Offender.OffenderDetails().pnc.setValue('UNKNOWN PNC')
+            // new oasys.Pages.Offender.OffenderDetails().pnc.setValue('UNKNOWN PNC')
 
             // Create assessment
             oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })

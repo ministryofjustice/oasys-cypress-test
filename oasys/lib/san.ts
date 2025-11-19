@@ -229,7 +229,7 @@ export function runScript(assessmentPk: number, script: SanScript, resultAlias: 
         let scenario = script.scenarios[i]
         cy.wrap(false).as(`failedAlias${i}`)
 
-        gotoSan(script.section)
+        gotoSan(script.section, 'information')
         cy.task('consoleLog', scenario.name)
         runScenario(scenario.name, scenario.steps)
         returnToOASys()
@@ -370,7 +370,7 @@ export function action(action: string) {
             cy.get('.summary-action-buttons .govuk-button').eq(0).click()
             break
         case 'changeAnalysis':
-            cy.get('a[href*="practitioner-analysis"]').contains('Change').eq(0).click()
+            cy.get('a[href*="-analysis"]').contains('Change').eq(0).click()
             break
         case 'continue':
             cy.get('.questiongroup-action-buttons .govuk-button').eq(0).click()

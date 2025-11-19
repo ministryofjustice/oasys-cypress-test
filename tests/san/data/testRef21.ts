@@ -200,7 +200,7 @@ export const assessment5: SanPopulation = [
             { item: 'saveAndContinue' },
             { item: 'saveAndContinue' },
             { item: 'practitionerAnalysis' },
-            { item: 'markAsComplete' }
+            { item: 'continue' }
         ],
     },
 ]
@@ -214,7 +214,7 @@ export const assessment6: SanPopulation = [
             { item: 'saveAndContinue' },
             { item: 'saveAndContinue' },
             { item: 'practitionerAnalysis' },
-            { item: 'markAsComplete' }
+            { item: 'continue' }
         ],
     },
 ]
@@ -228,7 +228,7 @@ export const assessment7: SanPopulation = [
             { item: 'saveAndContinue' },
             { item: 'saveAndContinue' },
             { item: 'practitionerAnalysis' },
-            { item: 'markAsComplete' }
+            { item: 'continue' }
         ],
     },
 ]
