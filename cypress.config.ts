@@ -4,7 +4,7 @@ import * as oasysDb from './cypress/support/oasysDb'
 import * as restApi from './cypress/support/restApi'
 import * as fs from 'fs-extra'
 import * as pdf from './cypress/support/pdf'
-import { getLatestElogAndUnprocEventTime, getAppInfo } from './cypress/support/oasysDb'
+import { getLatestElogAndUnprocEventTime, getAppConfig } from './cypress/support/oasysDb'
 import { noDatabaseConnection } from './localSettings'
 import { ogrsTest } from './cypress/support/ogrs/orgsTest'
 import { OgrsTestParameters, OgrsTestScriptResult } from './cypress/support/ogrs/types'
@@ -53,12 +53,12 @@ module.exports = defineConfig({
         },
 
         /**
-         * Get the current application version number from the database. Returns a DbResponse type object including the version or error message.
+         * Get the application version and config details from the database; returns an AppConfig object
          */
-        getAppInfo(): Promise<DbResponse> {
+        getAppConfig(): Promise<AppConfig> {
 
           return new Promise((resolve) => {
-            oasysDb.getAppInfo().then((result) => {
+            oasysDb.getAppConfig().then((result) => {
               resolve(result)
             })
           })

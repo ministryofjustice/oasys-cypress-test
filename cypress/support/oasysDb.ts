@@ -124,17 +124,26 @@ export async function selectData(query: string): Promise<DbResponse> {
 /** 
  * Get the application version and config items.  Returns a string array containing version number and PROB_FORCE_CRN parameter
  */
-export async function getAppInfo(): Promise<DbResponse> {
+export async function getAppConfig(): Promise<AppConfig> {
 
-    const versionData = await selectSingleValue(`select version_number from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc fetch first 1 row only`)
-    if (versionData.error != null) {
-        return versionData
-    }
+    const versionData = await selectData(`select version_number from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc`)
     const configData = await selectSingleValue(`select system_parameter_value from eor.system_parameter_mv where system_parameter_code ='PROB_FORCE_CRN'`)
-    if (configData.error != null) {
-        return configData
+
+    if (versionData.error != null || configData.error != null) {
+        console.log(versionData.error)
+        console.log(configData.error)
+        return null
     }
-    return { data: [versionData.data as string, configData.data as string], error: null }
+    const versionHistory: AppVersion[] = []
+    const versions = versionData.data as string[][]
+
+    for (let i = 0; i < versions.length; i++) {
+        versionHistory.push({ version: versions[i][0], date: versions[i][1] })
+    }
+    return {
+        versionHistory: versionHistory,
+        probForceCrn: (configData.data as string) == 'Y'
+    }
 }
 
 /** 

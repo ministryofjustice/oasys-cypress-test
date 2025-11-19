@@ -15,3 +15,14 @@ declare type Environment = {
     standardUserPassword: string,
     globalAdminUserPassword: string,
 }
+
+declare type AppConfig = {
+    
+    versionHistory: AppVersion[],
+    probForceCrn: boolean,
+}
+
+declare type AppVersion = {
+    version: string,
+    date: string,
+}
