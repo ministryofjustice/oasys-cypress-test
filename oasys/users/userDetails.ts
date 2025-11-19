@@ -27,6 +27,7 @@ import { testEnvironment } from '../../localSettings'
 
 const t2 = testEnvironment.name.includes('T2')
 const sanRole = t2 ? 'San Service' : 'SAN Service'
+const caseAdminPrisRole = t2 ? 'Case Admin Prison Autotest' : 'Case Admin Prison'
 
 /////////////// Providers //////////////
 export const probationNonSan = 'Bedfordshire'
@@ -209,7 +210,7 @@ export const prisSanUnappr: User = new User(
  */
 export const prisSanCAdm: User = new User(
     { username: 'AUTOSANPRISCADM', forename1: 'Autotest', surname: 'SANPRISCADM' },
-    { provider: prisonSan, frameworkRole: null, defaultCountersigner: null, roles: ['Case Admin Prison', 'Trainer'] }
+    { provider: prisonSan, frameworkRole: null, defaultCountersigner: null, roles: [caseAdminPrisRole, 'Trainer'] }
 )
 
 // List of users used by create/update script
