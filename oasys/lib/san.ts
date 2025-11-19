@@ -21,9 +21,7 @@ export function gotoSan(section: SanSection = null, subPage: 'information' | 'an
 
     new oasys.Pages.Assessment.SanSections().goto().openSan.click()
 
-    const landingPage = new oasys.Pages.San.LandingPage()
-    landingPage.confirmCheck.setValue(true)
-    landingPage.confirm.click()
+    handleLandingPage('san')
 
     new oasys.Pages.San.SectionLandingPage('Accommodation').checkCurrent()
     if (section) {
@@ -61,7 +59,7 @@ export function goto(section: SanSection, subPage: 'information' | 'analysis' = 
  */
 export function checkSanLoaded(probationCrn: string, pnc: string) {
 
-    cy.get('h1.govuk-heading-l').contains('Strengths and needs').should('be.visible')
+    cy.get('.hmpps-header__title__service-name').contains('Strengths and needs').should('be.visible')
     cy.get('dd').contains(probationCrn).should('be.visible')
     cy.get('dd').contains(pnc).should('be.visible')
 }
@@ -72,10 +70,15 @@ export function checkSanLoaded(probationCrn: string, pnc: string) {
 export function gotoSentencePlan() {
 
     new oasys.Pages.SentencePlan.SentencePlanService().goto().openSp.click()
-    const landingPage = new oasys.Pages.SanSp.LandingPage()
+    handleLandingPage('sp')
+    cy.get('h1.govuk-heading-l').contains('plan').should('be.visible')
+}
+
+export function handleLandingPage(type: 'san' | 'sp') {
+
+    const landingPage = type == 'san' ? new oasys.Pages.San.LandingPage() : new oasys.Pages.SanSp.LandingPage()
     landingPage.confirmCheck.setValue(true)
     landingPage.confirm.click()
-    cy.get('h1.govuk-heading-l').contains('plan').should('be.visible')
 }
 
 /**
@@ -159,7 +162,7 @@ export function checkText(item: SanId, value: string) {
  */
 export function checkReadonlyText(label: string, value: string) {
 
-    cy.get('#summary').then((container) => {
+    cy.get('#main-content').then((container) => {
         const div = container.find(`.govuk-summary-list__row:contains('${label}')`)
         expect(div[0].innerHTML.search(value)).gt(0)
         cy.log(`Checked value for ${label}`)
@@ -487,7 +490,7 @@ export function checkSections2To13AndSafCompletionStatus(expectedStatus: boolean
 export function checkSanAssessmentCompletionStatus(expectedStatus: boolean) {
 
     new oasys.Pages.Assessment.OffenderInformation().checkCompletionStatus(expectedStatus)
-    new oasys.Pages.Assessment.ProposalInformation().checkCompletionStatus(expectedStatus)
+    new oasys.Pages.Assessment.SourcesOfInformation().checkCompletionStatus(expectedStatus)
     new oasys.Pages.Assessment.OffendingInformation().checkCompletionStatus(expectedStatus)
     new oasys.Pages.Assessment.Predictors().checkCompletionStatus(expectedStatus)
     new oasys.Pages.Assessment.SanSections().checkCompletionStatus(expectedStatus)

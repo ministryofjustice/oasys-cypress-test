@@ -77,6 +77,10 @@ describe('SAN integration - test ref 23', () => {
                     and Risk Category OGRS, OGP and OVP just show dashes, both OSP rows show N/A,  the RSR row shows N/A and then two dashes`)
 
                 const summarySheet = new oasys.Pages.Assessment.SummarySheet().goto()
+                oasys.Nav.clickButton('Next')
+                oasys.Nav.clickButton('Previous')  // Odd error with stuff out of order on the first visit
+                                oasys.Nav.clickButton('Next')
+                oasys.Nav.clickButton('Previous')  // Odd error with stuff out of order on the first visit
                 const expectedValues: ColumnValues[] = [
                     {
                         name: 'oasysSection',
@@ -142,6 +146,7 @@ describe('SAN integration - test ref 23', () => {
                 oasys.Nav.history(offender)
                 const offenderDetails = new oasys.Pages.Offender.OffenderDetails()
                 offenderDetails.openSan.click()
+                oasys.San.handleLandingPage('san')
                 oasys.San.populateSanSections('Test ref 23 modification', testData.modifySan)
                 oasys.San.returnToOASys()
 
@@ -150,6 +155,7 @@ describe('SAN integration - test ref 23', () => {
                     Return back to the OASys Offender record screen`)
 
                 offenderDetails.openSp.click()
+                oasys.San.handleLandingPage('sp')
                 oasys.San.populateSanSections('Test ref 23 SP modification', testData.addGoal)
                 oasys.San.returnToOASys()
 

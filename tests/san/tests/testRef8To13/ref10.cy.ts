@@ -71,7 +71,7 @@ describe('SAN integration - test ref 10', () => {
                         Return to OASys, a Full analysis is now showing with sections 6.1 and 6.2 in it.  
                         The 'Strengths and Needs Sections' menu option remains showing with a green tick`)
 
-                new oasys.Pages.Assessment.SanSections().goto().openSan.click()
+                oasys.San.gotoSan()
                 oasys.San.populateSanSections('TestRef10 modify SAN', testData.modifySan)
                 oasys.San.returnToOASys()
                 san.next.click()

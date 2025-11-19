@@ -72,10 +72,10 @@ describe('SAN integration - test ref 27', () => {
                 oasys.login(oasys.Users.prisHomds)
                 offender.receptionCode = 'TRANSFER IN FROM OTHER ESTABLISHMENT'
                 oasys.Offender.enterPrisonStubDetailsAndCreateReceptionEvent(offender)
-                oasys.Offender.searchAndSelectByPnc(offender.pnc, 'Altcourse (HMP)')
+                oasys.Offender.searchAndSelectByPnc(offender.pnc, oasys.Users.prisonSan)
                 const offenderDetails = new oasys.Pages.Offender.OffenderDetails()
                 offenderDetails.offenderManagementTab.click()
-                new oasys.Pages.Offender.OffenderManagementTab().awaitingPrisonOwner.checkValue('Kirklevington (HMP)')
+                new oasys.Pages.Offender.OffenderManagementTab().awaitingPrisonOwner.checkValue(oasys.Users.prisonNonSan)
 
                 cy.log(`Click on the <Create Assessment> button - shown 'Work In Progress Assessment at another Establishment…. Recording (Work in Progress)….' message
                     Click on the <Lock Incomplete> button - returns back to the Offender record
@@ -84,7 +84,7 @@ describe('SAN integration - test ref 27', () => {
 
                 oasys.Nav.clickButton('Create Assessment')
                 oasys.Nav.clickButton('Lock Incomplete')
-                offenderDetails.controllingOwner.checkValue('Kirklevington (HMP)')
+                offenderDetails.controllingOwner.checkValue(oasys.Users.prisonNonSan)
 
                 cy.log(`Make a note of the date and time in the OASYS_SET field 'LASTUPD_DATE'
                     Check that Get Assessment has occurred BEFORE locking incomplete
@@ -144,7 +144,7 @@ describe('SAN integration - test ref 27', () => {
                     oasys.Assessment.openLatest()
                     oasys.San.gotoSanReadOnly('Accommodation','information')
                     oasys.San.checkSanEditMode(false)
-                    oasys.San.goto('Alcohol use')
+                    oasys.San.goto('Alcohol use', 'information')
                     oasys.San.checkReadonlyText(
                         'Has TestRefTwentySeven-Four shown evidence of binge drinking or excessive alcohol use in the last 6 months?',
                         'Evidence of binge drinking or excessive alcohol use')
@@ -165,7 +165,7 @@ describe('SAN integration - test ref 27', () => {
                              and st.oasys_set_pk = ${pk}`
 
                     oasys.Db.getData(questionsQuery, 'questions')
-                    oasys.Db.getData(`select lastupd_from_san, lastupd_date from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate2')
+                    oasys.Db.getData(`select to_char(lastupd_from_san, 'YYYY-MM-DD HH24:MI:SS'), to_char(lastupd_date, 'YYYY-MM-DD HH24:MI:SS') from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate2')
                     cy.get<string[][]>('@questions').then((questions) => {
                         cy.get<string[][]>('@lastUpdDate2').then((updatedSetData) => {
 

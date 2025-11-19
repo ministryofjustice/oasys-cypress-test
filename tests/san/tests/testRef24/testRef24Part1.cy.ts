@@ -38,6 +38,7 @@ describe('SAN integration - test ref 24', () => {
                     Return back to the Offender record`)
 
                 offenderDetails.openSan.click()
+                oasys.San.handleLandingPage('san')
                 oasys.San.populateSanSections('Test ref 24', oasys.Populate.San.ExampleTest.sanPopulation1)
                 oasys.San.returnToOASys()
 
@@ -46,6 +47,7 @@ describe('SAN integration - test ref 24', () => {
                     Return back to the Offender record`)
 
                 offenderDetails.openSp.click()
+                oasys.San.handleLandingPage('sp')
                 oasys.San.populateSanSections('Test ref 24 SP', oasys.Populate.San.SentencePlan.minimal)
                 oasys.San.returnToOASys()
 
