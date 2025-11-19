@@ -121,7 +121,7 @@ function getOffenceCat(offence: string): OgrsOffenceCat {
     return cat == undefined ? null : cat
 }
 
-export function loadExpectedValues(values: string[]): OutputParameters {
+export function loadOracleOutputValues(values: string[]): OutputParameters {
 
     const expectedOutputParameters = createOutputObject()
 
