@@ -36,7 +36,7 @@ export type TestCaseResult = {
     identifier: string,
 }
 
-export type RebandingTestParameters = {
+export type RescoringTestParameters = {
     dataFile: string,
     start?: number,
     end?: number,
@@ -47,7 +47,7 @@ export type RebandingTestParameters = {
     versionHistory: AppVersion[],
 }
 
-export type RebandingResult = {
+export type RescoringResult = {
     crn: string,
     newPredictors: string,
     existingPredictors: string,

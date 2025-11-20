@@ -1,6 +1,6 @@
 import { dateFormat } from "../orgsTest"
 
-export class RebandingOffenderWithAssessment {
+export class RescoringOffenderWithAssessment {
 
     probationCrn: string
     nomisId: string
@@ -12,7 +12,7 @@ export class RebandingOffenderWithAssessment {
     surname: string
     gender: number
     custodyInd: string
-    assessment: RebandingAssessment
+    assessment: RescoringAssessment
 
     dbElapsedTime: number
 
@@ -46,7 +46,7 @@ export class RebandingOffenderWithAssessment {
     }
 }
 
-export class RebandingAssessment {
+export class RescoringAssessment {
 
     appVersion: string
 

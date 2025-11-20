@@ -3,11 +3,11 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import utc from 'dayjs/plugin/utc'
 
 import { TestCaseParameters } from '../types'
-import { RebandingAssessment } from './dbClasses'
+import { RescoringAssessment } from './dbClasses'
 import { dateFormat } from '../orgsTest'
-import { addCalculatedInputParameters } from '../loadTestData'
+import { addCalculatedInputParameters, getOffenceCat } from '../loadTestData'
 
-export function createAssessmentTestCase(assessment: RebandingAssessment, staticFlag: 'Y' | 'N', useCurrentDate: boolean, appVersions: SignificantReleaseDates): TestCaseParameters {
+export function createAssessmentTestCase(assessment: RescoringAssessment, staticFlag: 'Y' | 'N', useCurrentDate: boolean, appVersions: SignificantReleaseDates): TestCaseParameters {
 
     dayjs.extend(customParseFormat)
     dayjs.extend(utc)
@@ -32,7 +32,7 @@ export function createAssessmentTestCase(assessment: RebandingAssessment, static
         AGE_AT_FIRST_SANCTION: getNumericAnswer(assessment.textData, '1', '1.8'),
         LAST_SANCTION_DATE: getDate(getTextAnswer(assessment.textData, '1', '1.29')),
         DATE_RECENT_SEXUAL_OFFENCE: getDate(getTextAnswer(assessment.textData, '1', '1.33')),
-        CURR_SEX_OFF_MOTIVATION: getSingleAnswer(assessment.qaData, '1', '1.41', ynLookup),
+        CURR_SEX_OFF_MOTIVATION: q141(assessment),
         MOST_RECENT_OFFENCE: getDate(getTextAnswer(assessment.textData, '1', '1.43')),
         COMMUNITY_DATE: getDate(getTextAnswer(assessment.textData, '1', '1.38')),
         ONE_POINT_THIRTY: getSingleAnswer(assessment.qaData, '1', '1.30', ynLookup),
@@ -149,6 +149,17 @@ function da(data: string[][], after6_30: boolean): number {
         return null // TODO handle pre-6.30 assessments?
     }
 
+}
+
+function q141(assessment: RescoringAssessment): string {
+
+    const q141 = getSingleAnswer(assessment.qaData, '1', '1.41', ynLookup)
+    const offenceCat = getOffenceCat(getString(assessment.offence))
+    if (q141 == null && offenceCat && ['sexual_offences_not_children', 'sexual_offences_children'].includes(offenceCat.cat)) {
+        return 'O'
+    } else {
+        return q141
+    }
 }
 
 function dailyDrugs(data: string[][]): string {

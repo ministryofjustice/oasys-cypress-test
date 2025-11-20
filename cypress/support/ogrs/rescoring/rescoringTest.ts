@@ -4,7 +4,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import utc from 'dayjs/plugin/utc'
 
 
-import { OutputParameters, RebandingResult, RebandingTestParameters, TestCaseParameters } from '../types'
+import { OutputParameters, RescoringResult, RescoringTestParameters, TestCaseParameters } from '../types'
 import { getOgrsResult } from '../../oasysDb'
 import { Dayjs } from 'dayjs'
 import { getOffenderData } from './getOffenderData'
@@ -16,9 +16,9 @@ import { loadOracleOutputValues } from '../loadTestData'
 const dataFilePath = './cypress/support/ogrs/data/'
 export const dateFormat = 'DD-MM-YYYY'
 
-export async function rebandingTest(testParams: RebandingTestParameters): Promise<RebandingResult[]> {
+export async function rescoringTest(testParams: RescoringTestParameters): Promise<RescoringResult[]> {
 
-    const results: RebandingResult[] = []
+    const results: RescoringResult[] = []
 
     // Load offence codes from OASys
     const offenceCodeData = await db.selectData('select offence_group_code || sub_code, rsr_category_desc from eor.ct_offence order by 1')
@@ -49,9 +49,9 @@ export async function rebandingTest(testParams: RebandingTestParameters): Promis
     for (let i = start; i <= end; i++) {
 
         // Get offender and assessment details from the OASys db
-        const rebandingOffenderWithAssessment = await getOffenderData('prob', crns[i], testParams.includeLayer1)
+        const rescoringOffenderWithAssessment = await getOffenderData('prob', crns[i], testParams.includeLayer1)
 
-        if (rebandingOffenderWithAssessment == null || rebandingOffenderWithAssessment.assessment == null) {
+        if (rescoringOffenderWithAssessment == null || rescoringOffenderWithAssessment.assessment == null) {
             // not found or duplicate CRN, or no assessment of the correct type/status
             results.push({
                 crn: crns[i],
@@ -61,7 +61,7 @@ export async function rebandingTest(testParams: RebandingTestParameters): Promis
             })
         } else {
 
-            const testCaseParams = createAssessmentTestCase(rebandingOffenderWithAssessment.assessment, testParams.staticFlag, testParams.useCurrentDate, appVersions)
+            const testCaseParams = createAssessmentTestCase(rescoringOffenderWithAssessment.assessment, testParams.staticFlag, testParams.useCurrentDate, appVersions)
             const functionCall = getFunctionCall(testCaseParams)
 
             const oracleOutputValues = await getOgrsResult(functionCall)
@@ -70,8 +70,8 @@ export async function rebandingTest(testParams: RebandingTestParameters): Promis
             results.push({
                 crn: crns[i],
                 newPredictors: getNewPredictors(oracleTestCaseResult),
-                existingPredictors: rebandingOffenderWithAssessment.getOldPredictors(),
-                pk: rebandingOffenderWithAssessment.assessment.pk,
+                existingPredictors: rescoringOffenderWithAssessment.getOldPredictors(),
+                pk: rescoringOffenderWithAssessment.assessment.pk,
             })
         }
     }
