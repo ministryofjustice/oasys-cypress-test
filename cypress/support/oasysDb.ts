@@ -3,6 +3,7 @@ var connection
 
 import { testEnvironment, userSuffix } from '../../localSettings'
 import { ogrsFunctionCall } from './ogrs/getTestData/oracleFunctionCall'
+import { dateFormat } from './ogrs/orgsTest'
 
 /** 
  * Connect to the Oracle database using parameters configured in environments.ts and localSettings.ts, returns a null string for success, or an error for failure.
@@ -126,7 +127,8 @@ export async function selectData(query: string): Promise<DbResponse> {
  */
 export async function getAppConfig(): Promise<AppConfig> {
 
-    const versionData = await selectData(`select version_number from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc`)
+    const versionData = await selectData(`select version_number, to_date(release_date, '${dateFormat}')
+                                             from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc`)
     const configData = await selectSingleValue(`select system_parameter_value from eor.system_parameter_mv where system_parameter_code ='PROB_FORCE_CRN'`)
 
     if (versionData.error != null || configData.error != null) {
