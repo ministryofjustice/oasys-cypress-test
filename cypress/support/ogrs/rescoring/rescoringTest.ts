@@ -1,7 +1,4 @@
 import * as fs from 'fs-extra'
-import dayjs from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-import utc from 'dayjs/plugin/utc'
 
 
 import { OutputParameters, RescoringResult, RescoringTestParameters, TestCaseParameters } from '../types'
@@ -29,15 +26,6 @@ export async function rescoringTest(testParams: RescoringTestParameters): Promis
         offences[offence[0]] = offence[1]
     })
 
-    // Get application release dates for releases that are relevant to pulling test data from OASys
-    dayjs.extend(customParseFormat)
-    dayjs.extend(utc)
-    const appVersions: SignificantReleaseDates = {
-        r6_20: getReleaseDate('6.20.0.0', testParams.versionHistory),
-        r6_30: getReleaseDate('6.30.0.0', testParams.versionHistory),
-        r6_35: getReleaseDate('6.35.0.0', testParams.versionHistory),
-    }
-
     // Load input parameters from a CSV file (list of CRNs)
     const crnFile = await fs.readFile(`${dataFilePath}${testParams.dataFile}.csv`, 'utf8')
     const crns = crnFile.split('\r\n')
@@ -61,7 +49,7 @@ export async function rescoringTest(testParams: RescoringTestParameters): Promis
             })
         } else {
 
-            const testCaseParams = createAssessmentTestCase(rescoringOffenderWithAssessment.assessment, testParams.staticFlag, testParams.useCurrentDate, appVersions)
+            const testCaseParams = createAssessmentTestCase(rescoringOffenderWithAssessment.assessment, testParams)
             const functionCall = getFunctionCall(testCaseParams)
 
             const oracleOutputValues = await getOgrsResult(functionCall)
@@ -77,12 +65,6 @@ export async function rescoringTest(testParams: RescoringTestParameters): Promis
     }
 
     return results
-}
-
-function getReleaseDate(release: string, versionHistory: AppVersion[]): dayjs.Dayjs {
-
-    const releaseRecord = versionHistory.filter((v) => v.version == release)[0]
-    return dayjs.utc(releaseRecord.date, dateFormat)
 }
 
 function getNewPredictors(outputParams: OutputParameters): string {

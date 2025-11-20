@@ -44,7 +44,7 @@ export type RescoringTestParameters = {
     includeLayer1: boolean,
     useCurrentDate: boolean,
     reportMode: ReportMode,
-    versionHistory: AppVersion[],
+    significantReleaseDates: SignificantReleaseDates,
 }
 
 export type RescoringResult = {

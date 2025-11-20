@@ -2,23 +2,23 @@ import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import utc from 'dayjs/plugin/utc'
 
-import { TestCaseParameters } from '../types'
+import { RescoringTestParameters, TestCaseParameters } from '../types'
 import { RescoringAssessment } from './dbClasses'
 import { dateFormat } from '../orgsTest'
 import { addCalculatedInputParameters, getOffenceCat } from '../loadTestData'
 
-export function createAssessmentTestCase(assessment: RescoringAssessment, staticFlag: 'Y' | 'N', useCurrentDate: boolean, appVersions: SignificantReleaseDates): TestCaseParameters {
+export function createAssessmentTestCase(assessment: RescoringAssessment, testParams: RescoringTestParameters): TestCaseParameters {
 
     dayjs.extend(customParseFormat)
     dayjs.extend(utc)
     const today = dayjs.utc()
 
     const initiationDate = dayjs.utc(assessment.initiationDate, dateFormat)
-    const after6_30 = checkIfAfter(appVersions.r6_30, initiationDate)
+    const after6_30 = checkIfAfter(testParams.significantReleaseDates.r6_30, initiationDate)
 
     const p: TestCaseParameters = {
-        ASSESSMENT_DATE: useCurrentDate ? today : getDate(assessment.completedDate),
-        STATIC_CALC: staticFlag,
+        ASSESSMENT_DATE: testParams.useCurrentDate ? today : getDate(assessment.completedDate),
+        STATIC_CALC: testParams.staticFlag,
         DOB: getDate(assessment.dob),
         GENDER: lookupValue(assessment.gender, genderLookup),
         OFFENCE_CODE: getString(assessment.offence),

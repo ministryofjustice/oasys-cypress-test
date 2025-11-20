@@ -20,6 +20,7 @@ declare type AppConfig = {
 
     versionHistory: AppVersion[],
     probForceCrn: boolean,
+    significantReleaseDates: SignificantReleaseDates,
 }
 
 declare type AppVersion = {

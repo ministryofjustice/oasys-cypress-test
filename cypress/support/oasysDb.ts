@@ -1,9 +1,13 @@
 var oracledb = require('oracledb')
-var connection
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import utc from 'dayjs/plugin/utc'
 
 import { testEnvironment, userSuffix } from '../../localSettings'
 import { ogrsFunctionCall } from './ogrs/getTestData/oracleFunctionCall'
 import { dateFormat } from './ogrs/orgsTest'
+
+var connection
 
 /** 
  * Connect to the Oracle database using parameters configured in environments.ts and localSettings.ts, returns a null string for success, or an error for failure.
@@ -123,7 +127,7 @@ export async function selectData(query: string): Promise<DbResponse> {
 }
 
 /** 
- * Get the application version and config items.  Returns a string array containing version number and PROB_FORCE_CRN parameter
+ * Get the application version and config items.  Returns an AppConfig object
  */
 export async function getAppConfig(): Promise<AppConfig> {
 
@@ -142,10 +146,25 @@ export async function getAppConfig(): Promise<AppConfig> {
     for (let i = 0; i < versions.length; i++) {
         versionHistory.push({ version: versions[i][0], date: versions[i][1] })
     }
+
+    dayjs.extend(customParseFormat)
+    dayjs.extend(utc)
+
     return {
         versionHistory: versionHistory,
-        probForceCrn: (configData.data as string) == 'Y'
+        probForceCrn: (configData.data as string) == 'Y',
+        significantReleaseDates: {
+            r6_20: getReleaseDate('6.20.0.0', versionHistory),
+            r6_30: getReleaseDate('6.30.0.0', versionHistory),
+            r6_35: getReleaseDate('6.35.0.0', versionHistory),
+        }
     }
+}
+
+function getReleaseDate(release: string, versionHistory: AppVersion[]): dayjs.Dayjs {
+
+    const releaseRecord = versionHistory.filter((v) => v.version == release)[0]
+    return dayjs.utc(releaseRecord.date, dateFormat)
 }
 
 /** 
