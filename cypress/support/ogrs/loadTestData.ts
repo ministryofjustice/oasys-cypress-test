@@ -115,7 +115,7 @@ function getDateDiff(firstDate: Dayjs, secondDate: Dayjs, unit: 'year' | 'month'
     }
 }
 
-function getOffenceCat(offence: string): OgrsOffenceCat {
+export function getOffenceCat(offence: string): OgrsOffenceCat {
 
     const cat = offenceCats[offences[offence]]
     return cat == undefined ? null : cat
