@@ -229,7 +229,7 @@ export function runScript(assessmentPk: number, script: SanScript, resultAlias: 
         let scenario = script.scenarios[i]
         cy.wrap(false).as(`failedAlias${i}`)
 
-        gotoSan(script.section, 'information')
+        gotoSan(script.section, script.section == 'Offence analysis' ? null : 'information')
         cy.task('consoleLog', scenario.name)
         runScenario(scenario.name, scenario.steps)
         returnToOASys()

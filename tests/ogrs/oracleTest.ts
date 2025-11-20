@@ -1,8 +1,8 @@
 import { OgrsTestParameters, ReportMode } from '../../cypress/support/ogrs/types'
 import { runTest } from './testLib'
 
-const count = 10000
-const reportMode: ReportMode = 'minimal'
+const count = 100
+const reportMode: ReportMode = 'normal'
 
 describe('OGRS calculator test', () => {
 

@@ -17,7 +17,7 @@ declare type Environment = {
 }
 
 declare type AppConfig = {
-    
+
     versionHistory: AppVersion[],
     probForceCrn: boolean,
 }
@@ -25,4 +25,10 @@ declare type AppConfig = {
 declare type AppVersion = {
     version: string,
     date: string,
+}
+
+declare type SignificantReleaseDates = {
+    r6_20: Dayjs,
+    r6_30: Dayjs,
+    r6_35: Dayjs,
 }

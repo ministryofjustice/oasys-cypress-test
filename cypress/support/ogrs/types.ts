@@ -34,7 +34,24 @@ export type TestCaseResult = {
     outputParams: OutputParameters,
     failed: boolean,
     identifier: string,
+}
 
+export type RebandingTestParameters = {
+    dataFile: string,
+    start?: number,
+    end?: number,
+    staticFlag: 'Y' | 'N',
+    includeLayer1: boolean,
+    useCurrentDate: boolean,
+    reportMode: ReportMode,
+    versionHistory: AppVersion[],
+}
+
+export type RebandingResult = {
+    crn: string,
+    newPredictors: string,
+    existingPredictors: string,
+    pk: number,
 }
 
 export type ScoreType = 'serious_violence_brief' | 'serious_violence_extended' | 'general_brief' | 'violence_brief' | 'general_extended' | 'violence_extended' | 'osp_c' | 'osp_i' | 'rsr'
