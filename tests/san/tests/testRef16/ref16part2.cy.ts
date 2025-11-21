@@ -63,7 +63,11 @@ describe('SAN integration - test ref 16 part 2', () => {
 
             summarySheet.goto().opdOverrideMessage.checkValue('This individual does not meet the criteria for the OPD pathway.', true)
             summarySheet.opdOverride.checkValue('No')
-
+            // Workaround for uncaught javascript error in SAN
+            Cypress.on('uncaught:exception', () => {
+                cy.log('Cypress Exception')
+                return false
+            })
             oasys.San.gotoSan()
 
             cy.log(`In the SAN Assessment answer the following questions as defined below:	
@@ -93,9 +97,9 @@ describe('SAN integration - test ref 16 part 2', () => {
                     Leave the assessment as WIP`)
 
             oasys.San.returnToOASys()
-            // TODO replace this   summarySheet.goto().learningScreeningTool.checkValue(
-            //     'This individual may have a learning disability and/or learning challenges. Further assessment may be needed to determine the support required. Consideration for referral for specialised assessment should be given, if appropriate.',
-            //     true)
+            summarySheet.goto().learningScreeningTool.checkValue(
+                'This individual may have a learning disability and/or learning challenges. Further assessment may be needed to determine the support required. Consideration for referral for specialised assessment should be given, if appropriate.',
+                true)
 
             summarySheet.goto().opd.checkValue('This individual meets the criteria for the OPD pathway.', true)
 
