@@ -1,20 +1,16 @@
 import { OgrsTestParameters, ReportMode } from '../../cypress/support/ogrs/types'
 import { runTest } from './testLib'
 
-const pk = 1114639
+const pk = 9559367
 const reportMode: ReportMode = 'normal' 
 
-describe('OGRS calculator test - static flag = N', () => {
+describe('OGRS calculator test', () => {
 
-    runTests('N')
+    runTests()
 })
 
-describe('OGRS calculator test - static flag = Y', () => {
 
-    runTests('Y')
-})
-
-function runTests(staticFlag: 'Y' | 'N') {
+function runTests() {
 
     const dbTestParams: OgrsTestParameters = {
         testType: 'db',
@@ -23,7 +19,7 @@ function runTests(staticFlag: 'Y' | 'N') {
             whereClause: `oasys_set_pk = ${pk}`,
             count: 1,
         },
-        staticFlag: staticFlag,
+        staticFlag: null,
         reportMode: reportMode,
         includeObjects: false,
     }
