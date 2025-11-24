@@ -1,5 +1,5 @@
 import * as oasys from 'oasys'
-import * as testData from '../../data/testRef20'
+import * as testData from '../../data/testRef29'
 
 describe('SAN integration - test ref 29/30', () => {
 
@@ -36,7 +36,7 @@ describe('SAN integration - test ref 29/30', () => {
             predictors.o1_37.setValue(1)
 
             oasys.San.gotoSan()
-            oasys.San.populateSanSections('TestRef20 complete SAN', testData.sanPopulation)
+            oasys.San.populateSanSections('TestRef29 complete SAN', testData.sanPopulation)
             oasys.San.returnToOASys()
             oasys.Nav.clickButton('Next')
             oasys.Nav.clickButton('Next')
