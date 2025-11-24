@@ -117,7 +117,6 @@ describe('SAN integration - test ref 08 part 5', () => {
                         '12 - Attitudes', '13 - Health and Other Considerations',
                         'Self Assessment Form']
 
-                    // TODO revisions to existing screens - what are these?  Might need this to be a manual test
                     // oasys.Pdf.checkPdf(() => { print.print.click() }, inclusions, exclusions, 'pdf')
                     // print.cancel.click()
                     // cy.get<boolean>('@pdf').then((failed) => expect(failed).equal(false))  // TODO enable pdf checking

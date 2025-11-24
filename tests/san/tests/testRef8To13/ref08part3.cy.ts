@@ -62,6 +62,7 @@ describe('SAN integration - test ref 08 part 3', () => {
                     values: ['0', '0', 'N/A', '0', '0', 'N/A', '4', '6', '0']
                 }
             ]
+            summarySheet.save.click()  // Workaround for defect NOD-1165
             summarySheet.sanCrimTable.checkData(expectedValues)
 
             const expectedPredictorsValues: ColumnValues[] = [
@@ -82,7 +83,7 @@ describe('SAN integration - test ref 08 part 3', () => {
                     values: ['Low', 'Low', 'Low', 'Medium', 'Very High', 'High  (DYNAMIC)']
                 },
             ]
-            // TODO investigate why the order changes     summarySheet.predictorsTable.checkData(expectedPredictorsValues)
+            summarySheet.predictorsTable.checkData(expectedPredictorsValues)
 
             cy.log(`There is NO 'weighted scores' section
                     There is a 'Likelihood of serious harm to others' section - ensure it states that 'There is no risk information to be displayed as the RoSH Screening does not indicate a Risk of Serious Harm, and a Full Analysis has not been undertaken.'
@@ -95,7 +96,7 @@ describe('SAN integration - test ref 08 part 3', () => {
             summarySheet.likelihoodHarmOthersTable.checkCount(0)
             summarySheet.likelihoodHarmOthersTable.checkText('There is no risk information to be displayed as the RoSH Screening does not indicate a Risk of Serious Harm, and a Full Analysis has not been undertaken.')
             summarySheet.concernsTable.checkCount(0)
-            // TODO fix this summarySheet.learningScreeningTool.checkValue('This individual may have some learning challenges. Further assessment may be needed to determine the support required.', true)
+            summarySheet.learningScreeningTool.checkValue('This individual may have some learning challenges. Further assessment may be needed to determine the support required.', true)
             summarySheet.opdOverrideMessage.checkValue('This individual does not meet the criteria for the OPD pathway.')
             summarySheet.dateCompleted.checkValue('\nDate Assessment Completed: \n')
 

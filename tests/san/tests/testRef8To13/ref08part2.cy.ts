@@ -180,7 +180,8 @@ describe('SAN integration - test ref 08 part 2', () => {
                         values: [null, null, 'N/A', null, null, 'N/A', null, null, null]
                     }
                 ]
-                // TODO investigate why the order changes     summarySheet.sanCrimTable.checkData(expectedValues)
+                summarySheet.save.click()  // Workaround for defect NOD-1165
+                summarySheet.sanCrimTable.checkData(expectedValues)
 
                 oasys.logout()
             })
