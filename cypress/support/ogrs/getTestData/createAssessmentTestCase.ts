@@ -142,9 +142,10 @@ function getTextAnswer(data: string[][], section: string, question: string): str
 
 function q141(assessment: OgrsAssessment): string {
 
+    const q130 = getSingleAnswer(assessment.qaData, '1', '1.30', ynLookup)
     const q141 = getSingleAnswer(assessment.qaData, '1', '1.41', ynLookup)
     const offenceCat = getOffenceCat(getString(assessment.offence))
-    if (q141 == null && offenceCat && ['sexual_offences_not_children','sexual_offences_children'].includes(offenceCat.cat) ) {
+    if (q130 == 'Y' && q141 == null && offenceCat && ['sexual_offences_not_children','sexual_offences_children'].includes(offenceCat.cat) ) {
         return 'O'
     } else {
         return q141
