@@ -129,6 +129,26 @@ export function selectCheckbox(item: SanId, value: string) {
 }
 
 /**
+ * As above, but some options may not be visible
+ */
+export function selectConditionalCheckbox(item: SanId, value: string) {
+
+    const itemsToCheck = value.split(',').map((item) => item.trim())
+    for (let i = 0; i < item.options.length; i++) {
+        const itemSuffix = i == 0 ? '' : `-${i + 1}`
+        if (itemsToCheck.includes(item.options[i])) {
+            cy.get(`${item.id}${itemSuffix}`).check()
+        } else if (item.options[i] != '-') {   // '-' is used as a separator in the list of IDs
+            cy.get('#main-content').then((container) => {
+                const checkboxVisible = container.find(`${item.id}${itemSuffix}:visible`).length == 1
+                if (checkboxVisible) {
+                    cy.get(`${item.id}${itemSuffix}`).uncheck()
+                }
+            })
+        }
+    }
+}
+/**
  * Enter text in a textbox.  Parameters are:
  *   - item: a SanId defining a San textbox
  *   - text: the text to enter
@@ -304,6 +324,10 @@ export function runStep(step: SanStep) {
             break
         case 'checkbox':
             selectCheckbox(stepItem, step.value)
+            cy.groupedLog(`Checkbox: ${step.item} - '${step.value}'`)
+            break
+        case 'conditionalCheckbox':
+            selectConditionalCheckbox(stepItem, step.value)
             cy.groupedLog(`Checkbox: ${step.item} - '${step.value}'`)
             break
         case 'textbox':
