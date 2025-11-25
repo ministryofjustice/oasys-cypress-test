@@ -145,7 +145,7 @@ function q141(assessment: OgrsAssessment): string {
     const q130 = getSingleAnswer(assessment.qaData, '1', '1.30', ynLookup)
     const q141 = getSingleAnswer(assessment.qaData, '1', '1.41', ynLookup)
     const offenceCat = getOffenceCat(getString(assessment.offence))
-    if (q130 == 'Y' && q141 == null && offenceCat && ['sexual_offences_not_children','sexual_offences_children'].includes(offenceCat.cat) ) {
+    if (q130 == 'Y' && q141 == null && offenceCat && ['sexual_offences_not_children', 'sexual_offences_children'].includes(offenceCat.cat)) {
         return 'O'
     } else {
         return q141
@@ -169,7 +169,7 @@ function checkForDailyDrugs(data: string[][]): string {
     let result = 'N'
     const drugs = getDrugsUsage(data)
     Object.keys(drugs).forEach((key) => {
-        if (drugs[key] = '100') {
+        if (drugs[key] == '100') {
             result = 'Y'
         }
     })
