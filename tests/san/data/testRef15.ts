@@ -305,11 +305,9 @@ export const dataFromSan: OasysAnswer[] = [
     { section: '8', q: '8.1', a: `YES` },
     { section: '8', q: '8.2.8.1', a: '100' },
     { section: '8', q: '8.2.8.2', a: 'YES' },
-    // { section: '8', q: '8.2.8.3', a: `YES` },  // TODO should these be set?  With Howard
     { section: '8', q: '8.2.8.4', a: 'YES' },
     { section: '8', q: '8.2.14.1', a: '130' },
     { section: '8', q: '8.2.14.2', a: 'YES' },
-    // { section: '8', q: '8.2.14.3', a: `YES` },
     { section: '8', q: '8.2.14.4', a: 'YES' },
     { section: '8', q: '8.2.14.t', a: `ABCD efg10ABCD efg20ABCD efg30ABCD efg40ABCD efg50ABCD efg60ABCD efg70ABCD efg80ABCD efg90ABCD ef100ABCD ef110ABCD ef120ABCD ef130ABCD ef140ABCD ef150ABCD ef160ABCD ef170ABCD ef180ABCD ef190ABCD ef200` },
 
