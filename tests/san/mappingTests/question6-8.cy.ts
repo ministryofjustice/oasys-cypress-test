@@ -10,8 +10,6 @@ const relationships2 = new oasys.Pages.San.Relationships.Relationships2()
 type AccommodationOptions = 'family' | 'friends' | 'partner' | 'child' | 'other' | 'unknown' | 'alone'
 type RelationshipOptions = 'partner' | 'ownChildren' | 'otherChildren' | 'family' | 'friends' | 'other'
 
-let relationshipSet = false
-
 describe('Mapping test for question 6.8', () => {
 
     it('Mapping test for question 6.8', () => {
@@ -129,8 +127,6 @@ function setRelationshipOptions(options: RelationshipOptions[], firstRun: boolea
         relationships1.saveAndContinue.click()
     }
     relationships2.importantPeople.setValue(options)
-
-    relationshipSet = options.length > 0 && !options.includes('other')  // Other has a mandatory text field so will return to the right page; no previous click required
 }
 
 function checkMapping(assessmentPk: number, expectedValue: number, logText: string[], testCase: number) {
