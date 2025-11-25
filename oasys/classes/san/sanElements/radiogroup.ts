@@ -1,9 +1,9 @@
 export class Radiogroup<T extends string> {
 
     selector: string
-    options: T[]
+    options: (T | '-')[]
 
-    constructor(selector: string, options: T[]) {
+    constructor(selector: string, options: (T | '-')[]) {
 
         this.selector = selector
         this.options = options

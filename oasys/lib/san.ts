@@ -17,15 +17,15 @@ import { sanIds } from '../../tests/data/sanIds'
  * 
  * The optional parameters can be used to jump straight to a particular section, and optionally into the information or analysis subsections.
  */
-export function gotoSan(section: SanSection = null, subPage: 'information' | 'analysis' = null) {
+export function gotoSan(section: SanSection = null, subPage: 'information' | 'analysis' = null, supressLog: boolean = false) {
 
-    new oasys.Pages.Assessment.SanSections().goto().openSan.click()
+    new oasys.Pages.Assessment.SanSections().goto(supressLog).openSan.click()
 
     handleLandingPage('san')
 
-    new oasys.Pages.San.SectionLandingPage('Accommodation').checkCurrent()
+    new oasys.Pages.San.SectionLandingPage('Accommodation').checkCurrent(supressLog)
     if (section) {
-        goto(section, subPage)
+        goto(section, subPage, supressLog)
     }
 }
 /**
@@ -46,9 +46,9 @@ export function gotoSanReadOnly(section: SanSection = null, subPage: 'informatio
 /**
  * Select a SAN section on the menu using the text label on the menu
  */
-export function goto(section: SanSection, subPage: 'information' | 'analysis' = null) {
+export function goto(section: SanSection, subPage: 'information' | 'analysis' = null, supressLog: boolean = false) {
 
-    const page = new oasys.Pages.San.SectionLandingPage(section).goto()
+    const page = new oasys.Pages.San.SectionLandingPage(section).goto(supressLog)
     if (subPage) {
         page[subPage].click()
     }

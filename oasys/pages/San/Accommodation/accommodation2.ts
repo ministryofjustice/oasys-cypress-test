@@ -6,19 +6,15 @@ export class Accommodation2 extends BaseSanEditPage {
     name = 'Accommodation2'
     title = 'Accommodation - Strengths and Needs'
 
-    currentAccommodation = new SanElement.Radiogroup('#current_accommodation', ['settled', 'temporary', 'noAccommodation'])
-    noAccommodationType = new SanElement.Radiogroup('#type_of_no_accommodation', ['awaitingAssessment', 'campsite', 'hostel', 'homeless', 'roughSleeping', 'shelter'])
-    settledAccommodationType = new SanElement.Radiogroup('#type_of_settled_accommodation', ['homeowner', 'friends', 'privateRenting', 'socialRent', 'healthcare', 'supported'])
-    temporaryAccommodationType = new SanElement.Radiogroup('#type_of_temporary_accommodation', ['approvedPremises', 'cas2', 'cas3', 'immigration', 'shortTerm'])
     livingWith = new SanElement.CheckboxGroup<'family' | 'friends' | 'partner' | 'child' | 'other' | 'unknown' | 'alone'>('#living_with', ['family', 'friends', 'partner', 'child', 'other', 'unknown', '-', 'alone'])
+    locationSuitable = new SanElement.Radiogroup<'yes' | 'no'>('#suitable_housing_location', ['yes', 'no'])
+    accommodationSuitable = new SanElement.Radiogroup<'yes' | 'yesWithConcerns' | 'no'>('#suitable_housing', ['yes', 'yesWithConcerns', 'no'])
+    wantChanges = new SanElement.Radiogroup<SanWantChanges>('#accommodation_changes', ['madeChanges', 'makingChanges', 'wantToChange', 'needHelp', 'thinking', 'notWanted', 'notAnswering', '-', 'notPresent', 'notApplicable'])
 
 }
 /*
-accommodationSuitable = new SanElement.Radiogroup('#suitable_housing', ['yes', 'yesWithConcerns', 'no'])
 futurePlanned = new SanElement.Radiogroup('#suitable_housing_planned', ['yes', 'no'])
 futureType = new SanElement.Radiogroup('#future_accommodation_type', ['awaitingAssessment', 'awatingPlacement', 'buyHouse', 'friends', 'privateRent', 'socialRent', 'healthcare', 'supported', 'other')
-locationSuitable = new SanElement.Radiogroup('#suitable_housing_location', ['yes', 'no'])
-wantChangesAccommodation = new SanElement.Radiogroup('#accommodation_changes', ['madeChanges', 'makingChanges', 'wantToChange', 'needHelp', 'thinking', 'notWanted', 'notAnswering', '-', 'notPresent', 'notApplicable'])
 
 
 accommodationStrengths: {

@@ -1,3 +1,6 @@
 export * as Accommodation from './Accommodation'
+export * as Drugs from './Drugs'
+export * as Relationships from './Relationships'
+export { InformationSummary } from './informationSummary'
 export { LandingPage } from './landingPage'
 export { SectionLandingPage } from './sectionLandingPage'

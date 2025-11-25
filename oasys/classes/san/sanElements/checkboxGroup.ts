@@ -3,7 +3,7 @@ export class CheckboxGroup<T extends string> {
     selector: string
     options: (T | '-')[]
 
-    constructor(selector: string, options: (T | '-')[]) {
+    constructor(selector: string, options: (T | '-')[], conditionalDisplay: boolean = false) {
 
         this.selector = selector
         this.options = options
@@ -23,5 +23,6 @@ export class CheckboxGroup<T extends string> {
             }
         }
     }
+
 }
 

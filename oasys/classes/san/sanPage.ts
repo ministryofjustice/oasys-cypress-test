@@ -106,7 +106,7 @@ export abstract class SanPage {
             }
         } else if (this.menu.type == 'San') {
             cy.get('.moj-side-navigation__item a').contains(this.name).first().click()
-
+            this.checkCurrent(suppressLog)
         } else {
             throw new Error(`Invalid menu type for page ${this.name}`)
         }
