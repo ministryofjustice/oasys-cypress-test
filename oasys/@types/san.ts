@@ -23,3 +23,7 @@ declare type SanSection = 'Accommodation' | 'Employment and education' | 'Financ
     | 'Personal relationships and community' | 'Thinking, behaviours and attitudes' | 'Offence analysis' | 'Sentence plan'
 
 declare type SanWantChanges = 'madeChanges' | 'makingChanges' | 'wantToChange' | 'needHelp' | 'thinking' | 'notWanted' | 'notAnswering' | 'notPresent' | 'notApplicable'
+
+declare type DrugsFrequency = 'daily' | 'weekly' | 'monthly' | 'occasionally'
+declare type DrugType = 'amphetamines' | 'benzodiazepines' | 'cannabis' | 'cocaine' | 'crack' | 'ecstasy' | 'hallucinogenics' | 'heroin' | 'methadone' | 'prescribed' | 'opiates' | 'solvents' | 'spice' | 'steroids' | 'other'
+declare type InjectableDrugType = 'none' | 'amphetamines' | 'benzodiazepines' | 'cocaine' | 'crack' | 'heroin' | 'methadone' | 'prescribed' | 'opiates' | 'steroids' | 'other'
