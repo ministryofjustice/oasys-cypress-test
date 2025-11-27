@@ -11,8 +11,10 @@ export class Radiogroup<T extends string> {
 
     setValue(value: T) {
 
-        const itemNo = this.options.indexOf(value)
-        const itemSuffix = itemNo == 0 ? '' : `-${itemNo + 1}`  // First item has no suffix on the id used to find it, remainder are -2, -3 etc
-        cy.get(`${this.selector}${itemSuffix}`).click()
+        if (value != null) {
+            const itemNo = this.options.indexOf(value)
+            const itemSuffix = itemNo == 0 ? '' : `-${itemNo + 1}`  // First item has no suffix on the id used to find it, remainder are -2, -3 etc
+            cy.get(`${this.selector}${itemSuffix}`).click()
+        }
     }
 }

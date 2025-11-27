@@ -12,6 +12,11 @@ export abstract class SanPage {
     name: string
     title: string
     menu: Menu
+    idPrefix: string
+
+    constructor(idPrefix: string = '') {
+        this.idPrefix = idPrefix
+    }
 
     /**
      * Sets the value of a multiple element on the pages, each identified by the element name

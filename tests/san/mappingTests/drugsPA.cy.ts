@@ -1,13 +1,19 @@
 import * as oasys from 'oasys'
 import { mappingTestOffenderFile } from './xMappingTest'
 
-type TestCase = { ref: number, strengths: boolean, riskOfHarm: boolean, riskOfReoffending: boolean, textType: 'normal' | 'max' | 'empty' }
+type TextType = 'normal' | 'max' | 'empty'
+type Motivation = 'noMotivation' | 'someMotivation' | 'motivated' | 'unknown'
+type TestCase = {
+    ref: number, strengths: boolean, riskOfHarm: boolean, riskOfReoffending: boolean,
+    strengthsText: TextType, riskOfHarmText: TextType, riskOfReoffendingText: TextType,
+    motivated: Motivation
+}
 
-const practitionerAnalysis = new oasys.Pages.San.PractitionerAnalysis('Drug use')
+const drugsAnalysis = new oasys.Pages.San.Drugs.DrugsPractitionerAnalysis()
 
-describe('Mapping test for drugs - individual drugs details', () => {
+describe('Mapping test for drugs practitioner analysis', () => {
 
-    it('amphetamines', () => { paTest() })
+    it('Drugs', () => { paTest() })
 })
 
 function paTest() {
@@ -34,15 +40,30 @@ function paTest() {
             cy.wrap(false).as('failed')
             const testCases: TestCase[] =
                 [
-                    { ref: 1, strengths: true, riskOfHarm: false, riskOfReoffending: false, textType: 'normal' },
-
+                    { ref: 1, strengths: true, riskOfHarm: false, riskOfReoffending: false, strengthsText: 'normal', riskOfHarmText: 'normal', riskOfReoffendingText: 'normal', motivated: null },
+                    { ref: 2, strengths: false, riskOfHarm: true, riskOfReoffending: false, strengthsText: 'normal', riskOfHarmText: 'normal', riskOfReoffendingText: 'normal', motivated: 'motivated' },
+                    { ref: 3, strengths: false, riskOfHarm: false, riskOfReoffending: true, strengthsText: 'normal', riskOfHarmText: 'normal', riskOfReoffendingText: 'normal', motivated: 'someMotivation' },
+                    { ref: 4, strengths: false, riskOfHarm: false, riskOfReoffending: false, strengthsText: 'normal', riskOfHarmText: 'normal', riskOfReoffendingText: 'normal', motivated: 'noMotivation' },
+                    { ref: 5, strengths: true, riskOfHarm: true, riskOfReoffending: true, strengthsText: 'max', riskOfHarmText: 'max', riskOfReoffendingText: 'max', motivated: 'unknown' },
+                    { ref: 6, strengths: false, riskOfHarm: false, riskOfReoffending: false, strengthsText: 'empty', riskOfHarmText: 'empty', riskOfReoffendingText: 'empty', motivated: 'motivated' },
+                    { ref: 7, strengths: false, riskOfHarm: false, riskOfReoffending: false, strengthsText: 'empty', riskOfHarmText: 'normal', riskOfReoffendingText: 'normal', motivated: 'someMotivation' },
+                    { ref: 8, strengths: false, riskOfHarm: false, riskOfReoffending: false, strengthsText: 'normal', riskOfHarmText: 'empty', riskOfReoffendingText: 'normal', motivated: 'noMotivation' },
+                    { ref: 9, strengths: false, riskOfHarm: false, riskOfReoffending: false, strengthsText: 'normal', riskOfHarmText: 'normal', riskOfReoffendingText: 'empty', motivated: 'unknown' },
                 ]
 
             let firstRun = true
 
             for (const test of testCases) {
+
                 // Get to the right starting screen
-                oasys.San.gotoSan('Drug use', 'analysis', true)
+
+                if (firstRun) {
+                    oasys.San.gotoSan('Drug use', 'information', true)
+                    new oasys.Pages.San.Drugs.Drugs1().everUsed.setValue('yes')  // Need to set this otherwise the motivation question doesn't get returned
+                    new oasys.Pages.San.SectionLandingPage('Drug use').analysis.click()
+                } else {
+                    oasys.San.gotoSan('Drug use', 'analysis', true)
+                }
 
                 // Set values on SAN, return to OASys and check the results
                 scenario(test)
@@ -76,19 +97,21 @@ function paTest() {
 
 function scenario(test: TestCase) {
 
+    drugsAnalysis.motivatedToStop.setValue(test.motivated)
     setValues('strengths', test)
     setValues('riskOfHarm', test)
     setValues('riskOfReoffending', test)
+    drugsAnalysis.saveAndContinue.click()
 }
 
 function setValues(question: 'strengths' | 'riskOfHarm' | 'riskOfReoffending', test: TestCase) {
 
     if (test[question]) {
-        practitionerAnalysis[question].setValue('yes')
-        practitionerAnalysis[`${question}YesDetails`].setValue(getText(question, true, test.textType))
+        drugsAnalysis[question].setValue('yes')
+        drugsAnalysis[`${question}YesDetails`].setValue(getText(question, true, test[`${question}Text`]))
     } else {
-        practitionerAnalysis[question].setValue('no')
-        practitionerAnalysis[`${question}NoDetails`].setValue(getText(question, false, test.textType))
+        drugsAnalysis[question].setValue('no')
+        drugsAnalysis[`${question}NoDetails`].setValue(getText(question, false, test[`${question}Text`]))
     }
 }
 
@@ -98,7 +121,7 @@ function getText(question: 'strengths' | 'riskOfHarm' | 'riskOfReoffending', yes
         case 'normal':
             return `${question} text - ${yes ? 'yes' : 'no'} selected`
         case 'max':
-            oasys.oasysString(question == 'riskOfReoffending' ? 1000 : 1425)
+            return oasys.oasysString(question == 'riskOfReoffending' ? 1000 : 1425)
         case 'empty':
             return ''
     }
@@ -107,22 +130,66 @@ function getText(question: 'strengths' | 'riskOfHarm' | 'riskOfReoffending', yes
 function checkAnswers(assessmentPk: number, test: TestCase, resultAlias: string) {
 
     /*
+        8.8: motivation - 0/1/2/M
+        8.97: combined text
+            if riskOfHarm
+                'Area linked to serious harm notes - ' + relevant text + newline
+            else
+                'Area not linked to serious harm notes - ' + relevant text + newline
 
+            if strengths
+                'Strengths and protective factor notes - ' + relevant text + newline
+            else
+                'Area not linked to strengths and positive factors notes - ' + relevant text + newline
+
+            if riskOfReoffending
+                'Risk of reoffending notes - ' + relevant text
+            else
+                'Area not linked to reoffending notes - ' + relevant text
+
+        8.98: risk of harm - YES or NO
+        8.99: risk of reoffending - YES or NO
+        8_SAN_STRENGTH: strenthgs - YES or NO
+        SMD_SAN_SECTION_COMP: section complete - YES or NO
     */
 
-    // Template response data for these tests
+    const motivation = test.motivated == 'motivated' ? '0'
+        : test.motivated == 'someMotivation' ? '1'
+            : test.motivated == 'noMotivation' ? '2'
+                : test.motivated == 'unknown' ? 'M' : null
+
+    let text: string = null
+    if (test.strengthsText != 'empty' || test.riskOfHarmText != 'empty' || test.riskOfReoffendingText != 'empty') {
+        let strengthsText = answerText('strengths', test)
+        let riskOfHarmText = answerText('riskOfHarm', test)
+        const riskOfReoffendingText = answerText('riskOfReoffending', test)
+
+        if (strengthsText != '' && `${riskOfHarmText}${riskOfReoffendingText}` != '') {
+            strengthsText = `${strengthsText}\n`
+        }
+        if (riskOfHarmText != '' && riskOfReoffendingText != '') {
+            riskOfHarmText = `${riskOfHarmText}\n`
+        }
+        text = `${strengthsText}${riskOfHarmText}${riskOfReoffendingText}`
+    }
+    /*
+    
+        If riskSeriousHarmText <> "" And riskReoffendingText <> "" Then
+            riskSeriousHarmText = riskSeriousHarmText & vbNewLine
+        End If
+        
+        x_97 = strengthsText & riskSeriousHarmText & riskReoffendingText
+        If x_97 = "" Then x_97 = "null"
+    */
+
     const expectedAnswers: OasysAnswer[] = [
-        { section: '8', q: '8.8', a: 'YES' },
-        { section: '8', q: '8.9', a: null },
-        { section: '8', q: '8.97', a: null },
-        { section: '8', q: '8.98', a: null },
-        { section: '8', q: '8.99', a: null },
-        { section: '8', q: '8_SAN_STRENGTH', a: null },
+        { section: '8', q: '8.8', a: motivation },
+        { section: '8', q: '8.97', a: text },
+        { section: '8', q: '8.98', a: test.riskOfHarm == null ? null : test.riskOfHarm ? 'YES' : 'NO' },
+        { section: '8', q: '8.99', a: test.riskOfReoffending == null ? null : test.riskOfReoffending ? 'YES' : 'NO' },
+        { section: '8', q: '8_SAN_STRENGTH', a: test.strengths == null ? null : test.strengths ? 'YES' : 'NO' },
     ]
 
-    const expectedAnswersTemplateSAN: OasysAnswer[] = [
-        { section: 'SAN', q: 'SMD_SAN_SECTION_COMP', a: 'NO' },
-    ]
     cy.task('checkSectionAnswers', { assessmentPk: assessmentPk, section: '8', expectedAnswers: expectedAnswers }).then((result: CheckDbSectionResponse) => {
 
         result.report.forEach((line) => {
@@ -132,4 +199,24 @@ function checkAnswers(assessmentPk: number, test: TestCase, resultAlias: string)
         })
         cy.wrap(result.failed).as(resultAlias)
     })
+}
+
+function answerText(question: 'strengths' | 'riskOfHarm' | 'riskOfReoffending', test: TestCase): string {
+
+    const yesPrefix = {
+        strengths: 'Strengths and protective factor notes - ',
+        riskOfHarm: 'Area linked to serious harm notes - ',
+        riskOfReoffending: 'Risk of reoffending notes - ',
+    }
+    const noPrefix = {
+        strengths: 'Area not linked to strengths and positive factors notes - ',
+        riskOfHarm: 'Area not linked to serious harm notes - ',
+        riskOfReoffending: 'Area not linked to reoffending notes - ',
+    }
+
+    return test[`${question}Text`] == 'empty'
+        ? ''
+        : `${test[question]
+            ? yesPrefix[question]
+            : noPrefix[question]}${getText(question, test[question], test[`${question}Text`])}`
 }

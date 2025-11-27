@@ -5,7 +5,6 @@ export class PractitionerAnalysis extends SanPage {
 
     name = 'PractitionerAnalysis'
     title = 'Strengths and needs'
-    idPrefix: string = ''
 
     strengths = new SanElement.Radiogroup<'yes' | 'no'>(`#${this.idPrefix}_practitioner_analysis_strengths_or_protective_factors`, ['yes', 'no'])
     strengthsYesDetails = new SanElement.Textbox(`#${this.idPrefix}_practitioner_analysis_strengths_or_protective_factors_yes_details`)
@@ -24,9 +23,8 @@ export class PractitionerAnalysis extends SanPage {
     returnToOASys = new SanElement.Link('Return to OASys')
 
     constructor(section: SanSection) {
-        super()
+        super(idPrefixes[section])
         this.title = `${section} - Strengths and needs`
-        this.idPrefix = idPrefixes[section]
     }
 }
 
