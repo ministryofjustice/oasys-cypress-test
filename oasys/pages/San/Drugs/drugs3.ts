@@ -32,67 +32,10 @@ export class Drugs3 extends BaseSanEditPage {
     heroinInjectedLastSixMonths = new SanElement.CheckboxGroup<'lastSix' | 'moreThanSix'>('#drugs_injected_heroin', ['lastSix', 'moreThanSix'])
     methadoneInjectedLastSixMonths = new SanElement.CheckboxGroup<'lastSix' | 'moreThanSix'>('#drugs_injected_methadone_not_prescribed', ['lastSix', 'moreThanSix'])
     prescribedInjectedLastSixMonths = new SanElement.CheckboxGroup<'lastSix' | 'moreThanSix'>('#drugs_injected_misused_prescribed_drugs', ['lastSix', 'moreThanSix'])
-    opiatesInjectedLastSixMonths = new SanElement.CheckboxGroup<'lastSix' | 'moreThanSix'>('#drugs_injected_opiates', ['lastSix', 'moreThanSix'])
+    opiatesInjectedLastSixMonths = new SanElement.CheckboxGroup<'lastSix' | 'moreThanSix'>('#drugs_injected_other_opiates', ['lastSix', 'moreThanSix'])
     steroidsInjectedLastSixMonths = new SanElement.CheckboxGroup<'lastSix' | 'moreThanSix'>('#drugs_injected_steroids', ['lastSix', 'moreThanSix'])
     otherInjectedLastSixMonths = new SanElement.CheckboxGroup<'lastSix' | 'moreThanSix'>('#drugs_injected_other_drug', ['lastSix', 'moreThanSix'])
 
     treatment = new SanElement.Radiogroup<'yes' | 'no'>('#drugs_is_receiving_treatment', ['yes', 'no'])
     treatmentYesDetails = new SanElement.Textbox('#drugs_is_receiving_treatment_yes_details')
 }
-/*
-
-    // Drugs
-  
-
-
-
-    whyStarted: {
-        type: 'checkbox', id: '#drugs_reasons_for_use',
-        options: ['cultural', 'curiosity', 'performance', 'escapism', 'stress', 'peerPressure', 'recreation', 'selfMedication', 'other'],
-    },
-    impactDrugs: {
-        type: 'checkbox', id: '#drugs_affected_their_life',
-        options: ['behavioural', 'community', 'finances', 'offending', 'health', 'relationships', 'other'],
-    },
-    wantChangesDrugs: {
-        type: 'radio', id: '#drug_use_changes',
-        options: ['madeChanges', 'makingChanges', 'wantToChange', 'needHelp', 'thinking', 'notWanted', 'notAnswering', '-', 'notPresent', 'notApplicable'],
-    },
-
-    motivatedToStop: {
-        type: 'radio', id: '#drugs_practitioner_analysis_motivated_to_stop',
-        options: ['motivated', 'someMotivation', 'noMotivation', 'unknown'],
-    },
-    drugsStrengths: {
-        type: 'radio', id: '#drug_use_practitioner_analysis_strengths_or_protective_factors',
-        options: ['yes', 'no'],
-    },
-    drugsStrengthsYesDetails: {
-        type: 'textbox', id: '#drug_use_practitioner_analysis_strengths_or_protective_factors_yes_details'
-    },
-    drugsStrengthsNoDetails: {
-        type: 'textbox', id: '#drug_use_practitioner_analysis_strengths_or_protective_factors_no_details'
-    },
-    drugsRiskSeriousHarm: {
-        type: 'radio',
-        id: '#drug_use_practitioner_analysis_risk_of_serious_harm',
-        options: ['yes', 'no'],
-    },
-    drugsRiskSeriousHarmYesDetails: {
-        type: 'textbox', id: '#drug_use_practitioner_analysis_risk_of_serious_harm_yes_details'
-    },
-    drugsRiskSeriousHarmNoDetails: {
-        type: 'textbox', id: '#drug_use_practitioner_analysis_risk_of_serious_harm_no_details'
-    },
-    drugsRiskReoffending: {
-        type: 'radio',
-        id: '#drug_use_practitioner_analysis_risk_of_reoffending',
-        options: ['yes', 'no'],
-    },
-    drugsRiskReoffendingYesDetails: {
-        type: 'textbox', id: '#drug_use_practitioner_analysis_risk_of_reoffending_yes_details'
-    },
-    drugsRiskReoffendingNoDetails: {
-        type: 'textbox', id: '#drug_use_practitioner_analysis_risk_of_reoffending_no_details'
-    },
-*/

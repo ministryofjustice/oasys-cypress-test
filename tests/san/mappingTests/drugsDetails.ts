@@ -66,6 +66,7 @@ const expectedAnswersTemplate: OasysAnswer[] = [
     { section: '8', q: '8.6', a: '0' },
 ]
 let expectedAnswers: OasysAnswer[]  // variable to hold a new copy of the template for each iteration of the test with the different drug types
+const otherDrugName = 'Other drug name'
 
 describe('Mapping test for drugs - individual drugs details', () => {
 
@@ -139,6 +140,7 @@ function drugTest(drugType: DrugType) {
                 ]
 
             let firstRun = true
+            cy.task('consoleLog', `Testing ${drugType}`)
 
             expectedAnswers = JSON.parse(JSON.stringify(expectedAnswersTemplate)) as OasysAnswer[]  // take a copy to modify for this drug
             for (const test of testCases) {
@@ -186,7 +188,7 @@ function scenario(drugType: DrugType, test: TestCase) {
 
     drugs2.drugType.setValue([drugType])
     if (drugType == 'other') {
-        drugs2.drugTypeOther.setValue('Other drug name')
+        drugs2.drugTypeOther.setValue(otherDrugName)
     }
     drugs2[`${drugType}LastSixMonths`].setValue(test.lastSix ? 'yes' : 'no')
     drugs2.saveAndContinue.click()
@@ -216,7 +218,7 @@ function checkAnswers(assessmentPk: number, drugType: DrugType, test: TestCase, 
         8.2.x.3 = previous usage - YES or null
         8.2.x.4 = previously injected - YES or null
 
-        8.4 = current class A usage (heroin, methadone, opiates, crack, cocaine) - 2 or 0
+        8.4 = current class A usage (heroin, methadone, opiates, crack, cocaine, prescribed) - 2 or 0
         8.5 = main drug level of use - 2 (daily, weekly), 0 (monthly, occasionally, or not used in last 6 months), M (last six but no frequency)
         8.6 = ever injected - 2 (injected last 6 months), 1 (injected previously), 0
     */
@@ -231,7 +233,10 @@ function checkAnswers(assessmentPk: number, drugType: DrugType, test: TestCase, 
         expectedAnswers.filter((a) => a.q == `8.2.${drugNumber}.2`)[0].a = test.injectedLastSix ? 'YES' : null
         expectedAnswers.filter((a) => a.q == `8.2.${drugNumber}.4`)[0].a = test.injectedMoreThanSix ? 'YES' : null
     }
-    expectedAnswers.filter((a) => a.q == '8.4')[0].a = drugNumber < 6 && (dailyOrWeekly || monthlyOrOccasionally) ? '2' : '0'
+    if (drugType == 'other') {
+        expectedAnswers.filter((a) => a.q == '8.2.14.t')[0].a = otherDrugName
+    }
+    expectedAnswers.filter((a) => a.q == '8.4')[0].a = drugNumber <= 6 && (dailyOrWeekly || monthlyOrOccasionally) ? '2' : '0'  // drugNumbers 1 to 6 are class A
     expectedAnswers.filter((a) => a.q == '8.5')[0].a = dailyOrWeekly ? '2' : monthlyOrOccasionally ? '0' : !test.lastSix ? '0' : 'M'
     expectedAnswers.filter((a) => a.q == '8.6')[0].a = test.injectedLastSix ? '2' : test.injectedMoreThanSix ? '1' : '0'
 
