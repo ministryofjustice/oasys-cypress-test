@@ -97,12 +97,12 @@ describe('SAN integration - test ref 27', () => {
                         Return back to the OASys Assessment - goes back to the 'Sentence Plan Service' screen
                         Close the assessment - back to the offender record`)
 
-                    oasys.Assessment.openLatest()
-                    oasys.San.gotoSan()
+                    oasys.Assessment.open(2)
+                    oasys.San.gotoSanReadOnly('Accommodation','information')
                     oasys.San.checkSanEditMode(false)
                     oasys.San.returnToOASys()
 
-                    oasys.San.gotoSentencePlan()
+                    oasys.San.gotoSentencePlanReadOnly()
                     oasys.San.checkSentencePlanEditMode(false)
                     oasys.San.returnToOASys()
 
@@ -116,7 +116,7 @@ describe('SAN integration - test ref 27', () => {
                                  and st.oasys_set_pk = ${pk}`
 
                     oasys.Db.getData(questionsQuery, 'questions')
-                    oasys.Db.getData(`select lastupd_from_san, lastupd_date from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate2')
+                    oasys.Db.getData(`select to_char(lastupd_from_san, 'YYYY-MM-DD HH24:MI:SS'), to_char(lastupd_date, 'YYYY-MM-DD HH24:MI:SS') from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate2')
                     cy.get<string[][]>('@questions').then((questions) => {
                         cy.get<string[][]>('@lastUpdDate2').then((updatedSetData) => {
 

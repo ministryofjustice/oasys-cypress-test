@@ -64,14 +64,14 @@ export function createPris(assessmentDetails: CreateAssessmentDetails) {
 }
 
 /**
- * Go from the offender details page through CMS screens to the create assessment page for a probation offender.
+ * Go from the offender details page through CMS screens to the create assessment page for a probation offender. The process depends on the force CRN setting.
  */
 export function getToCreateAssessmentPage(suppressLog: boolean = false) {
 
-    cy.get<string>('@probForceCrn').then((probForceCrn) => {
+    cy.get<AppConfig>('@appConfig').then((appConfig) => {
 
         new oasys.Pages.Offender.OffenderDetails().createAssessment.click()
-        if (probForceCrn == 'Y') {
+        if (appConfig.probForceCrn) {
             new oasys.Pages.Offender.CrnAmendment().ok.click()
             new oasys.Pages.Offender.CmsSearchResults().cmsEventNumberColumn.clickFirstRow()
             new oasys.Pages.Offender.CmsOffenderDetails().updateOffender.click()

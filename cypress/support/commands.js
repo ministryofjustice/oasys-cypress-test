@@ -9,15 +9,16 @@ var logGroup = ""
  */
 function getSpecPath() {
 
-    const runCommand = Cypress.env('runCommand')
-    const location = Cypress.env('location')
+    const runCommand = Cypress.env('runCommand').replaceAll(String.fromCharCode(92), '/')
+    const location = Cypress.env('location').replaceAll(String.fromCharCode(92), '/')
 
     // If running a single test, just need the filename part
     if (runCommand.length > 3 && runCommand.substring(runCommand.length - 3) == '.ts') {
         return runCommand.substring(runCommand.lastIndexOf('/') + 1)
     } else {
-        const runCommandRelativePath = runCommand.replace(`${location}/`, '')
-        return Cypress.spec.relative.replace(`${runCommandRelativePath}/`, '')
+        // const runCommandRelativePath = runCommand.replace(`${location}/`, '')
+        const path = Cypress.spec.relative.replaceAll(String.fromCharCode(92), '/')
+        return path.substring(path.lastIndexOf('/') + 1)
     }
 }
 

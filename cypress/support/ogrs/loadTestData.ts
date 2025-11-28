@@ -1,3 +1,8 @@
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import utc from 'dayjs/plugin/utc'
+import isLeapYear from 'dayjs/plugin/isLeapYear'
+
 import { Decimal } from 'decimal.js'
 
 import { TestCaseParameters, OgrsOffenceCat, OutputParameters } from './types'
@@ -86,9 +91,11 @@ function getString(param: string): string {
     return param == '' || param == 'null' || param == null ? null : param
 }
 
-function getDate(param: string): Dayjs {
+function getDate(param: string): dayjs.Dayjs {
 
-    const result = Cypress.dayjs.utc(param, dateFormat)
+    dayjs.extend(customParseFormat)
+    dayjs.extend(utc)
+    const result = dayjs.utc(param, dateFormat)
     return !result.isValid() ? null : result
 }
 
@@ -96,8 +103,9 @@ function getInteger(param: string): number {
     return param == '' || param == null || param.toLowerCase() == 'null' ? null : Number.parseInt(param)
 }
 
-function getDateDiff(firstDate: Dayjs, secondDate: Dayjs, unit: 'year' | 'month', ofm: boolean = false): number {
+function getDateDiff(firstDate: dayjs.Dayjs, secondDate: dayjs.Dayjs, unit: 'year' | 'month', ofm: boolean = false): number {
 
+    dayjs.extend(isLeapYear)
     if (firstDate == null || secondDate == null) {
         return null
     }
@@ -115,13 +123,13 @@ function getDateDiff(firstDate: Dayjs, secondDate: Dayjs, unit: 'year' | 'month'
     }
 }
 
-function getOffenceCat(offence: string): OgrsOffenceCat {
+export function getOffenceCat(offence: string): OgrsOffenceCat {
 
     const cat = offenceCats[offences[offence]]
     return cat == undefined ? null : cat
 }
 
-export function loadExpectedValues(values: string[]): OutputParameters {
+export function loadOracleOutputValues(values: string[]): OutputParameters {
 
     const expectedOutputParameters = createOutputObject()
 

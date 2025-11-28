@@ -3,7 +3,7 @@ import * as testData from '../../data/testRef21'
 
 describe('SAN integration - test ref 21 part 2a', () => {
 
-    it('Test ref 21 part 2a - create assessments on offender 2', () => {
+    it('Test ref 21 part 2b - create assessments on offender 2', () => {
 
         // Get offender details
         cy.task('retrieveValue', 'offender2').then((offenderData) => {

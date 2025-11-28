@@ -60,7 +60,9 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
     standardCheck(params, required, missing, 'SIX_POINT_EIGHT')
     standardCheck(params, required, missing, 'SEVEN_POINT_TWO')
     standardCheck(params, required, missing, 'DAILY_DRUG_USER')
-    standardCheck(params, required, missing, 'EIGHT_POINT_EIGHT')
+    if (params.DAILY_DRUG_USER != null) {
+        standardCheck(params, required, missing, 'EIGHT_POINT_EIGHT')
+    }
     standardCheck(params, required, missing, 'NINE_POINT_ONE')
     standardCheck(params, required, missing, 'NINE_POINT_TWO')
     standardCheck(params, required, missing, 'ELEVEN_POINT_TWO')
@@ -87,7 +89,7 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
         standardCheck(params, required, missing, 'DATE_RECENT_SEXUAL_OFFENCE')
         standardCheck(params, required, missing, 'CURR_SEX_OFF_MOTIVATION')
     }
-    if (['osp_c', 'rsr'].includes(scoreType) && params.male && params.CURR_SEX_OFF_MOTIVATION == 'Y' && params.STRANGER_VICTIM == null) {
+    if (['osp_c', 'rsr'].includes(scoreType) && params.male && ['Y', 'O'].includes(params.CURR_SEX_OFF_MOTIVATION) && params.STRANGER_VICTIM == null) {
         missing.push(getErrorText('STRANGER_VICTIM'))
     }
 
@@ -205,6 +207,7 @@ export const requiredParams = {
         'SIX_POINT_SEVEN',
         'SIX_POINT_EIGHT',
         'SEVEN_POINT_TWO',
+        'DAILY_DRUG_USER',
         'EIGHT_POINT_EIGHT',
         'NINE_POINT_ONE',
         'NINE_POINT_TWO',

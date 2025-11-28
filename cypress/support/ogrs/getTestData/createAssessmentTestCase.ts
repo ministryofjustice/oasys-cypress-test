@@ -2,10 +2,11 @@ import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import utc from 'dayjs/plugin/utc'
 
-import { TestCaseParameters } from '../types'
+import { OgrsTestParameters, TestCaseParameters } from '../types'
 import { OgrsAssessment } from './dbClasses'
 import { dateFormat } from '../orgsTest'
 import { addCalculatedInputParameters } from '../loadTestData'
+import { getOffenceCat } from '../loadTestData'
 
 export function createAssessmentTestCase(assessment: OgrsAssessment): TestCaseParameters {
 
@@ -36,7 +37,7 @@ export function createAssessmentTestCase(assessment: OgrsAssessment): TestCasePa
         AGE_AT_FIRST_SANCTION: getNumericAnswer(assessment.textData, '1', '1.8'),
         LAST_SANCTION_DATE: getDate(getTextAnswer(assessment.textData, '1', '1.29')),
         DATE_RECENT_SEXUAL_OFFENCE: getDate(getTextAnswer(assessment.textData, '1', '1.33')),
-        CURR_SEX_OFF_MOTIVATION: getSingleAnswer(assessment.qaData, '1', '1.41', ynLookup),
+        CURR_SEX_OFF_MOTIVATION: q141(assessment),
         MOST_RECENT_OFFENCE: getDate(getTextAnswer(assessment.textData, '1', '1.43')),
         COMMUNITY_DATE: getDate(getTextAnswer(assessment.textData, '1', '1.38')),
         ONE_POINT_THIRTY: getSingleAnswer(assessment.qaData, '1', '1.30', ynLookup),
@@ -139,6 +140,18 @@ function getTextAnswer(data: string[][], section: string, question: string): str
     return null
 }
 
+function q141(assessment: OgrsAssessment): string {
+
+    const q130 = getSingleAnswer(assessment.qaData, '1', '1.30', ynLookup)
+    const q141 = getSingleAnswer(assessment.qaData, '1', '1.41', ynLookup)
+    const offenceCat = getOffenceCat(getString(assessment.offence))
+    if (q130 == 'Y' && q141 == null && offenceCat && ['sexual_offences_not_children', 'sexual_offences_children'].includes(offenceCat.cat)) {
+        return 'O'
+    } else {
+        return q141
+    }
+}
+
 function da(data: string[][]): number {
 
     const q67 = getNumericAnswer(data, '6', '6.7da')
@@ -156,7 +169,7 @@ function checkForDailyDrugs(data: string[][]): string {
     let result = 'N'
     const drugs = getDrugsUsage(data)
     Object.keys(drugs).forEach((key) => {
-        if (drugs[key] = '100') {
+        if (drugs[key] == '100') {
             result = 'Y'
         }
     })

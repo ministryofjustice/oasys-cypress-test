@@ -17,17 +17,15 @@ import { sanIds } from '../../tests/data/sanIds'
  * 
  * The optional parameters can be used to jump straight to a particular section, and optionally into the information or analysis subsections.
  */
-export function gotoSan(section: SanSection = null, subPage: 'information' | 'analysis' = null) {
+export function gotoSan(section: SanSection = null, subPage: 'information' | 'analysis' = null, supressLog: boolean = false) {
 
-    new oasys.Pages.Assessment.SanSections().goto().openSan.click()
+    new oasys.Pages.Assessment.SanSections().goto(supressLog).openSan.click()
 
-    const landingPage = new oasys.Pages.San.LandingPage()
-    landingPage.confirmCheck.setValue(true)
-    landingPage.confirm.click()
+    handleLandingPage('san')
 
-    new oasys.Pages.San.SectionLandingPage('Accommodation').checkCurrent()
+    new oasys.Pages.San.SectionLandingPage('Accommodation').checkCurrent(supressLog)
     if (section) {
-        goto(section, subPage)
+        goto(section, subPage, supressLog)
     }
 }
 /**
@@ -48,9 +46,9 @@ export function gotoSanReadOnly(section: SanSection = null, subPage: 'informatio
 /**
  * Select a SAN section on the menu using the text label on the menu
  */
-export function goto(section: SanSection, subPage: 'information' | 'analysis' = null) {
+export function goto(section: SanSection, subPage: 'information' | 'analysis' = null, supressLog: boolean = false) {
 
-    const page = new oasys.Pages.San.SectionLandingPage(section).goto()
+    const page = new oasys.Pages.San.SectionLandingPage(section).goto(supressLog)
     if (subPage) {
         page[subPage].click()
     }
@@ -61,7 +59,7 @@ export function goto(section: SanSection, subPage: 'information' | 'analysis' = 
  */
 export function checkSanLoaded(probationCrn: string, pnc: string) {
 
-    cy.get('h1.govuk-heading-l').contains('Strengths and needs').should('be.visible')
+    cy.get('.hmpps-header__title__service-name').contains('Strengths and needs').should('be.visible')
     cy.get('dd').contains(probationCrn).should('be.visible')
     cy.get('dd').contains(pnc).should('be.visible')
 }
@@ -72,10 +70,15 @@ export function checkSanLoaded(probationCrn: string, pnc: string) {
 export function gotoSentencePlan() {
 
     new oasys.Pages.SentencePlan.SentencePlanService().goto().openSp.click()
-    const landingPage = new oasys.Pages.SanSp.LandingPage()
+    handleLandingPage('sp')
+    cy.get('h1.govuk-heading-l').contains('plan').should('be.visible')
+}
+
+export function handleLandingPage(type: 'san' | 'sp') {
+
+    const landingPage = type == 'san' ? new oasys.Pages.San.LandingPage() : new oasys.Pages.SanSp.LandingPage()
     landingPage.confirmCheck.setValue(true)
     landingPage.confirm.click()
-    cy.get('h1.govuk-heading-l').contains('plan').should('be.visible')
 }
 
 /**
@@ -126,6 +129,26 @@ export function selectCheckbox(item: SanId, value: string) {
 }
 
 /**
+ * As above, but some options may not be visible
+ */
+export function selectConditionalCheckbox(item: SanId, value: string) {
+
+    const itemsToCheck = value.split(',').map((item) => item.trim())
+    for (let i = 0; i < item.options.length; i++) {
+        const itemSuffix = i == 0 ? '' : `-${i + 1}`
+        if (itemsToCheck.includes(item.options[i])) {
+            cy.get(`${item.id}${itemSuffix}`).check()
+        } else if (item.options[i] != '-') {   // '-' is used as a separator in the list of IDs
+            cy.get('#main-content').then((container) => {
+                const checkboxVisible = container.find(`${item.id}${itemSuffix}:visible`).length == 1
+                if (checkboxVisible) {
+                    cy.get(`${item.id}${itemSuffix}`).uncheck()
+                }
+            })
+        }
+    }
+}
+/**
  * Enter text in a textbox.  Parameters are:
  *   - item: a SanId defining a San textbox
  *   - text: the text to enter
@@ -159,7 +182,7 @@ export function checkText(item: SanId, value: string) {
  */
 export function checkReadonlyText(label: string, value: string) {
 
-    cy.get('#summary').then((container) => {
+    cy.get('#main-content').then((container) => {
         const div = container.find(`.govuk-summary-list__row:contains('${label}')`)
         expect(div[0].innerHTML.search(value)).gt(0)
         cy.log(`Checked value for ${label}`)
@@ -226,7 +249,7 @@ export function runScript(assessmentPk: number, script: SanScript, resultAlias: 
         let scenario = script.scenarios[i]
         cy.wrap(false).as(`failedAlias${i}`)
 
-        gotoSan(script.section)
+        gotoSan(script.section, script.section == 'Offence analysis' ? null : 'information')
         cy.task('consoleLog', scenario.name)
         runScenario(scenario.name, scenario.steps)
         returnToOASys()
@@ -303,6 +326,10 @@ export function runStep(step: SanStep) {
             selectCheckbox(stepItem, step.value)
             cy.groupedLog(`Checkbox: ${step.item} - '${step.value}'`)
             break
+        case 'conditionalCheckbox':
+            selectConditionalCheckbox(stepItem, step.value)
+            cy.groupedLog(`Checkbox: ${step.item} - '${step.value}'`)
+            break
         case 'textbox':
             enterText(stepItem, step.value)
             cy.groupedLog(`Textbox: ${step.item} - '${step.value.length > 50 ? step.value.substring(0, 50) + '...' : step.value}'`)
@@ -367,7 +394,7 @@ export function action(action: string) {
             cy.get('.summary-action-buttons .govuk-button').eq(0).click()
             break
         case 'changeAnalysis':
-            cy.get('a[href*="practitioner-analysis"]').contains('Change').eq(0).click()
+            cy.get('a[href*="-analysis"]').contains('Change').eq(0).click()
             break
         case 'continue':
             cy.get('.questiongroup-action-buttons .govuk-button').eq(0).click()
@@ -487,7 +514,7 @@ export function checkSections2To13AndSafCompletionStatus(expectedStatus: boolean
 export function checkSanAssessmentCompletionStatus(expectedStatus: boolean) {
 
     new oasys.Pages.Assessment.OffenderInformation().checkCompletionStatus(expectedStatus)
-    new oasys.Pages.Assessment.ProposalInformation().checkCompletionStatus(expectedStatus)
+    new oasys.Pages.Assessment.SourcesOfInformation().checkCompletionStatus(expectedStatus)
     new oasys.Pages.Assessment.OffendingInformation().checkCompletionStatus(expectedStatus)
     new oasys.Pages.Assessment.Predictors().checkCompletionStatus(expectedStatus)
     new oasys.Pages.Assessment.SanSections().checkCompletionStatus(expectedStatus)

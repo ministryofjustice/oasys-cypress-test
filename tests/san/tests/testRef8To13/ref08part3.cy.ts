@@ -62,6 +62,7 @@ describe('SAN integration - test ref 08 part 3', () => {
                     values: ['0', '0', 'N/A', '0', '0', 'N/A', '4', '6', '0']
                 }
             ]
+            summarySheet.save.click()  // Workaround for defect NOD-1165
             summarySheet.sanCrimTable.checkData(expectedValues)
 
             const expectedPredictorsValues: ColumnValues[] = [

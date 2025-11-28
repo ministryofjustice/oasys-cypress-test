@@ -14,7 +14,7 @@ describe('SAN integration - test ref 21 part 5', () => {
             oasys.Offender.searchAndSelectByPnc(offender2.pnc)
 
             // Create and complete assessment 8 (layer 3 v2)
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Significant Change', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
+            oasys.Assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
             oasys.San.gotoSan()
             oasys.San.populateSanSections('Test ref 21', testData.assessment7)
             oasys.San.returnToOASys()

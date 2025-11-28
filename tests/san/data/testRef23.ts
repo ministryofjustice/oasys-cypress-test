@@ -222,7 +222,7 @@ export const modifySan: SanPopulation = [
             { item: 'everDrank', value: 'no' },
             { item: 'saveAndContinue' },
             { item: 'practitionerAnalysis' },
-            { item: 'markAsComplete' },
+            { item: 'continue' },
         ]
     }
 ]

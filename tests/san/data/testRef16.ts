@@ -3,6 +3,7 @@ export const sanPopulation: SanPopulation = [
         section: 'Accommodation',
         steps: [
             { item: 'currentAccommodation', value: 'noAccommodation' },
+            { item: 'saveAndContinue'},
         ],
     },
     {
@@ -15,6 +16,7 @@ export const sanPopulation: SanPopulation = [
             { item: 'difficulties', value: `reading, numeracy` },
             { item: 'readingLevel', value: `some` },
             { item: 'numeracyLevel', value: `some` },
+            { item: 'saveAndContinue' },
         ],
     },
     {
@@ -22,6 +24,7 @@ export const sanPopulation: SanPopulation = [
         steps: [
             { item: 'incomeSource', value: 'family' },
             { item: 'overReliant', value: `yes` },
+            { item: 'saveAndContinue' },
         ],
     },
     {
@@ -31,6 +34,7 @@ export const sanPopulation: SanPopulation = [
             { item: 'mentalHealthProblems', value: 'no' },
             { item: 'saveAndContinue' },
             { item: 'learningDifficulties', value: 'yesSome' },
+            { item: 'saveAndContinue' },
         ],
     },
     {
@@ -41,6 +45,7 @@ export const sanPopulation: SanPopulation = [
             { item: 'importantPeople', value: 'partner' },
             { item: 'saveAndContinue' },
             { item: 'behaviouralProblems', value: 'yes' },
+            { item: 'saveAndContinue' },
         ],
     },
     {

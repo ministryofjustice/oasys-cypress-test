@@ -34,7 +34,7 @@ describe('SAN integration - test ref 08 part 5', () => {
                             (outcome passed is 'COUNTERSIGNED' along with countersigners ID and name)
                         Check that on the SNS_MESSAGE table there are records for OGRS, RSR and AssSumm`)
 
-                    oasys.San.gotoSan()
+                    oasys.San.gotoSanReadOnly('Accommodation', 'information')
                     oasys.San.checkSanEditMode(false)
                     oasys.San.returnToOASys()
                     oasys.Assessment.countersign({ page: oasys.Pages.SentencePlan.IspSection52to8, comment: 'Test comment' })
@@ -117,7 +117,6 @@ describe('SAN integration - test ref 08 part 5', () => {
                         '12 - Attitudes', '13 - Health and Other Considerations',
                         'Self Assessment Form']
 
-                    // TODO revisions to existing screens - what are these?  Might need this to be a manual test
                     oasys.Pdf.checkPdf(() => { print.print.click() }, inclusions, exclusions, 'pdf')
                     print.cancel.click()
                     cy.get<boolean>('@pdf').then((failed) => expect(failed).equal(false))

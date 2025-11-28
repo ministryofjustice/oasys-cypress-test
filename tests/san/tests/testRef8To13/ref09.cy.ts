@@ -28,6 +28,7 @@ describe('SAN integration - test ref 09', () => {
 
                 const offenderDetails = new oasys.Pages.Offender.OffenderDetails()
                 offenderDetails.openSan.click()
+                oasys.San.handleLandingPage('san')
                 oasys.San.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
@@ -53,7 +54,7 @@ describe('SAN integration - test ref 09', () => {
                     Log out.`)
 
                 oasys.Assessment.openLatest()
-                oasys.San.gotoSan()
+                oasys.San.gotoSanReadOnly('Accommodation', 'information')
                 oasys.San.checkSanEditMode(false)
                 cy.get('#main-content').then((container) => {
                     expect(container.find('.summary__answer:contains("Settled"):visible').length).equal(1)

@@ -33,17 +33,14 @@ beforeEach(() => {
         cy.log(`Script: ${Cypress.spec.relative}`)
 
     } else {
-        cy.task('getAppInfo').then((result: DbResponse) => {
-            if (result.error != null) {
-                throw new Error(result.error)
-            }
-            const appData = result.data as string[]
+        cy.task('getAppConfig').then((appConfig: AppConfig) => {
 
-            cy.wrap(appData[0]).as('appVersion')
-            cy.wrap(appData[1]).as('probForceCrn')
+            const appVersion = appConfig.versionHistory[0].version
+            cy.wrap(appVersion).as('appVersion')
+            cy.wrap(appConfig).as('appConfig')
 
-            cy.log(`OASys ${appData[0]} (${testEnvironment.name}), ${Cypress.browser.name.toUpperCase()} (v${Cypress.browser.majorVersion}). Script: ${Cypress.spec.relative}`)
-            cy.task('consoleLog', `OASys version ${appData[0]} in ${testEnvironment.name}`)
+            cy.log(`OASys ${appVersion} (${testEnvironment.name}), ${Cypress.browser.name.toUpperCase()} (v${Cypress.browser.majorVersion}). Script: ${Cypress.spec.relative}`)
+            cy.task('consoleLog', `OASys version ${appVersion} in ${testEnvironment.name}`)
 
             if (!noOasys) {
                 cy.visit(testEnvironment.url)

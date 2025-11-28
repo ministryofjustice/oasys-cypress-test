@@ -11,7 +11,7 @@ export class Link {
 
     click() {
 
-        if (this.selector.startsWith('#') || this.selector.includes('[')) {
+        if (this.selector.startsWith('#') || this.selector.startsWith('.') || this.selector.includes('[')) {
             cy.get(this.selector).click()
         } else {
             cy.contains('a', this.selector).click()
@@ -19,7 +19,7 @@ export class Link {
         oasys.Nav.waitForPageUpdate()
     }
 
-    checkStatus (expectedStatus: ElementStatus) {
+    checkStatus(expectedStatus: ElementStatus) {
 
         cy.get('#content').then((containerDiv) => {
 

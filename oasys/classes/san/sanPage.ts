@@ -12,6 +12,11 @@ export abstract class SanPage {
     name: string
     title: string
     menu: Menu
+    idPrefix: string
+
+    constructor(idPrefix: string = '') {
+        this.idPrefix = idPrefix
+    }
 
     /**
      * Sets the value of a multiple element on the pages, each identified by the element name
@@ -105,8 +110,9 @@ export abstract class SanPage {
                 }
             }
         } else if (this.menu.type == 'San') {
-            cy.get('.moj-side-navigation__item a').contains(this.name).first().click()
-
+            cy.get('.moj-side-navigation__item a').contains(this.name).first().click().then(() => {
+                this.checkCurrent(suppressLog)
+            })
         } else {
             throw new Error(`Invalid menu type for page ${this.name}`)
         }

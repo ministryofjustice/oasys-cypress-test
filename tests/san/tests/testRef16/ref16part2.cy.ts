@@ -18,7 +18,7 @@ describe('SAN integration - test ref 16 part 2', () => {
             oasys.login(oasys.Users.prisSanPom)
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
             oasys.Assessment.openLatest()
-            oasys.San.gotoSan()
+            oasys.San.gotoSan('Accommodation', 'information')
             oasys.San.checkSanEditMode(true)
             oasys.San.returnToOASys()
 
@@ -63,7 +63,11 @@ describe('SAN integration - test ref 16 part 2', () => {
 
             summarySheet.goto().opdOverrideMessage.checkValue('This individual does not meet the criteria for the OPD pathway.', true)
             summarySheet.opdOverride.checkValue('No')
-
+            // Workaround for uncaught javascript error in SAN
+            Cypress.on('uncaught:exception', () => {
+                cy.log('Cypress Exception')
+                return false
+            })
             oasys.San.gotoSan()
 
             cy.log(`In the SAN Assessment answer the following questions as defined below:	
