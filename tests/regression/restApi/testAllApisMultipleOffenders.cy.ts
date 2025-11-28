@@ -2,7 +2,7 @@ import * as oasys from 'oasys'
 import { testEnvironment } from '../../../localSettings'
 
 /**
- * Tests all endpoints against a randomish set of 400 offenders based on specified date conditions covering 2015 to yesterday.
+ * Tests all endpoints against a randomish set of 360 offenders based on specified date conditions covering 2015 to yesterday.
  * Also uses a number of specific offender test cases to improve coverage of properties in the endpoints.
  */
 describe('RestAPI regression tests', () => {
@@ -24,11 +24,19 @@ describe('RestAPI regression tests', () => {
         { date: `2018-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
         { date: `2019-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
         { date: `2020-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2021-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2022-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        { date: `2021-${randomMonth()}-${randomDay()}`, count: offenderCount },
+        { date: `2022-${randomMonth()}-${randomDay()}`, count: offenderCount },
         { date: `2023-${randomMonth()}-${randomDay()}`, count: offenderCount },
         { date: `2024-${randomMonth()}-${randomDay()}`, count: offenderCount },
         { date: 'today', count: offenderCount },
+    ]
+
+    const offendersToSkip = `('D011517', 'X083869', 'X334486')` // Duff test data in T2.  ; 2: , 3: 
+    const testDataIssues = [
+        `'D011517'`,  // duplicate oasys_set created in 2012
+        `'X083869'`,  // return/linefeed mismatching
+        `'X334486'`,  // 888 offence code issue
+        `'X552026'`,  // no assessments / no matching assessments confusion
     ]
 
     for (let i = 0; i < dateConditions.length; i++) {
@@ -41,12 +49,14 @@ describe('RestAPI regression tests', () => {
     function testOffenderSet(dateCondition: { date: string, count: number }) {
 
         const dateFilter = dateCondition.date == 'today' ? 'sysdate - 1' : `to_date('${dateCondition.date}','YYYY-MM-DD')`
+        const offendersToSkip = `(${testDataIssues.join()})`
 
         const offenderQuery = `select * from 
                                     (select cms_prob_number, cms_pris_number from eor.offender 
                                         where cms_prob_number is not null
                                         and deleted_date is null
                                         and create_date < ${dateFilter} 
+                                        and cms_prob_number not in ${offendersToSkip}
                                         order by create_date desc)
                                         where rownum <= ${dateCondition.count}`
 
@@ -91,11 +101,12 @@ describe('RestAPI regression tests', () => {
         ['a454545'], ['crn8859'], ['Cr12345'], ['x901187'], ['x901111']
     */
 
-    it(`All endpoint regression tests - extra test for specific cases`, () => {
-        if (testEnvironment.name.includes('system') || testEnvironment.name.includes('informal')) {
+    // 
+    if (testEnvironment.name.includes('system') || testEnvironment.name.includes('informal')) {
+        it(`All endpoint regression tests - extra test for specific cases`, () => {
             runTest(extraTestCases)
-        }
-    })
+        })
+    }
 
     function runTest(offenders: string[][]) {
 

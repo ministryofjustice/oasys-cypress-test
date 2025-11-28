@@ -104,7 +104,7 @@ export class DbAssessment extends DbAssessmentOrRsr {
         super(Number.parseInt(assessmentData[0]), assessmentData[1], assessmentData[2], assessmentData[3], assessmentData[4], assessmentData[5], assessmentData[6], versionTable)
         this.riskDetails = new DbRiskDetails(assessmentData)
         this.roshLevel = assessmentData[36]
-        this.eventNumber = Number.parseInt(assessmentData[37])
+        this.eventNumber = getDbInt(assessmentData[37])
         this.pOAssessment = assessmentData[38]
         this.pOAssessmentDesc = assessmentData[39]
         this.assessorName = assessmentData[40]
@@ -534,9 +534,9 @@ function getVersionNumber(initiationDate: string, versionTable: string[][]) {
 }
 
 function getDbInt(dbValue: string): number {
-    return  Number.isNaN(Number.parseInt(dbValue)) ? null : Number.parseInt(dbValue)
+    return Number.isNaN(Number.parseInt(dbValue)) ? null : Number.parseInt(dbValue)
 }
 
 function getDbFloat(dbValue: string): number {
-    return  Number.isNaN(Number.parseFloat(dbValue)) ? null : Number.parseFloat(dbValue)
+    return Number.isNaN(Number.parseFloat(dbValue)) ? null : Number.parseFloat(dbValue)
 }

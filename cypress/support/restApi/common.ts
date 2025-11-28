@@ -90,14 +90,18 @@ export function getMultipleAnswers(data: string[][], section: string, questions:
  * Return a single answer from the expected column in a 2-D array, the first column contains the question code.
  * Other columns contain free-format answer and additional note, plus currently_hidden_ind.
  */
-export function getTextAnswer(data: string[][], section: string, question: string): string {
-    
+export function getTextAnswer(data: string[][], section: string, question: string, answerType: 'freeformat' | 'additionalNote' = null): string {
+
     if (data == undefined) return undefined
     if (data == null) return null
 
     const answers = data.filter((a) => a[0] == section && a[1] == question && a[4] != 'Y')  // Check for currently hidden
     if (answers.length > 0) {
-        return answers[0][3] == null ? answers[0][2] : answers[0][3]
+        if (answerType == null) {
+            return answers[0][3] == null ? answers[0][2] : answers[0][3]
+        } else {
+            return answerType == 'freeformat' ? answers[0][2] : answers[0][3]
+        }
     }
     return undefined
 }
