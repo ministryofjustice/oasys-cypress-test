@@ -7,7 +7,8 @@ import * as pdf from './cypress/support/pdf'
 import { getLatestElogAndUnprocEventTime, getAppConfig } from './cypress/support/oasysDb'
 import { noDatabaseConnection } from './localSettings'
 import { ogrsTest } from './cypress/support/ogrs/orgsTest'
-import { OgrsTestParameters, OgrsTestScriptResult } from './cypress/support/ogrs/types'
+import { OgrsTestParameters, OgrsTestScriptResult, RescoringResult, RescoringTestParameters } from './cypress/support/ogrs/types'
+import { rescoringTest } from './cypress/support/ogrs/rescoring/rescoringTest'
 
 const reportFolder = 'report'
 const persistedData = {}
@@ -197,6 +198,14 @@ module.exports = defineConfig({
         ogrsAssessmentCalcTest(parameters: OgrsTestParameters): Promise<OgrsTestScriptResult> {
           return new Promise((resolve) => {
             ogrsTest(parameters).then((response) => {
+              resolve(response)
+            })
+          })
+        },
+
+        rescoringTest(parameters: RescoringTestParameters): Promise<RescoringResult[]> {
+          return new Promise((resolve) => {
+            rescoringTest(parameters).then((response) => {
               resolve(response)
             })
           })

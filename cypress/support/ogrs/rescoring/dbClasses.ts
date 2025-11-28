@@ -149,11 +149,11 @@ export class RescoringAssessment {
 
     static query(crnSource: Provider, crn: string, includeLayer1: boolean): string {
 
-        const typeWhere = includeLayer1 ? `s.ref_ass_version_code in ['LAYER1', 'LAYER3']` : `s.ref_ass_version_code = 'LAYER3'`
+        const typeWhere = includeLayer1 ? `s.ref_ass_version_code in ('LAYER1', 'LAYER3')` : `s.ref_ass_version_code = 'LAYER3'`
 
         return `select s.oasys_set_pk, s.ref_ass_version_code, s.version_number, s.assessment_status_elm, s.purpose_assessment_elm, s.purpose_assmt_other_ftxt,
-                    to_char(s.initiation_date, ${dateFormat}), 
-                    to_char(s.date_completed, ${dateFormat}), 
+                    to_char(s.initiation_date, '${dateFormat}'), 
+                    to_char(s.date_completed, '${dateFormat}'), 
                     s.gender_elm, s.prison_ind, to_char(s.date_of_birth, '${dateFormat}'),
                     s.rosh_level_elm, 
                     s.ogrs3_1year, s.ogrs3_2year, s.ogrs3_risk_recon_elm, 
@@ -166,7 +166,7 @@ export class RescoringAssessment {
                     from eor.offender o, eor.oasys_assessment_group g, eor.oasys_set s
                     where ${crnSource == 'prob' ? 'o.cms_prob_number' : 'o.cms_pris_number'} = '${crn}'
                     and o.offender_pk = g.offender_pk and g.oasys_assessment_group_pk = s.oasys_assessment_group_pk 
-                    and s.assessment_status_elm = 'COMPLETED' 
+                    and s.assessment_status_elm = 'COMPLETE' 
                     and s.deleted_date is null
                     and ${typeWhere} 
                     order by s.initiation_date fetch first 1 rows only`
@@ -187,7 +187,7 @@ export class RescoringAssessment {
                     where q.oasys_section_pk in 
                         (select oasys_section_pk from eor.oasys_Section 
                         where oasys_set_pk = ${assessmentPk} and currently_hidden_ind <> 'Y'
-                        and ref_section_code in ['1','2','3','4','6','8','9','11','12','ROSH'])
+                        and ref_section_code in ('1','2','3','4','6','8','9','11','12','ROSH'))
                     and q.oasys_question_pk = a.oasys_question_pk
                     and ra.ref_ass_version_code = a.ref_ass_version_code
                     and ra.version_number = a.version_number

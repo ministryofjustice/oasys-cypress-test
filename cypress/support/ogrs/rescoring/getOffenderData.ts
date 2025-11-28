@@ -38,5 +38,7 @@ export async function getOffenderData(crnSource: Provider, crn: string, includeL
     if (offences.length > 0 && offences[0].length > 0) {
         rescoringOffender.assessment.offence = offences[0][0]
     }
+
+    return rescoringOffender
 }
 

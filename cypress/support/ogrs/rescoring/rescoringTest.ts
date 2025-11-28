@@ -38,6 +38,7 @@ export async function rescoringTest(testParams: RescoringTestParameters): Promis
 
         // Get offender and assessment details from the OASys db
         const rescoringOffenderWithAssessment = await getOffenderData('prob', crns[i], testParams.includeLayer1)
+        console.log(JSON.stringify(rescoringOffenderWithAssessment))
 
         if (rescoringOffenderWithAssessment == null || rescoringOffenderWithAssessment.assessment == null) {
             // not found or duplicate CRN, or no assessment of the correct type/status
