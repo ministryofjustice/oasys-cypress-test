@@ -106,16 +106,16 @@ export class Section1Assessment extends v4Common.V4AssessmentCommon {
         if (this.dateOfFirstSanction == '') {
             this.dateOfFirstSanction = common.getReformattedDateAnswer(dbAssessment.textData, '1', '1.7.2')
         }
-        this.ospIRisk = common.getTextAnswer(dbAssessment.textData, '1', 'D1')
-        this.ospCRisk = common.getTextAnswer(dbAssessment.textData, '1', 'D2')
-        this.likelihoodOfSeriousReoffendingNext2Years = common.getTextAnswer(dbAssessment.textData, '1', 'D3')
+        this.ospIRisk = common.getTextAnswer(dbAssessment.textData, '1', 'D1', 'additionalNote')
+        this.ospCRisk = common.getTextAnswer(dbAssessment.textData, '1', 'D2', 'additionalNote')
+        this.likelihoodOfSeriousReoffendingNext2Years = common.getTextAnswer(dbAssessment.textData, '1', 'D3', 'additionalNote')
         this.sexualElementCommitted16orOver = common.getNumericAnswer(dbAssessment.textData, '1', 'S1.54')
         this.auditOfDateIntoCommunity = common.getTextAnswer(dbAssessment.textData, '1', '1.38.t')
         this.currDirectContactOffenceAgainstStranger = common.getSingleAnswer(dbAssessment.qaData, '1', '1.44')
         this.numDirectContactSanctionsChild = common.getNumericAnswer(dbAssessment.textData, '1', '1.45')
         this.numSanctionsIndecentChildImageOrIndirectContact = common.getNumericAnswer(dbAssessment.textData, '1', '1.46')
-        this.ospIICRisk = common.getTextAnswer(dbAssessment.textData, '1', 'D5')
-        this.ospDCRisk = common.getTextAnswer(dbAssessment.textData, '1', 'D6')
+        this.ospIICRisk = common.getTextAnswer(dbAssessment.textData, '1', 'D5', 'additionalNote')
+        this.ospDCRisk = common.getTextAnswer(dbAssessment.textData, '1', 'D6', 'additionalNote')
 
     }
 }
