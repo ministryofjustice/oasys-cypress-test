@@ -56,6 +56,7 @@ export class Section8Assessment extends v4Common.V4AssessmentCommon {
     benzodiazepinesCurrentUsage: string
     amphetaminesCurrentUsage: string
     hallucinogensCurrentUsage: string
+    ketamineCurrentUsage: string
     heroinCurrentInject: string
     steroidsCurrentInject: string
     otherCurrentInject: string
@@ -66,6 +67,7 @@ export class Section8Assessment extends v4Common.V4AssessmentCommon {
     misusedPrescribedDrugsCurrentInject: string
     benzodiazepinesCurrentInject: string
     amphetaminesCurrentInject: string
+    ketamineCurrentInject: string
     heroinPreviousUsage: string
     ecstasyPreviousUsage: string
     cannabisPreviousUsage: string
@@ -81,6 +83,7 @@ export class Section8Assessment extends v4Common.V4AssessmentCommon {
     benzodiazepinesPreviousUsage: string
     amphetaminesPreviousUsage: string
     hallucinogensPreviousUsage: string
+    ketaminePreviousUsage: string
     heroinPreviousInject: string
     steroidsPreviousInject: string
     otherPreviousInject: string
@@ -91,6 +94,7 @@ export class Section8Assessment extends v4Common.V4AssessmentCommon {
     misusedPrescribedDrugsPreviousInject: string
     benzodiazepinesPreviousInject: string
     amphetaminesPreviousInject: string
+    ketaminePreviousInject: string
     currentDrugNoted: string
     LevelOfUseOfMainDrug: string
     everInjectedDrugs: string
@@ -120,6 +124,7 @@ export class Section8Assessment extends v4Common.V4AssessmentCommon {
         this.benzodiazepinesCurrentUsage = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.7.1', dictionary)
         this.amphetaminesCurrentUsage = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.8.1', dictionary)
         this.hallucinogensCurrentUsage = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.9.1', dictionary)
+        this.ketamineCurrentUsage = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.16.1', dictionary)
         this.heroinCurrentInject = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.1.2', dictionary)
         this.steroidsCurrentInject = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.13.2', dictionary)
         this.otherCurrentInject = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.14.2', dictionary)
@@ -130,6 +135,7 @@ export class Section8Assessment extends v4Common.V4AssessmentCommon {
         this.misusedPrescribedDrugsCurrentInject = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.6.2', dictionary)
         this.benzodiazepinesCurrentInject = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.7.2', dictionary)
         this.amphetaminesCurrentInject = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.8.2', dictionary)
+        this.ketamineCurrentInject = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.16.2', dictionary)
         this.heroinPreviousUsage = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.1.3', dictionary)
         this.ecstasyPreviousUsage = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.10.3', dictionary)
         this.cannabisPreviousUsage = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.11.3', dictionary)
@@ -145,6 +151,7 @@ export class Section8Assessment extends v4Common.V4AssessmentCommon {
         this.benzodiazepinesPreviousUsage = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.7.3', dictionary)
         this.amphetaminesPreviousUsage = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.8.3', dictionary)
         this.hallucinogensPreviousUsage = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.9.3', dictionary)
+        this.ketaminePreviousUsage = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.16.3', dictionary)
         this.heroinPreviousInject = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.1.4', dictionary)
         this.steroidsPreviousInject = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.13.4', dictionary)
         this.otherPreviousInject = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.14.4', dictionary)
@@ -155,6 +162,7 @@ export class Section8Assessment extends v4Common.V4AssessmentCommon {
         this.misusedPrescribedDrugsPreviousInject = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.6.4', dictionary)
         this.benzodiazepinesPreviousInject = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.7.4', dictionary)
         this.amphetaminesPreviousInject = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.8.4', dictionary)
+        this.ketaminePreviousInject = common.getSingleAnswer(dbAssessment.qaData, '8', '8.2.16.4', dictionary)
         this.currentDrugNoted = common.getSingleAnswer(dbAssessment.qaData, '8', '8.4')
         this.LevelOfUseOfMainDrug = common.getSingleAnswer(dbAssessment.qaData, '8', '8.5')
         this.everInjectedDrugs = common.getSingleAnswer(dbAssessment.qaData, '8', '8.6', dictionary)
