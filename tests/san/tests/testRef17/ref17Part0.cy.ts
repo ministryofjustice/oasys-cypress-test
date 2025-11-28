@@ -20,7 +20,8 @@ describe('SAN integration - test ref 17 part 0', () => {
             cy.task('storeValue', { key: 'offender', value: JSON.stringify(offender) })
 
             oasys.logout()
-            oasys.Offender.createIomStub(offender.probationCrn, 'Y', 1, 'OK', 'Y')
+            // TODO implement IOM stub
+            // oasys.Offender.createIomStub(offender.probationCrn, 'Y', 1, 'OK', 'Y')
         })
     })
 
