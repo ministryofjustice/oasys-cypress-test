@@ -9,8 +9,10 @@ import { createAssessmentTestCase } from './createAssessmentTestCase'
 import { offences } from '../data/offences'
 import * as db from '../../oasysDb'
 import { loadOracleOutputValues } from '../loadTestData'
+import { RescoringOffenderWithAssessment } from './dbClasses'
 
 const dataFilePath = './cypress/support/ogrs/data/'
+const outputPath = './cypress/downloads/'
 export const dateFormat = 'DD-MM-YYYY'
 
 export async function rescoringTest(testParams: RescoringTestParameters): Promise<RescoringResult[]> {
@@ -37,15 +39,14 @@ export async function rescoringTest(testParams: RescoringTestParameters): Promis
     for (let i = start; i <= end; i++) {
 
         // Get offender and assessment details from the OASys db
-        const rescoringOffenderWithAssessment = await getOffenderData('prob', crns[i], testParams.includeLayer1)
-        console.log(JSON.stringify(rescoringOffenderWithAssessment))
+        const probationCrn = crns[i].split(',')[0]
+        const nomisId = crns[i].split(',')[1]
+        const rescoringOffenderWithAssessment = await getOffenderData(probationCrn == '' ? 'pris' :'prob', probationCrn == '' ? nomisId : probationCrn, testParams.includeLayer1)
 
         if (rescoringOffenderWithAssessment == null || rescoringOffenderWithAssessment.assessment == null) {
             // not found or duplicate CRN, or no assessment of the correct type/status
             results.push({
                 crn: crns[i],
-                newPredictors: '',
-                existingPredictors: '',
                 pk: null,
             })
         } else {
@@ -54,14 +55,18 @@ export async function rescoringTest(testParams: RescoringTestParameters): Promis
             const functionCall = getFunctionCall(testCaseParams)
 
             const oracleOutputValues = await getOgrsResult(functionCall)
-            const oracleTestCaseResult = loadOracleOutputValues(oracleOutputValues.split('|'))  // TODO could calculate in Cypress instead?
+            const oracleTestCaseResult = loadOracleOutputValues(oracleOutputValues.split('|'))
 
-            results.push({
+            const result: RescoringResult = {
                 crn: crns[i],
-                newPredictors: getNewPredictors(oracleTestCaseResult),
-                existingPredictors: rescoringOffenderWithAssessment.getOldPredictors(),
                 pk: rescoringOffenderWithAssessment.assessment.pk,
-            })
+            }
+            await fs.appendFile(`${outputPath}${testParams.outputFile}.csv`,
+                createOutputLine(functionCall, rescoringOffenderWithAssessment, oracleTestCaseResult, testParams.runNumber),
+                'utf8'
+            )
+
+            results.push(result)
         }
     }
 
@@ -165,4 +170,38 @@ function stringParameterToString(param: string): string {
 function numericParameterToString(param: number): string {
 
     return param == null ? 'null' : param.toString()
+}
+
+function createOutputLine(functionCall: string, offender: RescoringOffenderWithAssessment, outputParams: OutputParameters, runNumber: string): string {
+
+    const output: string[] = []
+    output.push(outputParams.RSR_PERCENTAGE?.toString())
+    output.push(outputParams.SNSV_PERCENTAGE_STATIC?.toString())
+    output.push(outputParams.SNSV_BAND_STATIC)
+    output.push(outputParams.SNSV_PERCENTAGE_DYNAMIC?.toString())
+    output.push(outputParams.SNSV_BAND_DYNAMIC)
+    output.push(outputParams.OGRS4G_PERCENTAGE?.toString())
+    output.push(outputParams.OGRS4G_BAND)
+    output.push(outputParams.OGP2_PERCENTAGE?.toString())
+    output.push(outputParams.OGP2_BAND)
+    output.push(outputParams.OGRS4V_PERCENTAGE?.toString())
+    output.push(outputParams.OGRS4V_BAND)
+    output.push(outputParams.OSP_DC_PERCENTAGE?.toString())
+    output.push(outputParams.OSP_DC_BAND)
+    output.push(outputParams.OSP_IIC_PERCENTAGE?.toString())
+    output.push(outputParams.OSP_IIC_BAND)
+
+    output.push(runNumber)
+    output.push(offender.assessment.pk.toString())
+    output.push(offender.offenderPk.toString())
+    output.push(offender.assessment.completedDate)
+    output.push(offender.assessment.type)
+    output.push(offender.assessment.purpose)
+    output.push(offender.probationCrn)
+    output.push(offender.nomisId)
+
+    const inputParams = functionCall.replace('eor.new_gen_predictors_pkg.get_ogrs4(','').replaceAll(`to_date('`,'').replaceAll(`','DD-MM-YYYY')`,'').replaceAll(')','').replaceAll(`'`,'')
+    const oldResults = offender.getOldPredictors()
+
+    return `${inputParams},${oldResults},${output.join()}\n`
 }

@@ -38,6 +38,7 @@ export type TestCaseResult = {
 
 export type RescoringTestParameters = {
     dataFile: string,
+    runNumber: string,
     start?: number,
     end?: number,
     staticFlag: 'Y' | 'N',
@@ -45,12 +46,11 @@ export type RescoringTestParameters = {
     useCurrentDate: boolean,
     reportMode: ReportMode,
     significantReleaseDates: SignificantReleaseDates,
+    outputFile: string,
 }
 
 export type RescoringResult = {
     crn: string,
-    newPredictors: string,
-    existingPredictors: string,
     pk: number,
 }
 

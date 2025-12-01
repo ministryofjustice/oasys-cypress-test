@@ -39,10 +39,21 @@ export class RescoringOffenderWithAssessment {
 
     getOldPredictors(): string {
 
-        return JSON.stringify(this.assessment)
-        // const predictorValues: string[] = []
-
-        // return predictorValues.join(',')
+        const predictorValues: string[] = []
+        predictorValues.push(this.assessment.rsrPercentageScore?.toString())
+        predictorValues.push(this.assessment.rsrRisk)
+        predictorValues.push(this.assessment.rsrStaticOrDynamic)
+        predictorValues.push(this.assessment.ospDirectContactPercentageScore?.toString())
+        predictorValues.push(this.assessment.ospDirectContactScoreLevel)
+        predictorValues.push(this.assessment.ospIndirectImagesChildrenPercentageScore?.toString())
+        predictorValues.push(this.assessment.ospIndirectImagesChildrenScoreLevel)
+        predictorValues.push(this.assessment.ogrs32Year?.toString())
+        predictorValues.push(this.assessment.ogrs3RiskRecon)
+        predictorValues.push(this.assessment.ogp2Year?.toString())
+        predictorValues.push(this.assessment.ogpRisk)
+        predictorValues.push(this.assessment.ovp2Year?.toString())
+        predictorValues.push(this.assessment.ovpRisk)
+        return predictorValues.join()
     }
 }
 
