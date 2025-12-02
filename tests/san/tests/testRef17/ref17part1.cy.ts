@@ -121,7 +121,7 @@ describe('SAN integration - test ref 17 part 1', () => {
 
                 cy.log(`Navigate to the Risk Management screen - ensure the checklist of items are 'Use of weapons', 'Arson', 'Accommodation', 
                                 'Personal relationships and commnity', 'Health and wellbeing', 'Thinking, behaviours and attitudes',
-                                'Integrated Child Safeguarding Plan', 'Risk to Children, ' 
+                                'Risk to Children, ' 
                             Note: there maybe others depending on what has been answered in the SAN assessment
                         Ensure the Key Information about Current Situation field is correct and specifically includes the following:
                             A sentence for 'They have offence analysis,accommodation, personal relationships and community, health and wellbeing and thinking,
@@ -137,7 +137,7 @@ describe('SAN integration - test ref 17 part 1', () => {
                 rmp.sanRelationships.checkStatus('enabled')
                 rmp.sanHealth.checkStatus('enabled')
                 rmp.sanThinking.checkStatus('enabled')
-                rmp.safeguardingPlan.checkStatus('enabled')
+                rmp.safeguardingPlan.checkStatus('notVisible')
                 rmp.riskToChildren.checkStatus('enabled')
 
                 rmp.keyInformation.getValue('keyInformation')
