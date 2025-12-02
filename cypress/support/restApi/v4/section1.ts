@@ -75,6 +75,7 @@ export class Section1Assessment extends v4Common.V4AssessmentCommon {
     numSanctionsIndecentChildImageOrIndirectContact: number
     ospIICRisk: string
     ospDCRisk: string
+    newActuarialPredictors: NewActuarialPredictors
 
     addDetails(dbAssessment: dbClasses.DbAssessment) {
 
@@ -116,6 +117,28 @@ export class Section1Assessment extends v4Common.V4AssessmentCommon {
         this.numSanctionsIndecentChildImageOrIndirectContact = common.getNumericAnswer(dbAssessment.textData, '1', '1.46')
         this.ospIICRisk = common.getTextAnswer(dbAssessment.textData, '1', 'D5', 'additionalNote')
         this.ospDCRisk = common.getTextAnswer(dbAssessment.textData, '1', 'D6', 'additionalNote')
+        this.newActuarialPredictors = new NewActuarialPredictors(dbAssessment.riskDetails)
+    }
+}
 
+class NewActuarialPredictors {
+
+    snsvStaticYr2: number
+    snsvStaticYr2Band: string
+    snsvStaticCalculated: string
+    snsvDynamicYr2: number
+    snsvDynamicYr2Band: string
+    snsvDynamicCalculated: string
+    rsrAlgorithmVersion: number
+
+    constructor(dbRiskDetails: dbClasses.DbRiskDetails) {
+
+        this.snsvStaticYr2 = dbRiskDetails.snsvStaticYr2
+        this.snsvStaticYr2Band = dbRiskDetails.snsvStaticYr2Band
+        this.snsvStaticCalculated = dbRiskDetails.snsvStaticCalculated
+        this.snsvDynamicYr2 = dbRiskDetails.snsvDynamicYr2
+        this.snsvDynamicYr2Band = dbRiskDetails.snsvDynamicYr2Band
+        this.snsvDynamicCalculated = dbRiskDetails.snsvDynamicCalculated
+        this.rsrAlgorithmVersion = dbRiskDetails.rsrAlgorithmVersion
     }
 }

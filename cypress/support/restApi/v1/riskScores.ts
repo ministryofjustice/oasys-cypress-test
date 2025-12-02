@@ -1,4 +1,4 @@
-import { OGP, OVP, OGRS, RSR, OSP } from '../riskScoreClasses'
+import { OGP, OVP, OGRS, RSR, OSP, NewActuarialPredictors } from '../riskScoreClasses'
 import * as v1Common from './v1Common'
 import * as dbClasses from '../dbClasses'
 import * as env from 'environments'
@@ -57,6 +57,7 @@ class RiskScoresAssessment extends v1Common.V1AssessmentCommon {
     OGRS: OGRS
     RSR: RSR
     OSP: OSP
+    NEWACTPREDICT: NewActuarialPredictors
 
     addRiskDetails(dbRiskDetails: dbClasses.DbRiskDetails) {
 
@@ -65,6 +66,7 @@ class RiskScoresAssessment extends v1Common.V1AssessmentCommon {
         this.OGRS = new OGRS(dbRiskDetails)
         this.RSR = new RSR(dbRiskDetails)
         this.OSP = new OSP(dbRiskDetails)
+        this.NEWACTPREDICT = new NewActuarialPredictors(dbRiskDetails, true)
     }
 }
 
