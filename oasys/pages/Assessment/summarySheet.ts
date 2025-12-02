@@ -25,7 +25,7 @@ export class SummarySheet extends BaseAssessmentPage {
     lowScoringSection10 = new Element.Select('#f01_0010')
     reasonsForLowScoringAreas = new Element.Textbox('#P1_LOW_SCORE_REASON')
 
-    predictorsTable = new CommonTables.PredictorsTable('R3497615380869174', 'Summary Sheet Predictor Scores')
+    predictorsTable = new CommonTables.PredictorsTable('R152474483953316113', 'Summary Sheet Predictor Scores')
     weighedScoresTable = new CommonTables.WeightedScoresTable('R4262411784053323', 'Summary Sheet Weighted Scores')
     likelihoodHarmOthersTable = new SummarySheetLikelihoodHarmOthersTable('R4310220450481626', 'Summary Sheet Likelihood of Serious Harm to Others')
     concernsTable = new SummarySheetConcernsTable('R3161211058051917', 'Summary Sheet Concerns')

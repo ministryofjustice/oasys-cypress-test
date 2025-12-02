@@ -71,16 +71,13 @@ describe('SAN integration - test ref 23', () => {
                     OVP_2YEAR: null,
                 })
 
-                predictors.goto().rsrScore.checkValue(`RSR can't be calculated on gender other than Male and Female.`, true)
+                predictors.goto().rsrScore.checkValue(`Unable to calculate due to: \nCombined Serious Reoffending Predictor can't be calculated on gender other than Male and Female.`, true)
 
                 cy.log(`Check that the Summary screen is showing the correct information for the Criminogenic Needs and threshold section and that in the Predictors Scores % 
                     and Risk Category OGRS, OGP and OVP just show dashes, both OSP rows show N/A,  the RSR row shows N/A and then two dashes`)
 
                 const summarySheet = new oasys.Pages.Assessment.SummarySheet().goto()
-                oasys.Nav.clickButton('Next')
-                oasys.Nav.clickButton('Previous')  // Odd error with stuff out of order on the first visit
-                                oasys.Nav.clickButton('Next')
-                oasys.Nav.clickButton('Previous')  // Odd error with stuff out of order on the first visit
+                oasys.Nav.clickButton('Save')  // TODO workaround for defect NOD-1165
                 const expectedValues: ColumnValues[] = [
                     {
                         name: 'oasysSection',
@@ -100,11 +97,7 @@ describe('SAN integration - test ref 23', () => {
                 const expectedPredictorsValues: ColumnValues[] = [
                     {
                         name: 'scoreDescription',
-                        values: ['OGRS3 probability of proven reoffending', 'OGP probability of proven non-violent reoffending', 'OVP probability of proven violent-type reoffending', 'OSP Indecent Image and Indirect Contact Reoffending Risk', 'OSP Direct Contact Sexual Reoffending Risk', 'Risk of Serious Recidivism (RSR)']
-                    },
-                    {
-                        name: 'oneYear',
-                        values: ['-', '-', '-', 'N/A', 'N/A', 'N/A']
+                        values: ['All Reoffending Predictor', 'Violent Reoffending Predictor', 'Serious Violent Reoffending Predictor', 'Images and Indirect Contact - Sexual Reoffending Predictor', 'Direct Contact - Sexual Reoffending Predictor', 'Combined Serious Reoffending Predictor']
                     },
                     {
                         name: 'twoYear',
@@ -134,7 +127,7 @@ describe('SAN integration - test ref 23', () => {
                 isp.conferenceDate.setValue({ months: -1 })
                 isp.conferenceChair.setValue('Chair of the conference')
 
-                oasys.Assessment.signAndLock({ expectRsrWarning: true }) // OGRS warning, requires same action as the RSR warning
+                oasys.Assessment.signAndLock() // OGRS warning, requires same action as the RSR warning
                 oasys.San.checkSanSigningCall(pk, oasys.Users.probSanHeadPdu, 'SELF', 0, 0)
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
 
