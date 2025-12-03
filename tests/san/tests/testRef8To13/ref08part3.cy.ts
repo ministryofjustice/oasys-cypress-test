@@ -68,19 +68,15 @@ describe('SAN integration - test ref 08 part 3', () => {
             const expectedPredictorsValues: ColumnValues[] = [
                 {
                     name: 'scoreDescription',
-                    values: ['OGRS3 probability of proven reoffending', 'OGP probability of proven non-violent reoffending', 'OVP probability of proven violent-type reoffending', 'OSP Indecent Image and Indirect Contact Reoffending Risk', 'OSP Direct Contact Sexual Reoffending Risk', 'Risk of Serious Recidivism (RSR)']
-                },
-                {
-                    name: 'oneYear',
-                    values: ['18', '11', '11', 'N/A', 'N/A', 'N/A']
+                    values: ['All Reoffending Predictor', 'Violent Reoffending Predictor', 'Serious Violent Reoffending Predictor', 'Images and Indirect Contact - Sexual Reoffending Predictor', 'Direct Contact - Sexual Reoffending Predictor', 'Combined Serious Reoffending Predictor']
                 },
                 {
                     name: 'twoYear',
-                    values: ['31', '19', '19', 'N/A', 'N/A', ' 10.07']
+                    values: [' 29.05', '  3.71', '  0.43', 'N/A', 'N/A', '  9.94']
                 },
                 {
                     name: 'category',
-                    values: ['Low', 'Low', 'Low', 'Medium', 'Very High', 'High  (DYNAMIC)']
+                    values: ['Low  (DYNAMIC)', 'Low  (DYNAMIC)', 'Low  (DYNAMIC)', 'Medium', 'Very High', 'Very High  (DYNAMIC)']
                 },
             ]
             summarySheet.predictorsTable.checkData(expectedPredictorsValues)
