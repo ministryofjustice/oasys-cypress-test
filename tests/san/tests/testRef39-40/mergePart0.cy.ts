@@ -14,7 +14,7 @@ const offender2: OffenderDef = {
     dateOfBirth: { years: -20 },
 }
 
-describe('SAN integration - tests 39/40 part 0', () => {
+describe('SAN integration - tests 39-40 part 0', () => {
     /**
      * Merge - where BOTH offenders have OASys-SAN assessments
      * Merge two offenders where BOTH of the offenders have OASys-SAN assessments - check it posts the correct MERGE API

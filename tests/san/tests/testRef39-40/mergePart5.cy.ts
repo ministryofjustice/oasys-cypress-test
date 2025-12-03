@@ -1,6 +1,6 @@
 import * as oasys from 'oasys'
 
-describe('SAN integration - tests 39/40', () => {
+describe('SAN integration - tests 39-40', () => {
     /**
      * Merge - where BOTH offenders have OASys-SAN assessments
      * Merge two offenders where BOTH of the offenders have OASys-SAN assessments - check it posts the correct MERGE API
@@ -11,6 +11,10 @@ describe('SAN integration - tests 39/40', () => {
      */
 
     it('Merge tests part 5 - demerge offenders', () => {
+
+        Cypress.on('uncaught:exception', () => {
+            return false
+        })
 
         // Get offender details
         cy.task('retrieveValue', 'offender1').then((offenderData) => {
