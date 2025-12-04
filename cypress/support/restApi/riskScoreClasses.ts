@@ -131,7 +131,7 @@ export class NewActuarialPredictors {
     snsvDynamicYr2Band: string
     snsvDynamicCalculated: string
 
-    constructor(dbRiskDetails: dbClasses.DbRiskDetails, includeSnsv: boolean) {
+    constructor(dbRiskDetails: dbClasses.DbRiskDetails) {
 
         this.ogrs4gYr2 = dbRiskDetails.ogrs4gYr2
         this.ogrs4gBand = dbRiskDetails.ogrs4gBand
@@ -146,21 +146,12 @@ export class NewActuarialPredictors {
         this.ovp2Band = dbRiskDetails.ovp2Band
         this.ovp2Calculated = dbRiskDetails.ovp2Calculated
 
-        if (includeSnsv) {
-            this.snsvStaticYr2 = dbRiskDetails.snsvStaticYr2
-            this.snsvStaticYr2Band = dbRiskDetails.snsvStaticYr2Band
-            this.snsvStaticCalculated = dbRiskDetails.snsvStaticCalculated
-            this.snsvDynamicYr2 = dbRiskDetails.snsvDynamicYr2
-            this.snsvDynamicYr2Band = dbRiskDetails.snsvDynamicYr2Band
-            this.snsvDynamicCalculated = dbRiskDetails.snsvDynamicCalculated
-        } else {
-            delete this.snsvStaticYr2
-            delete this.snsvStaticYr2Band
-            delete this.snsvStaticCalculated
-            delete this.snsvDynamicYr2
-            delete this.snsvDynamicYr2Band
-            delete this.snsvDynamicCalculated
-        }
+        this.snsvStaticYr2 = dbRiskDetails.snsvStaticYr2
+        this.snsvStaticYr2Band = dbRiskDetails.snsvStaticYr2Band
+        this.snsvStaticCalculated = dbRiskDetails.snsvStaticCalculated
+        this.snsvDynamicYr2 = dbRiskDetails.snsvDynamicYr2
+        this.snsvDynamicYr2Band = dbRiskDetails.snsvDynamicYr2Band
+        this.snsvDynamicCalculated = dbRiskDetails.snsvDynamicCalculated
     }
 
 }

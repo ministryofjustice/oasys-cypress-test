@@ -127,7 +127,7 @@ export class AssSummAssessment extends v3Common.V3AssessmentCommon {
 
         this.weightedScores = new WeightedScores(dbAssessment)
         this.furtherInformation = new FurtherInformation(dbAssessment)
-        this.newActuarialPredictors = new NewActuarialPredictors(dbAssessment.riskDetails, false)
+        this.newActuarialPredictors = new NewActuarialPredictors(dbAssessment.riskDetails)
         this.ogpOvp = new OgpOvp(dbAssessment)
 
         if (dbAssessment.sanIndicator != 'Y') {

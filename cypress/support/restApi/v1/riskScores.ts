@@ -57,7 +57,7 @@ class RiskScoresAssessment extends v1Common.V1AssessmentCommon {
     OGRS: OGRS
     RSR: RSR
     OSP: OSP
-    NEWACTPREDICT: NewActuarialPredictors
+    newActuarialPredictors: NewActuarialPredictors
 
     addRiskDetails(dbRiskDetails: dbClasses.DbRiskDetails) {
 
@@ -66,7 +66,7 @@ class RiskScoresAssessment extends v1Common.V1AssessmentCommon {
         this.OGRS = new OGRS(dbRiskDetails)
         this.RSR = new RSR(dbRiskDetails)
         this.OSP = new OSP(dbRiskDetails)
-        this.NEWACTPREDICT = new NewActuarialPredictors(dbRiskDetails, true)
+        this.newActuarialPredictors = new NewActuarialPredictors(dbRiskDetails)
     }
 }
 

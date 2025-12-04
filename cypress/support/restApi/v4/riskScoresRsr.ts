@@ -71,7 +71,7 @@ export class RiskScoresRsrAssessment extends v4Common.V4AssessmentCommon {
         this.OGRS = new OGRS(dbAssessment.riskDetails)
         this.RSR = new RSR(dbAssessment.riskDetails)
         this.OSP = new OSP(dbAssessment.riskDetails)
-        this.newActuarialPredictors = new NewActuarialPredictors(dbAssessment.riskDetails, true)
+        this.newActuarialPredictors = new NewActuarialPredictors(dbAssessment.riskDetails)
 
         // Different name for scoreLevel in this endpoint
         this.RSR['rsrScoreLevel'] = this.RSR.scoreLevel
