@@ -127,9 +127,9 @@ export class RsrMessageData extends SnsMessageData {
             OSPDirectContactScore: assessment.ospDcScore,
             OSPDirectContactBand: assessment.ospDcBand,
             SNSVStaticYr2: assessment.snsvStaticYr2,
-            SNSVStaticYr2Band: assessment.snsvStaticYr2Band == null ? 'null' : assessment.snsvStaticYr2Band,  // TODO workaround for defect NOD-1172
+            SNSVStaticYr2Band: assessment.snsvStaticYr2Band,
             SNSVDynamicYr2: assessment.snsvDynamicYr2,
-            SNSVDynamicYr2Band: assessment.snsvDynamicYr2Band == null ? 'null' : assessment.snsvDynamicYr2Band,  // TODO workaround for defect NOD-1172
+            SNSVDynamicYr2Band: assessment.snsvDynamicYr2Band,
             RSRAlgorithmVersion: assessment.rsrAlgorithmVersion,
             EventNumber: assessment.eventNumber,
             AssessmentDate: assessment.assessmentDate
