@@ -47,7 +47,7 @@ describe('Mapping test for question 6.8', () => {
 
             oasys.Db.getLatestSetPkByPnc(mappingTestOffender.pnc, 'assessmentPk')
             cy.get<number>('@assessmentPk').then((assessmentPk) => {
-
+// TODO add test for accommodation question hidden by previous answer
                 const testCases: { accommodation: AccommodationOptions[], relationship: RelationshipOptions[], mapping: number }[] =
                     [
                         { accommodation: [], relationship: [], mapping: null },
