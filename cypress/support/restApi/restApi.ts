@@ -203,6 +203,7 @@ export async function checkApiResponse(expectedValues: rest.Common.EndpointRespo
         logText.push('**********************************')
     } else {
         logText.push('Passed')
+        logText.push(`    response: ${JSON.stringify(response)}`)
     }
     return { failed: failed, output: logText }
 

@@ -48,7 +48,7 @@ describe('RestAPI regression tests', () => {
     // Get a list of offenders based on the date specified, then call the API test for each in turn.
     function testOffenderSet(dateCondition: { date: string, count: number }) {
 
-        const dateFilter = dateCondition.date == 'today' ? 'sysdate - 1' : `to_date('${dateCondition.date}','YYYY-MM-DD')`
+        const dateFilter = dateCondition.date == 'today' ? 'sysdate' : `to_date('${dateCondition.date}','YYYY-MM-DD')`
         const offendersToSkip = `(${testDataIssues.join()})`
 
         const offenderQuery = `select * from 

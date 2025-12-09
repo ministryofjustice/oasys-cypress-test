@@ -1,7 +1,7 @@
 import * as oasys from 'oasys'
 import * as testData from '../../data/mergeTest'
 
-describe('SAN integration - tests 39/40', () => {
+describe('SAN integration - tests 39-40', () => {
     /**
      * Merge - where BOTH offenders have OASys-SAN assessments
      * Merge two offenders where BOTH of the offenders have OASys-SAN assessments - check it posts the correct MERGE API

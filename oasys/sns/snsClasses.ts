@@ -76,6 +76,11 @@ export class OgrsMessageData extends SnsMessageData {
         this.additionalInformation = {
             OGRS3Yr1: assessment.ogrs1yr,
             OGRS3Yr2: assessment.ogrs2yr,
+            OGRS4GYr2: assessment.ogrs4gYr2,
+            OGP2Yr2: assessment.ogp2Yr2,
+            OGRS4VYr2: assessment.ogrs4vYr2,
+            OVP2Yr2: assessment.ovp2Yr2,
+            RSRAlgorithmVersion: assessment.rsrAlgorithmVersion,
             EventNumber: assessment.eventNumber,
             AssessmentDate: assessment.assessmentDate
         }
@@ -121,6 +126,11 @@ export class RsrMessageData extends SnsMessageData {
             OSPIndirectIndecentBand: assessment.ospIicBand,
             OSPDirectContactScore: assessment.ospDcScore,
             OSPDirectContactBand: assessment.ospDcBand,
+            SNSVStaticYr2: assessment.snsvStaticYr2,
+            SNSVStaticYr2Band: assessment.snsvStaticYr2Band,
+            SNSVDynamicYr2: assessment.snsvDynamicYr2,
+            SNSVDynamicYr2Band: assessment.snsvDynamicYr2Band,
+            RSRAlgorithmVersion: assessment.rsrAlgorithmVersion,
             EventNumber: assessment.eventNumber,
             AssessmentDate: assessment.assessmentDate
         }

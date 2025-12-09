@@ -116,6 +116,5 @@ export class Section1Assessment extends v4Common.V4AssessmentCommon {
         this.numSanctionsIndecentChildImageOrIndirectContact = common.getNumericAnswer(dbAssessment.textData, '1', '1.46')
         this.ospIICRisk = common.getTextAnswer(dbAssessment.textData, '1', 'D5', 'additionalNote')
         this.ospDCRisk = common.getTextAnswer(dbAssessment.textData, '1', 'D6', 'additionalNote')
-
     }
 }

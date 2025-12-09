@@ -2,6 +2,7 @@ import * as common from '../common'
 import * as v3Common from './v3Common'
 import * as dbClasses from '../dbClasses'
 import * as env from 'environments'
+import { NewActuarialPredictors } from '../riskScoreClasses'
 
 export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssessments, parameters: EndpointParams) {
 
@@ -66,7 +67,6 @@ export class AssSummAssessment extends v3Common.V3AssessmentCommon {
     analysisEscapeAbscond: string
     analysisControlBehaveTrust: string
 
-
     initialSpDate: string
     reviewSpDate: string
     reviewNum: string
@@ -74,6 +74,7 @@ export class AssSummAssessment extends v3Common.V3AssessmentCommon {
     weightedScores: WeightedScores
     furtherInformation: FurtherInformation
     offender: Offender
+    newActuarialPredictors: NewActuarialPredictors
     ogpOvp: OgpOvp
 
     basicSentencePlan: BasicSentencePlanArea[] = null
@@ -108,7 +109,6 @@ export class AssSummAssessment extends v3Common.V3AssessmentCommon {
         this.analysisEscapeAbscond = common.getTextAnswer(dbAssessment.textData, 'ROSHFULL', 'FA65')
         this.analysisControlBehaveTrust = common.getTextAnswer(dbAssessment.textData, 'ROSHFULL', 'FA66')
 
-
         if (dbAssessment.sanIndicator == 'Y') { // No SP data for SAN assessments
             delete this.initialSpDate
             delete this.reviewSpDate
@@ -127,6 +127,7 @@ export class AssSummAssessment extends v3Common.V3AssessmentCommon {
 
         this.weightedScores = new WeightedScores(dbAssessment)
         this.furtherInformation = new FurtherInformation(dbAssessment)
+        this.newActuarialPredictors = new NewActuarialPredictors(dbAssessment.riskDetails)
         this.ogpOvp = new OgpOvp(dbAssessment)
 
         if (dbAssessment.sanIndicator != 'Y') {
@@ -202,6 +203,7 @@ class FurtherInformation {
     courtCode: string
     courtType: string
     courtName: string
+    rsrAlgorithmVersion: number
 
     constructor(dbAssessment: dbClasses.DbAssessment) {
 
@@ -228,6 +230,8 @@ class FurtherInformation {
         if (this.courtCode == undefined) this.courtCode = null
         if (this.courtType == undefined) this.courtType = null
         if (this.courtName == undefined) this.courtName = null
+
+        this.rsrAlgorithmVersion = dbAssessment.riskDetails.rsrAlgorithmVersion
 
     }
 }

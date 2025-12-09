@@ -55,7 +55,7 @@ describe('SAN integration - test ref 10', () => {
                         CLONED_FROM_PREV_OASYS_SAN_PK: prevPk.toString(),
                         SAN_ASSESSMENT_VERSION_NO: null,
                         LASTUPD_FROM_SAN: sanDataTime,
-                        RSR_PERCENTAGE_SCORE: '10.11',
+                        RSR_PERCENTAGE_SCORE: '9.96',
                         RSR_STATIC_OR_DYNAMIC: 'DYNAMIC',
                         RSR_ERROR_COUNT: '0',
                         OSP_IIC_PERCENTAGE_SCORE: '3.33',

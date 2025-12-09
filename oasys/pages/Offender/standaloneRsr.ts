@@ -5,11 +5,11 @@ export class StandaloneRsr extends Page {
 
     name = 'StandaloneRsr'
     title = 'RSR Predictor'
-    menu: Menu = { type: 'Subform', level1: 'RSR' }
+    menu: Menu = { type: 'Subform', level1: 'CSRP' }
 
     save = new Element.Button('Save')
     close = new Element.Button('Close')
-    calculateRsrScore = new Element.Button('Calculate RSR Score')
+    calculateScores = new Element.Button('Calculate Predictor Scores')
 
     offence = new Element.Textbox<string>('#P5_CT_OFFENCE_CODE_TEXT')
     offenceDescription = new Element.Textbox<string>('#LOVDSC_P5_CT_OFFENCE_CODE_TEXT')
