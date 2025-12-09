@@ -30,11 +30,17 @@ describe('SAN integration - tests 39-40', () => {
             oasys.Nav.clickButton('Close')
 
             // Create a new one, check cloning
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Review' })
-            oasys.San.gotoSan('Offence analysis')
-            oasys.San.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description for assessment 1')
-            oasys.San.returnToOASys()
-            oasys.logout()
+            cy.get<AppConfig>('@appConfig').then((appConfig) => {
+                if (!appConfig.probForceCrn) {
+                    // Need to set PNC to avoid error creating assessment
+                    new oasys.Pages.Offender.OffenderDetails().pnc.setValue(offender1.pnc)
+                }
+                oasys.Assessment.createProb({ purposeOfAssessment: 'Review' })
+                oasys.San.gotoSan('Offence analysis')
+                oasys.San.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description for assessment 1')
+                oasys.San.returnToOASys()
+                oasys.logout()
+            })
         })
     })
 })
