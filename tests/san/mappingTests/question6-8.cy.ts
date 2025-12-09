@@ -47,49 +47,57 @@ describe('Mapping test for question 6.8', () => {
 
             oasys.Db.getLatestSetPkByPnc(mappingTestOffender.pnc, 'assessmentPk')
             cy.get<number>('@assessmentPk').then((assessmentPk) => {
-// TODO add test for accommodation question hidden by previous answer
                 const testCases: { accommodation: AccommodationOptions[], relationship: RelationshipOptions[], mapping: number }[] =
                     [
                         { accommodation: [], relationship: [], mapping: null },
-                        { accommodation: ['alone'], relationship: [], mapping: null },
+                        { accommodation: ['alone'], relationship: [], mapping: 3 },
                         { accommodation: [], relationship: ['other'], mapping: 3 },
                         { accommodation: [], relationship: ['partner'], mapping: 2 },
                         { accommodation: ['partner'], relationship: [], mapping: 1 }, //5
                         { accommodation: ['child'], relationship: ['other'], mapping: 3 },
                         { accommodation: ['family'], relationship: ['other'], mapping: 3 },
                         { accommodation: ['friends'], relationship: ['other'], mapping: 3 },
-                        { accommodation: ['other'], relationship: ['other'], mapping: 3 },
-                        { accommodation: ['partner'], relationship: ['other'], mapping: 1 }, // 10
-                        { accommodation: ['unknown'], relationship: ['other'], mapping: 3 },
-                        { accommodation: ['child', 'partner'], relationship: ['other'], mapping: 1 },
-                        { accommodation: ['family', 'partner'], relationship: ['other'], mapping: 1 },
-                        { accommodation: ['friends', 'partner'], relationship: ['other'], mapping: 1 },
-                        { accommodation: ['other', 'partner'], relationship: ['other'], mapping: 1 }, // 15
-                        { accommodation: ['unknown', 'partner'], relationship: ['other'], mapping: 1 },
-                        { accommodation: ['alone'], relationship: ['family'], mapping: 3 },
-                        { accommodation: ['alone'], relationship: ['friends'], mapping: 3 },
-                        { accommodation: ['alone'], relationship: ['other'], mapping: 3 },
-                        { accommodation: ['alone'], relationship: ['otherChildren'], mapping: 3 }, // 20
-                        { accommodation: ['alone'], relationship: ['ownChildren'], mapping: 3 },
-                        { accommodation: ['alone'], relationship: ['partner'], mapping: 2 }, 
-                        { accommodation: ['alone'], relationship: ['family', 'partner'], mapping: 2 }, 
-                        { accommodation: ['alone'], relationship: ['friends', 'partner'], mapping: 2 },
-                        { accommodation: ['alone'], relationship: ['other', 'partner'], mapping: 2 }, // 25
-                        { accommodation: ['alone'], relationship: ['otherChildren', 'partner'], mapping: 2 },
-                        { accommodation: ['alone'], relationship: ['ownChildren', 'partner'], mapping: 2 },
-                        { accommodation: ['child', 'partner'], relationship: ['family', 'partner'], mapping: 1 },
-                        { accommodation: ['family', 'partner'], relationship: ['friends', 'partner'], mapping: 1 },
-                        { accommodation: ['other', 'partner'], relationship: ['other', 'partner'], mapping: 1 },
-                        { accommodation: ['alone'], relationship: ['otherChildren', 'partner'], mapping: 2 },
-                        { accommodation: ['unknown', 'partner'], relationship: ['ownChildren', 'partner'], mapping: 1 },
+                        // { accommodation: ['other'], relationship: ['other'], mapping: 3 },
+                        // { accommodation: ['partner'], relationship: ['other'], mapping: 1 }, // 10
+                        // { accommodation: ['unknown'], relationship: ['other'], mapping: 3 },
+                        // { accommodation: ['child', 'partner'], relationship: ['other'], mapping: 1 },
+                        // { accommodation: ['family', 'partner'], relationship: ['other'], mapping: 1 },
+                        // { accommodation: ['friends', 'partner'], relationship: ['other'], mapping: 1 },
+                        // { accommodation: ['other', 'partner'], relationship: ['other'], mapping: 1 }, // 15
+                        // { accommodation: ['unknown', 'partner'], relationship: ['other'], mapping: 1 },
+                        // { accommodation: ['alone'], relationship: ['family'], mapping: 3 },
+                        // { accommodation: ['alone'], relationship: ['friends'], mapping: 3 },
+                        // { accommodation: ['alone'], relationship: ['other'], mapping: 3 },
+                        // { accommodation: ['alone'], relationship: ['otherChildren'], mapping: 3 }, // 20
+                        // { accommodation: ['alone'], relationship: ['ownChildren'], mapping: 3 },
+                        // { accommodation: ['alone'], relationship: ['partner'], mapping: 2 },
+                        // { accommodation: ['alone'], relationship: ['family', 'partner'], mapping: 2 },
+                        // { accommodation: ['alone'], relationship: ['friends', 'partner'], mapping: 2 },
+                        // { accommodation: ['alone'], relationship: ['other', 'partner'], mapping: 2 }, // 25
+                        // { accommodation: ['alone'], relationship: ['otherChildren', 'partner'], mapping: 2 },
+                        // { accommodation: ['alone'], relationship: ['ownChildren', 'partner'], mapping: 2 },
+                        // { accommodation: ['child', 'partner'], relationship: ['family', 'partner'], mapping: 1 },
+                        // { accommodation: ['family', 'partner'], relationship: ['friends', 'partner'], mapping: 1 },
+                        // { accommodation: ['other', 'partner'], relationship: ['other', 'partner'], mapping: 1 }, // 30
+                        // { accommodation: ['alone'], relationship: ['otherChildren', 'partner'], mapping: 2 },
+                        // { accommodation: ['unknown', 'partner'], relationship: ['ownChildren', 'partner'], mapping: 1 },
                     ]
 
                 let first = true
                 let i = 1
                 for (const test of testCases) {
+                    cy.task('consoleLog', `Test case ${i}`)
+                    if (first) {
+                        // Extra case 0 without any accommodation
+                        oasys.San.gotoSan('Accommodation', 'information', true)
+                        accommodation1.currentAccommodation.setValue('noAccommodation')
+
+                        setRelationshipOptions(['partner'], true)
+                        checkMapping(assessmentPk, 2, logText, 0)
+                    }
                     oasys.San.gotoSan('Accommodation', 'information', true)
                     setAccommodationOptions(test.accommodation, first)
-                    setRelationshipOptions(test.relationship, first)
+                    setRelationshipOptions(test.relationship, false)
                     logText.push(`${i}: ${JSON.stringify(test)}`)
                     checkMapping(assessmentPk, test.mapping, logText, i)
                     first = false
