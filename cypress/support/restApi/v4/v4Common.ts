@@ -1,6 +1,6 @@
 import * as common from '../common'
 import * as dbClasses from '../dbClasses'
-import * as env from 'environments'
+import * as env from '../restApiUrls'
 
 export function assessmentFilter(dbAssessment: dbClasses.DbAssessmentOrRsr): boolean {
 

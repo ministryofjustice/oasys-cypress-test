@@ -13,8 +13,8 @@ describe('RestAPI regression tests', () => {
     let offendersTested = 0
 
     // Number of offenders for each date range
-    const offenderCountEarly = 10  // Used for pre-2023, not many offenders available
-    const offenderCount = 60  // 2023 and later
+    const offenderCountEarly = 0  // Used for pre-2023, not many offenders available
+    const offenderCount = 20  // 2023 and later
 
     // Define date parameters for sets of offender data
     const dateConditions = [

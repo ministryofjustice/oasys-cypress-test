@@ -4,7 +4,7 @@ import { flatten } from 'flat'                               //      https://www
 import dayjs from 'dayjs'
 
 import * as rest from '.'
-import { restApiUrls } from 'environments'
+import { restApiUrls } from './restApiUrls'
 import { testEnvironment } from '../../../localSettings'
 
 const restConfig = testEnvironment.rest

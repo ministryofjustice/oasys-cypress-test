@@ -1,5 +1,5 @@
 import * as oasys from 'oasys'
-import { restErrorResults } from 'environments'
+import { restErrorResults } from '../../../cypress/support/restApi/restApiUrls'
 
 /**
  * Tests all the endpoints for the standard error conditions
