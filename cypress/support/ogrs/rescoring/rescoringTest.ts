@@ -41,7 +41,7 @@ export async function rescoringTest(testParams: RescoringTestParameters): Promis
         // Get offender and assessment details from the OASys db
         const probationCrn = crns[i].split(',')[0]
         const nomisId = crns[i].split(',')[1]
-        const rescoringOffenderWithAssessment = await getOffenderData(probationCrn == '' ? 'pris' :'prob', probationCrn == '' ? nomisId : probationCrn, testParams.includeLayer1)
+        const rescoringOffenderWithAssessment = await getOffenderData(probationCrn == '' ? 'pris' : 'prob', probationCrn == '' ? nomisId : probationCrn, testParams.includeLayer1)
 
         if (rescoringOffenderWithAssessment == null || rescoringOffenderWithAssessment.assessment == null) {
             // not found or duplicate CRN, or no assessment of the correct type/status
@@ -49,6 +49,7 @@ export async function rescoringTest(testParams: RescoringTestParameters): Promis
                 crn: crns[i],
                 pk: null,
             })
+            await fs.appendFile(`${outputPath}${testParams.outputFile}.csv`, '\n', 'utf8')
         } else {
 
             const testCaseParams = createAssessmentTestCase(rescoringOffenderWithAssessment.assessment, testParams)
@@ -62,7 +63,7 @@ export async function rescoringTest(testParams: RescoringTestParameters): Promis
                 pk: rescoringOffenderWithAssessment.assessment.pk,
             }
             await fs.appendFile(`${outputPath}${testParams.outputFile}.csv`,
-                createOutputLine(functionCall, rescoringOffenderWithAssessment, oracleTestCaseResult, testParams.runNumber),
+                createOutputLine(testCaseParams, rescoringOffenderWithAssessment, oracleTestCaseResult, testParams.runNumber),
                 'utf8'
             )
 
@@ -71,15 +72,6 @@ export async function rescoringTest(testParams: RescoringTestParameters): Promis
     }
 
     return results
-}
-
-function getNewPredictors(outputParams: OutputParameters): string {
-
-    // const predictorValues: string[] = []
-
-    // return predictorValues.join(',')
-
-    return JSON.stringify(outputParams)
 }
 
 function getFunctionCall(params: TestCaseParameters): string {
@@ -172,36 +164,135 @@ function numericParameterToString(param: number): string {
     return param == null ? 'null' : param.toString()
 }
 
-function createOutputLine(functionCall: string, offender: RescoringOffenderWithAssessment, outputParams: OutputParameters, runNumber: string): string {
+function createOutputLine(params: TestCaseParameters, offender: RescoringOffenderWithAssessment, outputParams: OutputParameters, runNumber: string): string {
+
+    const metadata: string[] = []
+    metadata.push(runNumber)
+    metadata.push(offender.assessment.probationCrn)
+    metadata.push(offender.assessment.nomisId)
+    metadata.push(offender.assessment.pk.toString())
+    metadata.push(offender.offenderPk.toString())
+    metadata.push(offender.assessment.completedDate)
+    metadata.push(offender.assessment.type)
+    metadata.push(offender.assessment.purpose)
 
     const output: string[] = []
+    output.push(outputParams.RSR_BAND)
+    output.push(outputParams.RSR_CALCULATED != 'Y' ? '' : outputParams.RSR_DYNAMIC == 'Y' ? 'DYNAMIC' : 'STATIC')
     output.push(outputParams.RSR_PERCENTAGE?.toString())
-    output.push(outputParams.SNSV_PERCENTAGE_STATIC?.toString())
-    output.push(outputParams.SNSV_BAND_STATIC)
-    output.push(outputParams.SNSV_PERCENTAGE_DYNAMIC?.toString())
-    output.push(outputParams.SNSV_BAND_DYNAMIC)
-    output.push(outputParams.OGRS4G_PERCENTAGE?.toString())
-    output.push(outputParams.OGRS4G_BAND)
-    output.push(outputParams.OGP2_PERCENTAGE?.toString())
-    output.push(outputParams.OGP2_BAND)
-    output.push(outputParams.OGRS4V_PERCENTAGE?.toString())
-    output.push(outputParams.OGRS4V_BAND)
+    output.push(outputParams.OSP_DC_CALCULATED == 'A' ? 'NA' : outputParams.OSP_DC_BAND)
     output.push(outputParams.OSP_DC_PERCENTAGE?.toString())
-    output.push(outputParams.OSP_DC_BAND)
+    output.push(outputParams.OSP_IIC_CALCULATED == 'A' ? 'NA' : outputParams.OSP_IIC_BAND)
     output.push(outputParams.OSP_IIC_PERCENTAGE?.toString())
-    output.push(outputParams.OSP_IIC_BAND)
+    output.push(outputParams.SNSV_BAND_STATIC)
+    output.push(outputParams.SNSV_PERCENTAGE_STATIC?.toString())
+    output.push(outputParams.SNSV_BAND_DYNAMIC)
+    output.push(outputParams.SNSV_PERCENTAGE_DYNAMIC?.toString())
+    output.push(outputParams.OGRS4G_BAND)
+    output.push(outputParams.OGRS4G_PERCENTAGE?.toString())
+    output.push(outputParams.OGRS4V_BAND)
+    output.push(outputParams.OGRS4V_PERCENTAGE?.toString())
+    output.push(outputParams.OGP2_BAND)
+    output.push(outputParams.OGP2_PERCENTAGE?.toString())
+    output.push(outputParams.OVP2_BAND)
+    output.push(outputParams.OVP2_PERCENTAGE?.toString())
+    output.push('')
+    output.push(outputParams.SNSV_MISSING_QUESTIONS_DYNAMIC.replaceAll('\n', '|'))
+    output.push(outputParams.OGP2_MISSING_QUESTIONS.replaceAll('\n', '|'))
+    output.push(outputParams.OVP2_MISSING_QUESTIONS.replaceAll('\n', '|'))
 
-    output.push(runNumber)
-    output.push(offender.assessment.pk.toString())
-    output.push(offender.offenderPk.toString())
-    output.push(offender.assessment.completedDate)
-    output.push(offender.assessment.type)
-    output.push(offender.assessment.purpose)
-    output.push(offender.probationCrn)
-    output.push(offender.nomisId)
-
-    const inputParams = functionCall.replace('eor.new_gen_predictors_pkg.get_ogrs4(','').replaceAll(`to_date('`,'').replaceAll(`','DD-MM-YYYY')`,'').replaceAll(')','').replaceAll(`'`,'')
+    const inputParams = getInputsForOutputLine(params)
     const oldResults = offender.getOldPredictors()
 
-    return `${inputParams},${oldResults},${output.join()}\n`
+    return `${metadata.join()},${oldResults},${inputParams},${output.join()}\n`
+}
+
+function getInputsForOutputLine(params: TestCaseParameters) {
+
+    let result: string[] = []
+
+    result.push(dateParameterToCsvOutputString(params.ASSESSMENT_DATE))
+    result.push(stringParameterToCsvOutputString(params.STATIC_CALC))
+    result.push(dateParameterToCsvOutputString(params.DOB))
+    result.push(stringParameterToCsvOutputString(params.GENDER))
+    result.push(stringParameterToCsvOutputString(params.OFFENCE_CODE))
+    result.push(numericParameterToCsvOutputString(params.TOTAL_SANCTIONS_COUNT))
+    result.push(numericParameterToCsvOutputString(params.TOTAL_VIOLENT_SANCTIONS))
+    result.push(numericParameterToCsvOutputString(params.CONTACT_ADULT_SANCTIONS))
+    result.push(numericParameterToCsvOutputString(params.CONTACT_CHILD_SANCTIONS))
+    result.push(numericParameterToCsvOutputString(params.INDECENT_IMAGE_SANCTIONS))
+    result.push(numericParameterToCsvOutputString(params.PARAPHILIA_SANCTIONS))
+    result.push(stringParameterToCsvOutputString(params.STRANGER_VICTIM))
+    result.push(numericParameterToCsvOutputString(params.AGE_AT_FIRST_SANCTION))
+    result.push(dateParameterToCsvOutputString(params.LAST_SANCTION_DATE))
+    result.push(dateParameterToCsvOutputString(params.DATE_RECENT_SEXUAL_OFFENCE))
+    result.push(stringParameterToCsvOutputString(params.CURR_SEX_OFF_MOTIVATION))
+    result.push(dateParameterToCsvOutputString(params.MOST_RECENT_OFFENCE))
+    result.push(dateParameterToCsvOutputString(params.COMMUNITY_DATE))
+    result.push(stringParameterToCsvOutputString(params.ONE_POINT_THIRTY))
+    result.push(numericParameterToCsvOutputString(params.TWO_POINT_TWO))
+    result.push(numericParameterToCsvOutputString(params.THREE_POINT_FOUR))
+    result.push(numericParameterToCsvOutputString(params.FOUR_POINT_TWO))
+    result.push(numericParameterToCsvOutputString(params.SIX_POINT_FOUR))
+    result.push(numericParameterToCsvOutputString(params.SIX_POINT_SEVEN))
+    result.push(numericParameterToCsvOutputString(params.SIX_POINT_EIGHT))
+    result.push(numericParameterToCsvOutputString(params.SEVEN_POINT_TWO))
+    result.push(stringParameterToCsvOutputString(params.DAILY_DRUG_USER))
+    result.push(stringParameterToCsvOutputString(params.AMPHETAMINES))
+    result.push(stringParameterToCsvOutputString(params.BENZODIAZIPINES))
+    result.push(stringParameterToCsvOutputString(params.CANNABIS))
+    result.push(stringParameterToCsvOutputString(params.CRACK_COCAINE))
+    result.push(stringParameterToCsvOutputString(params.ECSTASY))
+    result.push(stringParameterToCsvOutputString(params.HALLUCINOGENS))
+    result.push(stringParameterToCsvOutputString(params.HEROIN))
+    result.push(stringParameterToCsvOutputString(params.KETAMINE))
+    result.push(stringParameterToCsvOutputString(params.METHADONE))
+    result.push(stringParameterToCsvOutputString(params.MISUSED_PRESCRIBED))
+    result.push(stringParameterToCsvOutputString(params.OTHER_OPIATE))
+    result.push(stringParameterToCsvOutputString(params.POWDER_COCAINE))
+    result.push(stringParameterToCsvOutputString(params.SOLVENTS))
+    result.push(stringParameterToCsvOutputString(params.SPICE))
+    result.push(stringParameterToCsvOutputString(params.STEROIDS))
+    result.push(stringParameterToCsvOutputString(params.OTHER_DRUGS))
+    result.push(numericParameterToCsvOutputString(params.EIGHT_POINT_EIGHT))
+    result.push(numericParameterToCsvOutputString(params.NINE_POINT_ONE))
+    result.push(numericParameterToCsvOutputString(params.NINE_POINT_TWO))
+    result.push(numericParameterToCsvOutputString(params.ELEVEN_POINT_TWO))
+    result.push(numericParameterToCsvOutputString(params.ELEVEN_POINT_FOUR))
+    result.push(numericParameterToCsvOutputString(params.TWELVE_POINT_ONE))
+    result.push(numericParameterToCsvOutputString(params.OGRS4G_ALGO_VERSION))
+    result.push(numericParameterToCsvOutputString(params.OGRS4V_ALGO_VERSION))
+    result.push(numericParameterToCsvOutputString(params.OGP2_ALGO_VERSION))
+    result.push(numericParameterToCsvOutputString(params.OVP2_ALGO_VERSION))
+    result.push(numericParameterToCsvOutputString(params.OSP_ALGO_VERSION))
+    result.push(numericParameterToCsvOutputString(params.SNSV_ALGO_VERSION))
+    result.push(numericParameterToCsvOutputString(params.AGGRAVATED_BURGLARY))
+    result.push(numericParameterToCsvOutputString(params.ARSON))
+    result.push(numericParameterToCsvOutputString(params.CRIMINAL_DAMAGE_LIFE))
+    result.push(numericParameterToCsvOutputString(params.FIREARMS))
+    result.push(numericParameterToCsvOutputString(params.GBH))
+    result.push(numericParameterToCsvOutputString(params.HOMICIDE))
+    result.push(numericParameterToCsvOutputString(params.KIDNAP))
+    result.push(numericParameterToCsvOutputString(params.ROBBERY))
+    result.push(numericParameterToCsvOutputString(params.WEAPONS_NOT_FIREARMS))
+    result.push(stringParameterToCsvOutputString(params.CUSTODY_IND))
+
+    return result.join(',')
+}
+
+
+function dateParameterToCsvOutputString(param: Dayjs): string {
+
+    const result = param?.format('DD-MM-YYYY')
+    return result == 'Invalid Date' || result == null ? '' : result
+}
+
+function stringParameterToCsvOutputString(param: string): string {
+
+    return param == null ? '' : param
+}
+
+function numericParameterToCsvOutputString(param: number): string {
+
+    return param == null ? '' : param.toString()
 }

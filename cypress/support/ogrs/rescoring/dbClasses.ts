@@ -2,57 +2,43 @@ import { dateFormat } from "../orgsTest"
 
 export class RescoringOffenderWithAssessment {
 
-    probationCrn: string
-    nomisId: string
+
     offenderPk: number
-    riskToOthers: string
-    limitedAccessOffender: boolean
-    pnc: string
-    forename1: string
-    surname: string
-    gender: number
-    custodyInd: string
     assessment: RescoringAssessment
 
     dbElapsedTime: number
 
-    constructor(offenderData: string[]) {
-
-        this.offenderPk = Number.parseInt(offenderData[0])
-        this.probationCrn = offenderData[1]
-        this.nomisId = offenderData[2]
-        this.riskToOthers = offenderData[3]
-        this.limitedAccessOffender = offenderData[4] == 'Y'
-        this.pnc = offenderData[5]
-        this.forename1 = offenderData[6]
-        this.surname = offenderData[7]
-        this.gender = Number.parseInt(offenderData[8])
-        this.custodyInd = offenderData[9]
+    constructor(assessmentData: string[]) {
+        this.assessment = new RescoringAssessment(assessmentData)
     }
 
-    static query(crnSource: Provider, crn: string): string {
-        return `select offender_pk, cms_prob_number, cms_pris_number, risk_to_others_elm, limited_access_offender, 
-                    pnc, forename_1, family_name, gender_elm, custody_ind
-                    from eor.offender where deleted_date is null 
-                    and ${crnSource == 'prob' ? 'cms_prob_number' : 'cms_pris_number'} = '${crn}'`
+    addOffenderPk() {
+
+
+    }
+
+    offenderPkQuery(): string {
+        return `select g.offender_pk from eor.oasys_assessment_group g, eor.oasys_set s
+                where s.oasys_set_pk = ${this.assessment.pk}
+                and g.oasys_assessment_group_pk = s.oasys_assessment_group_pk`
     }
 
     getOldPredictors(): string {
 
         const predictorValues: string[] = []
-        predictorValues.push(this.assessment.rsrPercentageScore?.toString())
         predictorValues.push(this.assessment.rsrRisk)
         predictorValues.push(this.assessment.rsrStaticOrDynamic)
-        predictorValues.push(this.assessment.ospDirectContactPercentageScore?.toString())
+        predictorValues.push(this.assessment.rsrPercentageScore?.toString())
         predictorValues.push(this.assessment.ospDirectContactScoreLevel)
-        predictorValues.push(this.assessment.ospIndirectImagesChildrenPercentageScore?.toString())
+        predictorValues.push(this.assessment.ospDirectContactPercentageScore?.toString())
         predictorValues.push(this.assessment.ospIndirectImagesChildrenScoreLevel)
-        predictorValues.push(this.assessment.ogrs32Year?.toString())
+        predictorValues.push(this.assessment.ospIndirectImagesChildrenPercentageScore?.toString())
         predictorValues.push(this.assessment.ogrs3RiskRecon)
-        predictorValues.push(this.assessment.ogp2Year?.toString())
+        // predictorValues.push(this.assessment.ogrs32Year?.toString())
         predictorValues.push(this.assessment.ogpRisk)
-        predictorValues.push(this.assessment.ovp2Year?.toString())
+        // predictorValues.push(this.assessment.ogp2Year?.toString())
         predictorValues.push(this.assessment.ovpRisk)
+        // predictorValues.push(this.assessment.ovp2Year?.toString())
         return predictorValues.join()
     }
 }
@@ -62,6 +48,8 @@ export class RescoringAssessment {
     appVersion: string
 
     pk: number
+    probationCrn: string
+    nomisId: string
     type: string
     version: number
     status: string
@@ -114,6 +102,8 @@ export class RescoringAssessment {
         let i = 0
 
         this.pk = getDbInt(assessmentData[i++])
+        this.probationCrn = assessmentData[i++]
+        this.nomisId = assessmentData[i++]
         this.type = assessmentData[i++]
         this.version = getDbInt(assessmentData[i++])
         this.status = assessmentData[i++]
@@ -160,9 +150,10 @@ export class RescoringAssessment {
 
     static query(crnSource: Provider, crn: string, includeLayer1: boolean): string {
 
-        const typeWhere = includeLayer1 ? `s.ref_ass_version_code in ('LAYER1', 'LAYER3')` : `s.ref_ass_version_code = 'LAYER3'`
+        const typeWhere = includeLayer1 ? `s.assessment_type_elm in ('LAYER_1', 'LAYER_3')` : `s.ref_ass_version_code = 'LAYER_3'`
 
-        return `select s.oasys_set_pk, s.ref_ass_version_code, s.version_number, s.assessment_status_elm, s.purpose_assessment_elm, s.purpose_assmt_other_ftxt,
+        return `select s.oasys_set_pk, s.cms_prob_number, s.cms_pris_number, 
+                    s.assessment_type_elm, s.version_number, s.assessment_status_elm, s.purpose_assessment_elm, s.purpose_assmt_other_ftxt,
                     to_char(s.initiation_date, '${dateFormat}'), 
                     to_char(s.date_completed, '${dateFormat}'), 
                     s.gender_elm, s.prison_ind, to_char(s.date_of_birth, '${dateFormat}'),
@@ -174,13 +165,12 @@ export class RescoringAssessment {
                     s.rsr_static_or_dynamic, s.rsr_percentage_score, s.rsr_risk_recon_elm, 
                     s.osp_i_percentage_score, s.osp_c_percentage_score, s.osp_i_risk_recon_elm, s.osp_c_risk_recon_elm, 
                     s.osp_iic_risk_recon_elm, s.osp_iic_percentage_score, s.osp_dc_risk_recon_elm, s.osp_dc_percentage_score     
-                    from eor.offender o, eor.oasys_assessment_group g, eor.oasys_set s
-                    where ${crnSource == 'prob' ? 'o.cms_prob_number' : 'o.cms_pris_number'} = '${crn}'
-                    and o.offender_pk = g.offender_pk and g.oasys_assessment_group_pk = s.oasys_assessment_group_pk 
+                    from eor.oasys_set s
+                    where ${crnSource == 'prob' ? 's.cms_prob_number' : 's.cms_pris_number'} = '${crn}'
                     and s.assessment_status_elm = 'COMPLETE' 
                     and s.deleted_date is null
                     and ${typeWhere} 
-                    order by s.initiation_date fetch first 1 rows only`
+                    order by s.initiation_date desc fetch first 1 rows only`
     }
 
     static offenceQuery(assessmentPk: number): string {
@@ -198,7 +188,7 @@ export class RescoringAssessment {
                     where q.oasys_section_pk in 
                         (select oasys_section_pk from eor.oasys_Section 
                         where oasys_set_pk = ${assessmentPk} and currently_hidden_ind <> 'Y'
-                        and ref_section_code in ('1','2','3','4','6','8','9','11','12','ROSH'))
+                        and ref_section_code in ('1','2','3','4','6','7','8','9','11','12','ROSH','RSR'))
                     and q.oasys_question_pk = a.oasys_question_pk
                     and ra.ref_ass_version_code = a.ref_ass_version_code
                     and ra.version_number = a.version_number
