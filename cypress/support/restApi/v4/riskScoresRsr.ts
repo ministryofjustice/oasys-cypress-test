@@ -1,7 +1,7 @@
 import * as v4Common from './v4Common'
-import { OGRS, RSR, OSP } from '../riskScoreClasses'
+import { OGRS, RSR, OSP, NewActuarialPredictors } from '../riskScoreClasses'
 import * as dbClasses from '../dbClasses'
-import * as env from 'environments'
+import * as env from '../restApiUrls'
 
 export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssessments, parameters: EndpointParams) {
 
@@ -43,6 +43,7 @@ export class RiskScoresRsrAssessment extends v4Common.V4AssessmentCommon {
     OGRS: OGRS
     RSR: RSR
     OSP: OSP
+    newActuarialPredictors: NewActuarialPredictors
 
 
     addDetails(dbAssessment: dbClasses.DbAssessment) {
@@ -70,6 +71,7 @@ export class RiskScoresRsrAssessment extends v4Common.V4AssessmentCommon {
         this.OGRS = new OGRS(dbAssessment.riskDetails)
         this.RSR = new RSR(dbAssessment.riskDetails)
         this.OSP = new OSP(dbAssessment.riskDetails)
+        this.newActuarialPredictors = new NewActuarialPredictors(dbAssessment.riskDetails)
 
         // Different name for scoreLevel in this endpoint
         this.RSR['rsrScoreLevel'] = this.RSR.scoreLevel

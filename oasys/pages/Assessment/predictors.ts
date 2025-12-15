@@ -40,10 +40,14 @@ export class Predictors extends BaseAssessmentPage {
      *  Note: might not work if you try to go to it straight after 1.38 as field isn't necessarily visible yet */
     o1_43 = new Element.Textbox<OasysDate>('#itm_1_43')
 
-    oneYearScore = new Element.Text("td:contains('General offending % within 1 year of community sentence/discharge')+td")
-    twoYearScore = new Element.Text("td:contains('General offending % within 2 years of community sentence/discharge')+td")
+    /** All reoffending predictor */
+    arp = new Element.Text("td:contains('ALL REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
+    /** Violent reoffending predictor */
+    vrp = new Element.Text("td:contains('VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
+    /** Servious violent reoffending predictor */
+    svrp = new Element.Text("td:contains('SERIOUS VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
+    ospDc = new Element.Textbox<string>('#textarea_D6')
     ospIic = new Element.Textbox<string>('#textarea_D5')
-    ospDd = new Element.Textbox<string>('#textarea_D6')
     rsrScore = new Element.Textbox<string>('#textarea_D3')
     rsrErrors = new Element.Textbox<string>('#textarea_D4')
 }

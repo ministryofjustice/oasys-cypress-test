@@ -1,6 +1,6 @@
 import * as oasys from 'oasys'
 
-describe('SAN integration - tests 39/40', () => {
+describe('SAN integration - tests 39-40', () => {
     /**
      * Merge - where BOTH offenders have OASys-SAN assessments
      * Merge two offenders where BOTH of the offenders have OASys-SAN assessments - check it posts the correct MERGE API
@@ -25,14 +25,14 @@ describe('SAN integration - tests 39/40', () => {
 
             // Check first assessment
             assesmentTab.assessments.purposeOfAssessment.clickRowContaining('Start of Suspended Sentence Order (Full) ')
-            oasys.San.gotoSan('Offence analysis')
+            oasys.San.gotoSanReadOnly('Offence analysis')
             oasys.San.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description modified for offender 2')
             oasys.San.returnToOASys()
             oasys.Nav.clickButton('Close')
 
             // Check second assessment
             oasys.Assessment.openLatest()
-            oasys.San.gotoSan('Offence analysis')
+            oasys.San.gotoSanReadOnly('Offence analysis')
             oasys.San.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description modified for 3rd assessment on merged offender')
             oasys.San.returnToOASys()
             oasys.Nav.clickButton('Close')

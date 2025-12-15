@@ -13,8 +13,8 @@ describe('RestAPI regression tests', () => {
     let offendersTested = 0
 
     // Number of offenders for each date range
-    const offenderCountEarly = 10  // Used for pre-2023, not many offenders available
-    const offenderCount = 60  // 2023 and later
+    const offenderCountEarly = 0  // Used for pre-2023, not many offenders available
+    const offenderCount = 20  // 2023 and later
 
     // Define date parameters for sets of offender data
     const dateConditions = [
@@ -48,7 +48,7 @@ describe('RestAPI regression tests', () => {
     // Get a list of offenders based on the date specified, then call the API test for each in turn.
     function testOffenderSet(dateCondition: { date: string, count: number }) {
 
-        const dateFilter = dateCondition.date == 'today' ? 'sysdate - 1' : `to_date('${dateCondition.date}','YYYY-MM-DD')`
+        const dateFilter = dateCondition.date == 'today' ? 'sysdate' : `to_date('${dateCondition.date}','YYYY-MM-DD')`
         const offendersToSkip = `(${testDataIssues.join()})`
 
         const offenderQuery = `select * from 

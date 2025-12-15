@@ -16,9 +16,16 @@ export function createAssessmentTestCase(assessment: RescoringAssessment, testPa
     const initiationDate = dayjs.utc(assessment.initiationDate, dateFormat)
     const after6_30 = checkIfAfter(testParams.significantReleaseDates.r6_30, initiationDate)
 
+    let staticCalc = 'N'
+    if (assessment.type == 'LAYER_1' && assessment.version == 2) {  // RoSHA - set static flag according to 1.39 (offender interview)
+        if (getSingleAnswer(assessment.qaData, 'RSR', '1.39') != 'YES') {
+            staticCalc = 'Y'
+        }
+    }
+
     const p: TestCaseParameters = {
         ASSESSMENT_DATE: testParams.useCurrentDate ? today : getDate(assessment.completedDate),
-        STATIC_CALC: testParams.staticFlag,
+        STATIC_CALC: staticCalc,
         DOB: getDate(assessment.dob),
         GENDER: lookupValue(assessment.gender, genderLookup),
         OFFENCE_CODE: getString(assessment.offence),
@@ -154,12 +161,16 @@ function da(data: string[][], after6_30: boolean): number {
 function q141(assessment: RescoringAssessment): string {
 
     const q141 = getSingleAnswer(assessment.qaData, '1', '1.41', ynLookup)
+    const q130 = getSingleAnswer(assessment.qaData, '1', '1.30', ynLookup)
     const offenceCat = getOffenceCat(getString(assessment.offence))
-    if (q141 == null && offenceCat && ['sexual_offences_not_children', 'sexual_offences_children'].includes(offenceCat.cat)) {
+    const sexualOffence = offenceCat && ['sexual_offences_not_children', 'sexual_offences_children'].includes(offenceCat.cat)
+
+    if (q130 != 'Y' || sexualOffence || (q130 == 'Y' && sexualOffence)) {
         return 'O'
-    } else {
-        return q141
+    } else if (q130 == 'Y' && q141 == null) {
+        return 'O'
     }
+    return q141
 }
 
 function dailyDrugs(data: string[][]): string {
@@ -173,7 +184,7 @@ function checkForDailyDrugs(data: string[][]): string {
     let result = 'N'
     const drugs = getDrugsUsage(data)
     Object.keys(drugs).forEach((key) => {
-        if (drugs[key] = '100') {
+        if (drugs[key] == '100') {
             result = 'Y'
         }
     })

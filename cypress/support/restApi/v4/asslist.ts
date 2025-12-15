@@ -1,6 +1,6 @@
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
-import * as env from 'environments'
+import * as env from '../restApiUrls'
 
 export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssessments, parameters: EndpointParams) {
 

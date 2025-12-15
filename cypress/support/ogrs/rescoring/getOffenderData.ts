@@ -3,24 +3,21 @@ import { RescoringOffenderWithAssessment, RescoringAssessment } from './dbClasse
 
 export async function getOffenderData(crnSource: Provider, crn: string, includeLayer1: boolean): Promise<RescoringOffenderWithAssessment> {
 
-    // Get offender data
-    const offenderData = await db.selectData(RescoringOffenderWithAssessment.query(crnSource, crn))
-    if (offenderData.error != null) throw new Error(offenderData.error)
-
-    if ((offenderData.data as string[][]).length != 1) {  // No data, or multiple offenders with same CRN
-        return null
-    }
-    const rescoringOffender = new RescoringOffenderWithAssessment(offenderData.data[0])
 
     // Get OASYS_SET data for the latest complete assessment
     const assessmentData = await db.selectData(RescoringAssessment.query(crnSource, crn, includeLayer1))
     if (assessmentData.error != null) throw new Error(assessmentData.error)
     if ((assessmentData.data as string[][]).length == 0) {  // no suitable assessments
-        return rescoringOffender
+        return null
     }
 
-    // Add OASYS_SET data to the return object
-    rescoringOffender.assessment = new RescoringAssessment(assessmentData.data[0])
+    // Create the return object with oasys_set data
+    const rescoringOffender = new RescoringOffenderWithAssessment(assessmentData.data[0])
+
+    //Look up the offender pk
+    const offenderData = await db.selectSingleValue(rescoringOffender.offenderPkQuery())
+    if (offenderData.error != null) throw new Error(offenderData.error)
+    rescoringOffender.offenderPk = offenderData.data as number
 
     // Questions and answers
     const qaData = await db.selectData(RescoringAssessment.qaQuery(rescoringOffender.assessment.pk))
@@ -38,5 +35,7 @@ export async function getOffenderData(crnSource: Provider, crn: string, includeL
     if (offences.length > 0 && offences[0].length > 0) {
         rescoringOffender.assessment.offence = offences[0][0]
     }
+
+    return rescoringOffender
 }
 

@@ -77,6 +77,7 @@ describe('Mapping test for drugs - individual drugs details', () => {
     it('crack', () => { drugTest('crack') })
     it('ecstasy', () => { drugTest('ecstasy') })
     it('hallucinogenics', () => { drugTest('hallucinogenics') })
+
     it('heroin', () => { drugTest('heroin') })
     it('methadone', () => { drugTest('methadone') })
     it('prescribed', () => { drugTest('prescribed') })
@@ -92,7 +93,6 @@ function drugTest(drugType: DrugType) {
 
     // Occasional error in SAN 'Cannot read properties of null (reading 'postMessage')'.  Need to workaround it with the following:
     Cypress.on('uncaught:exception', () => {
-        cy.log('Cypress Exception')
         return false
     })
 

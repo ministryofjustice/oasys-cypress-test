@@ -136,7 +136,13 @@ export class DbAssessment extends DbAssessmentOrRsr {
                     s.osp_i_percentage_score, s.osp_c_percentage_score, s.osp_i_risk_recon_elm, s.osp_c_risk_recon_elm, s.rosh_level_elm,
                     s.cms_event_number, s.purpose_assessment_elm, s.purpose_assmt_other_ftxt, assessor_name, s.version_number, s.parent_oasys_set_pk, 
                     s.osp_iic_risk_recon_elm, s.osp_iic_percentage_score, s.osp_dc_risk_recon_elm, s.osp_dc_percentage_score,
-                    s.san_assessment_linked_ind     
+                    s.san_assessment_linked_ind, 
+                    s.ogrs4g_percentage_2yr, s.ogrs4g_band_risk_recon_elm, s.ogrs4g_calculated, 
+                    s.ogrs4v_percentage_2yr, s.ogrs4v_band_risk_recon_elm, s.ogrs4v_calculated, 
+                    s.ogp2_percentage_2yr, s.ogp2_band_risk_recon_elm, s.ogp2_calculated, 
+                    s.ovp2_percentage_2yr, s.ovp2_band_risk_recon_elm, s.ovp2_calculated, 
+                    s.snsv_percentage_2yr_static, s.snsv_stat_band_risk_recon_elm, s.snsv_calculated_static, 
+                    s.snsv_percentage_2yr_dynamic, s.snsv_dyn_band_risk_recon_elm, s.snsv_calculated_dynamic 
                     from eor.offender o, eor.oasys_assessment_group g, eor.oasys_set s, eor.oasys_set_change c 
                     where ${crnSource == 'prob' ? 'o.cms_prob_number' : 'o.cms_pris_number'} = '${crn}'
                     and o.offender_pk = g.offender_PK and g.oasys_assessment_group_PK = s.oasys_assessment_group_PK 
@@ -199,7 +205,13 @@ export class DbRsr extends DbAssessmentOrRsr {
                             r.rsr_algorithm_version, r.rsr_percentage_score, r.rsr_risk_recon_elm, 
                             r.osp_i_percentage_score, r.osp_c_percentage_score, r.osp_i_risk_recon_elm, r.osp_c_risk_recon_elm,
                             o.cms_event_number,
-                            r.osp_iic_risk_recon_elm, r.osp_iic_percentage_score, r.osp_dc_risk_recon_elm, r.osp_dc_percentage_score  
+                            r.osp_iic_risk_recon_elm, r.osp_iic_percentage_score, r.osp_dc_risk_recon_elm, r.osp_dc_percentage_score,
+                            r.ogrs4g_percentage_2yr, r.ogrs4g_band_risk_recon_elm, r.ogrs4g_calculated, 
+                            r.ogrs4v_percentage_2yr, r.ogrs4v_band_risk_recon_elm, r.ogrs4v_calculated, 
+                            r.ogp2_percentage_2yr, r.ogp2_band_risk_recon_elm, r.ogp2_calculated, 
+                            r.ovp2_percentage_2yr, r.ovp2_band_risk_recon_elm, r.ovp2_calculated, 
+                            r.snsv_percentage_2yr_static, r.snsv_stat_band_risk_recon_elm, r.snsv_calculated_static, 
+                            r.snsv_percentage_2yr_dynamic, r.snsv_dyn_band_risk_recon_elm, r.snsv_calculated_dynamic   
                             from eor.offender_rsr_scores r, eor.offender o 
                             where r.offender_pk = o.offender_pk and ${crnSource == 'prob' ? 'o.cms_prob_number' : 'o.cms_pris_number'} = '${crn}' 
                             and o.deleted_date is null and r.deleted_date is null 
@@ -251,6 +263,25 @@ export class DbRiskDetails {
     ospDirectContactScoreLevel: string
     ospDirectContactPercentageScore: number
 
+    ogrs4gYr2: number
+    ogrs4gBand: string
+    ogrs4gCalculated: string
+    ogrs4vYr2: number
+    ogrs4vBand: string
+    ogrs4vCalculated: string
+    ogp2Yr2: number
+    ogp2Band: string
+    ogp2Calculated: string
+    ovp2Yr2: number
+    ovp2Band: string
+    ovp2Calculated: string
+    snsvStaticYr2: number
+    snsvStaticYr2Band: string
+    snsvStaticCalculated: string
+    snsvDynamicYr2: number
+    snsvDynamicYr2Band: string
+    snsvDynamicCalculated: string
+
     constructor(riskData: string[], standaloneRsr: boolean = false) {
 
         if (standaloneRsr) {
@@ -273,6 +304,24 @@ export class DbRiskDetails {
             this.ospDirectContactScoreLevel = riskData[20]
             this.ospDirectContactPercentageScore = getDbFloat(riskData[21])
 
+            this.ogrs4gYr2 = getDbFloat(riskData[22])
+            this.ogrs4gBand = riskData[23]
+            this.ogrs4gCalculated = riskData[24]
+            this.ogrs4vYr2 = getDbFloat(riskData[25])
+            this.ogrs4vBand = riskData[26]
+            this.ogrs4vCalculated = riskData[27]
+            this.ogp2Yr2 = getDbFloat(riskData[28])
+            this.ogp2Band = riskData[29]
+            this.ogp2Calculated = riskData[30]
+            this.ovp2Yr2 = getDbFloat(riskData[31])
+            this.ovp2Band = riskData[32]
+            this.ovp2Calculated = riskData[33]
+            this.snsvStaticYr2 = getDbFloat(riskData[34])
+            this.snsvStaticYr2Band = riskData[35]
+            this.snsvStaticCalculated = riskData[36]
+            this.snsvDynamicYr2 = getDbFloat(riskData[37])
+            this.snsvDynamicYr2Band = riskData[38]
+            this.snsvDynamicCalculated = riskData[39]
         } else {
             this.ogpStWesc = getDbInt(riskData[7])
             this.ogpDyWesc = getDbInt(riskData[8])
@@ -312,6 +361,26 @@ export class DbRiskDetails {
             this.ospIndirectImagesChildrenPercentageScore = getDbFloat(riskData[44])
             this.ospDirectContactScoreLevel = riskData[45]
             this.ospDirectContactPercentageScore = getDbFloat(riskData[46])
+
+            this.ogrs4gYr2 = getDbFloat(riskData[48])
+            this.ogrs4gBand = riskData[49]
+            this.ogrs4gCalculated = riskData[50]
+            this.ogrs4vYr2 = getDbFloat(riskData[51])
+            this.ogrs4vBand = riskData[52]
+            this.ogrs4vCalculated = riskData[53]
+            this.ogp2Yr2 = getDbFloat(riskData[54])
+            this.ogp2Band = riskData[55]
+            this.ogp2Calculated = riskData[56]
+            this.ovp2Yr2 = getDbFloat(riskData[57])
+            this.ovp2Band = riskData[58]
+            this.ovp2Calculated = riskData[59]
+            this.snsvStaticYr2 = getDbFloat(riskData[60])
+            this.snsvStaticYr2Band = riskData[61]
+            this.snsvStaticCalculated = riskData[62]
+            this.snsvDynamicYr2 = getDbFloat(riskData[63])
+            this.snsvDynamicYr2Band = riskData[64]
+            this.snsvDynamicCalculated = riskData[65]
+
         }
 
     }

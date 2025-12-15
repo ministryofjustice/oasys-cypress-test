@@ -1,7 +1,7 @@
 import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
-import * as env from 'environments'
+import * as env from '../restApiUrls'
 
 export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssessments, parameters: EndpointParams) {
 
@@ -116,6 +116,5 @@ export class Section1Assessment extends v4Common.V4AssessmentCommon {
         this.numSanctionsIndecentChildImageOrIndirectContact = common.getNumericAnswer(dbAssessment.textData, '1', '1.46')
         this.ospIICRisk = common.getTextAnswer(dbAssessment.textData, '1', 'D5', 'additionalNote')
         this.ospDCRisk = common.getTextAnswer(dbAssessment.textData, '1', 'D6', 'additionalNote')
-
     }
 }

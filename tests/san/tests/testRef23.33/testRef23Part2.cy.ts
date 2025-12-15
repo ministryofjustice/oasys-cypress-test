@@ -50,7 +50,7 @@ describe('SAN integration - test ref 23', () => {
 
                 new oasys.Pages.SentencePlan.IspSection52to8().goto()
 
-                oasys.Assessment.signAndLock({ expectRsrWarning: true })
+                oasys.Assessment.signAndLock()
 
                 cy.log(`Ensure the Sign API is sent to the SAN service and the parameters are correct
                     Ensure we get back a 200 response from the Sign API and that OASYS_SET.SAN_ASSESSMENT_VERSION_NO and OASYS_SET.SPP_PLAN_VERSION_NO have been populated

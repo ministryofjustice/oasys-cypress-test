@@ -29,7 +29,6 @@ describe('SAN integration - test ref 22 part 1', () => {
                 oasys.Nav.clickButton('Demerge')
                 // Workaround for uncaught javascript error in OASys
                 Cypress.on('uncaught:exception', () => {
-                    cy.log('Cypress Exception')
                     return false
                 })
                 oasys.Nav.clickButton('Confirm Demerge')

@@ -92,7 +92,6 @@ describe('SAN integration - test ref 08 part 2', () => {
                 oasys.Errors.checkSingleSignAndLockError(`The following fields on the RoSH Screening have not been completed, Please press 'Return to Assessment' and navigate back to the RoSH Screening to complete.`, false)
                 oasys.Errors.checkSingleSignAndLockError('Do you agree with the proposed plan (if no, explain why below)', false)
                 oasys.Errors.checkSignAndLockErrorsVisible('sanSectionsIncomplete')
-                oasys.Errors.checkSingleSignAndLockError(`Warning - The OVP scores could not be calculated as the following fields have not been completed. Please press 'Return to Assessment' and navigate back to the individual sections to complete.`, true)
 
                 oasys.Errors.checkSingleSignAndLockError(`In OASys the offender has been marked at 1.30 as having behaviours that are sexually motivated. There are relevant questions within the Strengths and Needs assessment that must be completed. Please press 'Return to Assessment' and navigate back to the 'Strengths and Needs Sections' to complete.`, true)
                 const signingStatus = new oasys.Pages.Signing.SigningStatus()

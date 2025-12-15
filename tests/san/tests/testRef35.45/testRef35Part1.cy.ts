@@ -97,7 +97,7 @@ describe('SAN integration - test ref 35', () => {
                 rsr.weaponPrevious.setValue('Yes')
                 rsr.burglaryPrevious.setValue('Yes')
 
-                rsr.calculateRsrScore.click()
+                rsr.calculateScores.click()
 
                 cy.log(`Now create a new 3.2 assessment, will overclone with the standalone RSR
                     However, it will then get the data from the SAN assessment

@@ -58,8 +58,11 @@ describe('SAN integration - test ref 13 part 3', () => {
                 predictors.o1_29.checkValue('')
                 predictors.o1_30.checkValue('')
                 predictors.o1_38.checkValue('')
-                predictors.oneYearScore.checkValue('')
-                predictors.twoYearScore.checkValue('')
+                predictors.arp.checkValue('Unable to calculate', true)
+                predictors.vrp.checkValue('Unable to calculate', true)
+                predictors.svrp.checkValue('Unable to calculate', true)
+                predictors.ospDc.checkValue('Unable to calculate', true)
+                predictors.ospIic.checkValue('Unable to calculate', true)
 
                 oasys.Db.checkAnswers(pks[0], testData.clonedAndModifiedData, 'answerCheck', true)
                 cy.get<boolean>('@answerCheck').then((answerCheck) => {

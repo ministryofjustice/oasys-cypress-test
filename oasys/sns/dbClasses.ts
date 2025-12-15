@@ -38,8 +38,21 @@ export class DbAssessmentOrRsr {
     opdOverride: string
 
     eventNumber: number
-
     sanIndicator: string
+
+    ogrs4gYr2: number
+    ogrs4gBand: string
+    ogrs4vYr2: number
+    ogrs4vBand: string
+    ogp2Yr2: number
+    ogp2Band: string
+    ovp2Yr2: number
+    ovp2Band: string
+    snsvStaticYr2: number
+    snsvStaticYr2Band: string
+    snsvDynamicYr2: number
+    snsvDynamicYr2Band: string
+    rsrAlgorithmVersion: number
 
     constructor(assessmentData: string[], type: AssessmentOrRsr) {
 
@@ -89,6 +102,20 @@ export class DbAssessmentOrRsr {
                     this.assessmentDate = this.signedDate == null ? this.completedDate : this.signedDate
                     break
             }
+
+            this.ogrs4gYr2 = fixDp(assessmentData[25])
+            this.ogrs4gBand = assessmentData[26]
+            this.ogrs4vYr2 = fixDp(assessmentData[27])
+            this.ogrs4vBand = assessmentData[28]
+            this.ogp2Yr2 = fixDp(assessmentData[29])
+            this.ogp2Band = assessmentData[30]
+            this.ovp2Yr2 = fixDp(assessmentData[31])
+            this.ovp2Band = assessmentData[32]
+            this.snsvStaticYr2 = fixDp(assessmentData[33])
+            this.snsvStaticYr2Band = assessmentData[34]
+            this.snsvDynamicYr2 = fixDp(assessmentData[35])
+            this.snsvDynamicYr2Band = assessmentData[36]
+            this.rsrAlgorithmVersion = Number.parseInt(assessmentData[37])
         } else {
             this.assessmentDate = this.completedDate
         }
@@ -102,10 +129,17 @@ export class DbAssessmentOrRsr {
                     s.rsr_percentage_score, s.rsr_risk_recon_elm, s.rsr_static_or_dynamic, 
                     s.osp_i_percentage_score, s.osp_c_percentage_score, s.osp_i_risk_recon_elm, s.osp_c_risk_recon_elm,
                     s.osp_iic_percentage_score, s.osp_iic_risk_recon_elm, s.osp_dc_percentage_score, s.osp_dc_risk_recon_elm , 
-                    
                     s.opd_result, s.opd_screen_out_override, 
                     to_char(s.assessor_signed_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'), s.ref_ass_version_code, r.ref_element_desc,
-                    to_char(s.countersigner_signed_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'), s.san_assessment_linked_ind  
+                    to_char(s.countersigner_signed_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'), s.san_assessment_linked_ind, 
+
+                    s.ogrs4g_percentage_2yr, s.ogrs4g_band_risk_recon_elm, 
+                    s.ogrs4v_percentage_2yr, s.ogrs4v_band_risk_recon_elm,
+                    s.ogp2_percentage_2yr, s.ogp2_band_risk_recon_elm, 
+                    s.ovp2_percentage_2yr, s.ovp2_band_risk_recon_elm, 
+                    s.snsv_percentage_2yr_static, s.snsv_stat_band_risk_recon_elm, 
+                    s.snsv_percentage_2yr_dynamic, s.snsv_dyn_band_risk_recon_elm,
+                    s.rsr_algorithm_version
                     from eor.offender o, eor.oasys_assessment_group g, eor.oasys_set s, eor.ref_element r 
                     where o.cms_prob_number = '${crn}'
                     and o.offender_pk = g.offender_PK and g.oasys_assessment_group_PK = s.oasys_assessment_group_PK 
