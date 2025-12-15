@@ -57,30 +57,30 @@ describe('Mapping test for question 6.8', () => {
                         { accommodation: ['child'], relationship: ['other'], mapping: 3 },
                         { accommodation: ['family'], relationship: ['other'], mapping: 3 },
                         { accommodation: ['friends'], relationship: ['other'], mapping: 3 },
-                        // { accommodation: ['other'], relationship: ['other'], mapping: 3 },
-                        // { accommodation: ['partner'], relationship: ['other'], mapping: 1 }, // 10
-                        // { accommodation: ['unknown'], relationship: ['other'], mapping: 3 },
-                        // { accommodation: ['child', 'partner'], relationship: ['other'], mapping: 1 },
-                        // { accommodation: ['family', 'partner'], relationship: ['other'], mapping: 1 },
-                        // { accommodation: ['friends', 'partner'], relationship: ['other'], mapping: 1 },
-                        // { accommodation: ['other', 'partner'], relationship: ['other'], mapping: 1 }, // 15
-                        // { accommodation: ['unknown', 'partner'], relationship: ['other'], mapping: 1 },
-                        // { accommodation: ['alone'], relationship: ['family'], mapping: 3 },
-                        // { accommodation: ['alone'], relationship: ['friends'], mapping: 3 },
-                        // { accommodation: ['alone'], relationship: ['other'], mapping: 3 },
-                        // { accommodation: ['alone'], relationship: ['otherChildren'], mapping: 3 }, // 20
-                        // { accommodation: ['alone'], relationship: ['ownChildren'], mapping: 3 },
-                        // { accommodation: ['alone'], relationship: ['partner'], mapping: 2 },
-                        // { accommodation: ['alone'], relationship: ['family', 'partner'], mapping: 2 },
-                        // { accommodation: ['alone'], relationship: ['friends', 'partner'], mapping: 2 },
-                        // { accommodation: ['alone'], relationship: ['other', 'partner'], mapping: 2 }, // 25
-                        // { accommodation: ['alone'], relationship: ['otherChildren', 'partner'], mapping: 2 },
-                        // { accommodation: ['alone'], relationship: ['ownChildren', 'partner'], mapping: 2 },
-                        // { accommodation: ['child', 'partner'], relationship: ['family', 'partner'], mapping: 1 },
-                        // { accommodation: ['family', 'partner'], relationship: ['friends', 'partner'], mapping: 1 },
-                        // { accommodation: ['other', 'partner'], relationship: ['other', 'partner'], mapping: 1 }, // 30
-                        // { accommodation: ['alone'], relationship: ['otherChildren', 'partner'], mapping: 2 },
-                        // { accommodation: ['unknown', 'partner'], relationship: ['ownChildren', 'partner'], mapping: 1 },
+                        { accommodation: ['other'], relationship: ['other'], mapping: 3 },
+                        { accommodation: ['partner'], relationship: ['other'], mapping: 1 }, // 10
+                        { accommodation: ['unknown'], relationship: ['other'], mapping: 3 },
+                        { accommodation: ['child', 'partner'], relationship: ['other'], mapping: 1 },
+                        { accommodation: ['family', 'partner'], relationship: ['other'], mapping: 1 },
+                        { accommodation: ['friends', 'partner'], relationship: ['other'], mapping: 1 },
+                        { accommodation: ['other', 'partner'], relationship: ['other'], mapping: 1 }, // 15
+                        { accommodation: ['unknown', 'partner'], relationship: ['other'], mapping: 1 },
+                        { accommodation: ['alone'], relationship: ['family'], mapping: 3 },
+                        { accommodation: ['alone'], relationship: ['friends'], mapping: 3 },
+                        { accommodation: ['alone'], relationship: ['other'], mapping: 3 },
+                        { accommodation: ['alone'], relationship: ['otherChildren'], mapping: 3 }, // 20
+                        { accommodation: ['alone'], relationship: ['ownChildren'], mapping: 3 },
+                        { accommodation: ['alone'], relationship: ['partner'], mapping: 2 },
+                        { accommodation: ['alone'], relationship: ['family', 'partner'], mapping: 2 },
+                        { accommodation: ['alone'], relationship: ['friends', 'partner'], mapping: 2 },
+                        { accommodation: ['alone'], relationship: ['other', 'partner'], mapping: 2 }, // 25
+                        { accommodation: ['alone'], relationship: ['otherChildren', 'partner'], mapping: 2 },
+                        { accommodation: ['alone'], relationship: ['ownChildren', 'partner'], mapping: 2 },
+                        { accommodation: ['child', 'partner'], relationship: ['family', 'partner'], mapping: 1 },
+                        { accommodation: ['family', 'partner'], relationship: ['friends', 'partner'], mapping: 1 },
+                        { accommodation: ['other', 'partner'], relationship: ['other', 'partner'], mapping: 1 }, // 30
+                        { accommodation: ['alone'], relationship: ['otherChildren', 'partner'], mapping: 2 },
+                        { accommodation: ['unknown', 'partner'], relationship: ['ownChildren', 'partner'], mapping: 1 },
                     ]
 
                 let first = true
