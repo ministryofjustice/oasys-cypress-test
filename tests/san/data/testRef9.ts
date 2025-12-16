@@ -11,7 +11,7 @@ export const modifySan: SanPopulation = [
             { item: 'futureType', value: 'privateRent' },
             { item: 'saveAndContinue' },
             { item: 'practitionerAnalysis' },
-            { item: 'continue' },
+            { item: 'markAsComplete' },
         ],
     },
     {
@@ -25,7 +25,7 @@ export const modifySan: SanPopulation = [
             { item: 'highestQual', value: 'level1' },
             { item: 'saveAndContinue' },
             { item: 'practitionerAnalysis' },
-            { item: 'continue' },
+            { item: 'markAsComplete' },
         ],
     },
     {
@@ -35,7 +35,7 @@ export const modifySan: SanPopulation = [
             { item: 'incomeSource', value: 'offending,pension' },
             { item: 'saveAndContinue' },
             { item: 'practitionerAnalysis' },
-            { item: 'continue' },
+            { item: 'markAsComplete' },
         ],
     },
     {
@@ -48,7 +48,7 @@ export const modifySan: SanPopulation = [
             { item: 'history', value: 'stable' },
             { item: 'saveAndContinue' },
             { item: 'practitionerAnalysis' },
-            { item: 'continue' },
+            { item: 'markAsComplete' },
         ],
     },
 ]
