@@ -174,12 +174,20 @@ function da(data: string[][], after6_30: boolean): number {
         const q67 = getNumericAnswer(data, '6', '6.7da')
         return q67 == 1 ? getNumericAnswer(data, '6', '6.7.2.1da') : q67
     } else {
-        return null // TODO handle pre-6.30 assessments?
+        const q67 = getTextAnswer(data, '6', '6.7')
+        if (q67 == null) {
+            return null
+        } else if (q67 == 'NO') {
+            return 0
+        } else {
+            const q672 = getMultipleAnswers(data, '6', ['6.7.1'], 2)
+            return q672 == null ? null : q672.includes('PERPETRATOR') ? 1 : 0
+        }
     }
 
 }
 
-function q22 (assessment: RescoringAssessment, after6_35: boolean): number{
+function q22(assessment: RescoringAssessment, after6_35: boolean): number {
 
     if (after6_35) {
         return getNumericAnswer(assessment.qaData, '2', '2.2_V2_WEAPON')
