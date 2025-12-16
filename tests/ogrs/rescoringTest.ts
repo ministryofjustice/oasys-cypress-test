@@ -12,11 +12,11 @@ function test(part: number) {
         cy.get<AppConfig>('@appConfig').then((appConfig) => {
 
             const testParams: RescoringTestParameters = {
-                dataFile: 'rescoringCRNs-T2B-TestRun14',
-                runNumber: '14',
+                dataFile: 'rescoringCRNs-T2B 16-Dec',
+                runNumber: '17',
                 start: null,
                 end: null,
-                staticFlag: 'N',
+                staticFlag: 'Y',
                 includeLayer1: true,
                 useCurrentDate: false,
                 reportMode: 'normal',       

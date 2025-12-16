@@ -196,10 +196,6 @@ function createOutputLine(params: TestCaseParameters, offender: RescoringOffende
     output.push(outputParams.OGP2_PERCENTAGE?.toString())
     output.push(outputParams.OVP2_BAND)
     output.push(outputParams.OVP2_PERCENTAGE?.toString())
-    output.push('')
-    output.push(outputParams.SNSV_MISSING_QUESTIONS_DYNAMIC.replaceAll('\n', '|'))
-    output.push(outputParams.OGP2_MISSING_QUESTIONS.replaceAll('\n', '|'))
-    output.push(outputParams.OVP2_MISSING_QUESTIONS.replaceAll('\n', '|'))
 
     const inputParams = getInputsForOutputLine(params)
     const oldResults = offender.getOldPredictors()
