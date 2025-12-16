@@ -131,7 +131,7 @@ function setAccommodationOptions(options: AccommodationOptions[], firstRun: bool
 function setRelationshipOptions(options: RelationshipOptions[], firstRun: boolean) {
 
     relationshipsLanding.goto(true)
-    relationshipsLanding.information.click()
+    // relationshipsLanding.information.click()  Removed for ARNS release 1.11, might come back later
     if (firstRun) {
         relationships1.anyChildren.setValue(['no'])
         relationships1.saveAndContinue.click()

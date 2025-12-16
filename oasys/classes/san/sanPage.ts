@@ -111,7 +111,7 @@ export abstract class SanPage {
             }
         } else if (this.menu.type == 'San') {
             cy.get('.moj-side-navigation__item a').contains(this.name).first().click().then(() => {
-                this.checkCurrent(suppressLog)
+                // this.checkCurrent(suppressLog)  Removed for SAN release 1.11 as the titles vary depending on where you land
             })
         } else {
             throw new Error(`Invalid menu type for page ${this.name}`)

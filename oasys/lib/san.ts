@@ -23,7 +23,7 @@ export function gotoSan(section: SanSection = null, subPage: 'information' | 'an
 
     handleLandingPage('san')
 
-    new oasys.Pages.San.SectionLandingPage('Accommodation').checkCurrent(supressLog)
+    new oasys.Pages.San.SectionLandingPage('Accommodation')  // .checkCurrent(supressLog)  Removed for release 1.11, titles vary depending on current state of the section
     if (section) {
         goto(section, subPage, supressLog)
     }
@@ -37,7 +37,7 @@ export function gotoSanReadOnly(section: SanSection = null, subPage: 'informatio
 
     new oasys.Pages.Assessment.SanSections().goto().openSan.click()
 
-    new oasys.Pages.San.SectionLandingPage('Accommodation').checkCurrent()
+    // new oasys.Pages.San.SectionLandingPage('Accommodation').checkCurrent()  Removed for release 1.11, titles vary depending on current state of the section
     if (section) {
         goto(section, subPage)
     }
@@ -49,9 +49,10 @@ export function gotoSanReadOnly(section: SanSection = null, subPage: 'informatio
 export function goto(section: SanSection, subPage: 'information' | 'analysis' = null, supressLog: boolean = false) {
 
     const page = new oasys.Pages.San.SectionLandingPage(section).goto(supressLog)
-    if (subPage) {
-        page[subPage].click()
-    }
+    // Sub-page functionality removed for ARNS release 1.11, might come back later
+    // if (subPage) {
+    //     page[subPage].click()
+    // }
 }
 
 /**
@@ -391,7 +392,8 @@ export function action(action: string) {
             })
             break
         case 'practitionerAnalysis':
-            cy.get('.summary-action-buttons .govuk-button').eq(0).click()
+            //cy.get('.summary-action-buttons .govuk-button').eq(0).click()  Release 1.11 revert to previous navigation
+            cy.get('#tab_practitioner-analysis').eq(0).click()
             break
         case 'changeAnalysis':
             cy.get('a[href*="-analysis"]').contains('Change').eq(0).click()
