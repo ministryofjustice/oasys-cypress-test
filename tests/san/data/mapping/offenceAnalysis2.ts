@@ -74,7 +74,8 @@ export const script: SanScript = {
         {
             name: '13 - ',
             steps: [
-                { item: 'change' },
+                { item: 'back' },
+                { item: 'back' },
                 { item: 'offenceDescription', value: `Offence description` },
                 { item: 'offenceElements', value: `hatred,physicalDamage,sexualElement,victimTargeted,violence,weapon` },
                 { item: 'victimTargetedDetails', value: `Victim targeted details` },
@@ -145,7 +146,8 @@ export const script: SanScript = {
         {
             name: '14 - ',
             steps: [
-                { item: 'change' },
+                { item: 'back' },
+                { item: 'back' },
                 { item: 'offenceDescription', value: `Offence description` },
                 { item: 'offenceElements', value: `physicalDamage,sexualElement,victimTargeted,violence,weapon` },
                 { item: 'victimTargetedDetails', value: `Victim targeted details` },
@@ -230,7 +232,8 @@ ABCD ef814ABCD ef824ABCD ef834ABCD ef844ABCD ef854ABCD ef864ABCD ef874ABCD ef884
         {
             name: '15 - ',
             steps: [
-                { item: 'change' },
+                { item: 'back' },
+                { item: 'back' },
                 { item: 'offenceDescription', value: `Offence description` },
                 { item: 'offenceElements', value: `sexualElement,victimTargeted,violence,weapon` },
                 { item: 'victimTargetedDetails', value: `Victim targeted details` },
@@ -329,7 +332,8 @@ ABCD ef814ABCD ef824ABCD ef834ABCD ef844ABCD ef854ABCD ef864ABCD ef874ABCD ef884
         {
             name: '16 - ',
             steps: [
-                { item: 'change' },
+                { item: 'back' },
+                { item: 'back' },
                 { item: 'offenceDescription', value: `Offence description` },
                 { item: 'offenceElements', value: `victimTargeted,violence,weapon` },
                 { item: 'victimTargetedDetails', value: `ABCD efg10ABCD efg20ABCD efg30ABCD efg40ABCD efg50ABCD efg60ABCD efg70ABCD efg80ABCD efg90ABCD ef100ABCD ef110ABCD ef120ABCD ef130ABCD ef140ABCD ef150ABCD ef160ABCD ef170ABCD ef180ABCD ef190ABCD ef200ABCD ef210ABCD ef220ABCD ef230ABCD ef240ABCD ef250ABCD ef260ABCD ef270ABCD ef280ABCD ef290ABCD ef300ABCD ef310ABCD ef320ABCD ef330ABCD ef340ABCD ef350ABCD ef360ABCD ef370ABCD ef380ABCD ef390ABCDEF 400` },
@@ -428,7 +432,8 @@ ABCD ef814ABCD ef824ABCD ef834ABCD ef844ABCD ef854ABCD ef864ABCD ef874ABCD ef884
         {
             name: '17 - ',
             steps: [
-                { item: 'change' },
+                { item: 'back' },
+                { item: 'back' },
                 { item: 'offenceDescription', value: `Offence description` },
                 { item: 'offenceElements', value: `violence,weapon` },
                 { item: 'reason', value: `Why it happened` },
@@ -496,7 +501,8 @@ ABCD ef814ABCD ef824ABCD ef834ABCD ef844ABCD ef854ABCD ef864ABCD ef874ABCD ef884
         {
             name: '18 - ',
             steps: [
-                { item: 'change' },
+                { item: 'back' },
+                { item: 'back' },
                 { item: 'offenceDescription', value: `Offence description` },
                 { item: 'offenceElements', value: `weapon` },
                 { item: 'reason', value: `Why it happened` },
@@ -580,7 +586,8 @@ ABCD ef814ABCD ef824ABCD ef834ABCD ef844ABCD ef854ABCD ef864ABCD ef874ABCD ef884
         {
             name: '19 - ',
             steps: [
-                { item: 'change' },
+                { item: 'back' },
+                { item: 'back' },
                 { item: 'offenceDescription', value: `Offence description` },
                 { item: 'offenceElements', value: `weapon` },
                 { item: 'reason', value: `Why it happened` },
@@ -664,7 +671,8 @@ ABCD ef814ABCD ef824ABCD ef834ABCD ef844ABCD ef854ABCD ef864ABCD ef874ABCD ef884
         {
             name: '20 - ',
             steps: [
-                { item: 'change' },
+                { item: 'back' },
+                { item: 'back' },
                 { item: 'offenceDescription', value: `Offence description` },
                 { item: 'offenceElements', value: `excessiveViolence,hatred,physicalDamage,sexualElement,victimTargeted,violence,weapon` },
                 { item: 'victimTargetedDetails', value: `Victim targeted details` },
@@ -733,7 +741,8 @@ ABCD ef814ABCD ef824ABCD ef834ABCD ef844ABCD ef854ABCD ef864ABCD ef874ABCD ef884
         {
             name: '21 - ',
             steps: [
-                { item: 'change' },
+                { item: 'back' },
+                { item: 'back' },
                 { item: 'offenceDescription', value: `Offence description` },
                 { item: 'offenceElements', value: `hatred,physicalDamage,sexualElement,victimTargeted,violence,weapon` },
                 { item: 'victimTargetedDetails', value: `Victim targeted details` },
@@ -834,7 +843,8 @@ ABCD ef814ABCD ef824ABCD ef834ABCD ef844ABCD ef854ABCD ef864ABCD ef874ABCD ef884
         {
             name: '22 - ',
             steps: [
-                { item: 'change' },
+                { item: 'back' },
+                { item: 'back' },
                 { item: 'offenceDescription', value: `Offence description` },
                 { item: 'offenceElements', value: `physicalDamage,sexualElement,victimTargeted,violence,weapon` },
                 { item: 'victimTargetedDetails', value: `Victim targeted details` },

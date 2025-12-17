@@ -77,7 +77,6 @@ describe('Mapping test for drugs - individual drugs details', () => {
     it('crack', () => { drugTest('crack') })
     it('ecstasy', () => { drugTest('ecstasy') })
     it('hallucinogenics', () => { drugTest('hallucinogenics') })
-
     it('heroin', () => { drugTest('heroin') })
     it('methadone', () => { drugTest('methadone') })
     it('prescribed', () => { drugTest('prescribed') })
