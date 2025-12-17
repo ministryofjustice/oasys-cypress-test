@@ -15,9 +15,10 @@ export function createAssessmentTestCase(assessment: RescoringAssessment, testPa
 
     const initiationDate = dayjs.utc(assessment.initiationDate, dateFormat)
     const after6_30 = checkIfAfter(testParams.significantReleaseDates.r6_30, initiationDate)
+    const after6_35 = checkIfAfter(testParams.significantReleaseDates.r6_35, initiationDate)
 
-    let staticCalc = 'N'
-    if (assessment.type == 'LAYER_1' && assessment.version == 2) {  // RoSHA - set static flag according to 1.39 (offender interview)
+    let staticCalc = testParams.staticFlag
+    if (staticCalc == 'N' && assessment.type == 'LAYER_1' && assessment.version == 2) {  // RoSHA - set static flag according to 1.39 (offender interview)
         if (getSingleAnswer(assessment.qaData, 'RSR', '1.39') != 'YES') {
             staticCalc = 'Y'
         }
@@ -43,7 +44,7 @@ export function createAssessmentTestCase(assessment: RescoringAssessment, testPa
         MOST_RECENT_OFFENCE: getDate(getTextAnswer(assessment.textData, '1', '1.43')),
         COMMUNITY_DATE: getDate(getTextAnswer(assessment.textData, '1', '1.38')),
         ONE_POINT_THIRTY: getSingleAnswer(assessment.qaData, '1', '1.30', ynLookup),
-        TWO_POINT_TWO: getNumericAnswer(assessment.qaData, '2', '2.2_V2_WEAPON'),
+        TWO_POINT_TWO: q22(assessment, after6_35),
         THREE_POINT_FOUR: getNumericAnswer(assessment.qaData, '3', '3.4'),
         FOUR_POINT_TWO: getNumericAnswer(assessment.qaData, '4', '4.2'),
         SIX_POINT_FOUR: getNumericAnswer(assessment.qaData, '6', '6.4'),
@@ -121,6 +122,26 @@ function getSingleAnswer(data: string[][], section: string, question: string, lo
     return null
 }
 
+function getMultipleAnswers(data: string[][], section: string, questions: string[], resultColumn: number, lookupDictionary: { [keys: string]: string } = {}): string[] {
+
+    if (data == undefined) return null
+
+    let result: string[] = null
+    const answers = data.filter((a) => a[0] == section && questions.includes(a[1]) && a[2] != 'No' && a[2] != null)
+
+    if (answers.length > 0) {
+        result = []
+        answers.forEach((a) => {
+            let answer = a[resultColumn]
+            if (answer != null) {
+                result.push(answer)
+            }
+        })
+    }
+
+    return result?.length == 0 ? null : result
+}
+
 function getNumericAnswer(data: string[][], section: string, question: string): number {
 
     if (data == undefined) return null
@@ -153,9 +174,27 @@ function da(data: string[][], after6_30: boolean): number {
         const q67 = getNumericAnswer(data, '6', '6.7da')
         return q67 == 1 ? getNumericAnswer(data, '6', '6.7.2.1da') : q67
     } else {
-        return null // TODO handle pre-6.30 assessments?
+        const q67 = getTextAnswer(data, '6', '6.7')
+        if (q67 == null) {
+            return null
+        } else if (q67 == 'NO') {
+            return 0
+        } else {
+            const q672 = getMultipleAnswers(data, '6', ['6.7.1'], 2)
+            return q672 == null ? null : q672.includes('PERPETRATOR') ? 1 : 0
+        }
     }
 
+}
+
+function q22(assessment: RescoringAssessment, after6_35: boolean): number {
+
+    if (after6_35) {
+        return getNumericAnswer(assessment.qaData, '2', '2.2_V2_WEAPON')
+    } else {
+        const a22 = getMultipleAnswers(assessment.qaData, '2', ['2.2'], 2)
+        return a22 == null ? null : a22.includes('WEAPON') ? 1 : 0
+    }
 }
 
 function q141(assessment: RescoringAssessment): string {

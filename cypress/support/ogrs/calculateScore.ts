@@ -223,12 +223,11 @@ export function calculateBand(scoreType: ScoreType, probability: Decimal): Score
         case 'serious_violence_extended':
             return probability.greaterThanOrEqualTo(6.9) ? 'Very High' : probability.greaterThanOrEqualTo(3) ? 'High' : probability.greaterThanOrEqualTo(1) ? 'Medium' : 'Low'
         case 'general_brief':
-        case 'violence_brief':
-            return probability.greaterThanOrEqualTo(90) ? 'Very High' : probability.greaterThanOrEqualTo(75) ? 'High' : probability.greaterThanOrEqualTo(50) ? 'Medium' : 'Low'
         case 'general_extended':
-            return probability.greaterThanOrEqualTo(78) ? 'Very High' : probability.greaterThanOrEqualTo(62) ? 'High' : probability.greaterThanOrEqualTo(39) ? 'Medium' : 'Low'
+            return probability.greaterThanOrEqualTo(90) ? 'Very High' : probability.greaterThanOrEqualTo(75) ? 'High' : probability.greaterThanOrEqualTo(50) ? 'Medium' : 'Low'
+        case 'violence_brief':
         case 'violence_extended':
-            return probability.greaterThanOrEqualTo(73) ? 'Very High' : probability.greaterThanOrEqualTo(60) ? 'High' : probability.greaterThanOrEqualTo(42) ? 'Medium' : 'Low'
+            return probability.greaterThanOrEqualTo(80) ? 'Very High' : probability.greaterThanOrEqualTo(60) ? 'High' : probability.greaterThanOrEqualTo(30) ? 'Medium' : 'Low'
     }
     return null
 }

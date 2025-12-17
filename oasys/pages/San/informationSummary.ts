@@ -7,4 +7,5 @@ export class InformationSummary extends BaseSanEditPage {
     title = 'Information summary - Strengths and Needs'
 
     change = new SanElement.Link('.govuk-link:visible:contains("Change")[0]')
+    analysis = new SanElement.Link('Practitioner analysis')
 }

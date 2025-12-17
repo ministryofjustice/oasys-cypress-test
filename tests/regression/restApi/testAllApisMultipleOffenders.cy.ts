@@ -13,8 +13,8 @@ describe('RestAPI regression tests', () => {
     let offendersTested = 0
 
     // Number of offenders for each date range
-    const offenderCountEarly = 0  // Used for pre-2023, not many offenders available
-    const offenderCount = 20  // 2023 and later
+    const offenderCountEarly = 20  // Used for pre-2023, not many offenders available
+    const offenderCount = 60  // 2023 and later
 
     // Define date parameters for sets of offender data
     const dateConditions = [
@@ -55,7 +55,7 @@ describe('RestAPI regression tests', () => {
                                     (select cms_prob_number, cms_pris_number from eor.offender 
                                         where cms_prob_number is not null
                                         and deleted_date is null
-                                        and create_date < ${dateFilter} 
+                                        and create_date <= ${dateFilter} 
                                         and cms_prob_number not in ${offendersToSkip}
                                         order by create_date desc)
                                         where rownum <= ${dateCondition.count}`

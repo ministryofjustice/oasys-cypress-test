@@ -150,7 +150,7 @@ export class RescoringAssessment {
 
     static query(crnSource: Provider, crn: string, includeLayer1: boolean): string {
 
-        const typeWhere = includeLayer1 ? `s.assessment_type_elm in ('LAYER_1', 'LAYER_3')` : `s.ref_ass_version_code = 'LAYER_3'`
+        const typeWhere = includeLayer1 ? `s.assessment_type_elm in ('LAYER_1', 'LAYER_3')` : `s.assessment_type_elm = 'LAYER_3'`
 
         return `select s.oasys_set_pk, s.cms_prob_number, s.cms_pris_number, 
                     s.assessment_type_elm, s.version_number, s.assessment_status_elm, s.purpose_assessment_elm, s.purpose_assmt_other_ftxt,

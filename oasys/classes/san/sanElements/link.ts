@@ -12,7 +12,7 @@ export class Link {
     click() {
 
         if (this.selector.startsWith('#') || this.selector.startsWith('.') || this.selector.includes('[')) {
-            cy.get(this.selector).click()
+            cy.get(this.selector).eq(0).click()
         } else {
             cy.contains('a', this.selector).click()
         }

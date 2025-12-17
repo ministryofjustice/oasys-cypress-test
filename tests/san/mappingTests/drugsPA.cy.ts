@@ -9,6 +9,11 @@ type TestCase = {
     motivated: Motivation
 }
 
+const drugs1 = new oasys.Pages.San.Drugs.Drugs1()
+const drugs2 = new oasys.Pages.San.Drugs.Drugs2()
+const drugs3 = new oasys.Pages.San.Drugs.Drugs3()
+const drugs4 = new oasys.Pages.San.Drugs.Drugs4()
+const infoSummary = new oasys.Pages.San.InformationSummary()
 const drugsAnalysis = new oasys.Pages.San.Drugs.DrugsPractitionerAnalysis()
 
 describe('Mapping test for drugs practitioner analysis', () => {
@@ -36,7 +41,6 @@ function paTest() {
         oasys.Db.getLatestSetPkByPnc(mappingTestOffender.pnc, 'assessmentPk')
         cy.get<number>('@assessmentPk').then((assessmentPk) => {
 
-            // Run all the scenarios for a single drug
             cy.wrap(false).as('failed')
             const testCases: TestCase[] =
                 [
@@ -51,18 +55,32 @@ function paTest() {
                     { ref: 9, strengths: false, riskOfHarm: false, riskOfReoffending: false, strengthsText: 'normal', riskOfHarmText: 'normal', riskOfReoffendingText: 'empty', motivated: 'unknown' },
                 ]
 
-            let firstRun = true
-
             for (const test of testCases) {
 
                 // Get to the right starting screen
 
-                if (firstRun) {
+                if (test.ref == 1) {
                     oasys.San.gotoSan('Drug use', 'information', true)
-                    new oasys.Pages.San.Drugs.Drugs1().everUsed.setValue('yes')  // Need to set this otherwise the motivation question doesn't get returned
-                    new oasys.Pages.San.SectionLandingPage('Drug use').analysis.click()
+                    drugs1.everUsed.setValue('yes')  // Need to set this otherwise the motivation question doesn't get returned
+                    // new oasys.Pages.San.SectionLandingPage('Drug use').analysis.click()  Removed for navigation change in release 1.11, might come back later
+                    drugs1.saveAndContinue.click()
+                    drugs2.drugType.setValue(['cannabis'])
+                    drugs2.cannabisLastSixMonths.setValue('no')
+                    drugs2.saveAndContinue.click()
+                    drugs3.detailsNotLastSixMonths.setValue('details')
+                    drugs3.treatment.setValue('no')
+                    drugs3.saveAndContinue.click()
+                    drugs4.whyStarted.setValue(['cultural'])
+                    drugs4.impactDrugs.setValue(['behavioural'])
+                    drugs4.wantChanges.setValue('madeChanges')
+                    drugs4.saveAndContinue.click()
+                    infoSummary.analysis.click()
                 } else {
                     oasys.San.gotoSan('Drug use', 'analysis', true)
+                    infoSummary.analysis.click()
+                    if (test.ref > 2) {
+                        drugsAnalysis.change.click()
+                    }
                 }
 
                 // Set values on SAN, return to OASys and check the results
@@ -85,7 +103,6 @@ function paTest() {
                         cy.groupedLogEnd()
                     })
                 })
-                firstRun = false
             }
 
             cy.get<boolean>('@failed').then((failed) => {
