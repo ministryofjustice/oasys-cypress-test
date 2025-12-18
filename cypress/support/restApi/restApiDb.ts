@@ -35,7 +35,7 @@ export async function getOffenderWithAssessments(crnSource: Provider, crn: strin
     let dbOffender = new DbOffenderWithAssessments(offenderData.data[0])
 
     // Get OASYS_SET data, then loop through assessments
-    const assessmentData = await db.selectData(DbAssessment.query(crnSource, crn))
+    const assessmentData = await db.selectData(DbAssessment.query(dbOffender.offenderPk))
     if (assessmentData.error != null) throw new Error(assessmentData.error)
     const assessments = assessmentData.data as string[][]
 
@@ -124,7 +124,7 @@ export async function getOffenderWithAssessments(crnSource: Provider, crn: strin
     }
 
     // Add standalone RSRs
-    const rsrData = await db.selectData(DbRsr.query(crnSource, crn))
+    const rsrData = await db.selectData(DbRsr.query(dbOffender.offenderPk))
     if (rsrData.error != null) throw new Error(rsrData.error)
     const rsrs = rsrData.data as string[][]
 
