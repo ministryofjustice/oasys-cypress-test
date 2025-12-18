@@ -107,7 +107,14 @@ function getString(param: string): string {
 
 function getDate(param: string): Dayjs {
 
-    const result = dayjs.utc(param, dateFormat)
+    let result = dayjs.utc(param, dateFormat)
+    // Handle different formats in text data
+    if (!result.isValid()) {
+        result = dayjs.utc(param, 'DD/MM/YYYY')
+    }
+    if (!result.isValid()) {
+        result = dayjs.utc(param, 'D/MM/YYYY')
+    }
     return !result.isValid() ? null : result
 }
 
@@ -193,7 +200,7 @@ function q22(assessment: RescoringAssessment, after6_35: boolean): number {
         return getNumericAnswer(assessment.qaData, '2', '2.2_V2_WEAPON')
     } else {
         const a22 = getMultipleAnswers(assessment.qaData, '2', ['2.2'], 2)
-        return a22 == null ? null : a22.includes('WEAPON') ? 1 : 0
+        return a22 == null ? null : a22.includes('WEAPON') ? 1 : null
     }
 }
 

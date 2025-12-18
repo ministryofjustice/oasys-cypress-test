@@ -10,7 +10,7 @@ export class OgrsAssessment {
     gender: string
     offence: string
     prisonInd: string
-
+    initiationDate: string
     qaData: string[][]
     textData: string[][]
 
@@ -23,11 +23,12 @@ export class OgrsAssessment {
         this.dob = assessmentData[4]
         this.gender = assessmentData[5]
         this.prisonInd = assessmentData[6]
+        this.initiationDate = assessmentData[7]
     }
 
     static query(rows: number, whereClause: string): string {
         return `select oasys_set_pk, ref_ass_version_code, version_number, assessment_status_elm,
-                    to_char(date_of_birth, '${dateFormat}'), gender_elm, prison_ind
+                    to_char(date_of_birth, '${dateFormat}'), gender_elm, prison_ind, to_char(initiation_date, '${dateFormat}')
                     from eor.oasys_set 
                     where ${whereClause} 
                     order by initiation_date desc fetch first ${rows} rows only`

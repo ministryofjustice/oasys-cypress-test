@@ -14,6 +14,10 @@ export function createAssessmentTestCase(assessment: OgrsAssessment): TestCasePa
     dayjs.extend(utc)
     const today = dayjs.utc()
 
+    const initiationDate = dayjs.utc(assessment.initiationDate, dateFormat)
+    const after6_30 = checkIfAfter(dayjs('09/11/2021'), initiationDate)
+    const after6_35 = checkIfAfter(dayjs('10/07/2022'), initiationDate)
+
     let staticCalc = 'N'
     if (assessment.type == 'LAYER1' && assessment.version == 2) {  // RoSHA - set static flag according to 1.39 (offender interview)
         if (getSingleAnswer(assessment.qaData, '1', '1.39') != 'YES') {
@@ -41,7 +45,7 @@ export function createAssessmentTestCase(assessment: OgrsAssessment): TestCasePa
         MOST_RECENT_OFFENCE: getDate(getTextAnswer(assessment.textData, '1', '1.43')),
         COMMUNITY_DATE: getDate(getTextAnswer(assessment.textData, '1', '1.38')),
         ONE_POINT_THIRTY: getSingleAnswer(assessment.qaData, '1', '1.30', ynLookup),
-        TWO_POINT_TWO: getNumericAnswer(assessment.qaData, '2', '2.2_V2_WEAPON'),
+        TWO_POINT_TWO: q22(assessment, after6_35),
         THREE_POINT_FOUR: getNumericAnswer(assessment.qaData, '3', '3.4'),
         FOUR_POINT_TWO: getNumericAnswer(assessment.qaData, '4', '4.2'),
         SIX_POINT_FOUR: getNumericAnswer(assessment.qaData, '6', '6.4'),
@@ -114,12 +118,32 @@ function getSingleAnswer(data: string[][], section: string, question: string, lo
     return null
 }
 
+function getMultipleAnswers(data: string[][], section: string, questions: string[], resultColumn: number, lookupDictionary: { [keys: string]: string } = {}): string[] {
+
+    if (data == undefined) return null
+
+    let result: string[] = null
+    const answers = data.filter((a) => a[0] == section && questions.includes(a[1]) && a[2] != 'No' && a[2] != null)
+
+    if (answers.length > 0) {
+        result = []
+        answers.forEach((a) => {
+            let answer = a[resultColumn]
+            if (answer != null) {
+                result.push(answer)
+            }
+        })
+    }
+
+    return result?.length == 0 ? null : result
+}
+
 function getNumericAnswer(data: string[][], section: string, question: string): number {
 
     if (data == undefined) return null
     if (data == null) return null
 
-    const answers = data.filter((a) => a[0] == section && a[1] == question && a[4] != 'Y')
+    const answers = data.filter((a) => a[0] == section && a[1] == question)
 
     if (answers.length > 0) {
         const answer = answers[0][2] == null ? answers[0][3] : answers[0][2]
@@ -133,7 +157,7 @@ function getTextAnswer(data: string[][], section: string, question: string): str
     if (data == undefined) return undefined
     if (data == null) return null
 
-    const answers = data.filter((a) => a[0] == section && a[1] == question && a[4] != 'Y')  // Check for currently hidden
+    const answers = data.filter((a) => a[0] == section && a[1] == question)
     if (answers.length > 0) {
         return answers[0][3] == null ? answers[0][2] : answers[0][3]
     }
@@ -149,6 +173,16 @@ function q141(assessment: OgrsAssessment): string {
         return 'O'
     } else {
         return q141
+    }
+}
+
+function q22(assessment: OgrsAssessment, after6_35: boolean): number {
+
+    if (after6_35) {
+        return getNumericAnswer(assessment.qaData, '2', '2.2_V2_WEAPON')
+    } else {
+        const a22 = getMultipleAnswers(assessment.qaData, '2', ['2.2'], 2)
+        return a22 == null ? null : a22.includes('WEAPON') ? 1 : 0
     }
 }
 
@@ -229,4 +263,9 @@ const genderLookup = {
 const ynLookup = {
     YES: 'Y',
     NO: 'N',
+}
+
+function checkIfAfter(appDate: Dayjs, compareDate: Dayjs) {  // return true if second date is later or equal to than the first
+
+    return !compareDate.isBefore(appDate)
 }
