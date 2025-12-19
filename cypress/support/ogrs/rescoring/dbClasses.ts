@@ -183,31 +183,30 @@ export class RescoringAssessment {
 
     static qaQuery(assessmentPk: number): string {
 
-        return `select q.ref_section_code, q.ref_question_code, ra.ref_answer_code
-                    from eor.oasys_question q, eor.oasys_answer a, eor.ref_answer ra
-                    where q.oasys_section_pk in 
-                        (select oasys_section_pk from eor.oasys_Section 
-                        where oasys_set_pk = ${assessmentPk} and currently_hidden_ind <> 'Y'
-                        and ref_section_code in ('1','2','3','4','6','7','8','9','11','12','ROSH','RSR'))
-                    and q.oasys_question_pk = a.oasys_question_pk
-                    and ra.ref_ass_version_code = a.ref_ass_version_code
-                    and ra.version_number = a.version_number
-                    and ra.ref_section_code = a.ref_section_code
-                    and ra.ref_question_code = a.ref_question_code
-                    and ra.ref_answer_code = a.ref_answer_code 
-                    and q.currently_hidden_ind <> 'Y' 
-                    order by q.ref_section_code, q.ref_question_code`
+        return `select q.ref_section_code, q.ref_question_code, a.ref_answer_code
+                    from eor.oasys_set st
+                    left outer join eor.oasys_section s
+                    on s.oasys_set_pk = st.oasys_set_pk
+                    left outer join eor.oasys_question q
+                    on q.oasys_section_pk = s.oasys_section_pk
+                    left outer join eor.oasys_answer a
+                    on a.oasys_question_pk = q.oasys_question_pk
+                    where st.oasys_set_pk = ${assessmentPk}
+                    and s.ref_section_code in ('1','2','3','4','6','7','8','9','11','12','ROSH','RSR')
+                    and q.currently_hidden_ind = 'N'`
     }
 
     static textAnswerQuery(assessmentPk: number): string {
 
-        return `select ref_section_code, ref_question_code, free_format_answer, additional_note, currently_hidden_ind  
-                    from eor.oasys_question
-                    where oasys_section_pk = 
-                        (select oasys_section_pk from eor.oasys_Section 
-                        where oasys_set_pk = ${assessmentPk} and currently_hidden_ind <> 'Y'
-                        and ref_section_code = '1')
-                    and (free_format_answer is not null or additional_note is not null)`
+        return `select q.ref_section_code, q.ref_question_code, q.free_format_answer, q.additional_note
+                    from eor.oasys_set st
+                    left outer join eor.oasys_section s
+                    on s.oasys_set_pk = st.oasys_set_pk
+                    left outer join eor.oasys_question q
+                    on q.oasys_section_pk = s.oasys_section_pk
+                    where st.oasys_set_pk = ${assessmentPk}
+                    and s.ref_section_code = '1'
+                    and q.currently_hidden_ind = 'N'`
     }
 }
 

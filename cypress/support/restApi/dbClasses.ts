@@ -120,7 +120,7 @@ export class DbAssessment extends DbAssessmentOrRsr {
         this.courtType = courtData[2]
     }
 
-    static query(crnSource: Provider, crn: string): string {
+    static query(offenderPk: number): string {
 
         return `select s.oasys_set_pk, s.ref_ass_version_code, s.assessment_status_elm,
                     to_char(s.initiation_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'),
@@ -143,9 +143,8 @@ export class DbAssessment extends DbAssessmentOrRsr {
                     s.ovp2_percentage_2yr, s.ovp2_band_risk_recon_elm, s.ovp2_calculated, 
                     s.snsv_percentage_2yr_static, s.snsv_stat_band_risk_recon_elm, s.snsv_calculated_static, 
                     s.snsv_percentage_2yr_dynamic, s.snsv_dyn_band_risk_recon_elm, s.snsv_calculated_dynamic 
-                    from eor.offender o, eor.oasys_assessment_group g, eor.oasys_set s, eor.oasys_set_change c 
-                    where ${crnSource == 'prob' ? 'o.cms_prob_number' : 'o.cms_pris_number'} = '${crn}'
-                    and o.offender_pk = g.offender_PK and g.oasys_assessment_group_PK = s.oasys_assessment_group_PK 
+                    from eor.oasys_assessment_group g, eor.oasys_set s, eor.oasys_set_change c 
+                    where g.offender_pk = ${offenderPk} and g.oasys_assessment_group_pk = s.oasys_assessment_group_pk 
                     and c.oasys_set_pk = s.oasys_set_pk 
                     and s.deleted_date is null
                     order by s.initiation_date`
@@ -162,24 +161,34 @@ export class DbAssessment extends DbAssessmentOrRsr {
     static qaQuery(assessmentPk: number): string {
 
         return `select q.ref_section_code, q.ref_question_code, ra.ref_section_answer
-                    from eor.oasys_question q, eor.oasys_answer a, eor.ref_answer ra
-                    where q.oasys_section_pk in (select oasys_section_pk from eor.oasys_Section where oasys_set_pk = ${assessmentPk} and currently_hidden_ind <> 'Y')
-                    and q.oasys_question_pk = a.oasys_question_pk
-                    and ra.ref_ass_version_code = a.ref_ass_version_code
+                    from eor.oasys_set st
+                    left outer join eor.oasys_section s
+                    on s.oasys_set_pk = st.oasys_set_pk
+                    left outer join eor.oasys_question q
+                    on q.oasys_section_pk = s.oasys_section_pk
+                    left outer join eor.oasys_answer a
+                    on a.oasys_question_pk = q.oasys_question_pk
+                    left outer join eor.ref_answer ra
+                    on (ra.ref_ass_version_code = a.ref_ass_version_code
                     and ra.version_number = a.version_number
                     and ra.ref_section_code = a.ref_section_code
                     and ra.ref_question_code = a.ref_question_code
-                    and ra.ref_answer_code = a.ref_answer_code 
-                    and q.currently_hidden_ind <> 'Y'
+                    and ra.ref_answer_code = a.ref_answer_code )
+                    where st.oasys_set_pk = ${assessmentPk}
+                    and q.currently_hidden_ind = 'N'
+                    and a.ref_answer_code is not null
                     order by q.ref_section_code, q.ref_question_code`
+
     }
 
     static textAnswerQuery(assessmentPk: number): string {
-
-        return `select ref_section_code, ref_question_code, free_format_answer, additional_note, currently_hidden_ind  
-                    from eor.oasys_question
-                    where oasys_section_pk in (select oasys_section_pk from eor.oasys_Section where oasys_set_pk = ${assessmentPk} and currently_hidden_ind <> 'Y')
-                    and (free_format_answer is not null or additional_note is not null)`
+   
+        return `select q.ref_section_code, q.ref_question_code, q.free_format_answer, q.additional_note
+                    from eor.oasys_set st
+                    left outer join eor.oasys_section s on s.oasys_set_pk = st.oasys_set_pk
+                    left outer join eor.oasys_question q on q.oasys_section_pk = s.oasys_section_pk
+                    where st.oasys_set_pk = ${assessmentPk}
+                    and q.currently_hidden_ind = 'N'`
     }
 }
 
@@ -192,10 +201,10 @@ export class DbRsr extends DbAssessmentOrRsr {
 
         super(Number.parseInt(rsrData[0]), 'STANDALONE', rsrData[1], rsrData[2], undefined, rsrData[3], rsrData[4], versionTable)
         this.riskDetails = new DbRiskDetails(rsrData, true)
-        this.eventNumber = Number.parseInt(rsrData[17])
+        this.eventNumber = null
     }
 
-    static query(crnSource: Provider, crn: string): string {
+    static query(offenderPk: number): string {
 
         return `select r.offender_rsr_scores_pk, r.rsr_status, to_char(r.initiation_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'), 
                             to_char(r.date_completed, 'YYYY-MM-DD\"T\"HH24:MI:SS'), 
@@ -204,7 +213,6 @@ export class DbRsr extends DbAssessmentOrRsr {
                             r.rsr_exception_error, 
                             r.rsr_algorithm_version, r.rsr_percentage_score, r.rsr_risk_recon_elm, 
                             r.osp_i_percentage_score, r.osp_c_percentage_score, r.osp_i_risk_recon_elm, r.osp_c_risk_recon_elm,
-                            o.cms_event_number,
                             r.osp_iic_risk_recon_elm, r.osp_iic_percentage_score, r.osp_dc_risk_recon_elm, r.osp_dc_percentage_score,
                             r.ogrs4g_percentage_2yr, r.ogrs4g_band_risk_recon_elm, r.ogrs4g_calculated, 
                             r.ogrs4v_percentage_2yr, r.ogrs4v_band_risk_recon_elm, r.ogrs4v_calculated, 
@@ -212,9 +220,9 @@ export class DbRsr extends DbAssessmentOrRsr {
                             r.ovp2_percentage_2yr, r.ovp2_band_risk_recon_elm, r.ovp2_calculated, 
                             r.snsv_percentage_2yr_static, r.snsv_stat_band_risk_recon_elm, r.snsv_calculated_static, 
                             r.snsv_percentage_2yr_dynamic, r.snsv_dyn_band_risk_recon_elm, r.snsv_calculated_dynamic   
-                            from eor.offender_rsr_scores r, eor.offender o 
-                            where r.offender_pk = o.offender_pk and ${crnSource == 'prob' ? 'o.cms_prob_number' : 'o.cms_pris_number'} = '${crn}' 
-                            and o.deleted_date is null and r.deleted_date is null 
+                            from eor.offender_rsr_scores r 
+                            where r.offender_pk = ${offenderPk} 
+                            and r.deleted_date is null 
                             order by r.initiation_date`
     }
 }
@@ -285,43 +293,44 @@ export class DbRiskDetails {
     constructor(riskData: string[], standaloneRsr: boolean = false) {
 
         if (standaloneRsr) {
-            this.ogrs31Year = getDbInt(riskData[5])
-            this.ogrs32Year = getDbInt(riskData[6])
-            this.ogrs3RiskRecon = riskData[7]
+            let i = 5
+            this.ogrs31Year = getDbInt(riskData[i++])
+            this.ogrs32Year = getDbInt(riskData[i++])
+            this.ogrs3RiskRecon = riskData[i++]
 
-            this.rsrStaticOrDynamic = riskData[8]
-            this.rsrExceptionError = riskData[9]
-            this.rsrAlgorithmVersion = getDbInt(riskData[10])
-            this.rsrPercentageScore = getDbFloat(riskData[11])
-            this.scoreLevel = riskData[12]
-            this.ospImagePercentageScore = getDbFloat(riskData[13])
-            this.ospContactPercentageScore = getDbFloat(riskData[14])
-            this.ospImageScoreLevel = riskData[15]
-            this.ospContactScoreLevel = riskData[16]
+            this.rsrStaticOrDynamic = riskData[i++]
+            this.rsrExceptionError = riskData[i++]
+            this.rsrAlgorithmVersion = getDbInt(riskData[i++])
+            this.rsrPercentageScore = getDbFloat(riskData[i++])
+            this.scoreLevel = riskData[i++]
+            this.ospImagePercentageScore = getDbFloat(riskData[i++])
+            this.ospContactPercentageScore = getDbFloat(riskData[i++])
+            this.ospImageScoreLevel = riskData[i++]
+            this.ospContactScoreLevel = riskData[i++]
 
-            this.ospIndirectImagesChildrenScoreLevel = riskData[18]
-            this.ospIndirectImagesChildrenPercentageScore = getDbFloat(riskData[19])
-            this.ospDirectContactScoreLevel = riskData[20]
-            this.ospDirectContactPercentageScore = getDbFloat(riskData[21])
+            this.ospIndirectImagesChildrenScoreLevel = riskData[i++]
+            this.ospIndirectImagesChildrenPercentageScore = getDbFloat(riskData[i++])
+            this.ospDirectContactScoreLevel = riskData[i++]
+            this.ospDirectContactPercentageScore = getDbFloat(riskData[i++])
 
-            this.ogrs4gYr2 = getDbFloat(riskData[22])
-            this.ogrs4gBand = riskData[23]
-            this.ogrs4gCalculated = riskData[24]
-            this.ogrs4vYr2 = getDbFloat(riskData[25])
-            this.ogrs4vBand = riskData[26]
-            this.ogrs4vCalculated = riskData[27]
-            this.ogp2Yr2 = getDbFloat(riskData[28])
-            this.ogp2Band = riskData[29]
-            this.ogp2Calculated = riskData[30]
-            this.ovp2Yr2 = getDbFloat(riskData[31])
-            this.ovp2Band = riskData[32]
-            this.ovp2Calculated = riskData[33]
-            this.snsvStaticYr2 = getDbFloat(riskData[34])
-            this.snsvStaticYr2Band = riskData[35]
-            this.snsvStaticCalculated = riskData[36]
-            this.snsvDynamicYr2 = getDbFloat(riskData[37])
-            this.snsvDynamicYr2Band = riskData[38]
-            this.snsvDynamicCalculated = riskData[39]
+            this.ogrs4gYr2 = getDbFloat(riskData[i++])
+            this.ogrs4gBand = riskData[i++]
+            this.ogrs4gCalculated = riskData[i++]
+            this.ogrs4vYr2 = getDbFloat(riskData[i++])
+            this.ogrs4vBand = riskData[i++]
+            this.ogrs4vCalculated = riskData[i++]
+            this.ogp2Yr2 = getDbFloat(riskData[i++])
+            this.ogp2Band = riskData[i++]
+            this.ogp2Calculated = riskData[i++]
+            this.ovp2Yr2 = getDbFloat(riskData[i++])
+            this.ovp2Band = riskData[i++]
+            this.ovp2Calculated = riskData[i++]
+            this.snsvStaticYr2 = getDbFloat(riskData[i++])
+            this.snsvStaticYr2Band = riskData[i++]
+            this.snsvStaticCalculated = riskData[i++]
+            this.snsvDynamicYr2 = getDbFloat(riskData[i++])
+            this.snsvDynamicYr2Band = riskData[i++]
+            this.snsvDynamicCalculated = riskData[i++]
         } else {
             this.ogpStWesc = getDbInt(riskData[7])
             this.ogpDyWesc = getDbInt(riskData[8])

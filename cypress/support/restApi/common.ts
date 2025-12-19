@@ -95,7 +95,7 @@ export function getTextAnswer(data: string[][], section: string, question: strin
     if (data == undefined) return undefined
     if (data == null) return null
 
-    const answers = data.filter((a) => a[0] == section && a[1] == question && a[4] != 'Y')  // Check for currently hidden
+    const answers = data.filter((a) => a[0] == section && a[1] == question)
     if (answers.length > 0) {
         if (answerType == null) {
             return answers[0][3] == null ? answers[0][2] : answers[0][3]
