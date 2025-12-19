@@ -77,7 +77,7 @@ export function fullyPopulated(params: PopulateAssessmentParams) {
         page.additionalRequirements5.setValue('Residential - other')
         page.specificInterventions1.setValue('Alcohol Related Violence Programme')
         page.specificInterventions2.setValue('Guided Skills Learning')
-        page.specificInterventions3.setValue('Building Better Relationships (BBR)')
+        page.specificInterventions3.setValue('Accommodation advocacy')
         page.sentenceAdditionalLicenceConditions.setValue(params.maxStrings ? oasys.oasysString(4000) : 'Additional licence conditions')
     }
 

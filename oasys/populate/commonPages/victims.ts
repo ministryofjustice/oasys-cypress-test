@@ -5,7 +5,7 @@ export function victim1() {
     const page = new oasys.Pages.Assessment.Other.Victim().goto(true)
     page.approxAge.setValue('5-11')
     page.gender.setValue('Male')
-    page.raceEthnicity.setValue('White - British')
+    page.raceEthnicity.setValue('White - Irish')
     page.relationship.setValue('Son/Daughter - child')
     page.save.click()
     page.close.click()
