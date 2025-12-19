@@ -134,23 +134,23 @@ export class NewActuarialPredictors {
     constructor(dbRiskDetails: dbClasses.DbRiskDetails) {
 
         this.ogrs4gYr2 = dbRiskDetails.ogrs4gYr2
-        this.ogrs4gBand = dbRiskDetails.ogrs4gBand
+        this.ogrs4gBand = common.riskLabel(dbRiskDetails.ogrs4gBand)
         this.ogrs4gCalculated = dbRiskDetails.ogrs4gCalculated
         this.ogrs4vYr2 = dbRiskDetails.ogrs4vYr2
-        this.ogrs4vBand = dbRiskDetails.ogrs4vBand
+        this.ogrs4vBand = common.riskLabel(dbRiskDetails.ogrs4vBand)
         this.ogrs4vCalculated = dbRiskDetails.ogrs4vCalculated
         this.ogp2Yr2 = dbRiskDetails.ogp2Yr2
-        this.ogp2Band = dbRiskDetails.ogp2Band
+        this.ogp2Band = common.riskLabel(dbRiskDetails.ogp2Band)
         this.ogp2Calculated = dbRiskDetails.ogp2Calculated
         this.ovp2Yr2 = dbRiskDetails.ovp2Yr2
-        this.ovp2Band = dbRiskDetails.ovp2Band
+        this.ovp2Band = common.riskLabel(dbRiskDetails.ovp2Band)
         this.ovp2Calculated = dbRiskDetails.ovp2Calculated
 
         this.snsvStaticYr2 = dbRiskDetails.snsvStaticYr2
-        this.snsvStaticYr2Band = dbRiskDetails.snsvStaticYr2Band
+        this.snsvStaticYr2Band = common.riskLabel(dbRiskDetails.snsvStaticYr2Band)
         this.snsvStaticCalculated = dbRiskDetails.snsvStaticCalculated
         this.snsvDynamicYr2 = dbRiskDetails.snsvDynamicYr2
-        this.snsvDynamicYr2Band = dbRiskDetails.snsvDynamicYr2Band
+        this.snsvDynamicYr2Band = common.riskLabel(dbRiskDetails.snsvDynamicYr2Band)
         this.snsvDynamicCalculated = dbRiskDetails.snsvDynamicCalculated
     }
 
