@@ -33,7 +33,6 @@ export class RiskManagementPlan extends BaseAssessmentPage {
     domesticAbuse = new Element.Checkbox('#itm_RM28_0_13_1_YES')
     hateCrime = new Element.Checkbox('#itm_RM28_0_14_1_YES')
     stalking = new Element.Checkbox('#itm_RM28_0_15_1_YES')
-    safeguardingPlan = new Element.Checkbox('#itm_RM28_0_16_1_YES')
     selfHarm = new Element.Checkbox('#itm_RM28_0_17_1_YES')
     copingInCustody = new Element.Checkbox('#itm_RM28_0_18_1_YES')
     vulnerability = new Element.Checkbox('#itm_RM28_0_19_1_YES')

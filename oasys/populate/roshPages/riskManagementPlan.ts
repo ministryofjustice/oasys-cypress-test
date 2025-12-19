@@ -75,7 +75,6 @@ function rmpCheckboxes(page: oasys.Pages.Rosh.RiskManagementPlan, params?: Popul
         page.domesticAbuse.setValue(true)
         page.hateCrime.setValue(true)
         page.stalking.setValue(true)
-        page.safeguardingPlan.setValue(true)
         page.selfHarm.setValue(true)
         page.copingInCustody.setValue(true)
         page.vulnerability.setValue(true)

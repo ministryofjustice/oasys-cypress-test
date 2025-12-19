@@ -137,7 +137,6 @@ describe('SAN integration - test ref 17 part 1', () => {
                 rmp.sanRelationships.checkStatus('enabled')
                 rmp.sanHealth.checkStatus('enabled')
                 rmp.sanThinking.checkStatus('enabled')
-                rmp.safeguardingPlan.checkStatus('notVisible')
                 rmp.riskToChildren.checkStatus('enabled')
 
                 rmp.keyInformation.getValue('keyInformation')
