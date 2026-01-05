@@ -89,7 +89,7 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
         standardCheck(params, required, missing, 'DATE_RECENT_SEXUAL_OFFENCE')
         standardCheck(params, required, missing, 'CURR_SEX_OFF_MOTIVATION')
     }
-    if (['osp_c', 'rsr'].includes(scoreType) && params.male && ['Y', 'O'].includes(params.CURR_SEX_OFF_MOTIVATION) && params.STRANGER_VICTIM == null) {
+    if (['osp_c', 'rsr'].includes(scoreType) && params.male && ['Y', 'O'].includes(params.CURR_SEX_OFF_MOTIVATION) && params.STRANGER_VICTIM == null && params.ONE_POINT_THIRTY == 'Y') {
         missing.push(getErrorText('STRANGER_VICTIM'))
     }
 

@@ -183,12 +183,12 @@ function da(data: string[][], after6_30: boolean): number {
     } else {
         const q67 = getTextAnswer(data, '6', '6.7')
         if (q67 == null) {
-            return null
+            return 0
         } else if (q67 == 'NO') {
             return 0
         } else {
             const q672 = getMultipleAnswers(data, '6', ['6.7.1'], 2)
-            return q672 == null ? null : q672.includes('PERPETRATOR') ? 1 : 0
+            return q672 == null ? 0 : q672.includes('PERPETRATOR') ? 1 : 0
         }
     }
 
