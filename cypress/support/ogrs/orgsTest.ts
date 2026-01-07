@@ -81,6 +81,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                 scriptResults.testCaseResults.push(testCaseResult)
                 if (testCaseResult.failed) {
                     scriptResults.failures++
+                    console.log(testCaseResult.identifier)
                 }
                 // count missing/invalid offence codes
                 if (!testCaseParams.offenceCat) {
@@ -143,6 +144,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                     scriptResults.testCaseResults.push(testCaseResult)
                     if (testCaseResult.failed) {
                         scriptResults.failures++
+                        console.log(testCaseResult.identifier)
                     }
                 }
             } catch (e) {
