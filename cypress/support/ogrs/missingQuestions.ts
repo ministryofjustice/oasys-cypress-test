@@ -22,11 +22,6 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
         if (params.ONE_POINT_THIRTY == null) {
             return { status: 'E', count: 1, errorText: `'Missing 1.30 Have they ever committed a sexual or sexually motivated offence?\n'` }
         }
-    } else {
-        // Invalid age at first sanction, relevant for all except OSP
-        if (params.AGE_AT_FIRST_SANCTION != null && params.ageAtLastSanction != null && params.AGE_AT_FIRST_SANCTION > params.ageAtLastSanction) {
-            return { status: 'E', count: 1, errorText: `'Age at first sanction cannot be greater than age at current sanction\n'` }
-        }
     }
 
     // Not male or female
@@ -40,6 +35,10 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
 
     if (params.LAST_SANCTION_DATE == null && (required.includes('LAST_SANCTION_DATE') || (scoreType == 'osp_c' && params.COMMUNITY_DATE == null))) {
         missing.push(getErrorText('LAST_SANCTION_DATE'))
+    }
+    // Invalid age at first sanction, relevant for all except OSP
+    if (!['osp_c', 'osp_i'].includes(scoreType) && params.AGE_AT_FIRST_SANCTION != null && params.ageAtLastSanction != null && params.AGE_AT_FIRST_SANCTION > params.ageAtLastSanction) {
+        missing.push('Age at first sanction cannot be greater than age at current sanction')
     }
     standardCheck(params, required, missing, 'AGE_AT_FIRST_SANCTION')
     standardCheck(params, required, missing, 'GENDER')
