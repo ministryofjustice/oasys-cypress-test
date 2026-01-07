@@ -46,8 +46,8 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
     // Sanctions
     zScore = zScore.add(calculateConditional(scoreType, coefs, 'firstsanction', params.firstSanction, outputParams))
     zScore = zScore.add(calculateConditional(scoreType, coefs, 'secondsanction', params.secondSanction, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'ogrs3_sanctionoccasions', params.TOTAL_SANCTIONS_COUNT, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, `yrs_between_first_and_second_sanction_${params.male ? 'male' : 'female'}`, params.yearsBetweenFirstTwoSanctions, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 'ogrs3_sanctionoccasions', params.TOTAL_SANCTIONS_COUNT, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, `yrs_between_first_and_second_sanction_${params.male ? 'male' : 'female'}`, params.yearsBetweenFirstTwoSanctions, outputParams))
 
     // OFM
     zScore = zScore.add(calculatePolynomial(scoreType, coefs, 'ofm', params.ofm, outputParams))
@@ -60,30 +60,30 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
     // Violent offences
     zScore = zScore.add(calculateConditional(scoreType, coefs, `never_sanctioned_violent_${params.male ? 'male' : 'female'}`, params.neverSanctionedViolence, outputParams))
     zScore = zScore.add(calculateConditional(scoreType, coefs, 'onceviolent', params.onceViolent, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'ogrs3_ovp_sanct', params.TOTAL_VIOLENT_SANCTIONS, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 'ogrs3_ovp_sanct', params.TOTAL_VIOLENT_SANCTIONS, outputParams))
     zScore = zScore.add(calculateCopas(scoreType, coefs, 'violent', params, outputParams))
 
     // Sections 2, 3, 4
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's2q2a_carry_use_weapon', params.TWO_POINT_TWO, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's3q4_suitability', params.THREE_POINT_FOUR, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's4q2_unemployed', params.FOUR_POINT_TWO, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 's2q2a_carry_use_weapon', params.TWO_POINT_TWO, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 's3q4_suitability', params.THREE_POINT_FOUR, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 's4q2_unemployed', params.FOUR_POINT_TWO, outputParams))
 
     // Section 6
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's6q4_partner_relationship', params.SIX_POINT_FOUR, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's6q7_perpetrator', params.SIX_POINT_SEVEN, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 's6q4_partner_relationship', params.SIX_POINT_FOUR, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 's6q7_perpetrator', params.SIX_POINT_SEVEN, outputParams))
     zScore = zScore.add(calculateConditional(scoreType, coefs, 'livein_relationship', params.SIX_POINT_EIGHT == 1, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'quality_of_livein_relationship', params.SIX_POINT_EIGHT == 1 ? params.SIX_POINT_FOUR : 0, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 'quality_of_livein_relationship', params.SIX_POINT_EIGHT == 1 ? params.SIX_POINT_FOUR : 0, outputParams))
 
     // Section 7, 9, 11, 12
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's7q2_activities_encourage', params.SEVEN_POINT_TWO, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's9q1_current_use', params.NINE_POINT_ONE, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's9q2_binge_drinking', params.NINE_POINT_TWO, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's11q2_impulsivity', params.ELEVEN_POINT_TWO, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's11q4_temper_control', params.ELEVEN_POINT_FOUR, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's12q1_procriminal_attitudes', params.TWELVE_POINT_ONE, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 's7q2_activities_encourage', params.SEVEN_POINT_TWO, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 's9q1_current_use', params.NINE_POINT_ONE, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 's9q2_binge_drinking', params.NINE_POINT_TWO, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 's11q2_impulsivity', params.ELEVEN_POINT_TWO, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 's11q4_temper_control', params.ELEVEN_POINT_FOUR, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 's12q1_procriminal_attitudes', params.TWELVE_POINT_ONE, outputParams))
 
     // Drugs
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 's8q8_motivation_tackle_misuse', params.EIGHT_POINT_EIGHT, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 's8q8_motivation_tackle_misuse', params.EIGHT_POINT_EIGHT, outputParams))
     zScore = zScore.add(calculateConditional(scoreType, coefs, 'dailydrug', params.DAILY_DRUG_USER == 'Y', outputParams))
     zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_use_flag_v411_heroin', params.HEROIN == 'Y', outputParams))
     zScore = zScore.add(calculateConditional(scoreType, coefs, 'drug_use_flag_v411_methadone', params.METHADONE == 'Y', outputParams))
@@ -100,15 +100,15 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
         params.HALLUCINOGENS == 'Y' || params.KETAMINE == 'Y' || params.OTHER_DRUGS == 'Y' || params.SOLVENTS == 'Y' || params.SPICE == 'Y', outputParams))
 
     // Previous convictions
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'r1q2_murder_prev', params.HOMICIDE, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'r1q2_wounding_prev', params.GBH, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'r1q2_kidnapping_prev', params.KIDNAP, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'r1q2_firearm_prev', params.FIREARMS, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'r1q2_robbery_prev', params.ROBBERY, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'r1q2_agg_burglary_prev', params.AGGRAVATED_BURGLARY, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'r1q2_weapons_prev', params.WEAPONS_NOT_FIREARMS, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'r1q2_damage_with_intent_prev', params.CRIMINAL_DAMAGE_LIFE, outputParams))
-    zScore = zScore.add(calculateMultiplier(scoreType, coefs, 'r1q2_arson_prev', params.ARSON, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 'r1q2_murder_prev', params.HOMICIDE, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 'r1q2_wounding_prev', params.GBH, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 'r1q2_kidnapping_prev', params.KIDNAP, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 'r1q2_firearm_prev', params.FIREARMS, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 'r1q2_robbery_prev', params.ROBBERY, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 'r1q2_agg_burglary_prev', params.AGGRAVATED_BURGLARY, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 'r1q2_weapons_prev', params.WEAPONS_NOT_FIREARMS, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 'r1q2_damage_with_intent_prev', params.CRIMINAL_DAMAGE_LIFE, outputParams))
+    zScore = addDecimalsWithNull(zScore, calculateMultiplier(scoreType, coefs, 'r1q2_arson_prev', params.ARSON, outputParams))
 
     // Calculate probability and band, output the results
     const probability = calculateProbability(zScore)
@@ -118,6 +118,10 @@ export function calculate(scoreType: ScoreType, params: TestCaseParameters, outp
     reportScores(outputParams, scoreType, zScore, percentage, band, 'Y', 0, `''`)
 }
 
+function addDecimalsWithNull(runningTotal: Decimal, addition: Decimal): Decimal {
+
+    return addition == null ? runningTotal : runningTotal.add(addition)
+}
 
 function calculatePolynomial(scoreType: ScoreType, coefs: object, type: 'aai' | 'ofm', input: number, outputParams: OutputParameters, gender?: string): Decimal {
 
@@ -184,7 +188,7 @@ function calculateConditional(scoreType: ScoreType, coefs: object, item: OgrsFea
 function calculateMultiplier(scoreType: ScoreType, coefs: object, item: OgrsFeatures, value: number, outputParams: OutputParameters): Decimal {
 
     const coef = coefs[item]
-    const result = (coef == null || coef == undefined || value == 0 || value == null) ? new Decimal(0) : coef.times(value)
+    const result = coef == null || coef == undefined ? null : value == 0 || value == null ? new Decimal(0) : coef.times(value)
 
     addOutputParameter(outputParams, scoreType, item, result)
     return result
