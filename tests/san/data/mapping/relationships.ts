@@ -12,7 +12,7 @@ export const script: SanScript = {
             oasysAnswers: [
                 { section: '6', q: '6.1', a: null },
                 { section: '6', q: '6.3', a: null },
-                { section: '6', q: '6.8', a: null },
+                { section: '6', q: '6.8', a: '2' },
                 { section: '6', q: '6.4', a: null },
                 { section: '6', q: '6.6', a: null },
                 { section: '6', q: '6.7da', a: null },
@@ -40,7 +40,7 @@ export const script: SanScript = {
             oasysAnswers: [
                 { section: '6', q: '6.1', a: null },
                 { section: '6', q: '6.3', a: null },
-                { section: '6', q: '6.8', a: null },
+                { section: '6', q: '6.8', a: '3' },
                 { section: '6', q: '6.4', a: null },
                 { section: '6', q: '6.6', a: null },
                 { section: '6', q: '6.7da', a: null },
@@ -68,7 +68,7 @@ export const script: SanScript = {
             oasysAnswers: [
                 { section: '6', q: '6.1', a: null },
                 { section: '6', q: '6.3', a: null },
-                { section: '6', q: '6.8', a: null },
+                { section: '6', q: '6.8', a: '3' },
                 { section: '6', q: '6.4', a: null },
                 { section: '6', q: '6.6', a: null },
                 { section: '6', q: '6.7da', a: null },
@@ -96,7 +96,7 @@ export const script: SanScript = {
             oasysAnswers: [
                 { section: '6', q: '6.1', a: null },
                 { section: '6', q: '6.3', a: null },
-                { section: '6', q: '6.8', a: null },
+                { section: '6', q: '6.8', a: '3' },
                 { section: '6', q: '6.4', a: null },
                 { section: '6', q: '6.6', a: null },
                 { section: '6', q: '6.7da', a: null },
@@ -124,7 +124,7 @@ export const script: SanScript = {
             oasysAnswers: [
                 { section: '6', q: '6.1', a: null },
                 { section: '6', q: '6.3', a: null },
-                { section: '6', q: '6.8', a: null },
+                { section: '6', q: '6.8', a: '3' },
                 { section: '6', q: '6.4', a: null },
                 { section: '6', q: '6.6', a: null },
                 { section: '6', q: '6.7da', a: null },
@@ -153,7 +153,7 @@ export const script: SanScript = {
             oasysAnswers: [
                 { section: '6', q: '6.1', a: null },
                 { section: '6', q: '6.3', a: null },
-                { section: '6', q: '6.8', a: null },
+                { section: '6', q: '6.8', a: '3' },
                 { section: '6', q: '6.4', a: null },
                 { section: '6', q: '6.6', a: null },
                 { section: '6', q: '6.7da', a: null },
@@ -191,7 +191,7 @@ export const script: SanScript = {
             oasysAnswers: [
                 { section: '6', q: '6.1', a: `2` },
                 { section: '6', q: '6.3', a: `0` },
-                { section: '6', q: '6.8', a: null },
+                { section: '6', q: '6.8', a: '2' },
                 { section: '6', q: '6.4', a: `0` },
                 { section: '6', q: '6.6', a: `2` },
                 { section: '6', q: '6.7da', a: null },
@@ -230,7 +230,7 @@ export const script: SanScript = {
             oasysAnswers: [
                 { section: '6', q: '6.1', a: `0` },
                 { section: '6', q: '6.3', a: `1` },
-                { section: '6', q: '6.8', a: null },
+                { section: '6', q: '6.8', a: '3' },
                 { section: '6', q: '6.4', a: `1` },
                 { section: '6', q: '6.6', a: `0` },
                 { section: '6', q: '6.7da', a: null },
@@ -268,7 +268,7 @@ export const script: SanScript = {
             oasysAnswers: [
                 { section: '6', q: '6.1', a: `1` },
                 { section: '6', q: '6.3', a: `2` },
-                { section: '6', q: '6.8', a: null },
+                { section: '6', q: '6.8', a: '2' },
                 { section: '6', q: '6.4', a: `2` },
                 { section: '6', q: '6.6', a: `1` },
                 { section: '6', q: '6.7da', a: null },
@@ -307,7 +307,7 @@ export const script: SanScript = {
             oasysAnswers: [
                 { section: '6', q: '6.1', a: `2` },
                 { section: '6', q: '6.3', a: `2` },
-                { section: '6', q: '6.8', a: null },
+                { section: '6', q: '6.8', a: '2' },
                 { section: '6', q: '6.4', a: `0` },
                 { section: '6', q: '6.6', a: `2` },
                 { section: '6', q: '6.7da', a: null },
@@ -346,7 +346,7 @@ export const script: SanScript = {
             oasysAnswers: [
                 { section: '6', q: '6.1', a: `M` },
                 { section: '6', q: '6.3', a: `0` },
-                { section: '6', q: '6.8', a: null },
+                { section: '6', q: '6.8', a: '2' },
                 { section: '6', q: '6.4', a: `1` },
                 { section: '6', q: '6.6', a: `0` },
                 { section: '6', q: '6.7da', a: null },
@@ -385,7 +385,7 @@ export const script: SanScript = {
             oasysAnswers: [
                 { section: '6', q: '6.1', a: `0` },
                 { section: '6', q: '6.3', a: `1` },
-                { section: '6', q: '6.8', a: null },
+                { section: '6', q: '6.8', a: '2' },
                 { section: '6', q: '6.4', a: `2` },
                 { section: '6', q: '6.6', a: `1` },
                 { section: '6', q: '6.7da', a: null },
@@ -423,7 +423,7 @@ export const script: SanScript = {
             oasysAnswers: [
                 { section: '6', q: '6.1', a: `1` },
                 { section: '6', q: '6.3', a: `0` },
-                { section: '6', q: '6.8', a: null },
+                { section: '6', q: '6.8', a: '2' },
                 { section: '6', q: '6.4', a: `1` },
                 { section: '6', q: '6.6', a: `2` },
                 { section: '6', q: '6.7da', a: null },
