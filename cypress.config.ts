@@ -7,8 +7,9 @@ import * as pdf from './cypress/support/pdf'
 import { getLatestElogAndUnprocEventTime, getAppConfig } from './cypress/support/oasysDb'
 import { noDatabaseConnection } from './localSettings'
 import { ogrsTest } from './cypress/support/ogrs/orgsTest'
-import { OgrsTestParameters, OgrsTestScriptResult, RescoringResult, RescoringTestParameters } from './cypress/support/ogrs/types'
+import { OgrsTestParameters, OgrsTestScriptResult, RescoringResult, RescoringTestParameters, TieringTestParameters, TieringTestResult } from './cypress/support/ogrs/types'
 import { rescoringTest } from './cypress/support/ogrs/rescoring/rescoringTest'
+import { tieringTest } from './cypress/support/ogrs/tiering/tieringTest'
 
 const reportFolder = 'report'
 const persistedData = {}
@@ -206,6 +207,14 @@ module.exports = defineConfig({
         rescoringTest(parameters: RescoringTestParameters): Promise<RescoringResult[]> {
           return new Promise((resolve) => {
             rescoringTest(parameters).then((response) => {
+              resolve(response)
+            })
+          })
+        },
+
+        tieringTest(parameters: TieringTestParameters): Promise<TieringTestResult> {
+          return new Promise((resolve) => {
+            tieringTest(parameters).then((response) => {
               resolve(response)
             })
           })

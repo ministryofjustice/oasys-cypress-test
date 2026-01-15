@@ -54,6 +54,18 @@ export type RescoringResult = {
     pk: number,
 }
 
+export type TieringTestParameters = {
+    whereClause: string,
+    count: number,
+}
+
+export type TieringTestResult = {
+    logText: string[],
+    failed: number,
+    passed: 0,
+}
+
+export type Tier = 'A' | 'B Upper' | 'B Lower' | 'C Upper' | 'C Lower' | 'D' | 'E'
 export type ScoreType = 'serious_violence_brief' | 'serious_violence_extended' | 'general_brief' | 'violence_brief' | 'general_extended' | 'violence_extended' | 'osp_c' | 'osp_i' | 'rsr'
 export type ScoreBand = 'Low' | 'Medium' | 'High' | 'Very High' | 'N/A'
 

@@ -1,8 +1,8 @@
 import { OgrsTestParameters, ReportMode } from '../../cypress/support/ogrs/types'
 import { runTest } from './testLib'
 
-const pk = 9559367
-const reportMode: ReportMode = 'normal' 
+const pk = 2513831341
+const reportMode: ReportMode = 'verbose' 
 
 describe('OGRS calculator test', () => {
 
@@ -19,9 +19,9 @@ function runTests() {
             whereClause: `oasys_set_pk = ${pk}`,
             count: 1,
         },
-        staticFlag: null,
+        staticFlag: 'N',
         reportMode: reportMode,
-        includeObjects: false,
+        includeObjects: true,
     }
 
     it(`Assessment pk ${pk}`, () => {
