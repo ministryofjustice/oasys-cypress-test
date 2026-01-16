@@ -20,6 +20,7 @@ export class TieringCase {
     lifer: string
     stalking: string
     da: string
+    daHistory: string
     childProtection: string
     step1OgrsRsr: string
     dcsrpTier: string
@@ -49,6 +50,7 @@ export class TieringCase {
         this.lifer = tieringData[i++]
         this.stalking = tieringData[i++]
         this.da = tieringData[i++]
+        this.daHistory = tieringData[i++]
         this.childProtection = tieringData[i++]
         this.step1OgrsRsr = tieringData[i++]
         this.dcsrpTier = tieringData[i++]
@@ -64,7 +66,7 @@ export class TieringCase {
                     nc_rsr_percentage_score, 
                     nc_osp_dc_risk_recon_elm, nc_osp_dc_percentage_score, nc_osp_iic_risk_recon_elm, nc_osp_iic_percentage_score, dc_srp_risk_reduction, 
                     ogrs4g_percentage_2yr, ogp2_percentage_2yr, 
-                    mappa, lifer, stalking, da, child_protection,  
+                    mappa, lifer, stalking, da, da_history, cp_registered,  
                     step1_ogrs_rsr, dcsrp_tier, iicsrp_tier, final_tier,
                     custody_ind, to_char(community_date, '${dateFormat}')
                 from eor.df453_new_prediction 
