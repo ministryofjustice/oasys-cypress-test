@@ -21,15 +21,19 @@ export async function tieringTest(testParams: TieringTestParameters): Promise<Ti
         const caseResult = testTieringCase(tieringCase, logText)
 
         if (caseResult != tieringCase.finalTier) {
-            result.logText.push(`CRN: ${tieringCase.probationCrn} / ${tieringCase.prisonCrn}: FAILED`)
-            result.logText.push(`     ${JSON.stringify(tieringCase)}`)
-            result.logText.push(`     ROSH: ${tieringCase.rosh}`)
-            result.logText.push(`     MAPPA: ${tieringCase.mappa}`)
-            result.logText.push(`     Lifer: ${tieringCase.lifer}`)
-            result.logText.push(`     Oracle: ${tieringCase.finalTier}, Cypress: ${caseResult}`)
-            logText.forEach((log) => {
-                result.logText.push(log)
-            })
+            // if (tieringCase.mappa != 'Y'){
+                result.logText.push(`CRN: ${tieringCase.probationCrn} / ${tieringCase.prisonCrn}: FAILED`)
+                result.logText.push(`     ${JSON.stringify(tieringCase)}`)
+                result.logText.push(`     ROSH: ${tieringCase.rosh}`)
+                result.logText.push(`     MAPPA: ${tieringCase.mappa}`)
+                result.logText.push(`     Lifer: ${tieringCase.lifer}`)
+                result.logText.push(`     Custody: ${tieringCase.custodyInd}`)
+                result.logText.push(`     Oracle: ${tieringCase.finalTier}, Cypress: ${caseResult}`)
+                logText.forEach((log) => {
+                    result.logText.push(log)
+                })
+                logText.push('')
+            // }
             result.failed++
         } else {
             //result.logText.push(`CRN: ${tieringCase.probationCrn} / ${tieringCase.prisonCrn}`)

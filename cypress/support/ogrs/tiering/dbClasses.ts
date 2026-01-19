@@ -5,6 +5,7 @@ export class TieringCase {
     probationCrn: string
     prisonCrn: string
     assessmentPk: number
+    offenderPk: number
     dateCompleted: string
     rosh: string
     roshLevelElm: string
@@ -35,6 +36,7 @@ export class TieringCase {
         this.probationCrn = tieringData[i++]
         this.prisonCrn = tieringData[i++]
         this.assessmentPk = Number.parseInt(tieringData[i++])
+        this.offenderPk = Number.parseInt(tieringData[i++])
         this.dateCompleted = tieringData[i++]
         this.rosh = tieringData[i++]
         this.roshLevelElm = tieringData[i++]
@@ -62,8 +64,8 @@ export class TieringCase {
 
     static query(rows: number, whereClause: string): string {
         return `select 
-                    cms_prob_number, cms_pris_number, oasys_set_pk, to_char(date_completed, '${dateFormat}'), rosh, rosh_level_elm,
-                    nc_rsr_percentage_score, 
+                    cms_prob_number, cms_pris_number, oasys_set_pk, offender_pk,
+                    to_char(date_completed, '${dateFormat}'), rosh, rosh_level_elm, nc_rsr_percentage_score, 
                     nc_osp_dc_risk_recon_elm, nc_osp_dc_percentage_score, nc_osp_iic_risk_recon_elm, nc_osp_iic_percentage_score, dc_srp_risk_reduction, 
                     ogrs4g_percentage_2yr, ogp2_percentage_2yr, 
                     mappa, lifer, stalking, da, da_history, cp_registered,  

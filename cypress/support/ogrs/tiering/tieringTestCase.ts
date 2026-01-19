@@ -7,46 +7,43 @@ import { dateFormat } from './tieringTest'
 
 export function testTieringCase(tieringCase: TieringCase, logText: string[]): Tier {
 
-    let finalTier: Tier
-    const rosh = (tieringCase.rosh == null || tieringCase.rosh == 'Y') ? tieringCase.roshLevelElm : tieringCase.rosh  // TODO remove workaround
+    const rosh = (tieringCase.rosh == null) ? tieringCase.roshLevelElm : tieringCase.rosh
     const arpRisk = tieringCase.ogp2Percentage2yr == null ? tieringCase.ogrs4gPercentage2yr : tieringCase.ogp2Percentage2yr
 
-    // Step 1
+    // Step 1 - ARP/CSRP
     const step1 = calculateStep1(arpRisk, tieringCase.ncRsrPercentageScore)
-    logText.push(`        Step 1  - ${step1}`)
-    finalTier = step1
     
-    // Step 2 - higher of 2a and 2b replace step 1 if they can be calculated
+    // Step 2 - OSP. Higher of 2a and 2b overrules step 1 if either can be calculated
     const step2a = calculateStep2a(tieringCase.ncOspDcPercentageScore, tieringCase.dcSrpRiskReduction)
-    logText.push(`        Step 2a - ${step2a}`)
-    
     const step2b = calculateStep2b(tieringCase.ncOspIicRiskReconElm)
-    logText.push(`        Step 2b - ${step2b}`)
-    
     const step2Combined = getHigherTier(step2a, step2b)
-    if (step2Combined != null) {
-        finalTier = step2Combined
-    }
     
-    // Step 3 - can raise the result depending on ROSH and MAPPA
-    const step3 = calculateStep3(rosh, tieringCase.mappa, step1)
-    logText.push(`        Step 3  - ${step3}`)
-    finalTier = getHigherTier(finalTier, step3)
+    // Step 3 - ROSH and MAPPA.  Highest tier from steps one and two is for the decision between B+ and B-
+    const step3 = calculateStep3(rosh, tieringCase.mappa, getHigherTier(step1, step2Combined))
     
-    // Step 4 - can raise the result depending on ROSH
+    // Step 4 - ROSH
     const step4 = calculateStep4(rosh)
-    logText.push(`        Step 4  - ${step4}`)
-    finalTier = getHigherTier(finalTier, step4)
     
-    // Step 5 - can raise the result for lifers
+    // Step 5 - lifers
     const step5 = calculateStep5(tieringCase.lifer, tieringCase.custodyInd, tieringCase.communityDate, tieringCase.dateCompleted)
-    logText.push(`        Step 5  - ${step5}`)
-    finalTier = getHigherTier(finalTier, step5)
     
     // Step 6 - can raise the result for stalking, da, cp
-    const step6 = calculateStep6(tieringCase)  // TODO check these flags
-    logText.push(`        Step 6  - ${step6}`)
+    const step6 = calculateStep6(tieringCase)
+    
+    // Combine all the results.  Step 2 can overrule step 1 (higher or lower), 3 to 6 can only raise the result
+    let finalTier = step2Combined == null ? step1 : step2Combined
+    finalTier = getHigherTier(finalTier, step3)
+    finalTier = getHigherTier(finalTier, step4)
+    finalTier = getHigherTier(finalTier, step5)
     finalTier = getHigherTier(finalTier, step6)
+    
+    logText.push(`        Step 1  - ${step1}`)
+    logText.push(`        Step 2a - ${step2a}`)
+    logText.push(`        Step 2b - ${step2b}`)
+    logText.push(`        Step 3  - ${step3}`)
+    logText.push(`        Step 4  - ${step4}`)
+    logText.push(`        Step 5  - ${step5}`)
+    logText.push(`        Step 6  - ${step6}`)
 
     return finalTier
 }
@@ -87,7 +84,7 @@ function calculateStep1(arp: number, csrp: number): Tier {
 
 function calculateStep2a(ospRisk: number, riskReduced: string): Tier {
 
-    if (ospRisk == null || riskReduced == null) {
+    if (ospRisk == null) {
         return null
     }
 
@@ -127,18 +124,20 @@ function calculateStep4(rosh: string): Tier {
 
 function calculateStep5(lifer: string, custodyInd: string, communityDate: string, completionDate: string): Tier {
 
-    return lifer == 'Y' ? 'B Upper' : null        
+    if (lifer != 'Y' || custodyInd == 'Y' || communityDate == null || completionDate == null) {
+        return null
+    }
+
+    const firstDate = dayjs(completionDate, dateFormat)
+    const secondDate = dayjs(communityDate, dateFormat)
+    const diffDays = firstDate.diff(secondDate, 'day')  // Assessment date minus community date
+
+    if (diffDays < 0) { // Community date is in the future
+        return null
+    }
     
-    // TODO replace this when HS is ready
-    // Probably need to allow for case where Lifer flag is set but communityDate is null
-
-    // if (lifer != 'Y' || custodyInd == 'Y' || communityDate == null || completionDate == null) {
-    //     return null
-    // }
-
-    // const firstDate = dayjs(completionDate, dateFormat)
-    // const secondDate = dayjs(communityDate, dateFormat)
-    // return secondDate.diff(firstDate, 'year') >= 1 ? 'D' : 'B Upper'
+    const diffYears = firstDate.diff(secondDate, 'year')  // Assessment date minus community date
+    return diffYears >= 1 ? 'D' : 'B Upper'
 }
 
 function calculateStep6(tieringCase: TieringCase): Tier {
@@ -152,7 +151,7 @@ function calculateStep6(tieringCase: TieringCase): Tier {
         return 'D'
     }
     // CP
-    if (tieringCase.childProtection) { // More flags
+    if (tieringCase.childProtection) {
         return 'D'
     }
     return null
