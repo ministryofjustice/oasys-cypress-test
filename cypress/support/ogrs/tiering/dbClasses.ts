@@ -10,6 +10,8 @@ export class TieringCase {
     rosh: string
     roshLevelElm: string
     ncRsrPercentageScore: number
+    snsvStaticPercentage: number
+    snsvDynamicPercentage: number
     ncOspDcRiskReconElm: string
     ncOspDcPercentageScore: number
     ncOspIicRiskReconElm: string
@@ -27,6 +29,7 @@ export class TieringCase {
     dcsrpTier: string
     iicsrpTier: string
     finalTier: string
+    alternativeTier: string
     custodyInd: string
     communityDate: string
 
@@ -41,6 +44,8 @@ export class TieringCase {
         this.rosh = tieringData[i++]
         this.roshLevelElm = tieringData[i++]
         this.ncRsrPercentageScore = getDbFloat(tieringData[i++])
+        this.snsvStaticPercentage = getDbFloat(tieringData[i++])
+        this.snsvDynamicPercentage = getDbFloat(tieringData[i++])
         this.ncOspDcRiskReconElm = tieringData[i++]
         this.ncOspDcPercentageScore = getDbFloat(tieringData[i++])
         this.ncOspIicRiskReconElm = tieringData[i++]
@@ -58,6 +63,7 @@ export class TieringCase {
         this.dcsrpTier = tieringData[i++]
         this.iicsrpTier = tieringData[i++]
         this.finalTier = tieringData[i++]
+        this.alternativeTier = tieringData[i++]
         this.custodyInd = tieringData[i++]
         this.communityDate = tieringData[i++]
     }
@@ -65,11 +71,12 @@ export class TieringCase {
     static query(rows: number, whereClause: string): string {
         return `select 
                     cms_prob_number, cms_pris_number, oasys_set_pk, offender_pk,
-                    to_char(date_completed, '${dateFormat}'), rosh, rosh_level_elm, nc_rsr_percentage_score, 
+                    to_char(date_completed, '${dateFormat}'), rosh, rosh_level_elm, 
+                    nc_rsr_percentage_score, snsv_percentage_2yr_static, snsv_percentage_2yr_dynamic,
                     nc_osp_dc_risk_recon_elm, nc_osp_dc_percentage_score, nc_osp_iic_risk_recon_elm, nc_osp_iic_percentage_score, dc_srp_risk_reduction, 
                     ogrs4g_percentage_2yr, ogp2_percentage_2yr, 
                     mappa, lifer, stalking, da, da_history, cp_registered,  
-                    step1_ogrs_rsr, dcsrp_tier, iicsrp_tier, final_tier,
+                    step1_ogrs_rsr, dcsrp_tier, iicsrp_tier, final_tier, alternative_tier,
                     custody_ind, to_char(community_date, '${dateFormat}')
                 from eor.df453_new_prediction 
                     where ${whereClause} 

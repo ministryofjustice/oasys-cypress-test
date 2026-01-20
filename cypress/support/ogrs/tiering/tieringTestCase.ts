@@ -5,6 +5,7 @@ import { TieringCase } from './dbClasses'
 import { dateFormat } from './tieringTest'
 
 
+// Original process.  Step one uses CSRP but can be reduced by step 2.
 export function testTieringCase(tieringCase: TieringCase, logText: string[]): Tier {
 
     const rosh = (tieringCase.rosh == null) ? tieringCase.roshLevelElm : tieringCase.rosh
@@ -35,6 +36,50 @@ export function testTieringCase(tieringCase: TieringCase, logText: string[]): Ti
     finalTier = getHigherTier(finalTier, step3)
     finalTier = getHigherTier(finalTier, step4)
     finalTier = getHigherTier(finalTier, step5)
+    finalTier = getHigherTier(finalTier, step6)
+    
+    logText.push(`        Step 1  - ${step1}`)
+    logText.push(`        Step 2a - ${step2a}`)
+    logText.push(`        Step 2b - ${step2b}`)
+    logText.push(`        Step 3  - ${step3}`)
+    logText.push(`        Step 4  - ${step4}`)
+    logText.push(`        Step 5  - ${step5}`)
+    logText.push(`        Step 6  - ${step6}`)
+
+    return finalTier
+}
+
+// Alternative process.  Step 1 uses SNSV, but can be increased by step 2.
+export function testTieringCaseAlternative(tieringCase: TieringCase, logText: string[]): Tier {
+
+    const rosh = (tieringCase.rosh == null) ? tieringCase.roshLevelElm : tieringCase.rosh
+    const arpRisk = tieringCase.ogp2Percentage2yr == null ? tieringCase.ogrs4gPercentage2yr : tieringCase.ogp2Percentage2yr
+    const snsvRisk = tieringCase.snsvDynamicPercentage == null ? tieringCase.snsvStaticPercentage : tieringCase.snsvDynamicPercentage
+
+    // Step 1 - ARP/CSRP
+    const step1 = calculateStep1(arpRisk, snsvRisk)
+    let finalTier = step1
+    
+    // Step 2 - OSP.
+    const step2a = calculateStep2a(tieringCase.ncOspDcPercentageScore, tieringCase.dcSrpRiskReduction)
+    const step2b = calculateStep2b(tieringCase.ncOspIicRiskReconElm)
+    finalTier = getHigherTier(finalTier, step2a)
+    finalTier = getHigherTier(finalTier, step2b)
+    
+    // Step 3 - ROSH and MAPPA.  Highest tier from steps one and two is for the decision between B+ and B-
+    const step3 = calculateStep3(rosh, tieringCase.mappa, getHigherTier(step1, finalTier))
+    finalTier = getHigherTier(finalTier, step3)
+    
+    // Step 4 - ROSH
+    const step4 = calculateStep4(rosh)
+    finalTier = getHigherTier(finalTier, step4)
+    
+    // Step 5 - lifers
+    const step5 = calculateStep5(tieringCase.lifer, tieringCase.custodyInd, tieringCase.communityDate, tieringCase.dateCompleted)
+    finalTier = getHigherTier(finalTier, step5)
+    
+    // Step 6 - can raise the result for stalking, da, cp
+    const step6 = calculateStep6(tieringCase)
     finalTier = getHigherTier(finalTier, step6)
     
     logText.push(`        Step 1  - ${step1}`)

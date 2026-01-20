@@ -7,8 +7,6 @@ describe('Tier calculations test', () => {
 
     const testParams: TieringTestParameters = {
         whereClause: `ignore <> 'Y'`,
-        // whereClause: `ignore <> 'Y' and (MAPPA <> 'Y' OR COALESCE(ROSH, ROSH_LEVEL_ELM) <> 'H')`,
-        // whereClause: `cms_prob_number = 'D932782'`,
         count: count,
     }
 
