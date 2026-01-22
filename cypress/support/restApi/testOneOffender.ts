@@ -21,7 +21,7 @@ export async function testOneOffender(parameters: { crn: string, crnSource: Prov
         'allRiskScores',
         'rmp',
     ]
-    
+
     const apEndpoints: Endpoint[] = [
         'apOffence',
         'apNeeds',
@@ -131,6 +131,19 @@ export async function testOneOffender(parameters: { crn: string, crnSource: Prov
             // Add RSRs
             const standaloneRsrs = offenderData.assessments.filter((ass) => ass.assessmentType == 'STANDALONE')
             standaloneRsrs.forEach((assessment) => addAssessment(v4RsrEndpoints, apiParams, offenderData.probationCrn, assessment))
+        }
+
+        // Add PNI - only if initiated after 2020 to avoid incompatible data
+        const pniRelevantAssessments = offenderData.assessments.filter(rest.V4Common.pni.pniFilter).filter((ass) => ass.initiationDate > '2021')
+        if (pniRelevantAssessments.length > 1) {
+            const v4PniParams: EndpointParams = {
+                endpoint: 'pni',
+                crnSource: parameters.crnSource,
+                crn: parameters.crnSource == 'prob' ? offenderData.probationCrn : offenderData.nomisId,
+                additionalParameter: 'Y',
+                laoPrivilege: 'ALLOW'
+            }
+            apiParams.push(v4PniParams)
         }
 
         ///////////////////////////////////////////////////////////

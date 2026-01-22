@@ -78,7 +78,7 @@ export class RSR {
         this.rsrStaticOrDynamic = dbRiskDetails.rsrStaticOrDynamic
         this.rsrExceptionError = dbRiskDetails.rsrExceptionError
         this.rsrAlgorithmVersion = dbRiskDetails.rsrAlgorithmVersion
-        this.rsrPercentageScore = fixDp(dbRiskDetails.rsrPercentageScore)
+        this.rsrPercentageScore = common.fixDp(dbRiskDetails.rsrPercentageScore)
         this.scoreLevel = common.riskLabel(dbRiskDetails.scoreLevel)
     }
 }
@@ -97,15 +97,15 @@ export class OSP {
 
     constructor(dbRiskDetails: dbClasses.DbRiskDetails) {
 
-        this.ospImagePercentageScore = fixDp(dbRiskDetails.ospImagePercentageScore)
-        this.ospContactPercentageScore = fixDp(dbRiskDetails.ospContactPercentageScore)
+        this.ospImagePercentageScore = common.fixDp(dbRiskDetails.ospImagePercentageScore)
+        this.ospContactPercentageScore = common.fixDp(dbRiskDetails.ospContactPercentageScore)
         this.ospImageScoreLevel = common.riskLabel(dbRiskDetails.ospImageScoreLevel)
         this.ospContactScoreLevel = common.riskLabel(dbRiskDetails.ospContactScoreLevel)
 
         this.ospIndirectImagesChildrenScoreLevel = common.riskLabel(dbRiskDetails.ospIndirectImagesChildrenScoreLevel)
-        this.ospIndirectImagesChildrenPercentageScore = fixDp(dbRiskDetails.ospIndirectImagesChildrenPercentageScore)
+        this.ospIndirectImagesChildrenPercentageScore = common.fixDp(dbRiskDetails.ospIndirectImagesChildrenPercentageScore)
         this.ospDirectContactScoreLevel = common.riskLabel(dbRiskDetails.ospDirectContactScoreLevel)
-        this.ospDirectContactPercentageScore = fixDp(dbRiskDetails.ospDirectContactPercentageScore)
+        this.ospDirectContactPercentageScore = common.fixDp(dbRiskDetails.ospDirectContactPercentageScore)
     }
 }
 
@@ -154,11 +154,4 @@ export class NewActuarialPredictors {
         this.snsvDynamicCalculated = dbRiskDetails.snsvDynamicCalculated
     }
 
-}
-
-
-function fixDp(value: number): number {
-
-    if (value == undefined || value == null) return value
-    return Number(value.toFixed(2))
 }

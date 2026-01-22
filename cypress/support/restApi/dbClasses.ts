@@ -90,6 +90,10 @@ export class DbAssessment extends DbAssessmentOrRsr {
     courtName: string
     parentAssessmentPk: number
     sanIndicator: string
+    dateOfBirth: string
+    learningToolScore: number
+    ldcSubTotal: number
+    ldcFuncProc: string
     offences: DbOffence[] = []
     victims: DbVictim[] = []
     basicSentencePlan: DbBspObjective[] = []
@@ -111,6 +115,10 @@ export class DbAssessment extends DbAssessmentOrRsr {
         this.assessmentVersion = Number.parseInt(assessmentData[41])
         this.parentAssessmentPk = Number.parseInt(assessmentData[42]) || null
         this.sanIndicator = assessmentData[47]
+        this.dateOfBirth = assessmentData[66]
+        this.learningToolScore = assessmentData[67] == null ? null : Number.parseInt(assessmentData[67])
+        this.ldcSubTotal = assessmentData[68] == null ? null : Number.parseInt(assessmentData[68])
+        this.ldcFuncProc = assessmentData[69]
     }
 
     addCourtDetails(courtData: string[]) {
@@ -142,7 +150,9 @@ export class DbAssessment extends DbAssessmentOrRsr {
                     s.ogp2_percentage_2yr, s.ogp2_band_risk_recon_elm, s.ogp2_calculated, 
                     s.ovp2_percentage_2yr, s.ovp2_band_risk_recon_elm, s.ovp2_calculated, 
                     s.snsv_percentage_2yr_static, s.snsv_stat_band_risk_recon_elm, s.snsv_calculated_static, 
-                    s.snsv_percentage_2yr_dynamic, s.snsv_dyn_band_risk_recon_elm, s.snsv_calculated_dynamic 
+                    s.snsv_percentage_2yr_dynamic, s.snsv_dyn_band_risk_recon_elm, s.snsv_calculated_dynamic,
+                    to_char(s.date_of_birth, 'YYYY-MM-DD'),
+                    s.learning_tool_score, s.ldc_sub_total, s.ldc_func_proc
                     from eor.oasys_assessment_group g, eor.oasys_set s, eor.oasys_set_change c 
                     where g.offender_pk = ${offenderPk} and g.oasys_assessment_group_pk = s.oasys_assessment_group_pk 
                     and c.oasys_set_pk = s.oasys_set_pk 
@@ -182,7 +192,7 @@ export class DbAssessment extends DbAssessmentOrRsr {
     }
 
     static textAnswerQuery(assessmentPk: number): string {
-   
+
         return `select q.ref_section_code, q.ref_question_code, q.free_format_answer, q.additional_note
                     from eor.oasys_set st
                     left outer join eor.oasys_section s on s.oasys_set_pk = st.oasys_set_pk
