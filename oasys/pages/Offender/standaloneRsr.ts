@@ -32,7 +32,7 @@ export class StandaloneRsr extends Page {
     /**
      *  How many of the sanctions involved violent offences?
      */
-    o1_40 = new Element.Textbox<string>('#P5_QU_1_40')
+    o1_40 = new Element.Textbox<number>('#P5_QU_1_40')
     /**
      *  Date of current conviction
      */
