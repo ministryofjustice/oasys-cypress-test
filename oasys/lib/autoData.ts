@@ -23,7 +23,7 @@ let testStartDate = Cypress.dayjs()
  * 
  * If no values are specified (or no parameter at all), returns today's date.  If the parameter is a string, it is returned unchanged.
  */
-export function oasysDate(offset?: OasysDate): string {
+export function oasysDateAsString(offset?: OasysDate): string {
 
     if (typeof offset == 'string') {
         return offset
@@ -39,6 +39,21 @@ export function oasysDate(offset?: OasysDate): string {
     return date.format(dateFormat)
 }
 
+export function oasysDateAsDayjs(offset?: OasysDate): Dayjs {
+
+    if (typeof offset == 'string') {
+        return null
+    }
+
+    let date = testStartDate
+
+    if (offset?.days) date = date.add(offset.days, 'day')
+    if (offset?.weeks) date = date.add(offset.weeks, 'week')
+    if (offset?.months) date = date.add(offset.months, 'month')
+    if (offset?.years) date = date.add(offset.years, 'year')
+
+    return date
+}
 /** 
  * Returns a string with x characters.  The string includes some spaces and carriage returns, and a counter at regular intervals.
  */

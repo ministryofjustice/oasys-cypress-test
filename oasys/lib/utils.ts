@@ -23,7 +23,9 @@ export function getInteger(param: string): number {
 export function checkIfAfter(appDate: Dayjs, compareDate: Dayjs) {  // return true if second date is later or equal to than the first
 
     return !compareDate.isBefore(appDate)
-} export function lookupValue(value: string, lookup: {}): string {
+} 
+
+export function lookupValue(value: string, lookup: {}): string {
 
     const result = lookup[value]
     return result == undefined ? value : result

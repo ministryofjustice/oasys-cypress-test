@@ -9,11 +9,13 @@ declare type EndpointParams = {
     endpoint: Endpoint,
     crnSource?: Provider
     crn?: string,
-    additionalParameter?: 'Y' | 'N',
+    additionalParameter?: YorN,
     laoPrivilege: 'ALLOW' | 'LIMIT' | 'rubbish',
     assessmentPk?: number,
     expectedStatus?: string
 }
+
+declare type YorN = 'Y' | 'N'
 
 declare type EndpointUrl = { endpoint: Endpoint, url: string }
 

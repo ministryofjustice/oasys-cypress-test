@@ -815,7 +815,7 @@ export function checkSanOtlCall(pk: number, expectedSubjectDetails: { [keys: str
 
     cy.log(`Checking OTL call for ${pk}`)
     if (expectedSubjectDetails['dateOfBirth']) {  // reformat the date
-        expectedSubjectDetails['dateOfBirth'] = Cypress.dayjs(oasys.oasysDate(expectedSubjectDetails['dateOfBirth']), 'DD/MM/YYYY').format('YYYY-MM-DD')
+        expectedSubjectDetails['dateOfBirth'] = Cypress.dayjs(oasys.oasysDateAsString(expectedSubjectDetails['dateOfBirth']), 'DD/MM/YYYY').format('YYYY-MM-DD')
     }
 
     const query = `select log_text from eor.clog where log_source like '%${pk}%onetime%' order by time_stamp desc fetch first 2 rows only`

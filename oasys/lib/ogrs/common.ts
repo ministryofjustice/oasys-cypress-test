@@ -5,7 +5,9 @@ import isLeapYear from 'dayjs/plugin/isLeapYear'
 
 import { TestCaseParameters, OgrsOffenceCat } from './types'
 import { offenceCats, offences } from './data/offences'
-import { dateFormat } from 'lib/utils'
+import { getData } from '../db'
+
+let offencesLoaded = false
 
 export function addCalculatedInputParameters(p: TestCaseParameters) {
 
@@ -57,4 +59,21 @@ export function getOffenceCat(offence: string): OgrsOffenceCat {
 
     const cat = offenceCats[offences[offence]]
     return cat == undefined ? null : cat
+}
+
+export function loadOffenceCodeData() {
+
+    if (!offencesLoaded) {
+        // Load offence codes from OASys
+        const query = 'select offence_group_code || sub_code, rsr_category_desc from eor.ct_offence order by 1'
+
+        getData(query, 'offenceCodeData')
+        cy.get<string[][]>('@offenceCodeData').then((offenceCodes) => {
+            offenceCodes.forEach(offence => {
+                offences[offence[0]] = offence[1]
+            })
+        })
+        offencesLoaded = true
+    }
+
 }
