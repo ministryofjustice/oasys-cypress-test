@@ -1,4 +1,4 @@
-import { RescoringResult, RescoringTestParameters } from '../../cypress/support/ogrs/types'
+import { RescoringResult, RescoringTestParameters } from '../../oasys/lib/ogrs/types'
 
 describe('OGRS rescoring datafix test', () => {
 
@@ -19,7 +19,7 @@ function test(part: number) {
                 staticFlag: 'Y',
                 includeLayer1: true,
                 useCurrentDate: false,
-                reportMode: 'normal',       
+                reportMode: 'normal',
                 significantReleaseDates: appConfig.significantReleaseDates,
                 outputFile: 'rescoringOutput',
             }

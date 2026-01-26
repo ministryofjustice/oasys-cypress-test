@@ -2,11 +2,10 @@ import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import utc from 'dayjs/plugin/utc'
 
-import { OgrsOffenceCat, TestCaseParameters } from '../types'
+import { TestCaseParameters } from 'lib/ogrs/types'
 import { OgrsRsr } from './dbClasses'
-import { dateFormat } from '../orgsTest'
-import { offenceCats, offences } from '../data/offences'
-import { addCalculatedInputParameters } from '../loadTestData'
+import { addCalculatedInputParameters } from 'lib/ogrs/common'
+import { dateFormat } from 'lib/utils'
 
 export function createRsrTestCase(rsr: OgrsRsr): TestCaseParameters {
 

@@ -1,8 +1,8 @@
 import { Decimal } from 'decimal.js'
 
 import { coefficients } from './data/coefficients'
-import { TestCaseParameters, ScoreType, OutputParameters, ScoreBand } from './types'
-import { OgrsOffenceCat, OgrsFeatures } from './types'
+import { TestCaseParameters, ScoreType, OutputParameters, ScoreBand } from '../../../oasys/lib/ogrs/types'
+import { OgrsOffenceCat, OgrsFeatures } from '../../../oasys/lib/ogrs/types'
 import { addOutputParameter, reportScores } from './createOutput'
 import { checkMissingQuestions } from './missingQuestions'
 

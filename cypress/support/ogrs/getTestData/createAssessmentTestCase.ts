@@ -2,11 +2,10 @@ import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import utc from 'dayjs/plugin/utc'
 
-import { OgrsTestParameters, TestCaseParameters } from '../types'
+import { TestCaseParameters } from 'lib/ogrs/types'
 import { OgrsAssessment } from './dbClasses'
-import { dateFormat } from '../orgsTest'
-import { addCalculatedInputParameters } from '../loadTestData'
-import { getOffenceCat } from '../loadTestData'
+import { addCalculatedInputParameters, getOffenceCat } from 'lib/ogrs/common'
+import { checkIfAfter, dateFormat } from 'lib/utils'
 
 export function createAssessmentTestCase(assessment: OgrsAssessment): TestCaseParameters {
 
@@ -266,9 +265,4 @@ const genderLookup = {
 const ynLookup = {
     YES: 'Y',
     NO: 'N',
-}
-
-function checkIfAfter(appDate: Dayjs, compareDate: Dayjs) {  // return true if second date is later or equal to than the first
-
-    return !compareDate.isBefore(appDate)
 }

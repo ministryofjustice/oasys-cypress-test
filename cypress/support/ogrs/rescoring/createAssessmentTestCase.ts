@@ -2,10 +2,10 @@ import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import utc from 'dayjs/plugin/utc'
 
-import { RescoringTestParameters, TestCaseParameters } from '../types'
+import { RescoringTestParameters, TestCaseParameters } from '../../../../oasys/lib/ogrs/types'
 import { RescoringAssessment } from './dbClasses'
-import { dateFormat } from '../orgsTest'
-import { addCalculatedInputParameters, getOffenceCat } from '../loadTestData'
+import { addCalculatedInputParameters, getOffenceCat} from 'lib/ogrs/common'
+import { checkIfAfter, dateFormat, getString } from 'lib/utils'
 
 export function createAssessmentTestCase(assessment: RescoringAssessment, testParams: RescoringTestParameters): TestCaseParameters {
 
@@ -94,15 +94,6 @@ export function createAssessmentTestCase(assessment: RescoringAssessment, testPa
 
     addCalculatedInputParameters(p)
     return p
-}
-
-function checkIfAfter(appDate: Dayjs, compareDate: Dayjs) {  // return true if second date is later or equal to than the first
-
-    return !compareDate.isBefore(appDate)
-}
-
-function getString(param: string): string {
-    return param == '' || param == null ? null : param
 }
 
 function getDate(param: string): Dayjs {

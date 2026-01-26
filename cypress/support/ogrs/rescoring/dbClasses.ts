@@ -1,4 +1,4 @@
-import { dateFormat } from "../orgsTest"
+import { dateFormat } from 'lib/utils'
 
 export class RescoringOffenderWithAssessment {
 

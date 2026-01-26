@@ -1,4 +1,4 @@
-import { TestCaseParameters, ScoreType, MissingQuestionsResult } from './types'
+import { TestCaseParameters, ScoreType, MissingQuestionsResult } from '../../../oasys/lib/ogrs/types'
 
 export function checkMissingQuestions(scoreType: ScoreType, params: TestCaseParameters, rsrDynamic: boolean = false): MissingQuestionsResult {
 

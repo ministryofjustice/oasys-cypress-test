@@ -1,4 +1,4 @@
-import { OgrsTestParameters } from '../../cypress/support/ogrs/types'
+import { OgrsTestParameters } from '../../oasys/lib/ogrs/types'
 import { runTest } from './testLib'
 
 describe('OGRS calculator test - data science test cases', () => {

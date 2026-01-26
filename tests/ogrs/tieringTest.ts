@@ -1,4 +1,4 @@
-import { TieringTestParameters, TieringTestResult } from '../../cypress/support/ogrs/types'
+import { TieringTestParameters, TieringTestResult } from '../../oasys/lib/ogrs/types'
 
 const count = 260000
 const timeout = 10000000

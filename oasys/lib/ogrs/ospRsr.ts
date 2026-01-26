@@ -1,7 +1,7 @@
 import Decimal from 'decimal.js'
 
 import { ospCoefficients } from './data/ospCoefficients'
-import { OutputParameters, ScoreBand, TestCaseParameters } from './types'
+import { OutputParameters, ScoreBand, TestCaseParameters } from '../../../oasys/lib/ogrs/types'
 import { calculateProbability, calculateBand, probabilityToPercentage } from './calculateScore'
 import { reportScores, addOutputParameter } from './createOutput'
 import { checkMissingQuestions } from './missingQuestions'

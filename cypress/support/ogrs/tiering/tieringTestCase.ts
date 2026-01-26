@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 
-import { Tier } from '../types'
+import { Tier } from '../../../../oasys/lib/ogrs/types'
 import { TieringCase } from './dbClasses'
 import { dateFormat } from './tieringTest'
 
@@ -13,31 +13,31 @@ export function testTieringCase(tieringCase: TieringCase, logText: string[]): Ti
 
     // Step 1 - ARP/CSRP
     const step1 = calculateStep1(arpRisk, tieringCase.ncRsrPercentageScore)
-    
+
     // Step 2 - OSP. Higher of 2a and 2b overrules step 1 if either can be calculated
     const step2a = calculateStep2a(tieringCase.ncOspDcPercentageScore, tieringCase.dcSrpRiskReduction)
     const step2b = calculateStep2b(tieringCase.ncOspIicRiskReconElm)
     const step2Combined = getHigherTier(step2a, step2b)
-    
+
     // Step 3 - ROSH and MAPPA.  Highest tier from steps one and two is for the decision between B+ and B-
     const step3 = calculateStep3(rosh, tieringCase.mappa, getHigherTier(step1, step2Combined))
-    
+
     // Step 4 - ROSH
     const step4 = calculateStep4(rosh)
-    
+
     // Step 5 - lifers
     const step5 = calculateStep5(tieringCase.lifer, tieringCase.custodyInd, tieringCase.communityDate, tieringCase.dateCompleted)
-    
+
     // Step 6 - can raise the result for stalking, da, cp
     const step6 = calculateStep6(tieringCase)
-    
+
     // Combine all the results.  Step 2 can overrule step 1 (higher or lower), 3 to 6 can only raise the result
     let finalTier = step2Combined == null ? step1 : step2Combined
     finalTier = getHigherTier(finalTier, step3)
     finalTier = getHigherTier(finalTier, step4)
     finalTier = getHigherTier(finalTier, step5)
     finalTier = getHigherTier(finalTier, step6)
-    
+
     logText.push(`        Step 1  - ${step1}`)
     logText.push(`        Step 2a - ${step2a}`)
     logText.push(`        Step 2b - ${step2b}`)
@@ -59,29 +59,29 @@ export function testTieringCaseAlternative(tieringCase: TieringCase, logText: st
     // Step 1 - ARP/CSRP
     const step1 = calculateStep1(arpRisk, snsvRisk)
     let finalTier = step1
-    
+
     // Step 2 - OSP.
     const step2a = calculateStep2a(tieringCase.ncOspDcPercentageScore, tieringCase.dcSrpRiskReduction)
     const step2b = calculateStep2b(tieringCase.ncOspIicRiskReconElm)
     finalTier = getHigherTier(finalTier, step2a)
     finalTier = getHigherTier(finalTier, step2b)
-    
+
     // Step 3 - ROSH and MAPPA.  Highest tier from steps one and two is for the decision between B+ and B-
     const step3 = calculateStep3(rosh, tieringCase.mappa, getHigherTier(step1, finalTier))
     finalTier = getHigherTier(finalTier, step3)
-    
+
     // Step 4 - ROSH
     const step4 = calculateStep4(rosh)
     finalTier = getHigherTier(finalTier, step4)
-    
+
     // Step 5 - lifers
     const step5 = calculateStep5(tieringCase.lifer, tieringCase.custodyInd, tieringCase.communityDate, tieringCase.dateCompleted)
     finalTier = getHigherTier(finalTier, step5)
-    
+
     // Step 6 - can raise the result for stalking, da, cp
     const step6 = calculateStep6(tieringCase)
     finalTier = getHigherTier(finalTier, step6)
-    
+
     logText.push(`        Step 1  - ${step1}`)
     logText.push(`        Step 2a - ${step2a}`)
     logText.push(`        Step 2b - ${step2b}`)
@@ -180,7 +180,7 @@ function calculateStep5(lifer: string, custodyInd: string, communityDate: string
     if (diffDays < 0) { // Community date is in the future
         return null
     }
-    
+
     const diffYears = firstDate.diff(secondDate, 'year')  // Assessment date minus community date
     return diffYears >= 1 ? 'D' : 'B Upper'
 }

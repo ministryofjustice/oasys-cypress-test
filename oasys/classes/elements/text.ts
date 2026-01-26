@@ -17,7 +17,7 @@ export class Text {
 
     getValue(alias: string) {
 
-        cy.get(this.selector).invoke('val').as(alias)
+        cy.get(this.selector).invoke('text').as(alias)
     }
 
     checkStatus(status: ElementStatus) {
@@ -27,6 +27,14 @@ export class Text {
             if (status != result.status) {
                 throw new Error(`Incorrect status for ${this.selector}: expected ${status}, found ${result.status}`)
             }
+        })
+    }
+
+    logValue(desc: string = null) {
+
+        cy.get(this.selector).invoke('text').then((text) => {
+
+            cy.log(`${desc || this.selector}: ${text}`)
         })
     }
 
@@ -48,6 +56,7 @@ export class Text {
                 if (element.is(':visible')) {
                     result.status = 'visible'
                 }
+                result.value = element.text()
             }
 
         })

@@ -1,8 +1,8 @@
-import { OgrsTestParameters, ReportMode } from '../../cypress/support/ogrs/types'
+import { OgrsTestParameters, ReportMode } from '../../oasys/lib/ogrs/types'
 import { runTest } from './testLib'
 
 const pk = 2512657228
-const reportMode: ReportMode = 'verbose' 
+const reportMode: ReportMode = 'verbose'
 
 describe('OGRS calculator test', () => {
 

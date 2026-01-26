@@ -1,19 +1,18 @@
 import * as fs from 'fs-extra'
+import { Dayjs } from 'dayjs'
 
-import { OgrsTestParameters, OgrsTestScriptResult, OutputParameters, TestCaseParameters, TestCaseResult } from './types'
+import { OgrsTestParameters, OgrsTestScriptResult, OutputParameters, TestCaseParameters, TestCaseResult } from '../../../oasys/lib/ogrs/types'
 import { calculateTestCase } from './ogrsCalculator'
 import { loadParameterSet, loadOracleOutputValues } from './loadTestData'
 import { getOgrsResult } from '../oasysDb'
-import { Dayjs } from 'dayjs'
 import { getAssessmentTestData, getRsrTestData } from './getTestData/getTestData'
 import { createAssessmentTestCase } from './getTestData/createAssessmentTestCase'
 import { createRsrTestCase } from './getTestData/createRsrTestCase'
 import { OgrsAssessment, OgrsRsr } from './getTestData/dbClasses'
-import { offences } from './data/offences'
+import { offences } from '../../../oasys/lib/ogrs/data/offences'
 import * as db from '../oasysDb'
 
 const dataFilePath = './cypress/support/ogrs/data/'
-export const dateFormat = 'DD-MM-YYYY'
 
 export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTestScriptResult> {
 

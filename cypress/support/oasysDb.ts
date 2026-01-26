@@ -5,7 +5,7 @@ import utc from 'dayjs/plugin/utc'
 
 import { testEnvironment, userSuffix } from '../../localSettings'
 import { ogrsFunctionCall } from './ogrs/getTestData/oracleFunctionCall'
-import { dateFormat } from './ogrs/orgsTest'
+import { dateFormat } from 'lib/utils'
 
 var connection
 

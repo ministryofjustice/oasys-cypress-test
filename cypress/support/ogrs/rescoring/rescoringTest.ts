@@ -1,12 +1,12 @@
 import * as fs from 'fs-extra'
 
 
-import { OutputParameters, RescoringResult, RescoringTestParameters, TestCaseParameters } from '../types'
+import { OutputParameters, RescoringResult, RescoringTestParameters, TestCaseParameters } from '../../../../oasys/lib/ogrs/types'
 import { getOgrsResult } from '../../oasysDb'
 import { Dayjs } from 'dayjs'
 import { getOffenderData } from './getOffenderData'
 import { createAssessmentTestCase } from './createAssessmentTestCase'
-import { offences } from '../data/offences'
+import { offences } from '../../../../oasys/lib/ogrs/data/offences'
 import * as db from '../../oasysDb'
 import { loadOracleOutputValues } from '../loadTestData'
 import { RescoringOffenderWithAssessment } from './dbClasses'

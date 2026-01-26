@@ -68,7 +68,7 @@ describe('SAN integration - test ref 35', () => {
                 // Check cloning from the assessment
                 rsr.o1_8Age.checkValue('19')
                 rsr.o1_32.checkValue(2)
-                rsr.o1_40.checkValue('0')
+                rsr.o1_40.checkValue(0)
                 rsr.o1_29.checkValue({ months: -1 })
                 rsr.o1_30.checkValue('No')
                 rsr.o1_38.checkValue({})
@@ -83,7 +83,7 @@ describe('SAN integration - test ref 35', () => {
                 rsr.o12_1.checkValue('2-Significant problems')
 
                 rsr.o1_32.setValue(4)
-                rsr.o1_40.setValue('1')
+                rsr.o1_40.setValue(1)
                 rsr.o1_29.setValue({})
                 rsr.o1_38.setValue({ months: 6 })
                 rsr.o3_4.setValue('1-Some problems')

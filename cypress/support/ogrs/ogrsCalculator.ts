@@ -1,9 +1,9 @@
 import { Decimal } from 'decimal.js'
 
-import { TestCaseParameters, TestCaseResult, OutputParameters, OgrsTestParameters } from './types'
-import { calculate } from './calculateScore'
-import { ospRsrCalc } from './ospRsr'
-import { createOutputObject } from './createOutput'
+import { TestCaseParameters, TestCaseResult, OutputParameters, OgrsTestParameters } from 'lib/ogrs/types'
+import { calculate } from 'lib/ogrs/calculateScore'
+import { ospRsrCalc } from 'lib/ogrs/ospRsr'
+import { createOutputObject } from 'lib/ogrs/createOutput'
 
 const tolerance = new Decimal('1E-37')
 const precision = 40

@@ -1,4 +1,4 @@
-import { OgrsTestParameters, ReportMode } from '../../cypress/support/ogrs/types'
+import { OgrsTestParameters, ReportMode } from '../../oasys/lib/ogrs/types'
 import { runTest } from './testLib'
 
 const count = 10000
