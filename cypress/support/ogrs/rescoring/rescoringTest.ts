@@ -1,13 +1,11 @@
 import * as fs from 'fs-extra'
 
-
-import { OutputParameters, RescoringResult, RescoringTestParameters, TestCaseParameters } from '../../../../oasys/lib/ogrs/types'
+import { OutputParameters, RescoringResult, RescoringTestParameters, TestCaseParameters } from '../../../../oasys/ogrs/types'
 import { getOgrsResult } from '../../oasysDb'
 import { Dayjs } from 'dayjs'
 import { getOffenderData } from './getOffenderData'
 import { createAssessmentTestCase } from './createAssessmentTestCase'
-import { offences } from '../../../../oasys/lib/ogrs/data/offences'
-import * as db from '../../oasysDb'
+import { dateParameterToString, stringParameterToString, numericParameterToString, numericParameterToCsvOutputString, stringParameterToCsvOutputString, dateParameterToCsvOutputString } from 'lib/utils'
 import { loadOracleOutputValues } from '../loadTestData'
 import { RescoringOffenderWithAssessment } from './dbClasses'
 
@@ -18,15 +16,6 @@ export const dateFormat = 'DD-MM-YYYY'
 export async function rescoringTest(testParams: RescoringTestParameters): Promise<RescoringResult[]> {
 
     const results: RescoringResult[] = []
-
-    // Load offence codes from OASys
-    const offenceCodeData = await db.selectData('select offence_group_code || sub_code, rsr_category_desc from eor.ct_offence order by 1')
-    if (offenceCodeData.error != null) {
-        throw new Error(offenceCodeData.error)
-    }
-    (offenceCodeData.data as string[][]).forEach(offence => {
-        offences[offence[0]] = offence[1]
-    })
 
     // Load input parameters from a CSV file (list of CRNs)
     const crnFile = await fs.readFile(`${dataFilePath}${testParams.dataFile}.csv`, 'utf8')
@@ -147,23 +136,6 @@ function getFunctionCall(params: TestCaseParameters): string {
     return result.join(',')
 }
 
-function dateParameterToString(param: Dayjs): string {
-
-    const result = param?.format('DD-MM-YYYY')
-    return result == 'Invalid Date' || result == null ? 'null' : `to_date('${result}','DD-MM-YYYY')`
-}
-
-function stringParameterToString(param: string): string {
-
-    return param == null ? 'null' : `'${param}'`
-}
-
-
-function numericParameterToString(param: number): string {
-
-    return param == null ? 'null' : param.toString()
-}
-
 function createOutputLine(params: TestCaseParameters, offender: RescoringOffenderWithAssessment, outputParams: OutputParameters, runNumber: string): string {
 
     const metadata: string[] = []
@@ -274,21 +246,4 @@ function getInputsForOutputLine(params: TestCaseParameters) {
     result.push(stringParameterToCsvOutputString(params.CUSTODY_IND))
 
     return result.join(',')
-}
-
-
-function dateParameterToCsvOutputString(param: Dayjs): string {
-
-    const result = param?.format('DD-MM-YYYY')
-    return result == 'Invalid Date' || result == null ? '' : result
-}
-
-function stringParameterToCsvOutputString(param: string): string {
-
-    return param == null ? '' : param
-}
-
-function numericParameterToCsvOutputString(param: number): string {
-
-    return param == null ? '' : param.toString()
 }

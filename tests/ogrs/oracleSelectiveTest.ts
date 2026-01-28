@@ -1,33 +1,30 @@
-import { OgrsTestParameters, ReportMode } from '../../oasys/lib/ogrs/types'
+import { OgrsTestParameters, ReportMode } from '../../oasys/ogrs/types'
 import { runTest } from './testLib'
 
-const pk = 2512657228
+const pk = 4192308
 const reportMode: ReportMode = 'verbose'
 
 describe('OGRS calculator test', () => {
 
-    runTests()
-})
-
-
-function runTests() {
-
-    const dbTestParams: OgrsTestParameters = {
-        testType: 'db',
-        dbDetails: {
-            type: 'assessment',
-            whereClause: `oasys_set_pk = ${pk}`,
-            count: 1,
-        },
-        staticFlag: 'N',
-        reportMode: reportMode,
-        includeObjects: true,
-    }
-
     it(`Assessment pk ${pk}`, () => {
 
-        runTest(dbTestParams, '', false, false)
+        cy.get<AppConfig>('@appConfig').then((appConfig) => {
+
+            const dbTestParams: OgrsTestParameters = {
+                testType: 'db',
+                dbDetails: {
+                    type: 'assessment',
+                    whereClause: `oasys_set_pk = ${pk}`,
+                    count: 1,
+                },
+                staticFlag: 'N',
+                reportMode: reportMode,
+                includeObjects: true,
+                appConfig: appConfig,
+            }
+
+            runTest(dbTestParams, '', false, false)
+        })
     })
+})
 
-
-}

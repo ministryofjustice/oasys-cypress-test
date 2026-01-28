@@ -1,22 +1,16 @@
-import dayjs from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-import utc from 'dayjs/plugin/utc'
-import isLeapYear from 'dayjs/plugin/isLeapYear'
+import { Temporal } from '@js-temporal/polyfill'
 
 import { TestCaseParameters, OgrsOffenceCat } from './types'
-import { offenceCats, offences } from './data/offences'
-import { getData } from '../db'
+import { offenceCats } from './data/offences'
 
-let offencesLoaded = false
-
-export function addCalculatedInputParameters(p: TestCaseParameters) {
+export function addCalculatedInputParameters(p: TestCaseParameters, offences: {}) {
 
     p.effectiveAssessmentDate = p.COMMUNITY_DATE == null ? p.LAST_SANCTION_DATE : p.COMMUNITY_DATE
     p.age = getDateDiff(p.DOB, p.effectiveAssessmentDate, 'year')
     p.ageAtLastSanction = getDateDiff(p.DOB, p.LAST_SANCTION_DATE, 'year')
     p.ageAtLastSanctionSexual = getDateDiff(p.DOB, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
     p.ofm = getDateDiff(p.effectiveAssessmentDate, p.ASSESSMENT_DATE, 'month', true)
-    p.offenceCat = getOffenceCat(p.OFFENCE_CODE)
+    p.offenceCat = getOffenceCat(p.OFFENCE_CODE, offences)
     p.firstSanction = p.TOTAL_SANCTIONS_COUNT == 1
     p.secondSanction = p.TOTAL_SANCTIONS_COUNT == 2
     p.yearsBetweenFirstTwoSanctions = p.secondSanction ? p.ageAtLastSanction - p.AGE_AT_FIRST_SANCTION : 0
@@ -35,16 +29,16 @@ export function addCalculatedInputParameters(p: TestCaseParameters) {
 }
 
 
-function getDateDiff(firstDate: dayjs.Dayjs, secondDate: dayjs.Dayjs, unit: 'year' | 'month', ofm: boolean = false): number {
+function getDateDiff(firstDate: Temporal.PlainDate, secondDate: Temporal.PlainDate, unit: 'year' | 'month', ofm: boolean = false): number {
 
-    dayjs.extend(isLeapYear)
     if (firstDate == null || secondDate == null) {
         return null
     }
-    let diff = secondDate.diff(firstDate, unit)
+    const dateDiff = secondDate.since(firstDate, { smallestUnit: unit, largestUnit: unit })
+    let diff = unit == 'month' ? dateDiff.months : dateDiff.years
 
-    // Leap-year fix - if dob = 29/2, 28/2 is not a birthday on a non-leap year; the DaysJS calculation doesn't work like that
-    if (unit == 'year' && firstDate.date() == 29 && firstDate.month() == 1 && secondDate.date() == 28 && secondDate.month() == 1 && !secondDate.isLeapYear()) {
+    // Leap-year fix - if dob = 29/2, 28/2 is not a birthday on a non-leap year; the calculation doesn't work like that
+    if (unit == 'year' && firstDate.day == 29 && firstDate.month == 1 && secondDate.day == 28 && secondDate.month == 1 && !secondDate.inLeapYear) {
         diff--
     }
 
@@ -55,25 +49,8 @@ function getDateDiff(firstDate: dayjs.Dayjs, secondDate: dayjs.Dayjs, unit: 'yea
     }
 }
 
-export function getOffenceCat(offence: string): OgrsOffenceCat {
+export function getOffenceCat(offence: string, offences: {}): OgrsOffenceCat {
 
     const cat = offenceCats[offences[offence]]
     return cat == undefined ? null : cat
-}
-
-export function loadOffenceCodeData() {
-
-    if (!offencesLoaded) {
-        // Load offence codes from OASys
-        const query = 'select offence_group_code || sub_code, rsr_category_desc from eor.ct_offence order by 1'
-
-        getData(query, 'offenceCodeData')
-        cy.get<string[][]>('@offenceCodeData').then((offenceCodes) => {
-            offenceCodes.forEach(offence => {
-                offences[offence[0]] = offence[1]
-            })
-        })
-        offencesLoaded = true
-    }
-
 }

@@ -1,4 +1,4 @@
-import { TieringTestParameters, TieringTestResult } from '../../oasys/lib/ogrs/types'
+import { TieringTestParameters, TieringTestResult } from '../../oasys/ogrs/types'
 
 const count = 260000
 const timeout = 10000000

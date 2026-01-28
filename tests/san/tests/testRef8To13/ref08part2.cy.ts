@@ -1,4 +1,4 @@
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs'
 import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 08 part 2', () => {
@@ -119,7 +119,7 @@ describe('SAN integration - test ref 08 part 2', () => {
                 const predictors = new oasys.Pages.Assessment.Predictors().goto()
                 predictors.o1_32.setValue(4)
                 predictors.o1_40.setValue(0)
-                predictors.o1_29.setValue({ weeks: -1 })
+                predictors.o1_29.setValue({ days: -7 })
                 predictors.o1_46.checkLabel('Number of previous/current sanctions involving indecent child image or indirect child contact sexual/sexually motivated offences')
                 predictors.save.click()
                 predictors.next.click()

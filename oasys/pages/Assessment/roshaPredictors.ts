@@ -44,7 +44,7 @@ export class RoshaPredictors extends BaseAssessmentPage {
     o6_7VictimFamily = new Element.Select<YesNoAnswer>('#P5_QU_6_7_1_2DA')
     o6_7PerpetratorPartner = new Element.Select<YesNoAnswer>('#P5_QU_6_7_2_1DA')
     o6_7PerpetratorFamily = new Element.Select<YesNoAnswer>('#P5_QU_6_7_2_2DA')
-    o6_8 = new Element.Select<'In a relationship, living together' | 'In a relationship, not living together' | 'Not in a relationship'>('#P5_QU_6_8')
+    o6_8 = new Element.Select<Q6_8Answer>('#P5_QU_6_8')
     o7_2 = new Element.Select<ProblemsMissingAnswer>('#P5_QU_7_2')
     o8_1 = new Element.Select<YesNoAnswer>('#P5_QU_8_1')
     o9_1 = new Element.Select<ProblemsMissingAnswer>('#P5_QU_9_1')

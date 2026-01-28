@@ -1,4 +1,4 @@
-import { OgrsTestParameters } from '../../oasys/lib/ogrs/types'
+import { OgrsTestParameters } from '../../oasys/ogrs/types'
 import { runTest } from './testLib'
 
 describe('OGRS calculator test - data science test cases', () => {
@@ -8,35 +8,44 @@ describe('OGRS calculator test - data science test cases', () => {
 
     it('Data science test cases - static flag = N', () => {
 
-        const csvTestParams: OgrsTestParameters = {
-            testType: 'csv',
-            csvDetails: {
-                dataFile: 'dsTestCases',
-            },
-            staticFlag: 'N',
-            reportMode: 'normal',
-            includeObjects: false
-        }
 
-        csvTestParams.csvDetails.start = start
-        csvTestParams.csvDetails.end = end
-        runTest(csvTestParams, 'dsOutputN', true, false)
+        cy.get<AppConfig>('@appConfig').then((appConfig) => {
+
+            const csvTestParams: OgrsTestParameters = {
+                testType: 'csv',
+                csvDetails: {
+                    dataFile: 'dsTestCases',
+                },
+                staticFlag: 'N',
+                reportMode: 'normal',
+                includeObjects: false,
+                appConfig: appConfig,
+            }
+
+            csvTestParams.csvDetails.start = start
+            csvTestParams.csvDetails.end = end
+            runTest(csvTestParams, 'dsOutputN', true, false)
+        })
     })
 
     it('Data science test cases - static flag = Y', () => {
+        cy.get<AppConfig>('@appConfig').then((appConfig) => {
 
-        const csvTestParams: OgrsTestParameters = {
-            testType: 'csv',
-            csvDetails: {
-                dataFile: 'dsTestCases',
-            },
-            staticFlag: 'Y',
-            reportMode: 'normal',
-            includeObjects: false
-        }
 
-        csvTestParams.csvDetails.start = start
-        csvTestParams.csvDetails.end = end
-        runTest(csvTestParams, 'dsOutputY', true, false)
+            const csvTestParams: OgrsTestParameters = {
+                testType: 'csv',
+                csvDetails: {
+                    dataFile: 'dsTestCases',
+                },
+                staticFlag: 'Y',
+                reportMode: 'normal',
+                includeObjects: false,
+                appConfig: appConfig,
+            }
+
+            csvTestParams.csvDetails.start = start
+            csvTestParams.csvDetails.end = end
+            runTest(csvTestParams, 'dsOutputY', true, false)
+        })
     })
 })

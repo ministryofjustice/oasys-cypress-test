@@ -6,10 +6,9 @@
  * @module Autodata
  */
 
-import * as dayjs from 'dayjs'
+import { Temporal } from '@js-temporal/polyfill'
 
-const dateFormat = 'DD/MM/YYYY'
-let testStartDate = Cypress.dayjs()
+export let testStartDate = Temporal.Now.plainDateISO()
 
 /**
  * Calculate a date based on the test start date (i.e. today unless the test runs over midnight), using an OasysDate object which can contain any of the following (all optional):
@@ -29,30 +28,27 @@ export function oasysDateAsString(offset?: OasysDate): string {
         return offset
     }
 
-    let date = testStartDate
-
-    if (offset?.days) date = date.add(offset.days, 'day')
-    if (offset?.weeks) date = date.add(offset.weeks, 'week')
-    if (offset?.months) date = date.add(offset.months, 'month')
-    if (offset?.years) date = date.add(offset.years, 'year')
-
-    return date.format(dateFormat)
+    return calculateOffsetDate(offset).toLocaleString()
 }
 
-export function oasysDateAsDayjs(offset?: OasysDate): Dayjs {
+export function oasysDateAsPlainDate(offset?: OasysDate): Temporal.PlainDate {
 
-    if (typeof offset == 'string') {
+    if (offset == null || typeof offset == 'string') {
         return null
     }
+    return calculateOffsetDate(offset)
+}
 
-    let date = testStartDate
+function calculateOffsetDate(offset: OasysDate): Temporal.PlainDate {
 
-    if (offset?.days) date = date.add(offset.days, 'day')
-    if (offset?.weeks) date = date.add(offset.weeks, 'week')
-    if (offset?.months) date = date.add(offset.months, 'month')
-    if (offset?.years) date = date.add(offset.years, 'year')
+    const d = offset as { days?: number, weeks?: number, months?: number, years?: number }
+    let result = testStartDate
 
-    return date
+    if (d.days) result = result.add({ days: d.days })
+    if (d.months) result = result.add({ months: d.months })
+    if (d.years) result = result.add({ years: d.years })
+
+    return result
 }
 /** 
  * Returns a string with x characters.  The string includes some spaces and carriage returns, and a counter at regular intervals.

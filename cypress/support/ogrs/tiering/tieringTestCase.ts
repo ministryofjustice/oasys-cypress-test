@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 
-import { Tier } from '../../../../oasys/lib/ogrs/types'
+import { Tier } from '../../../../oasys/ogrs/types'
 import { TieringCase } from './dbClasses'
 import { dateFormat } from './tieringTest'
 

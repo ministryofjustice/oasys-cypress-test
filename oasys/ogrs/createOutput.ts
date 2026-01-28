@@ -1,6 +1,6 @@
 import { Decimal } from 'decimal.js'
 
-import { OutputParameters, ScoreBand, ScoreStatus, ScoreType } from '../../../oasys/lib/ogrs/types'
+import { OutputParameters, ScoreBand, ScoreStatus, ScoreType } from './types'
 
 export function createOutputObject(): OutputParameters {
 

@@ -1,7 +1,6 @@
 import * as fs from 'fs-extra'
-import { Dayjs } from 'dayjs'
 
-import { OgrsTestParameters, OgrsTestScriptResult, OutputParameters, TestCaseParameters, TestCaseResult } from '../../../oasys/lib/ogrs/types'
+import { OgrsTestParameters, OgrsTestScriptResult, OutputParameters, TestCaseParameters, TestCaseResult } from '../../../oasys/ogrs/types'
 import { calculateTestCase } from './ogrsCalculator'
 import { loadParameterSet, loadOracleOutputValues } from './loadTestData'
 import { getOgrsResult } from '../oasysDb'
@@ -9,7 +8,8 @@ import { getAssessmentTestData, getRsrTestData } from './getTestData/getTestData
 import { createAssessmentTestCase } from './getTestData/createAssessmentTestCase'
 import { createRsrTestCase } from './getTestData/createRsrTestCase'
 import { OgrsAssessment, OgrsRsr } from './getTestData/dbClasses'
-import { offences } from '../../../oasys/lib/ogrs/data/offences'
+import { offences } from '../../../oasys/ogrs/data/offences'
+import { dateParameterToString, stringParameterToString, numericParameterToString } from 'lib/utils'
 import * as db from '../oasysDb'
 
 const dataFilePath = './cypress/support/ogrs/data/'
@@ -23,15 +23,6 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
         offenceCodeErrors: [],
         packageTimestamp: '',
     }
-
-    // Load offence codes from OASys
-    const offenceCodeData = await db.selectData('select offence_group_code || sub_code, rsr_category_desc from eor.ct_offence order by 1')
-    if (offenceCodeData.error != null) {
-        throw new Error(offenceCodeData.error)
-    }
-    (offenceCodeData.data as string[][]).forEach(offence => {
-        offences[offence[0]] = offence[1]
-    })
 
     // Get OGRS4 package deployment timestamp
     const pkgTimestamp = await db.selectSingleValue(`select timestamp from dba_objects where object_name = 'NEW_GEN_PREDICTORS_PKG' and object_type = 'PACKAGE BODY'`)
@@ -52,7 +43,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
             const errorLog: string[] = []
             scriptResults.cases++
             try {
-                const testCaseParams = loadParameterSet(inputParameters[i])
+                const testCaseParams = loadParameterSet(inputParameters[i], offences)
                 errorLog.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
 
                 if (testParams.staticFlag) {
@@ -111,14 +102,12 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
         const oasysData: OgrsAssessment[] | OgrsRsr[] =
             testParams.dbDetails.type == 'assessment' ? await getAssessmentTestData(testParams.dbDetails.count, testParams.dbDetails.whereClause)
                 : await getRsrTestData(testParams.dbDetails.count, testParams.dbDetails.whereClause)
-
         for (const assessmentOrRsr of oasysData) {
             const errorLog: string[] = []
             try {
                 const testCaseParams = testParams.dbDetails.type == 'assessment' ?
-                    createAssessmentTestCase(assessmentOrRsr as OgrsAssessment) : createRsrTestCase(assessmentOrRsr as OgrsRsr)
+                    createAssessmentTestCase(assessmentOrRsr as OgrsAssessment, testParams.appConfig) : createRsrTestCase(assessmentOrRsr as OgrsRsr, offences)
                 errorLog.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
-
                 // Run generate two sets of scores, for static flag Y and N
                 for (let staticFlag of ['Y', 'N']) {
                     scriptResults.cases++
@@ -240,21 +229,4 @@ function getFunctionCall(params: TestCaseParameters): string {
     result.push(`${stringParameterToString(params.CUSTODY_IND)})`)
 
     return result.join(',')
-}
-
-function dateParameterToString(param: Dayjs): string {
-
-    const result = param?.format('DD-MM-YYYY')
-    return result == 'Invalid Date' || result == null ? 'null' : `to_date('${result}','DD-MM-YYYY')`
-}
-
-function stringParameterToString(param: string): string {
-
-    return param == null ? 'null' : `'${param}'`
-}
-
-
-function numericParameterToString(param: number): string {
-
-    return param == null ? 'null' : param.toString()
 }

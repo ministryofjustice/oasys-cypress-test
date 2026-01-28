@@ -9,7 +9,7 @@ export function minimal(withDateFirstSanction: boolean = true) {
     }
     page.o1_32.setValue('1')
     page.o1_40.setValue(0)
-    page.o1_29.setValue({ weeks: -1 })
+    page.o1_29.setValue({ days: -7 })
     page.o1_30.setValue('No')
     page.o1_38.setValue({ months: 18 })
 }
@@ -23,7 +23,7 @@ export function fullyPopulated(withDateFirstSanction: boolean = true) {
     }
     page.o1_32.setValue('5')
     page.o1_40.setValue('1')
-    page.o1_29.setValue({ weeks: -1 })
+    page.o1_29.setValue({ days: -7 })
     page.o1_30.setValue('Yes')
     page.o1_41.setValue('Yes')
     page.o1_44.setValue('Yes')

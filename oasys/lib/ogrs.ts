@@ -1,21 +1,27 @@
-import { calculate } from 'lib/ogrs/calculateScore'
-import { createOutputObject } from 'lib/ogrs/createOutput'
-import { addCalculatedInputParameters, loadOffenceCodeData } from 'lib/ogrs/common'
-import { lookupValue } from 'lib/utils'
-import { ospRsrCalc } from 'lib/ogrs/ospRsr'
-import { TestCaseParameters } from './ogrs/types'
-import { oasysDateAsDayjs } from 'oasys'
+import { calculate } from 'ogrs/calculateScore'
+import { createOutputObject } from 'ogrs/createOutput'
+import { addCalculatedInputParameters } from 'ogrs/common'
+import { lookupValue, lookupNumericValue } from 'lib/utils'
+import { ospRsrCalc } from 'ogrs/ospRsr'
+import { TestCaseParameters, OutputParameters } from '../ogrs/types'
+import { oasysDateAsPlainDate } from 'oasys'
 
-export function calculateOgrs4(params: Ogrs4Params) {
+export function calculateOgrs4(params: Ogrs4Params, resultAlias: string) {
 
-    loadOffenceCodeData()
-    cy.then(() => {
+    const calcResult: Ogrs4CalcResult = {
+        details: {} as OutputParameters,
+        arpResult: '',
+        vrpResult: '',
+        csrpResult: '',
+    }
+
+    cy.get<AppConfig>('@appConfig').then((appConfig) => {
 
         const calculatorParams: TestCaseParameters = {
 
-            ASSESSMENT_DATE: oasysDateAsDayjs(params.assessmentDate),
+            ASSESSMENT_DATE: oasysDateAsPlainDate(params.assessmentDate),
             STATIC_CALC: params.staticCalc,
-            DOB: oasysDateAsDayjs(params.dob),
+            DOB: oasysDateAsPlainDate(params.dob),
             GENDER: lookupValue(params.gender, genderLookup),
             OFFENCE_CODE: params.offenceCode,
             TOTAL_SANCTIONS_COUNT: params.totalSanctionsCount,
@@ -26,18 +32,18 @@ export function calculateOgrs4(params: Ogrs4Params) {
             PARAPHILIA_SANCTIONS: params.paraphiliaSanctions,
             STRANGER_VICTIM: params.strangerVictim,
             AGE_AT_FIRST_SANCTION: params.ageAtFirstSanction,
-            LAST_SANCTION_DATE: oasysDateAsDayjs(params.lastSanctionDate),
-            DATE_RECENT_SEXUAL_OFFENCE: oasysDateAsDayjs(params.dateRecentSexualOffence),
+            LAST_SANCTION_DATE: oasysDateAsPlainDate(params.lastSanctionDate),
+            DATE_RECENT_SEXUAL_OFFENCE: oasysDateAsPlainDate(params.dateRecentSexualOffence),
             CURR_SEX_OFF_MOTIVATION: params.currSexOffMotivation,
-            MOST_RECENT_OFFENCE: oasysDateAsDayjs(params.mostRecentOffence),
-            COMMUNITY_DATE: oasysDateAsDayjs(params.communityDate),
+            MOST_RECENT_OFFENCE: oasysDateAsPlainDate(params.mostRecentOffence),
+            COMMUNITY_DATE: oasysDateAsPlainDate(params.communityDate),
             ONE_POINT_THIRTY: params.onePointThirty,
-            TWO_POINT_TWO: params.twoPointTwo,
+            TWO_POINT_TWO: ynTo10(params.twoPointTwo),
             THREE_POINT_FOUR: params.threePointFour,
-            FOUR_POINT_TWO: params.fourPointTwo,
+            FOUR_POINT_TWO: ynTo10(params.fourPointTwo),
             SIX_POINT_FOUR: params.sixPointFour,
             SIX_POINT_SEVEN: params.sixPointSeven,
-            SIX_POINT_EIGHT: params.sixPointEight,
+            SIX_POINT_EIGHT: lookupNumericValue(params.sixPointEight, q6_8Lookup),
             SEVEN_POINT_TWO: params.sevenPointTwo,
             DAILY_DRUG_USER: params.dailyDrugUser,
             AMPHETAMINES: params.amphetamines,
@@ -80,10 +86,10 @@ export function calculateOgrs4(params: Ogrs4Params) {
             CUSTODY_IND: params.custodyInd,
         }
 
-        addCalculatedInputParameters(calculatorParams)
-        cy.log(JSON.stringify(calculatorParams))
+        addCalculatedInputParameters(calculatorParams, appConfig.offences)
         const result = createOutputObject()
 
+        cy.log(JSON.stringify(calculatorParams))
         calculate('serious_violence_extended', calculatorParams, result)
         calculate('general_extended', calculatorParams, result)
         calculate('violence_extended', calculatorParams, result)
@@ -96,8 +102,13 @@ export function calculateOgrs4(params: Ogrs4Params) {
         // OSP and RSR
         ospRsrCalc(calculatorParams, result)
 
-        cy.log(JSON.stringify(result))
-
+        calcResult.details = result
+        const arp = result.OGP2_CALCULATED == 'Y' ? result.OGP2_PERCENTAGE : result.OGRS4G_PERCENTAGE
+        const arpBand = result.OGP2_CALCULATED == 'Y' ? result.OGP2_BAND : result.OGRS4G_BAND
+        const arpType = result.OGP2_CALCULATED == 'Y' ? 'DYNAMIC' : result.OGRS4G_CALCULATED ? 'STATIC' : ''
+        calcResult.arpResult = `${arpType}  ${arp}%   ${arpBand}`
+    }).then(() => {
+        cy.wrap(calcResult).as(resultAlias)
     })
 }
 
@@ -112,4 +123,15 @@ const genderLookup = {
 const ynLookup = {
     YES: 'Y',
     NO: 'N',
+}
+
+function ynTo10(param: string): number {
+
+    return param == 'Y' ? 1 : param == 'N' ? 0 : null
+}
+
+const q6_8Lookup = {
+    'In a relationship, living together': 1,
+    'In a relationship, not living together': 2,
+    'Not in a relationship': 3,
 }

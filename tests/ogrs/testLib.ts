@@ -1,4 +1,4 @@
-import { OgrsTestParameters, OgrsTestScriptResult, OutputParameters, TestCaseParameters } from '../../oasys/lib/ogrs/types'
+import { OgrsTestParameters, OgrsTestScriptResult, OutputParameters, TestCaseParameters } from '../../oasys/ogrs/types'
 
 const timeout = 10000000
 const summaryOutputItems = ['SNSV_PERCENTAGE_STATIC', 'SNSV_PERCENTAGE_DYNAMIC', 'OGRS4V_PERCENTAGE', 'OVP2_PERCENTAGE', 'OGRS4G_PERCENTAGE', 'OGP2_PERCENTAGE',]

@@ -1,7 +1,5 @@
 var oracledb = require('oracledb')
-import dayjs from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-import utc from 'dayjs/plugin/utc'
+import { Temporal } from '@js-temporal/polyfill'
 
 import { testEnvironment, userSuffix } from '../../localSettings'
 import { ogrsFunctionCall } from './ogrs/getTestData/oracleFunctionCall'
@@ -132,12 +130,14 @@ export async function selectData(query: string): Promise<DbResponse> {
 export async function getAppConfig(): Promise<AppConfig> {
 
     const versionData = await selectData(`select version_number, to_char(release_date, '${dateFormat}')
-                                             from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc`)
+                                            from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc`)
     const configData = await selectSingleValue(`select system_parameter_value from eor.system_parameter_mv where system_parameter_code ='PROB_FORCE_CRN'`)
+    const offencesData = await selectData('select offence_group_code || sub_code, rsr_category_desc from eor.ct_offence order by 1')
 
-    if (versionData.error != null || configData.error != null) {
+    if (versionData.error != null || configData.error != null || offencesData.error != null) {
         console.log(versionData.error)
         console.log(configData.error)
+        console.log(offencesData.error)
         return null
     }
     const versionHistory: AppVersion[] = []
@@ -147,8 +147,10 @@ export async function getAppConfig(): Promise<AppConfig> {
         versionHistory.push({ version: versions[i][0], date: versions[i][1] })
     }
 
-    dayjs.extend(customParseFormat)
-    dayjs.extend(utc)
+    const offences = {};
+    (offencesData.data as string[][]).forEach(offence => {
+        offences[offence[0]] = offence[1]
+    })
 
     return {
         versionHistory: versionHistory,
@@ -157,14 +159,15 @@ export async function getAppConfig(): Promise<AppConfig> {
             r6_20: getReleaseDate('6.20.0.0', versionHistory),
             r6_30: getReleaseDate('6.30.0.0', versionHistory),
             r6_35: getReleaseDate('6.35.0.0', versionHistory),
-        }
+        },
+        offences: offences,
     }
 }
 
-function getReleaseDate(release: string, versionHistory: AppVersion[]): dayjs.Dayjs {
+function getReleaseDate(release: string, versionHistory: AppVersion[]): Temporal.PlainDate {
 
     const releaseRecord = versionHistory.filter((v) => v.version == release)[0]
-    return dayjs.utc(releaseRecord.date, dateFormat)
+    return Temporal.PlainDate.from(releaseRecord.date)
 }
 
 /** 

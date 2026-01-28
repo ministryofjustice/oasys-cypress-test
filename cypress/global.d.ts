@@ -1,7 +1,7 @@
-import dayjs from 'dayjs'
+import { Temporal } from '@js-temporal/polyfill'
 
 declare global {
-    type Dayjs = dayjs.Dayjs
+    type PlainDate = Temporal.PlainDate
 }
 
-export {}
+export { }

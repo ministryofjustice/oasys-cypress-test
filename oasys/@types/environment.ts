@@ -21,6 +21,7 @@ declare type AppConfig = {
     versionHistory: AppVersion[],
     probForceCrn: boolean,
     significantReleaseDates: SignificantReleaseDates,
+    offences: {},
 }
 
 declare type AppVersion = {
@@ -29,7 +30,7 @@ declare type AppVersion = {
 }
 
 declare type SignificantReleaseDates = {
-    r6_20: Dayjs,
-    r6_30: Dayjs,
-    r6_35: Dayjs,
+    r6_20: PlainDate,
+    r6_30: PlainDate,
+    r6_35: PlainDate,
 }

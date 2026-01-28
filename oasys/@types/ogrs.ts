@@ -19,12 +19,12 @@ declare type Ogrs4Params = {
     mostRecentOffence?: OasysDate,
     communityDate?: OasysDate,
     onePointThirty?: YorN,
-    twoPointTwo?: number,
+    twoPointTwo?: YorN,
     threePointFour?: number,
-    fourPointTwo?: number,
+    fourPointTwo?: YorN,
     sixPointFour?: number,
     sixPointSeven?: number,
-    sixPointEight?: number,
+    sixPointEight?: Q6_8Answer,
     sevenPointTwo?: number,
     dailyDrugUser?: YorN,
     amphetamines?: YorN,
@@ -59,4 +59,12 @@ declare type Ogrs4Params = {
     robbery?: number,
     weaponsNotFirearms?: number,
     custodyInd?: YorN,
+}
+
+type Ogrs4CalcResult = {
+
+    details: {},
+    arpResult: string,
+    vrpResult: string,
+    csrpResult: string,
 }

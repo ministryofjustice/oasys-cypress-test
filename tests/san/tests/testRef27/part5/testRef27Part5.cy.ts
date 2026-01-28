@@ -1,3 +1,5 @@
+import { Dayjs } from 'dayjs'
+
 import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 27', () => {

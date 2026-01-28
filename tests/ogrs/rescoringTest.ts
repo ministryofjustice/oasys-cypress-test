@@ -1,4 +1,4 @@
-import { RescoringResult, RescoringTestParameters } from '../../oasys/lib/ogrs/types'
+import { RescoringResult, RescoringTestParameters } from '../../oasys/ogrs/types'
 
 describe('OGRS rescoring datafix test', () => {
 
@@ -20,8 +20,8 @@ function test(part: number) {
                 includeLayer1: true,
                 useCurrentDate: false,
                 reportMode: 'normal',
-                significantReleaseDates: appConfig.significantReleaseDates,
                 outputFile: 'rescoringOutput',
+                appConfig: appConfig,
             }
 
             runTest(testParams)

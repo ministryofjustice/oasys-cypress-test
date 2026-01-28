@@ -1,21 +1,18 @@
-import dayjs from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-import utc from 'dayjs/plugin/utc'
+import { Temporal } from '@js-temporal/polyfill'
 
-import { RescoringTestParameters, TestCaseParameters } from '../../../../oasys/lib/ogrs/types'
+import { RescoringTestParameters, TestCaseParameters } from '../../../../oasys/ogrs/types'
 import { RescoringAssessment } from './dbClasses'
-import { addCalculatedInputParameters, getOffenceCat} from 'lib/ogrs/common'
-import { checkIfAfter, dateFormat, getString } from 'lib/utils'
+import { addCalculatedInputParameters, getOffenceCat } from 'ogrs/common'
+import { checkIfAfter, getDate, getString } from 'lib/utils'
+import { testStartDate } from 'oasys'
 
 export function createAssessmentTestCase(assessment: RescoringAssessment, testParams: RescoringTestParameters): TestCaseParameters {
 
-    dayjs.extend(customParseFormat)
-    dayjs.extend(utc)
-    const today = dayjs.utc()
+    const today = testStartDate
 
-    const initiationDate = dayjs.utc(assessment.initiationDate, dateFormat)
-    const after6_30 = checkIfAfter(testParams.significantReleaseDates.r6_30, initiationDate)
-    const after6_35 = checkIfAfter(testParams.significantReleaseDates.r6_35, initiationDate)
+    const initiationDate = Temporal.PlainDate.from(assessment.initiationDate)
+    const after6_30 = checkIfAfter(testParams.appConfig.significantReleaseDates.r6_30, initiationDate)
+    const after6_35 = checkIfAfter(testParams.appConfig.significantReleaseDates.r6_35, initiationDate)
 
     let staticCalc = testParams.staticFlag
     if (staticCalc == 'N' && assessment.type == 'LAYER_1' && assessment.version == 2) {  // RoSHA - set static flag according to 1.39 (offender interview)
@@ -40,7 +37,7 @@ export function createAssessmentTestCase(assessment: RescoringAssessment, testPa
         AGE_AT_FIRST_SANCTION: getNumericAnswer(assessment.textData, '1', '1.8'),
         LAST_SANCTION_DATE: getDate(getTextAnswer(assessment.textData, '1', '1.29')),
         DATE_RECENT_SEXUAL_OFFENCE: getDate(getTextAnswer(assessment.textData, '1', '1.33')),
-        CURR_SEX_OFF_MOTIVATION: q141(assessment),
+        CURR_SEX_OFF_MOTIVATION: q141(assessment, testParams.appConfig.offences),
         MOST_RECENT_OFFENCE: getDate(getTextAnswer(assessment.textData, '1', '1.43')),
         COMMUNITY_DATE: getDate(getTextAnswer(assessment.textData, '1', '1.38')),
         ONE_POINT_THIRTY: getSingleAnswer(assessment.qaData, '1', '1.30', ynLookup),
@@ -92,21 +89,8 @@ export function createAssessmentTestCase(assessment: RescoringAssessment, testPa
         CUSTODY_IND: getString(assessment.prisonInd) == 'C' ? 'Y' : 'N',
     }
 
-    addCalculatedInputParameters(p)
+    addCalculatedInputParameters(p, testParams.appConfig.offences)
     return p
-}
-
-function getDate(param: string): Dayjs {
-
-    let result = dayjs.utc(param, dateFormat)
-    // Handle different formats in text data
-    if (!result.isValid()) {
-        result = dayjs.utc(param, 'DD/MM/YYYY')
-    }
-    if (!result.isValid()) {
-        result = dayjs.utc(param, 'D/MM/YYYY')
-    }
-    return !result.isValid() ? null : result
 }
 
 function getSingleAnswer(data: string[][], section: string, question: string, lookupDictionary: {} = {}): string {
@@ -195,11 +179,11 @@ function q22(assessment: RescoringAssessment, after6_35: boolean): number {
     }
 }
 
-function q141(assessment: RescoringAssessment): string {
+function q141(assessment: RescoringAssessment, offences: {}): string {
 
     const q141 = getSingleAnswer(assessment.qaData, '1', '1.41', ynLookup)
     const q130 = getSingleAnswer(assessment.qaData, '1', '1.30', ynLookup)
-    const offenceCat = getOffenceCat(getString(assessment.offence))
+    const offenceCat = getOffenceCat(getString(assessment.offence), offences)
     const sexualOffence = offenceCat && ['sexual_offences_not_children', 'sexual_offences_children'].includes(offenceCat.cat)
 
     if (q130 != 'Y' || sexualOffence || (q130 == 'Y' && sexualOffence)) {

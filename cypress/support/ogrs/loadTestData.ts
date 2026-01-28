@@ -1,11 +1,11 @@
 import { Decimal } from 'decimal.js'
 
-import { TestCaseParameters, OutputParameters } from '../../../oasys/lib/ogrs/types'
-import { createOutputObject } from 'lib/ogrs/createOutput'
-import { addCalculatedInputParameters } from 'lib/ogrs/common'
+import { TestCaseParameters, OutputParameters } from '../../../oasys/ogrs/types'
+import { createOutputObject } from 'ogrs/createOutput'
+import { addCalculatedInputParameters } from 'ogrs/common'
 import { getDate, getInteger, getString } from 'lib/utils'
 
-export function loadParameterSet(parameterLine: string): TestCaseParameters {
+export function loadParameterSet(parameterLine: string, offences: {}): TestCaseParameters {
 
     const parameters = parameterLine.split(',')
     let i = 0
@@ -78,7 +78,7 @@ export function loadParameterSet(parameterLine: string): TestCaseParameters {
         CUSTODY_IND: getString(parameters[i++]),
     }
 
-    addCalculatedInputParameters(p)
+    addCalculatedInputParameters(p, offences)
     return p
 }
 

@@ -1,17 +1,14 @@
-import dayjs from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-import utc from 'dayjs/plugin/utc'
+import { Temporal } from '@js-temporal/polyfill'
 
-import { TestCaseParameters } from 'lib/ogrs/types'
+import { TestCaseParameters } from 'ogrs/types'
 import { OgrsRsr } from './dbClasses'
-import { addCalculatedInputParameters } from 'lib/ogrs/common'
-import { dateFormat } from 'lib/utils'
+import { addCalculatedInputParameters } from 'ogrs/common'
+import { getDate } from 'lib/utils'
+import { testStartDate } from 'oasys'
 
-export function createRsrTestCase(rsr: OgrsRsr): TestCaseParameters {
+export function createRsrTestCase(rsr: OgrsRsr, offences: {}): TestCaseParameters {
 
-    dayjs.extend(customParseFormat)
-    dayjs.extend(utc)
-    const today = dayjs.utc()
+    const today = testStartDate
 
     const p: TestCaseParameters = {
         ASSESSMENT_DATE: today,
@@ -81,18 +78,8 @@ export function createRsrTestCase(rsr: OgrsRsr): TestCaseParameters {
         CUSTODY_IND: rsr.prison_ind == 'C' ? 'Y' : 'N',
     }
 
-    addCalculatedInputParameters(p)
+    addCalculatedInputParameters(p, offences)
     return p
-}
-
-function getString(param: string): string {
-    return param == '' || param == null ? null : param
-}
-
-function getDate(param: string): dayjs.Dayjs {
-
-    const result = dayjs.utc(param, dateFormat)
-    return !result.isValid() ? null : result
 }
 
 function getNumericAnswer(value: string): number {
