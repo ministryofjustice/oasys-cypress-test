@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra'
-import pdf from 'pdf-parse'
+import { PDFParse } from 'pdf-parse'
 
 const downloadFolder = 'cypress/downloads'
 let pdfFile = null
@@ -42,7 +42,8 @@ export async function getPdf(): Promise<{ filename: string, contents: string[] }
 
     const fileContents = await fs.readFile(`${downloadFolder}/${pdfFile}`)
     return new Promise((resolve) => {
-        pdf(fileContents).then((data) => {
+        const parser = new PDFParse({ data: fileContents })
+        parser.getText().then((data) => {
             resolve({ filename: pdfFile, contents: data.text.split('\n') })
         })
     })
