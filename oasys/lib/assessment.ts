@@ -8,6 +8,9 @@
 import * as oasys from 'oasys'
 import { IPage } from 'classes/page'
 import { User } from 'classes/user'
+import { checkOgrs4Calcs } from './ogrs'
+
+let assessmentPk: number // Updated on creating an assessment.  Used at lock incomplete and sign&lock to call the OGRS4 regression test
 
 /**
  * Create a probation assessment with the details provided for the Create Assessment page. Assumes you are starting on the Offender Details page.
@@ -50,8 +53,7 @@ export function createProb(assessmentDetails: CreateAssessmentDetails, clonePrev
  *  - includeSanSections?: YesNoAnswer
  *  - selectTeam?: string
  *  - selectAssessor?: string
- *
- * The second (Yes/No) parameter should be supplied if you are expecting the option to clone from a historic assessment.
+ * 
  */
 export function createPris(assessmentDetails: CreateAssessmentDetails) {
 
@@ -208,8 +210,18 @@ export function lockIncomplete(message?: string) {
     cy.on('window:confirm', (str) => {
         expect(str).to.equal(message ?? 'Do you wish to lock the assessment as incomplete?')
     })
-    oasys.Nav.clickButton('Lock Incomplete', true)
-    cy.log('Locked assessment incomplete')
+
+    // Check the OGRS4 calculations
+    new oasys.Pages.Offender.OffenderDetails().pnc.getValue('pnc')
+    cy.get<string>('@pnc').then((pnc) => {
+        oasys.Db.getLatestSetPkByPnc(pnc, 'pk')
+        cy.get<number>('@pk').then((pk) => {
+            checkOgrs4Calcs(pk)
+
+            oasys.Nav.clickButton('Lock Incomplete', true)
+            cy.log('Locked assessment incomplete')
+        })
+    })
 }
 
 /**
@@ -226,11 +238,12 @@ export function lockIncomplete(message?: string) {
  *   - countersignCancel: allows you to cancel out after confirming that a countersignature is required
  *   - countersigner: either a predefined User object, or a string to enter as the countersigner
  *   - countersignComment: countersigner comment (a generic comment will be entered if this is not specified)
+ *   - offender: an OffenderDef object, if specified the OGRS4 calculations will be checked
  */
 export function signAndLock(
     params?: {
         page?: IPage, expectOutstandingQuestions?: boolean, expectRsrScore?: boolean, expectRsrWarning?: boolean,
-        expectCountersigner?: boolean, countersignCancel?: boolean, countersigner?: any, countersignComment?: string,
+        expectCountersigner?: boolean, countersignCancel?: boolean, countersigner?: any, countersignComment?: string
     }) {
 
     cy.log(`Sign & lock assessment`)
@@ -238,41 +251,54 @@ export function signAndLock(
     if (params?.page) {
         new params.page().goto(true)
     }
-    oasys.Nav.clickButton('Sign & Lock', true)
 
-    const signingStatus = new oasys.Pages.Signing.SigningStatus()
+    new oasys.Pages.BaseAssessmentPage().getPncFromScreenContext('pnc')
+    cy.get<string>('@pnc').then((pnc) => {  // Grab the PNC to find the oasys_set in the database for OGRS4 testing
 
-    if (params?.expectOutstandingQuestions) {
-        signingStatus.continueWithSigning.click()
-    }
-    if (params?.expectRsrScore) {
-        new oasys.Pages.Signing.RsrConfirm().ok.click()
-    }
-    if (params?.expectRsrWarning) {
-        signingStatus.continueWithSigning.click()
-    }
+        oasys.Nav.clickButton('Sign & Lock', true)
 
-    signingStatus.confirmSignAndLock.click()
+        const signingStatus = new oasys.Pages.Signing.SigningStatus()
 
-    if (params?.expectCountersigner) {
-        const cPage = new oasys.Pages.Signing.CountersignatureRequired()
-        if (params?.countersignCancel) {
-            cPage.cancel.click()
+        if (params?.expectOutstandingQuestions) {
+            signingStatus.continueWithSigning.click()
         }
-        else {
-            if (params.countersigner?.constructor?.name == 'User') {
-                cPage.countersigner.setValue((params.countersigner as User).lovLookup)
-            } else if (params.countersigner != null) {
-                cPage.countersigner.setValue(params.countersigner as string)
+        if (params?.expectRsrScore) {
+            new oasys.Pages.Signing.RsrConfirm().ok.click()
+        }
+        if (params?.expectRsrWarning) {
+            signingStatus.continueWithSigning.click()
+        }
+
+        signingStatus.confirmSignAndLock.click()
+
+        if (params?.expectCountersigner) {
+            const cPage = new oasys.Pages.Signing.CountersignatureRequired()
+            if (params?.countersignCancel) {
+                cPage.cancel.click()
             }
-            cPage.comments.setValue(params.countersignComment ?? 'Assessment needs to be countersigned')
-            cPage.confirm.click()
+            else {
+                if (params.countersigner?.constructor?.name == 'User') {
+                    cPage.countersigner.setValue((params.countersigner as User).lovLookup)
+                } else if (params.countersigner != null) {
+                    cPage.countersigner.setValue(params.countersigner as string)
+                }
+                cPage.comments.setValue(params.countersignComment ?? 'Assessment needs to be countersigned')
+                cPage.confirm.click()
+            }
         }
-    }
 
-    if (!params?.countersignCancel) {
-        new oasys.Pages.Tasks.TaskManager().checkCurrent()
-    }
+        // Check the OGRS4 calculations
+        oasys.Db.getLatestSetPkByPnc(pnc, 'pk')
+        cy.get<number>('@pk').then((pk) => {
+            checkOgrs4Calcs(pk)
+        })
+
+        // Check for unwanted countersigning
+        if (!params?.countersignCancel) {
+            new oasys.Pages.Tasks.TaskManager().checkCurrent()
+        }
+
+    })
 }
 
 /**

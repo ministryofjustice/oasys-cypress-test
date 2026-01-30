@@ -10,7 +10,7 @@ export class Text {
     /**
      * Check if the element contains the specified text.  The optional second parameter can be set to true to indicate a partial match (i.e. contains rather than equals).
      */
-    checkValue(value: string, partial: boolean = false) {
+        checkValue(value: string, partial: boolean = false) {
 
         cy.get(this.selector).should(partial ? 'contain' : 'have.text', value)
     }

@@ -4,7 +4,7 @@ import { testStartDate } from 'lib/autoData'
 import { TestCaseParameters } from 'ogrs/types'
 import { OgrsAssessment } from './dbClasses'
 import { addCalculatedInputParameters, getOffenceCat } from 'ogrs/common'
-import { checkIfAfter, getDate } from 'lib/utils'
+import { checkIfAfter, getDate, lookupString} from 'lib/utils'
 
 export function createAssessmentTestCase(assessment: OgrsAssessment, appConfig: AppConfig): TestCaseParameters {
 
@@ -25,7 +25,7 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, appConfig: 
         ASSESSMENT_DATE: today, // TODO is this right?
         STATIC_CALC: staticCalc,
         DOB: getDate(assessment.dob),
-        GENDER: lookupValue(assessment.gender, genderLookup),
+        GENDER: lookupString(assessment.gender, genderLookup),
         OFFENCE_CODE: getString(assessment.offence),
         TOTAL_SANCTIONS_COUNT: getNumericAnswer(assessment.textData, '1', '1.32'),
         TOTAL_VIOLENT_SANCTIONS: getNumericAnswer(assessment.textData, '1', '1.40'),
@@ -93,22 +93,22 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, appConfig: 
     return p
 }
 
-function getString(param: string): string {
+export function getString(param: string): string {
     return param == '' || param == null ? null : param
 }
 
-function getSingleAnswer(data: string[][], section: string, question: string, lookupDictionary: {} = {}): string {
+export function getSingleAnswer(data: string[][], section: string, question: string, lookupDictionary: {} = {}): string {
 
     if (data == undefined || data == null) return null
 
     const answers = data.filter((a) => a[0] == section && a[1] == question)
     if (answers.length > 0) {
-        return lookupValue(answers[0][2], lookupDictionary)
+        return lookupString(answers[0][2], lookupDictionary)
     }
     return null
 }
 
-function getMultipleAnswers(data: string[][], section: string, questions: string[], resultColumn: number, lookupDictionary: { [keys: string]: string } = {}): string[] {
+export function getMultipleAnswers(data: string[][], section: string, questions: string[], resultColumn: number, lookupDictionary: { [keys: string]: string } = {}): string[] {
 
     if (data == undefined) return null
 
@@ -128,7 +128,7 @@ function getMultipleAnswers(data: string[][], section: string, questions: string
     return result?.length == 0 ? null : result
 }
 
-function getNumericAnswer(data: string[][], section: string, question: string): number {
+export function getNumericAnswer(data: string[][], section: string, question: string): number {
 
     if (data == undefined) return null
     if (data == null) return null
@@ -152,37 +152,6 @@ function getTextAnswer(data: string[][], section: string, question: string): str
         return answers[0][3] == null ? answers[0][2] : answers[0][3]
     }
     return null
-}
-
-function q141(assessment: OgrsAssessment, offences): string {
-
-    const q141 = getSingleAnswer(assessment.qaData, '1', '1.41', ynLookup)
-    const q130 = getSingleAnswer(assessment.qaData, '1', '1.30', ynLookup)
-    const offenceCat = getOffenceCat(getString(assessment.offence), offences)
-    const sexualOffence = offenceCat && ['sexual_offences_not_children', 'sexual_offences_children'].includes(offenceCat.cat)
-
-    if (q130 != 'Y' || sexualOffence || (q130 == 'Y' && sexualOffence)) {
-        return 'O'
-    } else if (q130 == 'Y' && q141 == null) {
-        return 'O'
-    }
-    return q141
-}
-
-function q22(assessment: OgrsAssessment, after6_35: boolean): number {
-
-    if (after6_35) {
-        return getNumericAnswer(assessment.qaData, '2', '2.2_V2_WEAPON')
-    } else {
-        const a22 = getMultipleAnswers(assessment.qaData, '2', ['2.2'], 2)
-        return a22 == null ? null : a22.includes('WEAPON') ? 1 : 0
-    }
-}
-
-function da(data: string[][]): number {
-
-    const q67 = getNumericAnswer(data, '6', '6.7da')
-    return q67 == 1 ? getNumericAnswer(data, '6', '6.7.2.1da') : q67
 }
 
 function dailyDrugs(data: string[][]): string {
@@ -239,12 +208,6 @@ function getDrugsUsage(data: string[][]): {} {
 
 }
 
-function lookupValue(value: string, lookup: {}): string {
-
-    const result = lookup[value]
-    return result == undefined ? value : result
-}
-
 const genderLookup = {
     0: 'N',
     1: 'M',
@@ -253,7 +216,38 @@ const genderLookup = {
     9: 'U',
 }
 
-const ynLookup = {
+export const ynLookup = {
     YES: 'Y',
     NO: 'N',
+}
+
+export function q141(assessment: OgrsAssessment, offences): string {
+
+    const q141 = getSingleAnswer(assessment.qaData, '1', '1.41', ynLookup)
+    const q130 = getSingleAnswer(assessment.qaData, '1', '1.30', ynLookup)
+    const offenceCat = getOffenceCat(getString(assessment.offence), offences)
+    const sexualOffence = offenceCat && ['sexual_offences_not_children', 'sexual_offences_children'].includes(offenceCat.cat)
+
+    if (q130 != 'Y' || sexualOffence || (q130 == 'Y' && sexualOffence)) {
+        return 'O'
+    } else if (q130 == 'Y' && q141 == null) {
+        return 'O'
+    }
+    return q141
+}
+
+export function q22(assessment: OgrsAssessment, after6_35: boolean): number {
+
+    if (after6_35) {
+        return getNumericAnswer(assessment.qaData, '2', '2.2_V2_WEAPON')
+    } else {
+        const a22 = getMultipleAnswers(assessment.qaData, '2', ['2.2'], 2)
+        return a22 == null ? null : a22.includes('WEAPON') ? 1 : 0
+    }
+}
+
+export function da(data: string[][]): number {
+
+    const q67 = getNumericAnswer(data, '6', '6.7da')
+    return q67 == 1 ? getNumericAnswer(data, '6', '6.7.2.1da') : q67
 }
