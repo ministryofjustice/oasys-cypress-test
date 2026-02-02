@@ -2,8 +2,6 @@ import { Temporal } from '@js-temporal/polyfill'
 
 import { TestCaseParameters, OgrsOffenceCat } from './types'
 import { offenceCats } from './data/offences'
-import { getSingleAnswer, ynLookup, getString, getNumericAnswer, getMultipleAnswers } from '../../cypress/support/ogrs/getTestData/createAssessmentTestCase'
-import { OgrsAssessment } from '../../cypress/support/ogrs/getTestData/dbClasses'
 import { lookupString } from 'lib/utils'
 
 export function addCalculatedInputParameters(p: TestCaseParameters, offences: {}) {

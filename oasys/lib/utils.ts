@@ -2,13 +2,16 @@ import { Temporal } from '@js-temporal/polyfill'
 
 export const dateFormat = 'YYYY-MM-DD' // RFC 9557 format for Temporal
 
-// Convert date string to Temporal Plain date.  Might be in RFC9557 format, but also need to allow for DD/MM/YYYY in OASys string fields
+// Convert date string to Temporal Plain date.  Might be in RFC9557 format, but also need to allow for DD/MM/YYYY in OASys string fields or DD-MM-YYYY from CSV loads
 export function getDate(param: string): Temporal.PlainDate {
 
-    if (param == null) {
+    if (param == null || param == '' || param == 'null') {
         return null
     }
-    const reformatted = param.search('/') > 0 ? `${param.substring(6)}-${param.substring(3, 5)}-${param.substring(0, 2)}` : param
+    let reformatted = param
+    if (['/', '-'].includes(param.substring(2, 3))) {
+        reformatted = `${param.substring(6)}-${param.substring(3, 5)}-${param.substring(0, 2)}`
+    }
     try {
         return Temporal.PlainDate.from(reformatted)
     } catch (e) {

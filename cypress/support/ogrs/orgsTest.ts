@@ -8,9 +8,7 @@ import { getAssessmentTestData, getRsrTestData } from './getTestData/getTestData
 import { createAssessmentTestCase } from './getTestData/createAssessmentTestCase'
 import { createRsrTestCase } from './getTestData/createRsrTestCase'
 import { OgrsAssessment, OgrsRsr } from './getTestData/dbClasses'
-import { offences } from '../../../oasys/ogrs/data/offences'
 import { dateParameterToString, stringParameterToString, numericParameterToString } from 'lib/utils'
-import * as db from '../oasysDb'
 
 const dataFilePath = './cypress/support/ogrs/data/'
 
@@ -24,13 +22,6 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
         packageTimestamp: '',
     }
 
-    // Get OGRS4 package deployment timestamp
-    const pkgTimestamp = await db.selectSingleValue(`select timestamp from dba_objects where object_name = 'NEW_GEN_PREDICTORS_PKG' and object_type = 'PACKAGE BODY'`)
-    if (pkgTimestamp.error != null) {
-        throw new Error(pkgTimestamp.error)
-    }
-    scriptResults.packageTimestamp = pkgTimestamp.data as string
-
     // Load input parameters from a CSV file
     if (testParams.testType == 'csv') {
         const inputParameterFile = await fs.readFile(`${dataFilePath}${testParams.csvDetails.dataFile}.csv`, 'utf8')
@@ -43,9 +34,8 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
             const errorLog: string[] = []
             scriptResults.cases++
             try {
-                const testCaseParams = loadParameterSet(inputParameters[i], offences)
+                const testCaseParams = loadParameterSet(inputParameters[i], testParams.appConfig.offences)
                 errorLog.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
-
                 if (testParams.staticFlag) {
                     testCaseParams.STATIC_CALC = testParams.staticFlag
                 }
@@ -106,7 +96,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
             const errorLog: string[] = []
             try {
                 const testCaseParams = testParams.dbDetails.type == 'assessment' ?
-                    createAssessmentTestCase(assessmentOrRsr as OgrsAssessment, testParams.appConfig) : createRsrTestCase(assessmentOrRsr as OgrsRsr, offences)
+                    createAssessmentTestCase(assessmentOrRsr as OgrsAssessment, testParams.appConfig) : createRsrTestCase(assessmentOrRsr as OgrsRsr, testParams.appConfig.offences)
                 errorLog.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
                 // Run generate two sets of scores, for static flag Y and N
                 for (let staticFlag of ['Y', 'N']) {
