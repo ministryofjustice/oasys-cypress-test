@@ -67,8 +67,8 @@ describe('SAN integration - test ref 08 part 1', () => {
 
                 const offendingInformation = new oasys.Pages.Assessment.OffendingInformation().goto()
                 offendingInformation.setValues({
-                    offence: '020', subcode: '01', count: '1', offenceDate: oasys.oasysDateAsString({ months: -4 }), sentence: 'Fine',
-                    sentenceDate: oasys.oasysDateAsString({ months: -3 })
+                    offence: '020', subcode: '01', count: '1', offenceDate: oasys.OasysDateTime.oasysDateAsString({ months: -4 }), sentence: 'Fine',
+                    sentenceDate: oasys.OasysDateTime.oasysDateAsString({ months: -3 })
                 })
                 oasys.Populate.Layer3Pages.Predictors.fullyPopulated({ r1_30PrePopulated: true, r1_41PrePopulated: true })
                 oasys.Populate.sections2To13NoIssues()

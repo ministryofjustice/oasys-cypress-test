@@ -7,7 +7,7 @@ import { testEnvironment } from '../../../localSettings'
  */
 describe('RestAPI regression tests', () => {
 
-    const startTime = Cypress.dayjs().format('YYYY-MM-DD HH:mm:ss')
+    oasys.OasysDateTime.startTimer('apiTest')
 
     let stats: EndpointStat[] = []
     let offendersTested = 0
@@ -160,7 +160,7 @@ describe('RestAPI regression tests', () => {
         reportStats()
         cy.groupedLogEnd()
 
-        let elapsedTimeS = Math.round(Cypress.dayjs().diff(startTime) / 1000)
+        let elapsedTimeS = Math.round(oasys.OasysDateTime.elapsedTime('apiTest') / 1000)
         cy.groupedLogStart('Totals')
         cy.groupedLog(`Offenders: ${offendersTested}`)
         cy.groupedLog(`API calls: ${totalApiCount}`)

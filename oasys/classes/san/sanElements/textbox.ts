@@ -1,4 +1,4 @@
-import { oasysDateAsString } from 'oasys'
+import { OasysDateTime } from 'oasys'
 
 export class Textbox<T> {
 
@@ -17,7 +17,7 @@ export class Textbox<T> {
         } else if (typeof value == 'number') {
             textValue = value == 0 ? '0' : value.toString()
         } else if (typeof value != 'string') {
-            textValue = oasysDateAsString(value as OasysDate)
+            textValue = OasysDateTime.oasysDateAsString(value as OasysDate)
         }
         cy.get(this.selector).clear()
         if (textValue != '') {
@@ -34,7 +34,7 @@ export class Textbox<T> {
         } else if (typeof value == 'number') {
             textValue = value == 0 ? '0' : value.toString()
         } else if (typeof value != 'string') {
-            textValue = oasysDateAsString(value as OasysDate)
+            textValue = OasysDateTime.oasysDateAsString(value as OasysDate)
         }
         this.getStatusAndValue('result')
         cy.get<ElementStatusAndValue>('@result').then((result) => {

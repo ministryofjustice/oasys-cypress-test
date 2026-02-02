@@ -1,4 +1,4 @@
-import * as dayjs from 'dayjs'
+import { Temporal } from '@js-temporal/polyfill'
 import * as oasys from 'oasys'
 import * as testData from '../../data/testRef36'
 
@@ -29,7 +29,7 @@ describe('SAN integration - test ref 36', () => {
             cy.get<number[]>('@result').then((pks) => {
                 // Check OASYS_SET and API calls
                 oasys.San.getSanApiTime(pks[0], 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                cy.get<dayjs.Dayjs>('@getSanDataTime').then((sanDataTime) => {
+                cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((sanDataTime) => {
                     oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pks[0]}`, {
                         SAN_ASSESSMENT_LINKED_IND: 'Y',
                         CLONED_FROM_PREV_OASYS_SAN_PK: pks[1].toString(),

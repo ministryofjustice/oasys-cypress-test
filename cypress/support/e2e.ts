@@ -15,16 +15,7 @@
 
 import './commands'
 import { testEnvironment, noDatabaseConnection, noOasys } from '../../localSettings'
-
-import dayjs from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-import utc from 'dayjs/plugin/utc'
-import isLeapYear from 'dayjs/plugin/isLeapYear'
-
-Cypress.dayjs = dayjs
-Cypress.dayjs.extend(customParseFormat)
-Cypress.dayjs.extend(utc)
-Cypress.dayjs.extend(isLeapYear)
+import { AppVersionHistory } from 'lib/dateTime'
 
 beforeEach(() => {
 
@@ -33,18 +24,22 @@ beforeEach(() => {
         cy.log(`Script: ${Cypress.spec.relative}`)
 
     } else {
-        cy.task('getAppConfig').then((appConfig: AppConfig) => {
+        cy.task('getAppVersionHistory').then((appVersionHistory: AppVersionHistory) => {
 
-            const appVersion = appConfig.versionHistory[0].version
-            cy.wrap(appVersion).as('appVersion')
-            cy.wrap(appConfig).as('appConfig')
+            cy.task('getAppConfig').then((appConfig: AppConfig) => {
 
-            cy.log(`OASys ${appVersion} (${testEnvironment.name}), ${Cypress.browser.name.toUpperCase()} (v${Cypress.browser.majorVersion}). Script: ${Cypress.spec.relative}`)
-            cy.task('consoleLog', `OASys version ${appVersion} in ${testEnvironment.name}`)
+                const appVersion = appVersionHistory.currentVersion
+                cy.wrap(appVersion).as('appVersion')
+                cy.wrap(appVersionHistory).as('appVersionHistory')
+                cy.wrap(appConfig).as('appConfig')
 
-            if (!noOasys) {
-                cy.visit(testEnvironment.url)
-            }
+                cy.log(`OASys ${appVersion} (${testEnvironment.name}), ${Cypress.browser.name.toUpperCase()} (v${Cypress.browser.majorVersion}). Script: ${Cypress.spec.relative}`)
+                cy.task('consoleLog', `OASys version ${appVersion} in ${testEnvironment.name}`)
+
+                if (!noOasys) {
+                    cy.visit(testEnvironment.url)
+                }
+            })
         })
     }
 })

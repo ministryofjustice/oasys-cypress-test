@@ -1,10 +1,10 @@
 import { calculate } from 'ogrs/calculateScore'
 import { createOutputObject } from 'ogrs/createOutput'
 import { addCalculatedInputParameters, da, dailyDrugUser, getDrugsUsage, getDrugUsed, q141, q22, q88 } from 'ogrs/common'
-import { lookupString, lookupInteger, problemsAnswerToNumeric, getDate } from 'lib/utils'
+import { lookupString, lookupInteger, problemsAnswerToNumeric } from 'lib/utils'
+import { OasysDateTime } from './dateTime'
 import { ospRsrCalc } from 'ogrs/ospRsr'
 import { TestCaseParameters, OutputParameters } from '../ogrs/types'
-import { oasysDateAsPlainDate, testStartDate } from 'oasys'
 import { OgrsRegressionTestAssessment } from '../../cypress/support/ogrs/getTestData/getOneAssessment'
 
 export function calculateOgrs4(params: Ogrs4Params, resultAlias: string) {
@@ -15,9 +15,9 @@ export function calculateOgrs4(params: Ogrs4Params, resultAlias: string) {
 
         const calculatorParams: TestCaseParameters = {
 
-            ASSESSMENT_DATE: oasysDateAsPlainDate(params.assessmentDate ?? {}),
+            ASSESSMENT_DATE: OasysDateTime.oasysDateAsPlainDate(params.assessmentDate ?? {}),
             STATIC_CALC: params.staticCalc ? 'Y' : 'N',
-            DOB: oasysDateAsPlainDate(params.dob),
+            DOB: OasysDateTime.oasysDateAsPlainDate(params.dob),
             GENDER: lookupString(params.gender, genderLookup),
             OFFENCE_CODE: params.offenceCode,
             TOTAL_SANCTIONS_COUNT: params.totalSanctionsCount,
@@ -28,11 +28,11 @@ export function calculateOgrs4(params: Ogrs4Params, resultAlias: string) {
             PARAPHILIA_SANCTIONS: params.paraphiliaSanctions,
             STRANGER_VICTIM: yesNoToYN(params.strangerVictim),
             AGE_AT_FIRST_SANCTION: params.ageAtFirstSanction,
-            LAST_SANCTION_DATE: oasysDateAsPlainDate(params.lastSanctionDate),
-            DATE_RECENT_SEXUAL_OFFENCE: oasysDateAsPlainDate(params.dateRecentSexualOffence),
+            LAST_SANCTION_DATE: OasysDateTime.oasysDateAsPlainDate(params.lastSanctionDate),
+            DATE_RECENT_SEXUAL_OFFENCE: OasysDateTime.oasysDateAsPlainDate(params.dateRecentSexualOffence),
             CURR_SEX_OFF_MOTIVATION: yesNoToYN(params.currSexOffMotivation),
-            MOST_RECENT_OFFENCE: oasysDateAsPlainDate(params.mostRecentOffence),
-            COMMUNITY_DATE: oasysDateAsPlainDate(params.communityDate),
+            MOST_RECENT_OFFENCE: OasysDateTime.oasysDateAsPlainDate(params.mostRecentOffence),
+            COMMUNITY_DATE: OasysDateTime.oasysDateAsPlainDate(params.communityDate),
             ONE_POINT_THIRTY: yesNoToYN(params.onePointThirty),
             TWO_POINT_TWO: yesNoTo1_0(params.twoPointTwo),
             THREE_POINT_FOUR: problemsAnswerToNumeric(params.threePointFour),
@@ -128,9 +128,9 @@ export function checkOgrs4Calcs(assessmentPk: number) {
 
             const calculatorParams: TestCaseParameters = {
 
-                ASSESSMENT_DATE: testStartDate,
+                ASSESSMENT_DATE: OasysDateTime.testStartDate,
                 STATIC_CALC: staticCalc,
-                DOB: getDate(assessment.dob),
+                DOB: OasysDateTime.stringToDate(assessment.dob),
                 GENDER: lookupString(assessment.gender, genderNumberLookup),
                 OFFENCE_CODE: assessment.offence,
                 TOTAL_SANCTIONS_COUNT: lookupInteger('1.32', assessment.qaData),
@@ -141,11 +141,11 @@ export function checkOgrs4Calcs(assessmentPk: number) {
                 PARAPHILIA_SANCTIONS: lookupInteger('1.37', assessment.qaData),
                 STRANGER_VICTIM: lookupString('1.44', assessment.qaData, ynLookup),
                 AGE_AT_FIRST_SANCTION: lookupInteger('1.8', assessment.qaData),
-                LAST_SANCTION_DATE: getDate(lookupString('1.29', assessment.qaData)),
-                DATE_RECENT_SEXUAL_OFFENCE: getDate(lookupString('1.33', assessment.qaData)),
+                LAST_SANCTION_DATE: OasysDateTime.stringToDate(lookupString('1.29', assessment.qaData)),
+                DATE_RECENT_SEXUAL_OFFENCE: OasysDateTime.stringToDate(lookupString('1.33', assessment.qaData)),
                 CURR_SEX_OFF_MOTIVATION: q141(lookupString('1.30', assessment.qaData), lookupString('1.40', assessment.qaData), assessment.offence, appConfig.offences),
-                MOST_RECENT_OFFENCE: getDate(lookupString('1.43', assessment.qaData)),
-                COMMUNITY_DATE: getDate(lookupString('1.38', assessment.qaData)),
+                MOST_RECENT_OFFENCE: OasysDateTime.stringToDate(lookupString('1.43', assessment.qaData)),
+                COMMUNITY_DATE: OasysDateTime.stringToDate(lookupString('1.38', assessment.qaData)),
                 ONE_POINT_THIRTY: lookupString('1.30', assessment.qaData, ynLookup),
                 TWO_POINT_TWO: q22(lookupString('2.2_V2_WEAPON', assessment.qaData)),
                 THREE_POINT_FOUR: lookupInteger('3.4', assessment.qaData),

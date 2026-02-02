@@ -1,4 +1,5 @@
-import { dateFormat, stringToFloat } from 'lib/utils'
+import { stringToFloat } from 'lib/utils'
+import { OasysDateTime } from 'lib/dateTime'
 import * as db from '../../oasysDb'
 
 export async function getOneAssessment(assessmentPk: number): Promise<OgrsRegressionTestAssessment> {
@@ -95,7 +96,7 @@ export class OgrsRegressionTestAssessment {
 
     static query(assessmentPk): string {
 
-        return `select assessment_type_elm, version_number, to_char(date_of_birth, '${dateFormat}'), gender_elm, prison_ind,
+        return `select assessment_type_elm, version_number, to_char(date_of_birth, '${OasysDateTime.dateFormat}'), gender_elm, prison_ind,
                         ogrs4g_percentage_2yr, ogrs4g_band_risk_recon_elm, ogrs4g_calculated, 
                         ogrs4v_percentage_2yr, ogrs4v_band_risk_recon_elm, ogrs4v_calculated, 
                         ogp2_percentage_2yr, ogp2_band_risk_recon_elm, ogp2_calculated, 

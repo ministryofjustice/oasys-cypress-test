@@ -1,4 +1,4 @@
-import { dateFormat } from 'lib/utils'
+import { OasysDateTime } from 'lib/dateTime'
 
 export class RescoringOffenderWithAssessment {
 
@@ -154,9 +154,9 @@ export class RescoringAssessment {
 
         return `select s.oasys_set_pk, s.cms_prob_number, s.cms_pris_number, 
                     s.assessment_type_elm, s.version_number, s.assessment_status_elm, s.purpose_assessment_elm, s.purpose_assmt_other_ftxt,
-                    to_char(s.initiation_date, '${dateFormat}'), 
-                    to_char(s.date_completed, '${dateFormat}'), 
-                    s.gender_elm, s.prison_ind, to_char(s.date_of_birth, '${dateFormat}'),
+                    to_char(s.initiation_date, '${OasysDateTime.dateFormat}'), 
+                    to_char(s.date_completed, '${OasysDateTime.dateFormat}'), 
+                    s.gender_elm, s.prison_ind, to_char(s.date_of_birth, '${OasysDateTime.dateFormat}'),
                     s.rosh_level_elm, 
                     s.ogrs3_1year, s.ogrs3_2year, s.ogrs3_risk_recon_elm, 
                     s.ogp_st_wesc, s.ogp_dy_wesc, s.ogp_tot_wesc, s.ogp_1year, s.ogp_2year, s.ogp_risk_recon_elm, 

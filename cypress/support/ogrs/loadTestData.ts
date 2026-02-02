@@ -3,7 +3,8 @@ import { Decimal } from 'decimal.js'
 import { TestCaseParameters, OutputParameters } from '../../../oasys/ogrs/types'
 import { createOutputObject } from 'ogrs/createOutput'
 import { addCalculatedInputParameters } from 'ogrs/common'
-import { getDate, getInteger, getString } from 'lib/utils'
+import { getInteger, getString } from 'lib/utils'
+import { OasysDateTime } from 'lib/dateTime'
 
 export function loadParameterSet(parameterLine: string, offences: {}): TestCaseParameters {
 
@@ -11,9 +12,9 @@ export function loadParameterSet(parameterLine: string, offences: {}): TestCaseP
     let i = 0
 
     const p: TestCaseParameters = {
-        ASSESSMENT_DATE: getDate(parameters[i++]),
+        ASSESSMENT_DATE: OasysDateTime.stringToDate(parameters[i++]),
         STATIC_CALC: getString(parameters[i++]),
-        DOB: getDate(parameters[i++]),
+        DOB: OasysDateTime.stringToDate(parameters[i++]),
         GENDER: getString(parameters[i++]),
         OFFENCE_CODE: getString(parameters[i++]),
         TOTAL_SANCTIONS_COUNT: getInteger(parameters[i++]),
@@ -24,11 +25,11 @@ export function loadParameterSet(parameterLine: string, offences: {}): TestCaseP
         PARAPHILIA_SANCTIONS: getInteger(parameters[i++]),
         STRANGER_VICTIM: getString(parameters[i++]),
         AGE_AT_FIRST_SANCTION: getInteger(parameters[i++]),
-        LAST_SANCTION_DATE: getDate(parameters[i++]),
-        DATE_RECENT_SEXUAL_OFFENCE: getDate(parameters[i++]),
+        LAST_SANCTION_DATE: OasysDateTime.stringToDate(parameters[i++]),
+        DATE_RECENT_SEXUAL_OFFENCE: OasysDateTime.stringToDate(parameters[i++]),
         CURR_SEX_OFF_MOTIVATION: getString(parameters[i++]),
-        MOST_RECENT_OFFENCE: getDate(parameters[i++]),
-        COMMUNITY_DATE: getDate(parameters[i++]),
+        MOST_RECENT_OFFENCE: OasysDateTime.stringToDate(parameters[i++]),
+        COMMUNITY_DATE: OasysDateTime.stringToDate(parameters[i++]),
         ONE_POINT_THIRTY: getString(parameters[i++]),
         TWO_POINT_TWO: getInteger(parameters[i++]),
         THREE_POINT_FOUR: getInteger(parameters[i++]),

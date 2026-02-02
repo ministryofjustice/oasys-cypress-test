@@ -3,7 +3,7 @@ import { Temporal } from '@js-temporal/polyfill'
 import { TestCaseParameters } from 'ogrs/types'
 import { OgrsRsr } from './dbClasses'
 import { addCalculatedInputParameters } from 'ogrs/common'
-import { getDate } from 'lib/utils'
+import { OasysDateTime } from 'lib/dateTime'
 import { testStartDate } from 'oasys'
 
 export function createRsrTestCase(rsr: OgrsRsr, offences: {}): TestCaseParameters {
@@ -13,7 +13,7 @@ export function createRsrTestCase(rsr: OgrsRsr, offences: {}): TestCaseParameter
     const p: TestCaseParameters = {
         ASSESSMENT_DATE: today,
         STATIC_CALC: 'N',
-        DOB: getDate(rsr.dob),
+        DOB: OasysDateTime.stringToDate(rsr.dob),
         GENDER: lookupValue(rsr.gender, genderLookup),
         OFFENCE_CODE: rsr.offence,
         TOTAL_SANCTIONS_COUNT: rsr.s1_32_total_sanctions,
@@ -24,11 +24,11 @@ export function createRsrTestCase(rsr: OgrsRsr, offences: {}): TestCaseParameter
         PARAPHILIA_SANCTIONS: rsr.s1_37_non_contact_score,
         STRANGER_VICTIM: rsr.s1_44_dc_stranger_victim,
         AGE_AT_FIRST_SANCTION: rsr.s1_8_age_at_first_sanction,
-        LAST_SANCTION_DATE: getDate(rsr.s1_29_date_current_conviction),
-        DATE_RECENT_SEXUAL_OFFENCE: getDate(rsr.s1_33_date_recent_sex_offence),
+        LAST_SANCTION_DATE: OasysDateTime.stringToDate(rsr.s1_29_date_current_conviction),
+        DATE_RECENT_SEXUAL_OFFENCE: OasysDateTime.stringToDate(rsr.s1_33_date_recent_sex_offence),
         CURR_SEX_OFF_MOTIVATION: rsr.s1_41_current_sexual_mot,
-        MOST_RECENT_OFFENCE: getDate(rsr.s1_43_last_offence_date),
-        COMMUNITY_DATE: getDate(rsr.s1_38_community_date),
+        MOST_RECENT_OFFENCE: OasysDateTime.stringToDate(rsr.s1_43_last_offence_date),
+        COMMUNITY_DATE: OasysDateTime.stringToDate(rsr.s1_38_community_date),
         ONE_POINT_THIRTY: lookupValue(rsr.s1_30_sexual_element, ynLookup),
         TWO_POINT_TWO: getNumericAnswer(rsr.s2_2_weapon),
         THREE_POINT_FOUR: getNumericAnswer(rsr.s3_q4_suitable_accom),

@@ -1,23 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill'
-
-export const dateFormat = 'YYYY-MM-DD' // RFC 9557 format for Temporal
-
-// Convert date string to Temporal Plain date.  Might be in RFC9557 format, but also need to allow for DD/MM/YYYY in OASys string fields or DD-MM-YYYY from CSV loads
-export function getDate(param: string): Temporal.PlainDate {
-
-    if (param == null || param == '' || param == 'null') {
-        return null
-    }
-    let reformatted = param
-    if (['/', '-'].includes(param.substring(2, 3))) {
-        reformatted = `${param.substring(6)}-${param.substring(3, 5)}-${param.substring(0, 2)}`
-    }
-    try {
-        return Temporal.PlainDate.from(reformatted)
-    } catch (e) {
-        return null
-    }
-}
 
 export function getString(param: string): string {
     return param == '' || param == 'null' || param == null ? null : param
@@ -25,11 +5,6 @@ export function getString(param: string): string {
 
 export function getInteger(param: string): number {
     return param == '' || param == null || param.toLowerCase() == 'null' ? null : Number.parseInt(param)
-}
-
-export function checkIfAfter(appDate: Temporal.PlainDate, compareDate: Temporal.PlainDate) {  // return true if second date is later or equal to than the first
-
-    return Temporal.PlainDate.compare(appDate, compareDate) >= 0
 }
 
 export function lookupString(value: string, lookup: { [keys: string]: string }, translation: { [keys: string]: string } = null): string {
@@ -76,11 +51,6 @@ export function stringToFloat(param: string): number {
     return Number.isNaN(result) ? null : result
 }
 
-export function dateParameterToString(param: Temporal.PlainDate): string {
-
-    return param == null ? 'null' : `to_date('${param?.toLocaleString().replace('/', '-')}','DD-MM-YYYY')`
-}
-
 export function stringParameterToString(param: string): string {
 
     return param == null ? 'null' : `'${param}'`
@@ -89,11 +59,6 @@ export function stringParameterToString(param: string): string {
 export function numericParameterToString(param: number): string {
 
     return param == null ? 'null' : param.toString()
-}
-
-export function dateParameterToCsvOutputString(param: Temporal.PlainDate): string {
-
-    return param == null ? 'null' : `${param.toLocaleString()}`
 }
 
 export function stringParameterToCsvOutputString(param: string): string {

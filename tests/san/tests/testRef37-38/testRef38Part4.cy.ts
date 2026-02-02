@@ -72,7 +72,7 @@ describe('SAN integration - test ref 38 part 4', () => {
                     },
                     {
                         name: 'date',
-                        values: [oasys.oasysDateAsString(), oasys.oasysDateAsString(), oasys.oasysDateAsString(), oasys.oasysDateAsString(), oasys.oasysDateAsString(), oasys.oasysDateAsString(), oasys.oasysDateAsString(), oasys.oasysDateAsString()]
+                        values: [oasys.OasysDateTime.oasysDateAsString(), oasys.OasysDateTime.oasysDateAsString(), oasys.OasysDateTime.oasysDateAsString(), oasys.OasysDateTime.oasysDateAsString(), oasys.OasysDateTime.oasysDateAsString(), oasys.OasysDateTime.oasysDateAsString(), oasys.OasysDateTime.oasysDateAsString(), oasys.OasysDateTime.oasysDateAsString()]
                     },
                     {
                         name: 'comment',

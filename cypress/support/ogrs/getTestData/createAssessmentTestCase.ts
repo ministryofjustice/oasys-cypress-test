@@ -4,15 +4,15 @@ import { testStartDate } from 'lib/autoData'
 import { TestCaseParameters } from 'ogrs/types'
 import { OgrsAssessment } from './dbClasses'
 import { addCalculatedInputParameters, getOffenceCat } from 'ogrs/common'
-import { checkIfAfter, getDate, lookupString} from 'lib/utils'
+import { lookupString } from 'lib/utils'
+import { OasysDateTime } from 'lib/dateTime'
 
 export function createAssessmentTestCase(assessment: OgrsAssessment, appConfig: AppConfig): TestCaseParameters {
 
     const today = testStartDate
 
     const initiationDate = Temporal.PlainDate.from(assessment.initiationDate)
-    const after6_30 = checkIfAfter(appConfig.significantReleaseDates.r6_30, initiationDate)
-    const after6_35 = checkIfAfter(appConfig.significantReleaseDates.r6_35, initiationDate)
+    const after6_35 = OasysDateTime.appVersionHistory.after6_35(initiationDate)
 
     let staticCalc = 'N'
     if (assessment.type == 'LAYER1' && assessment.version == 2) {  // RoSHA - set static flag according to 1.39 (offender interview)
@@ -22,9 +22,9 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, appConfig: 
     }
 
     const p: TestCaseParameters = {
-        ASSESSMENT_DATE: today, // TODO is this right?
+        ASSESSMENT_DATE: today,
         STATIC_CALC: staticCalc,
-        DOB: getDate(assessment.dob),
+        DOB: OasysDateTime.stringToDate(assessment.dob),
         GENDER: lookupString(assessment.gender, genderLookup),
         OFFENCE_CODE: getString(assessment.offence),
         TOTAL_SANCTIONS_COUNT: getNumericAnswer(assessment.textData, '1', '1.32'),
@@ -35,11 +35,11 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, appConfig: 
         PARAPHILIA_SANCTIONS: getNumericAnswer(assessment.textData, '1', '1.37'),
         STRANGER_VICTIM: getSingleAnswer(assessment.qaData, '1', '1.44', ynLookup),
         AGE_AT_FIRST_SANCTION: getNumericAnswer(assessment.textData, '1', '1.8'),
-        LAST_SANCTION_DATE: getDate(getTextAnswer(assessment.textData, '1', '1.29')),
-        DATE_RECENT_SEXUAL_OFFENCE: getDate(getTextAnswer(assessment.textData, '1', '1.33')),
+        LAST_SANCTION_DATE: OasysDateTime.stringToDate(getTextAnswer(assessment.textData, '1', '1.29')),
+        DATE_RECENT_SEXUAL_OFFENCE: OasysDateTime.stringToDate(getTextAnswer(assessment.textData, '1', '1.33')),
         CURR_SEX_OFF_MOTIVATION: q141(assessment, appConfig.offences),
-        MOST_RECENT_OFFENCE: getDate(getTextAnswer(assessment.textData, '1', '1.43')),
-        COMMUNITY_DATE: getDate(getTextAnswer(assessment.textData, '1', '1.38')),
+        MOST_RECENT_OFFENCE: OasysDateTime.stringToDate(getTextAnswer(assessment.textData, '1', '1.43')),
+        COMMUNITY_DATE: OasysDateTime.stringToDate(getTextAnswer(assessment.textData, '1', '1.38')),
         ONE_POINT_THIRTY: getSingleAnswer(assessment.qaData, '1', '1.30', ynLookup),
         TWO_POINT_TWO: q22(assessment, after6_35),
         THREE_POINT_FOUR: getNumericAnswer(assessment.qaData, '3', '3.4'),

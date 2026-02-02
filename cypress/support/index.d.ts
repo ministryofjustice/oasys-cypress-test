@@ -17,7 +17,4 @@ declare namespace Cypress {
      */
     groupedLogEnd(): Chainable<any>
   }
-  interface Cypress {
-    dayjs: any
-  }
 }

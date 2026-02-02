@@ -1,5 +1,4 @@
-import dayjs from 'dayjs'
-
+import { OasysDateTime } from 'oasys'
 import * as db from '../oasysDb'
 import { DbOffenderWithAssessments, DbAssessment, DbVictim, DbOffence, DbRsr, DbSection, DbAction, DbObjective, DbBspObjective, DbNeed } from './dbClasses'
 
@@ -16,7 +15,7 @@ export async function getOffenderWithAssessments(crnSource: Provider, crn: strin
 
     // Database queries are (mostly) defined in the relevant class definitions
 
-    let start = dayjs()
+    OasysDateTime.startTimer('getOffenderWithAssessments')
 
     // Get application versions
     if (versionTable == null) {
@@ -136,6 +135,6 @@ export async function getOffenderWithAssessments(crnSource: Provider, crn: strin
     dbOffender.assessments.sort((a, b) => (a.initiationDate > b.initiationDate) ? 1 : ((b.initiationDate > a.initiationDate) ? -1 : 0))
 
     // Record time elapsed in database load
-    dbOffender.dbElapsedTime = dayjs().diff(start)
+    dbOffender.dbElapsedTime = OasysDateTime.elapsedTime('getOffenderWithAssessments')
     return dbOffender
 }

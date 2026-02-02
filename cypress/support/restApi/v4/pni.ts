@@ -2,6 +2,7 @@ import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
+import { OasysDateTime } from 'oasys'
 
 export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssessments, parameters: EndpointParams) {
 
@@ -122,7 +123,7 @@ class PniCalc {
         this.saraRiskLevelToPartner = 1
         this.saraRiskLevelToOther = 1
 
-        const age = common.getDateDiff(dbAssessment.dateOfBirth, dbAssessment.initiationDate)
+        const age = OasysDateTime.dateDiffString(dbAssessment.dateOfBirth, dbAssessment.initiationDate, 'year')
         if (age >= 18) {
             const saraRiskLevelToPartner = common.getSingleAnswer(saraAssessment?.qaData, 'SARA', 'SR76.1.1')
             const saraRiskLevelToOther = common.getSingleAnswer(saraAssessment?.qaData, 'SARA', 'SR77.1.1')
@@ -200,7 +201,7 @@ class RsrOspData {
         this.ospIiicScoreLevel = common.riskLabel(dbAssessment.riskDetails.ospIndirectImagesChildrenScoreLevel) ?? common.riskLabel(dbAssessment.riskDetails.ospImageScoreLevel)  // For pre-6.49 assessments
         this.rsrPercentageScore = common.fixDp(dbAssessment.riskDetails.rsrPercentageScore)
         this.rsrAlgorithmVersion = dbAssessment.riskDetails.rsrAlgorithmVersion
-        this.offenderAge = common.getDateDiff(dbAssessment.dateOfBirth, dbAssessment.initiationDate)
+        this.offenderAge = OasysDateTime.dateDiffString(dbAssessment.dateOfBirth, dbAssessment.initiationDate, 'year')
     }
 }
 

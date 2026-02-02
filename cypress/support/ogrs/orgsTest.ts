@@ -8,7 +8,8 @@ import { getAssessmentTestData, getRsrTestData } from './getTestData/getTestData
 import { createAssessmentTestCase } from './getTestData/createAssessmentTestCase'
 import { createRsrTestCase } from './getTestData/createRsrTestCase'
 import { OgrsAssessment, OgrsRsr } from './getTestData/dbClasses'
-import { dateParameterToString, stringParameterToString, numericParameterToString } from 'lib/utils'
+import { stringParameterToString, numericParameterToString } from 'lib/utils'
+import { OasysDateTime } from 'lib/dateTime'
 
 const dataFilePath = './cypress/support/ogrs/data/'
 
@@ -152,9 +153,9 @@ function getFunctionCall(params: TestCaseParameters): string {
 
     let result: string[] = []
 
-    result.push(`eor.new_gen_predictors_pkg.get_ogrs4(${dateParameterToString(params.ASSESSMENT_DATE)}`)
+    result.push(`eor.new_gen_predictors_pkg.get_ogrs4(${OasysDateTime.dateParameterToString(params.ASSESSMENT_DATE)}`)
     result.push(stringParameterToString(params.STATIC_CALC))
-    result.push(dateParameterToString(params.DOB))
+    result.push(OasysDateTime.dateParameterToString(params.DOB))
     result.push(stringParameterToString(params.GENDER))
     result.push(stringParameterToString(params.OFFENCE_CODE))
     result.push(numericParameterToString(params.TOTAL_SANCTIONS_COUNT))
@@ -165,11 +166,11 @@ function getFunctionCall(params: TestCaseParameters): string {
     result.push(numericParameterToString(params.PARAPHILIA_SANCTIONS))
     result.push(stringParameterToString(params.STRANGER_VICTIM))
     result.push(numericParameterToString(params.AGE_AT_FIRST_SANCTION))
-    result.push(dateParameterToString(params.LAST_SANCTION_DATE))
-    result.push(dateParameterToString(params.DATE_RECENT_SEXUAL_OFFENCE))
+    result.push(OasysDateTime.dateParameterToString(params.LAST_SANCTION_DATE))
+    result.push(OasysDateTime.dateParameterToString(params.DATE_RECENT_SEXUAL_OFFENCE))
     result.push(stringParameterToString(params.CURR_SEX_OFF_MOTIVATION))
-    result.push(dateParameterToString(params.MOST_RECENT_OFFENCE))
-    result.push(dateParameterToString(params.COMMUNITY_DATE))
+    result.push(OasysDateTime.dateParameterToString(params.MOST_RECENT_OFFENCE))
+    result.push(OasysDateTime.dateParameterToString(params.COMMUNITY_DATE))
     result.push(stringParameterToString(params.ONE_POINT_THIRTY))
     result.push(numericParameterToString(params.TWO_POINT_TWO))
     result.push(numericParameterToString(params.THREE_POINT_FOUR))

@@ -11,6 +11,7 @@ import { OgrsTestParameters, OgrsTestScriptResult, RescoringResult, RescoringTes
 import { rescoringTest } from './cypress/support/ogrs/rescoring/rescoringTest'
 import { tieringTest } from './cypress/support/ogrs/tiering/tieringTest'
 import { getOneAssessment, OgrsRegressionTestAssessment } from './cypress/support/ogrs/getTestData/getOneAssessment'
+import { AppVersionHistory } from 'lib/dateTime'
 
 const reportFolder = 'report'
 const persistedData = {}
@@ -56,7 +57,7 @@ module.exports = defineConfig({
         },
 
         /**
-         * Get the application version and config details from the database; returns an AppConfig object
+         * Get the application and config details from the database; returns an AppConfig object
          */
         getAppConfig(): Promise<AppConfig> {
 
@@ -67,6 +68,18 @@ module.exports = defineConfig({
           })
         },
 
+        /**
+         * Get the application and config details from the database; returns an AppConfig object
+         */
+        getAppVersionHistory(): Promise<AppVersionHistory> {
+
+          return new Promise((resolve) => {
+            oasysDb.getAppVersionHistory().then((result) => {
+              resolve(result)
+            })
+          })
+        },
+        
         /**
          * Run a query to return data from the database. Returns a DbResponse type object including the a 2-d string array or error message.
          */

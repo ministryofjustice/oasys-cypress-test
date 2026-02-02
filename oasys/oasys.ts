@@ -15,4 +15,5 @@ export * as San from './lib/san'
 export * as Sns from './lib/sns'
 export * as Task from './lib/task'
 export * from './users'
+export { OasysDateTime } from './lib/dateTime'
 

@@ -38,7 +38,7 @@ export function createProb(source: OffenderDef, alias: string) {
     cy.get<OffenderDef>(`@${alias}`).then((offender) => {
 
         expect(offender).not.null  // null result would indicate errors checking the database
-        offender.dateOfBirth = oasys.oasysDateAsString(offender.dateOfBirth) // Calculate date if a # value has been specified
+        offender.dateOfBirth = oasys.OasysDateTime.oasysDateAsString(offender.dateOfBirth) // Calculate date if a # value has been specified
 
         // Delete the NOMIS Id if there is one to avoid attempting to populate it on the stub screen
         let nomisId: string
@@ -147,7 +147,7 @@ export function createPris(source: OffenderDef, alias: string) {
     cy.get<OffenderDef>(`@${alias}`).then((offender) => {
 
         expect(offender).not.null  // null result would indicate errors checking the database
-        offender.dateOfBirth = oasys.oasysDateAsString(offender.dateOfBirth) // Calculate date if a # value has been specified
+        offender.dateOfBirth = oasys.OasysDateTime.oasysDateAsString(offender.dateOfBirth) // Calculate date if a # value has been specified
 
         enterPrisonStubDetailsAndCreateReceptionEvent(offender)
         searchAndSelectByNomisId(offender.nomisId, true)

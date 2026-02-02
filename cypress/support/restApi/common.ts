@@ -1,11 +1,5 @@
-import dayjs from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-
+import { OasysDateTime } from 'oasys'
 import * as dbClasses from './dbClasses'
-
-export const releaseDate6_35 = '2022-06-10T09:06:29'
-export const releaseDate6_30 = '2021-10-18T11:12:54'
-export const releaseDate6_20 = '2020-06-24T14:21:00'
 
 /**
  * Base class for all API endpoints, defining the response data that is common to all.
@@ -133,9 +127,9 @@ export function getReformattedDateAnswer(data: string[][], section: string, ques
 
     let dateString = getTextAnswer(data, section, question)
 
-    dayjs.extend(customParseFormat)
-    let date = dayjs(dateString, 'DD/MM/YYYY')
-    return date.isValid() ? date.format('YYYY-MM-DD') : ''
+    const result = OasysDateTime.stringToDate(dateString)
+
+    return result == null ?  '' : result.toString()
 }
 
 /**
@@ -197,15 +191,4 @@ export function fixDp(value: number): number {
 
     if (value == undefined || value == null) return value
     return Number(value.toFixed(2))
-}
-
-export function getDateDiff(firstDate: string, secondDate: string, unit: 'year' | 'month' = 'year'): number {
-
-    if (firstDate == null || secondDate == null) {
-        return null
-    }
-    const d1 = dayjs(firstDate)
-    const d2 = secondDate == '' ? dayjs() : dayjs(secondDate)
-
-    return d2.diff(d1, unit)
 }

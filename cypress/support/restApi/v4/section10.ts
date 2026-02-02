@@ -2,6 +2,7 @@ import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
+import { OasysDateTime } from 'oasys'
 
 export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssessments, parameters: EndpointParams) {
 
@@ -72,7 +73,7 @@ export class Section10Assessment extends v4Common.V4AssessmentCommon {
         this.emoLinkedToHarm = common.getSingleAnswer(dbAssessment.qaData, '10', '10.98')
         this.emoLinkedToReoffending = common.getSingleAnswer(dbAssessment.qaData, '10', '10.99')
 
-        if (dbAssessment.initiationDate > common.releaseDate6_35) {
+        if (OasysDateTime.appVersionHistory.after6_35(dbAssessment.initiationDate)) {
             this.childhoodBehavourProblems = common.getSingleAnswer(dbAssessment.qaData, '10', '10.7_V2_CHILDHOOD')
             this.failureToCooperateWithPsychiatricTreatment = common.getSingleAnswer(dbAssessment.qaData, '10', '10.7_V2_FAILEDTOCOOP')
             this.historyOfHeadInjuriesFitsEtc = common.getSingleAnswer(dbAssessment.qaData, '10', '10.7_V2_HISTHEADINJ')

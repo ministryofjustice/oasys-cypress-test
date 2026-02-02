@@ -1,4 +1,4 @@
-import * as dayjs from 'dayjs'
+import { Temporal } from '@js-temporal/polyfill'
 import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 36', () => {
@@ -27,7 +27,7 @@ describe('SAN integration - test ref 36', () => {
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'result')
             cy.get<number[]>('@result').then((pks) => {
                 oasys.San.getSanApiTime(pks[0], 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                cy.get<dayjs.Dayjs>('@getSanDataTime').then((sanDataTime) => {
+                cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((sanDataTime) => {
                     oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pks[0]}`, {
                         SAN_ASSESSMENT_LINKED_IND: 'Y',
                         CLONED_FROM_PREV_OASYS_SAN_PK: pks[2].toString(),
@@ -68,7 +68,7 @@ describe('SAN integration - test ref 36', () => {
                 oasys.Assessment.lockIncomplete()
                 oasys.San.checkSanLockIncompleteCall(pks[0], oasys.Users.probSanUnappr, 2, 3)
                 oasys.San.getSanApiTime(pks[0], 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                cy.get<dayjs.Dayjs>('@getSanDataTime').then((sanDataTime) => {
+                cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((sanDataTime) => {
                     oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pks[0]}`, {
                         SAN_ASSESSMENT_LINKED_IND: 'Y',
                         CLONED_FROM_PREV_OASYS_SAN_PK: pks[2].toString(),
