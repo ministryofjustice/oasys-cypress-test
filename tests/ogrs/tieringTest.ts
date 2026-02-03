@@ -7,7 +7,7 @@ describe('Tier calculations test', () => {
 
     const testParams: TieringTestParameters = {
         // whereClause: `ignore <> 'Y' and run_number = 4`,
-        whereClause: `ignore <> 'Y'`,
+        whereClause: `ignore = 'N' or ignore is null`,
         // whereClause : `cms_prob_number = 'V166775'`,
         count: count,
     }
