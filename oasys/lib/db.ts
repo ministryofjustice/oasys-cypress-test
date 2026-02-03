@@ -20,24 +20,25 @@
  * @module Database
 */
 
-import dayjs from 'dayjs'
+import { Temporal } from '@js-temporal/polyfill'
+import { OasysDateTime } from 'oasys'
 
 /**
  * Checks a set of values against the result of a single-row database query, test fails if there are any mismatches.  Parameters are:
  *   - table name
  *   - where clause
- *   - object containing pairs of column names and expected values.  Expected values can be string or date (Dayjs) types.
+ *   - object containing pairs of column names and expected values.  Expected values can be string or date (Temporal PlainDateTime) types.
  * 
  * e.g. `checkDbValues('oasys_set', 'oasys_set_pk = 123456', { family_name: 'Smith', forename_1: 'John' })`
  * 
  * Fails if more than one row is returned.
  */
-export function checkDbValues(table: string, where: string, values: { [keys: string]: string | dayjs.Dayjs }) {
+export function checkDbValues(table: string, where: string, values: { [keys: string]: string | Temporal.PlainDateTime }) {
 
     var query = 'select '
     var firstCol = true
     const columnNames: string[] = []
-    const expectedValues: (string | dayjs.Dayjs)[] = []
+    const expectedValues: (string | Temporal.PlainDateTime)[] = []
     var failed = false
 
     Object.keys(values).forEach(name => {
@@ -47,7 +48,7 @@ export function checkDbValues(table: string, where: string, values: { [keys: str
             query += ', '
         }
         const stringType = !values[name] || typeof values[name] == 'string'
-        query += stringType ? name : `to_char(${name}, 'YYYY-MM-DD HH24:MI:SS')`
+        query += stringType ? name : `to_char(${name}, '${OasysDateTime.oracleTimestampFormat}')`
         columnNames.push(name)
         expectedValues.push(values[name])
     })
@@ -78,10 +79,9 @@ export function checkDbValues(table: string, where: string, values: { [keys: str
                         failed = true
                     }
                 } else {
-                    const actual = Cypress.dayjs(data[0][col], 'YYYY-MM-DD HH:mm:ss')
-                    const expected = Cypress.dayjs(expectedValues[col], 'YYYY-MM-DD HH:mm:ss')
-                    if (actual.diff(expected) > 15000) {  // TODO change this tolerance?
-                        cy.groupedLog(`Expected ${columnNames[col]} to be ${expected}, got ${actual}`)
+                    const actual = OasysDateTime.stringToTimestamp(data[0][col])
+                    if (Math.abs(OasysDateTime.timestampDiff(actual, expectedValues[col] as Temporal.PlainDateTime)) > 15000) {
+                        cy.groupedLog(`Expected ${columnNames[col]} to be ${expectedValues[col].toLocaleString()}, got ${actual}`)
                         failed = true
                     }
                 }

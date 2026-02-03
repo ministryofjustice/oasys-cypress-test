@@ -1,4 +1,4 @@
-import { OgrsTestParameters } from '../../cypress/support/ogrs/types'
+import { OgrsTestParameters } from '../../oasys/ogrs/types'
 import { runTest } from './testLib'
 
 describe('OGRS calculator test - data science test cases', () => {
@@ -13,18 +13,22 @@ function test(part: number, staticFlag: 'Y' | 'N') {
 
     it(`Data science test cases - static ${staticFlag}, part ${part}`, () => {
 
-        const csvTestParams: OgrsTestParameters = {
-            testType: 'csv',
-            csvDetails: {
-                dataFile: 'dsTestCases',
-                start: part == 1 ? 0 : 5000,
-                end: part == 1 ? 4999 : 9999,
-            },
-            staticFlag: staticFlag,
-            reportMode: 'none',
-            includeObjects: true,
-        }
+        cy.get<AppConfig>('@appConfig').then((appConfig) => {
 
-        runTest(csvTestParams, `dsOutput${staticFlag}`, true, false)
+            const csvTestParams: OgrsTestParameters = {
+                testType: 'csv',
+                csvDetails: {
+                    dataFile: 'dsTestCases',
+                    start: part == 1 ? 0 : 5000,
+                    end: part == 1 ? 4999 : 9999,
+                },
+                staticFlag: staticFlag,
+                reportMode: 'none',
+                includeObjects: true,
+                appConfig: appConfig,
+            }
+
+            runTest(csvTestParams, `dsOutput${staticFlag}`, true, false)
+        })
     })
 }

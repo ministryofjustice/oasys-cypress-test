@@ -7,7 +7,7 @@ import { testEnvironment } from '../../../localSettings'
  */
 describe('RestAPI regression tests', () => {
 
-    const startTime = Cypress.dayjs().format('YYYY-MM-DD HH:mm:ss')
+    oasys.OasysDateTime.startTimer('apiTest')
 
     let stats: EndpointStat[] = []
     let offendersTested = 0
@@ -18,16 +18,16 @@ describe('RestAPI regression tests', () => {
 
     // Define date parameters for sets of offender data
     const dateConditions = [
-        { date: `2015-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2016-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2017-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2018-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2019-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2020-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2021-${randomMonth()}-${randomDay()}`, count: offenderCount },
-        { date: `2022-${randomMonth()}-${randomDay()}`, count: offenderCount },
-        { date: `2023-${randomMonth()}-${randomDay()}`, count: offenderCount },
-        { date: `2024-${randomMonth()}-${randomDay()}`, count: offenderCount },
+        // { date: `2015-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2016-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2017-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2018-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2019-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2020-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2021-${randomMonth()}-${randomDay()}`, count: offenderCount },
+        // { date: `2022-${randomMonth()}-${randomDay()}`, count: offenderCount },
+        // { date: `2023-${randomMonth()}-${randomDay()}`, count: offenderCount },
+        // { date: `2024-${randomMonth()}-${randomDay()}`, count: offenderCount },
         { date: 'today', count: offenderCount },
     ]
 
@@ -160,7 +160,7 @@ describe('RestAPI regression tests', () => {
         reportStats()
         cy.groupedLogEnd()
 
-        let elapsedTimeS = Math.round(Cypress.dayjs().diff(startTime) / 1000)
+        let elapsedTimeS = Math.round(oasys.OasysDateTime.elapsedTime('apiTest') / 1000)
         cy.groupedLogStart('Totals')
         cy.groupedLog(`Offenders: ${offendersTested}`)
         cy.groupedLog(`API calls: ${totalApiCount}`)

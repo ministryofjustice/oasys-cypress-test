@@ -41,10 +41,10 @@ describe('SAN integration - test ref 27', () => {
                 oasys.Nav.clickButton('Close')
                 oasys.Assessment.lockIncomplete()
 
-                oasys.Db.getData(`select to_char(lastupd_date, 'YYYY-MM-DD HH24:MI:SS')  from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate')
+                oasys.Db.getData(`select to_char(lastupd_date, '${oasys.OasysDateTime.oracleTimestampFormat}')  from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate')
                 cy.get<string[][]>('@lastUpdDate').then((initialData) => {
 
-                    const lastUpdDate = Cypress.dayjs(initialData[0][0], 'YYYY-MM-DD HH:mm:ss')
+                    const lastUpdDate = oasys.OasysDateTime.stringToTimestamp(initialData[0][0])
 
                     cy.log(`A Lock API has been sent to the SAN Service - parameters of OASYS_SET_PK, user ID and name - a 200 response has been received back
                         Check that the OASYS_SET record has the field 'SAN_ASSESSMENT_VERSION_NO' and 'SSP_PLAN_VERSION_NO' populated by the return API response
@@ -92,22 +92,22 @@ describe('SAN integration - test ref 27', () => {
                     cy.log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
                          and also on the OASYS_SET record and ensure they are NOT after the date and time noted above`)
 
-                    const questionsQuery = `select max(to_char(q.lastupd_date, 'YYYY-MM-DD HH24:MI:SS')) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
+                    const questionsQuery = `select max(to_char(q.lastupd_date, ${oasys.OasysDateTime.oracleTimestampFormat})) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
                                             where st.oasys_set_pk = s.oasys_set_pk and s.oasys_section_pk = q.oasys_section_pk
                                             and st.oasys_set_pk = ${pk}`
 
                     oasys.Db.getData(questionsQuery, 'questions')
-                    oasys.Db.getData(`select to_char(lastupd_from_san, 'YYYY-MM-DD HH24:MI:SS'), to_char(lastupd_date, 'YYYY-MM-DD HH24:MI:SS') from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate2')
+                    oasys.Db.getData(`select to_char(lastupd_from_san, ${oasys.OasysDateTime.oracleTimestampFormat}), to_char(lastupd_date, ${oasys.OasysDateTime.oracleTimestampFormat}) from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate2')
                     cy.get<string[][]>('@questions').then((questions) => {
                         cy.get<string[][]>('@lastUpdDate2').then((updatedSetData) => {
 
-                            const latestQuestionUpdDate = Cypress.dayjs(questions[0][0], 'YYYY-MM-DD HH:mm:ss')
-                            const lastUpdFromSan = Cypress.dayjs(updatedSetData[0][0], 'YYYY-MM-DD HH:mm:ss')
-                            const lastUpdDate2 = Cypress.dayjs(updatedSetData[0][1], 'YYYY-MM-DD HH:mm:ss')
+                            const latestQuestionUpdDate = oasys.OasysDateTime.stringToTimestamp(questions[0][0])
+                            const lastUpdFromSan = oasys.OasysDateTime.stringToTimestamp(updatedSetData[0][0])
+                            const lastUpdDate2 = oasys.OasysDateTime.stringToTimestamp(updatedSetData[0][1])
 
-                            expect(latestQuestionUpdDate.diff(lastUpdDate)).lte(0)
-                            expect(lastUpdFromSan.diff(lastUpdDate)).lte(0)
-                            expect(lastUpdDate2.diff(lastUpdDate)).lte(0)
+                            expect(oasys.OasysDateTime.timestampDiff(lastUpdDate, latestQuestionUpdDate)).lte(0)
+                            expect(oasys.OasysDateTime.timestampDiff(lastUpdDate, lastUpdFromSan)).lte(0)
+                            expect(oasys.OasysDateTime.timestampDiff(lastUpdDate, lastUpdDate2)).lte(0)
 
                             cy.log(`Rollback the locked incomplete assessment
                             Ensure the SAN service respond with a 200

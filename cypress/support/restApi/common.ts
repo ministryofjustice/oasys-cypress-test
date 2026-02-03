@@ -1,11 +1,5 @@
-import dayjs from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-
+import { OasysDateTime } from 'oasys'
 import * as dbClasses from './dbClasses'
-
-export const releaseDate6_35 = '2022-06-10T09:06:29'
-export const releaseDate6_30 = '2021-10-18T11:12:54'
-export const releaseDate6_20 = '2020-06-24T14:21:00'
 
 /**
  * Base class for all API endpoints, defining the response data that is common to all.
@@ -107,6 +101,23 @@ export function getTextAnswer(data: string[][], section: string, question: strin
 }
 
 /**
+ * Similar to the above but converts string to score, e.g. '0-No problems' to 0.  M (missing) is returned as null returned as null
+ */
+export function getSingleAnswerAsScore(data: string[][], section: string, question: string): number {
+
+    if (data == undefined || data == null) return null
+
+    const answers = data.filter((a) => a[0] == section && a[1] == question)
+    if (answers.length > 0) {
+        if (answers[0][2] != null) {
+            const c = answers[0][2].substring(0, 1)
+            return Number.isNaN(Number.parseInt(c)) ? null : Number.parseInt(c)
+        }
+    }
+    return null
+}
+
+/**
  * As above, but reformats the text into the required date format.
  */
 export function getReformattedDateAnswer(data: string[][], section: string, question: string): string {
@@ -116,9 +127,9 @@ export function getReformattedDateAnswer(data: string[][], section: string, ques
 
     let dateString = getTextAnswer(data, section, question)
 
-    dayjs.extend(customParseFormat)
-    let date = dayjs(dateString, 'DD/MM/YYYY')
-    return date.isValid() ? date.format('YYYY-MM-DD') : ''
+    const result = OasysDateTime.stringToDate(dateString)
+
+    return result == null ?  '' : result.toString()
 }
 
 /**
@@ -174,4 +185,10 @@ export function getSectionScore(dbAssessment: dbClasses.DbAssessment, sectionCod
 function transformValue(lookup: string, lookupDictionary: { [keys: string]: string }): string {
 
     return lookupDictionary[lookup] == undefined ? lookup : lookupDictionary[lookup]
+}
+
+export function fixDp(value: number): number {
+
+    if (value == undefined || value == null) return value
+    return Number(value.toFixed(2))
 }

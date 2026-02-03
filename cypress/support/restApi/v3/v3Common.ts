@@ -1,5 +1,4 @@
-import dayjs from 'dayjs'
-
+import { OasysDateTime } from 'oasys'
 import * as common from '../common'
 import * as dbClasses from '../dbClasses'
 
@@ -8,7 +7,7 @@ export function assessmentFilter(dbAssessment: dbClasses.DbAssessmentOrRsr): boo
     if (dbAssessment.assessmentType != 'LAYER3') return false
     if (!['COMPLETE', 'LOCKED_INCOMPLETE'].includes(dbAssessment.status)) return true
 
-    const dateLimit = dayjs().subtract(6, 'month').format('YYYY-MM-DDTHH:mm:ss')
+    const dateLimit = OasysDateTime.oasysDateAsPlainDate({months: -6}).toString()
     return dbAssessment.completedDate > dateLimit
 }
 

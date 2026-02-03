@@ -44,7 +44,9 @@ declare type YesNoDkAnswer = 'Yes' | 'No' | `Don't know` | ''
 declare type YesNoMissingAnswer = 'Yes' | 'No' | 'Missing' | ''
 declare type ProblemsAnswer = '0-No problems' | '1-Some problems' | '2-Significant problems' | ''
 declare type ProblemsMissingAnswer = '0-No problems' | '1-Some problems' | '2-Significant problems' | 'Missing' | ''
-declare type OasysDate = string | { days?: number, weeks?: number, months?: number, years?: number, workingDays?: number }
+declare type OasysDate = string | { days?: number, months?: number, years?: number }
+declare type Q6_8Answer = 'In a relationship, living together' | 'In a relationship, not living together' | 'Not in a relationship'
+declare type DrugsUsage = 'Daily' | 'Weekly' | 'Monthly' | 'Occasional'
 
 declare type CreateAssessmentDetails = {
 

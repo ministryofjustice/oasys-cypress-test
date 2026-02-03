@@ -1,24 +1,20 @@
-import dayjs from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-import utc from 'dayjs/plugin/utc'
-import isLeapYear from 'dayjs/plugin/isLeapYear'
-
 import { Decimal } from 'decimal.js'
 
-import { TestCaseParameters, OgrsOffenceCat, OutputParameters } from './types'
-import { offences, offenceCats } from './data/offences'
-import { dateFormat } from './orgsTest'
-import { createOutputObject } from './createOutput'
+import { TestCaseParameters, OutputParameters } from '../../../oasys/ogrs/types'
+import { createOutputObject } from 'ogrs/createOutput'
+import { addCalculatedInputParameters } from 'ogrs/common'
+import { getInteger, getString } from 'lib/utils'
+import { OasysDateTime } from 'lib/dateTime'
 
-export function loadParameterSet(parameterLine: string): TestCaseParameters {
+export function loadParameterSet(parameterLine: string, offences: {}): TestCaseParameters {
 
     const parameters = parameterLine.split(',')
     let i = 0
 
     const p: TestCaseParameters = {
-        ASSESSMENT_DATE: getDate(parameters[i++]),
+        ASSESSMENT_DATE: OasysDateTime.stringToDate(parameters[i++]),
         STATIC_CALC: getString(parameters[i++]),
-        DOB: getDate(parameters[i++]),
+        DOB: OasysDateTime.stringToDate(parameters[i++]),
         GENDER: getString(parameters[i++]),
         OFFENCE_CODE: getString(parameters[i++]),
         TOTAL_SANCTIONS_COUNT: getInteger(parameters[i++]),
@@ -29,11 +25,11 @@ export function loadParameterSet(parameterLine: string): TestCaseParameters {
         PARAPHILIA_SANCTIONS: getInteger(parameters[i++]),
         STRANGER_VICTIM: getString(parameters[i++]),
         AGE_AT_FIRST_SANCTION: getInteger(parameters[i++]),
-        LAST_SANCTION_DATE: getDate(parameters[i++]),
-        DATE_RECENT_SEXUAL_OFFENCE: getDate(parameters[i++]),
+        LAST_SANCTION_DATE: OasysDateTime.stringToDate(parameters[i++]),
+        DATE_RECENT_SEXUAL_OFFENCE: OasysDateTime.stringToDate(parameters[i++]),
         CURR_SEX_OFF_MOTIVATION: getString(parameters[i++]),
-        MOST_RECENT_OFFENCE: getDate(parameters[i++]),
-        COMMUNITY_DATE: getDate(parameters[i++]),
+        MOST_RECENT_OFFENCE: OasysDateTime.stringToDate(parameters[i++]),
+        COMMUNITY_DATE: OasysDateTime.stringToDate(parameters[i++]),
         ONE_POINT_THIRTY: getString(parameters[i++]),
         TWO_POINT_TWO: getInteger(parameters[i++]),
         THREE_POINT_FOUR: getInteger(parameters[i++]),
@@ -83,50 +79,8 @@ export function loadParameterSet(parameterLine: string): TestCaseParameters {
         CUSTODY_IND: getString(parameters[i++]),
     }
 
-    addCalculatedInputParameters(p)
+    addCalculatedInputParameters(p, offences)
     return p
-}
-
-function getString(param: string): string {
-    return param == '' || param == 'null' || param == null ? null : param
-}
-
-function getDate(param: string): dayjs.Dayjs {
-
-    dayjs.extend(customParseFormat)
-    dayjs.extend(utc)
-    const result = dayjs.utc(param, dateFormat)
-    return !result.isValid() ? null : result
-}
-
-function getInteger(param: string): number {
-    return param == '' || param == null || param.toLowerCase() == 'null' ? null : Number.parseInt(param)
-}
-
-function getDateDiff(firstDate: dayjs.Dayjs, secondDate: dayjs.Dayjs, unit: 'year' | 'month', ofm: boolean = false): number {
-
-    dayjs.extend(isLeapYear)
-    if (firstDate == null || secondDate == null) {
-        return null
-    }
-    let diff = secondDate.diff(firstDate, unit)
-
-    // Leap-year fix - if dob = 29/2, 28/2 is not a birthday on a non-leap year; the DaysJS calculation doesn't work like that
-    if (unit == 'year' && firstDate.date() == 29 && firstDate.month() == 1 && secondDate.date() == 28 && secondDate.month() == 1 && !secondDate.isLeapYear()) {
-        diff--
-    }
-
-    if (ofm) {
-        return diff < 0 ? 0 : diff > 36 ? 36 : diff
-    } else {
-        return diff >= 0 ? diff : null
-    }
-}
-
-export function getOffenceCat(offence: string): OgrsOffenceCat {
-
-    const cat = offenceCats[offences[offence]]
-    return cat == undefined ? null : cat
 }
 
 export function loadOracleOutputValues(values: string[]): OutputParameters {
@@ -141,29 +95,4 @@ export function loadOracleOutputValues(values: string[]): OutputParameters {
     })
 
     return expectedOutputParameters
-}
-
-export function addCalculatedInputParameters(p: TestCaseParameters) {
-
-    p.effectiveAssessmentDate = p.COMMUNITY_DATE == null ? p.LAST_SANCTION_DATE : p.COMMUNITY_DATE
-    p.age = getDateDiff(p.DOB, p.effectiveAssessmentDate, 'year')
-    p.ageAtLastSanction = getDateDiff(p.DOB, p.LAST_SANCTION_DATE, 'year')
-    p.ageAtLastSanctionSexual = getDateDiff(p.DOB, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
-    p.ofm = getDateDiff(p.effectiveAssessmentDate, p.ASSESSMENT_DATE, 'month', true)
-    p.offenceCat = getOffenceCat(p.OFFENCE_CODE)
-    p.firstSanction = p.TOTAL_SANCTIONS_COUNT == 1
-    p.secondSanction = p.TOTAL_SANCTIONS_COUNT == 2
-    p.yearsBetweenFirstTwoSanctions = p.secondSanction ? p.ageAtLastSanction - p.AGE_AT_FIRST_SANCTION : 0
-    p.neverSanctionedViolence = p.TOTAL_VIOLENT_SANCTIONS == 0
-    p.onceViolent = p.TOTAL_VIOLENT_SANCTIONS == 1
-    p.male = p.GENDER == 'M'
-    p.female = p.GENDER == 'F'
-    p.out5Years = getDateDiff(p.COMMUNITY_DATE, p.ASSESSMENT_DATE, 'year') >= 5
-
-    const offenceInLast5Years = getDateDiff(p.MOST_RECENT_OFFENCE, p.ASSESSMENT_DATE, 'year')
-    p.offenceInLast5Years = offenceInLast5Years == null ? false : offenceInLast5Years < 5
-    const sexualOffenceInLast5Years = getDateDiff(p.DATE_RECENT_SEXUAL_OFFENCE, p.ASSESSMENT_DATE, 'year')
-    p.sexualOffenceInLast5Years = sexualOffenceInLast5Years == null ? false : sexualOffenceInLast5Years < 5
-
-    p.zeroSexualSanctions = p.CONTACT_ADULT_SANCTIONS == 0 && p.CONTACT_CHILD_SANCTIONS == 0 && p.INDECENT_IMAGE_SANCTIONS == 0 && p.PARAPHILIA_SANCTIONS == 0
 }

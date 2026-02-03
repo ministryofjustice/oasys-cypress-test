@@ -1,13 +1,11 @@
 import * as fs from 'fs-extra'
 
-
-import { OutputParameters, RescoringResult, RescoringTestParameters, TestCaseParameters } from '../types'
+import { OutputParameters, RescoringResult, RescoringTestParameters, TestCaseParameters } from '../../../../oasys/ogrs/types'
 import { getOgrsResult } from '../../oasysDb'
-import { Dayjs } from 'dayjs'
 import { getOffenderData } from './getOffenderData'
 import { createAssessmentTestCase } from './createAssessmentTestCase'
-import { offences } from '../data/offences'
-import * as db from '../../oasysDb'
+import { stringParameterToString, numericParameterToString, numericParameterToCsvOutputString, stringParameterToCsvOutputString } from 'lib/utils'
+import { OasysDateTime } from 'lib/dateTime'
 import { loadOracleOutputValues } from '../loadTestData'
 import { RescoringOffenderWithAssessment } from './dbClasses'
 
@@ -18,15 +16,6 @@ export const dateFormat = 'DD-MM-YYYY'
 export async function rescoringTest(testParams: RescoringTestParameters): Promise<RescoringResult[]> {
 
     const results: RescoringResult[] = []
-
-    // Load offence codes from OASys
-    const offenceCodeData = await db.selectData('select offence_group_code || sub_code, rsr_category_desc from eor.ct_offence order by 1')
-    if (offenceCodeData.error != null) {
-        throw new Error(offenceCodeData.error)
-    }
-    (offenceCodeData.data as string[][]).forEach(offence => {
-        offences[offence[0]] = offence[1]
-    })
 
     // Load input parameters from a CSV file (list of CRNs)
     const crnFile = await fs.readFile(`${dataFilePath}${testParams.dataFile}.csv`, 'utf8')
@@ -78,9 +67,9 @@ function getFunctionCall(params: TestCaseParameters): string {
 
     let result: string[] = []
 
-    result.push(`eor.new_gen_predictors_pkg.get_ogrs4(${dateParameterToString(params.ASSESSMENT_DATE)}`)
+    result.push(`eor.new_gen_predictors_pkg.get_ogrs4(${OasysDateTime.dateParameterToString(params.ASSESSMENT_DATE)}`)
     result.push(stringParameterToString(params.STATIC_CALC))
-    result.push(dateParameterToString(params.DOB))
+    result.push(OasysDateTime.dateParameterToString(params.DOB))
     result.push(stringParameterToString(params.GENDER))
     result.push(stringParameterToString(params.OFFENCE_CODE))
     result.push(numericParameterToString(params.TOTAL_SANCTIONS_COUNT))
@@ -91,11 +80,11 @@ function getFunctionCall(params: TestCaseParameters): string {
     result.push(numericParameterToString(params.PARAPHILIA_SANCTIONS))
     result.push(stringParameterToString(params.STRANGER_VICTIM))
     result.push(numericParameterToString(params.AGE_AT_FIRST_SANCTION))
-    result.push(dateParameterToString(params.LAST_SANCTION_DATE))
-    result.push(dateParameterToString(params.DATE_RECENT_SEXUAL_OFFENCE))
+    result.push(OasysDateTime.dateParameterToString(params.LAST_SANCTION_DATE))
+    result.push(OasysDateTime.dateParameterToString(params.DATE_RECENT_SEXUAL_OFFENCE))
     result.push(stringParameterToString(params.CURR_SEX_OFF_MOTIVATION))
-    result.push(dateParameterToString(params.MOST_RECENT_OFFENCE))
-    result.push(dateParameterToString(params.COMMUNITY_DATE))
+    result.push(OasysDateTime.dateParameterToString(params.MOST_RECENT_OFFENCE))
+    result.push(OasysDateTime.dateParameterToString(params.COMMUNITY_DATE))
     result.push(stringParameterToString(params.ONE_POINT_THIRTY))
     result.push(numericParameterToString(params.TWO_POINT_TWO))
     result.push(numericParameterToString(params.THREE_POINT_FOUR))
@@ -147,23 +136,6 @@ function getFunctionCall(params: TestCaseParameters): string {
     return result.join(',')
 }
 
-function dateParameterToString(param: Dayjs): string {
-
-    const result = param?.format('DD-MM-YYYY')
-    return result == 'Invalid Date' || result == null ? 'null' : `to_date('${result}','DD-MM-YYYY')`
-}
-
-function stringParameterToString(param: string): string {
-
-    return param == null ? 'null' : `'${param}'`
-}
-
-
-function numericParameterToString(param: number): string {
-
-    return param == null ? 'null' : param.toString()
-}
-
 function createOutputLine(params: TestCaseParameters, offender: RescoringOffenderWithAssessment, outputParams: OutputParameters, runNumber: string): string {
 
     const metadata: string[] = []
@@ -207,9 +179,9 @@ function getInputsForOutputLine(params: TestCaseParameters) {
 
     let result: string[] = []
 
-    result.push(dateParameterToCsvOutputString(params.ASSESSMENT_DATE))
+    result.push(OasysDateTime.dateParameterToCsvOutputString(params.ASSESSMENT_DATE))
     result.push(stringParameterToCsvOutputString(params.STATIC_CALC))
-    result.push(dateParameterToCsvOutputString(params.DOB))
+    result.push(OasysDateTime.dateParameterToCsvOutputString(params.DOB))
     result.push(stringParameterToCsvOutputString(params.GENDER))
     result.push(stringParameterToCsvOutputString(params.OFFENCE_CODE))
     result.push(numericParameterToCsvOutputString(params.TOTAL_SANCTIONS_COUNT))
@@ -220,11 +192,11 @@ function getInputsForOutputLine(params: TestCaseParameters) {
     result.push(numericParameterToCsvOutputString(params.PARAPHILIA_SANCTIONS))
     result.push(stringParameterToCsvOutputString(params.STRANGER_VICTIM))
     result.push(numericParameterToCsvOutputString(params.AGE_AT_FIRST_SANCTION))
-    result.push(dateParameterToCsvOutputString(params.LAST_SANCTION_DATE))
-    result.push(dateParameterToCsvOutputString(params.DATE_RECENT_SEXUAL_OFFENCE))
+    result.push(OasysDateTime.dateParameterToCsvOutputString(params.LAST_SANCTION_DATE))
+    result.push(OasysDateTime.dateParameterToCsvOutputString(params.DATE_RECENT_SEXUAL_OFFENCE))
     result.push(stringParameterToCsvOutputString(params.CURR_SEX_OFF_MOTIVATION))
-    result.push(dateParameterToCsvOutputString(params.MOST_RECENT_OFFENCE))
-    result.push(dateParameterToCsvOutputString(params.COMMUNITY_DATE))
+    result.push(OasysDateTime.dateParameterToCsvOutputString(params.MOST_RECENT_OFFENCE))
+    result.push(OasysDateTime.dateParameterToCsvOutputString(params.COMMUNITY_DATE))
     result.push(stringParameterToCsvOutputString(params.ONE_POINT_THIRTY))
     result.push(numericParameterToCsvOutputString(params.TWO_POINT_TWO))
     result.push(numericParameterToCsvOutputString(params.THREE_POINT_FOUR))
@@ -274,21 +246,4 @@ function getInputsForOutputLine(params: TestCaseParameters) {
     result.push(stringParameterToCsvOutputString(params.CUSTODY_IND))
 
     return result.join(',')
-}
-
-
-function dateParameterToCsvOutputString(param: Dayjs): string {
-
-    const result = param?.format('DD-MM-YYYY')
-    return result == 'Invalid Date' || result == null ? '' : result
-}
-
-function stringParameterToCsvOutputString(param: string): string {
-
-    return param == null ? '' : param
-}
-
-function numericParameterToCsvOutputString(param: number): string {
-
-    return param == null ? '' : param.toString()
 }

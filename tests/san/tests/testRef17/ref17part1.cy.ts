@@ -38,8 +38,8 @@ describe('SAN integration - test ref 17 part 1', () => {
 
                 const offendingInformation = new oasys.Pages.Assessment.OffendingInformation().goto()
                 offendingInformation.setValues({
-                    offence: '030', subcode: '01', count: '1', offenceDate: oasys.oasysDate({ months: -4 }),
-                    sentence: 'Fine', sentenceDate: oasys.oasysDate({ months: -3 })
+                    offence: '030', subcode: '01', count: '1', offenceDate: oasys.OasysDateTime.oasysDateAsString({ months: -4 }),
+                    sentence: 'Fine', sentenceDate: oasys.OasysDateTime.oasysDateAsString({ months: -3 })
                 })
                 const predictors = new oasys.Pages.Assessment.Predictors().goto(true)
                 predictors.dateFirstSanction.setValue({ years: -3 })

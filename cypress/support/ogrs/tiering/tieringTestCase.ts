@@ -1,8 +1,6 @@
-import dayjs from 'dayjs'
-
-import { Tier } from '../types'
+import { Tier } from '../../../../oasys/ogrs/types'
 import { TieringCase } from './dbClasses'
-import { dateFormat } from './tieringTest'
+import { OasysDateTime } from 'lib/dateTime'
 
 
 // Original process.  Step one uses CSRP but can be reduced by step 2.
@@ -101,20 +99,6 @@ function calculateStep2a(ospRisk: number, ospContactBand: string, riskReduced: s
         return null
     }
 
-    // if (oldPercentageBands) {
-    //     if (riskReduced == 'Y') {
-    //         return ospRisk >= 2.90 ? 'B Upper' : ospRisk >= 2.00 ? 'B Lower' : ospRisk >= 1.37 ? 'C Upper' : ospRisk >= 0.03 ? 'C Lower' : null
-    //     } else {
-    //         return ospRisk >= 2.90 ? 'A' : ospRisk >= 1.37 ? 'B Upper' : ospRisk >= 0.82 ? 'B Lower' : ospRisk >= 0.50 ? 'C Upper' : ospRisk >= 0.03 ? 'C Lower' : null
-    //     }
-    // } else {
-    //     if (riskReduced == 'Y') {
-    //         return ospRisk >= 5.31 ? 'B Upper' : ospRisk >= 3.36 ? 'B Lower' : ospRisk >= 2.11 ? 'C Upper' : ospRisk >= 0.02 ? 'C Lower' : null
-    //     } else {
-    //         return ospRisk >= 5.31 ? 'A' : ospRisk >= 2.11 ? 'B Upper' : ospRisk >= 1.12 ? 'B Lower' : ospRisk >= 0.6 ? 'C Upper' : ospRisk >= 0.02 ? 'C Lower' : null
-    //     }
-    // }
-
     const topMediumReduced = oldPercentageBands ? 2 : 3.36
     const bottomMediumReduced = oldPercentageBands ? 1.37 : 2.11
     const topMediumStd = oldPercentageBands ? 0.82 : 1.12
@@ -180,15 +164,11 @@ function calculateStep5(lifer: string, custodyInd: string, communityDate: string
         return null
     }
 
-    const firstDate = dayjs(completionDate, dateFormat)
-    const secondDate = dayjs(communityDate, dateFormat)
-    const diffDays = firstDate.diff(secondDate, 'day')  // Assessment date minus community date
-
-    if (diffDays < 0) { // Community date is in the future
+    if (OasysDateTime.dateDiffString(completionDate, communityDate, 'day') > 0) { // Community date is in the future
         return null
     }
 
-    const diffYears = firstDate.diff(secondDate, 'year')  // Assessment date minus community date
+    const diffYears = OasysDateTime.dateDiffString(communityDate, completionDate, 'year') // Assessment date minus community date
     return diffYears >= 1 ? 'D' : 'B Upper'
 }
 

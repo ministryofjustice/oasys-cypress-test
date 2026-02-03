@@ -1,4 +1,4 @@
-import { dateFormat } from "../orgsTest"
+import { OasysDateTime } from 'lib/dateTime'
 
 export class OgrsAssessment {
 
@@ -28,7 +28,7 @@ export class OgrsAssessment {
 
     static query(rows: number, whereClause: string): string {
         return `select oasys_set_pk, ref_ass_version_code, version_number, assessment_status_elm,
-                    to_char(date_of_birth, '${dateFormat}'), gender_elm, prison_ind, to_char(initiation_date, '${dateFormat}')
+                    to_char(date_of_birth, '${OasysDateTime.dateFormat}'), gender_elm, prison_ind, to_char(initiation_date, '${OasysDateTime.dateFormat}')
                     from eor.oasys_set 
                     where ${whereClause} 
                     order by initiation_date desc fetch first ${rows} rows only`
@@ -218,13 +218,13 @@ export class OgrsRsr {
         //             order by initiation_date desc fetch first ${rows} rows only`
 
         return `select offender_rsr_scores_pk, rsr_status,
-                    to_char(date_of_birth, '${dateFormat}'), gender_elm, offence_code || offence_subcode,
+                    to_char(date_of_birth, '${OasysDateTime.dateFormat}'), gender_elm, offence_code || offence_subcode,
                     s1_32_total_sanctions, s1_40_violent_sanctions, 
                     s1_34_contact_adult_score, s1_45_dc_child_score, s1_46_iic_child_score, s1_37_non_contact_score,
 
-                    s1_44_dc_stranger_victim, s1_8_age_at_first_sanction, to_char(s1_29_date_current_conviction, '${dateFormat}'), 
-                    to_char(s1_33_date_recent_sex_offence, '${dateFormat}'), s1_41_current_sexual_mot, 
-                    to_char(s1_43_last_offence_date, '${dateFormat}'), to_char(s1_38_community_date, '${dateFormat}'), s1_30_sexual_element, 
+                    s1_44_dc_stranger_victim, s1_8_age_at_first_sanction, to_char(s1_29_date_current_conviction, '${OasysDateTime.dateFormat}'), 
+                    to_char(s1_33_date_recent_sex_offence, '${OasysDateTime.dateFormat}'), s1_41_current_sexual_mot, 
+                    to_char(s1_43_last_offence_date, '${OasysDateTime.dateFormat}'), to_char(s1_38_community_date, '${OasysDateTime.dateFormat}'), s1_30_sexual_element, 
                     s2_2_weapon, s3_q4_suitable_accom, s4_q2_unemployed, s6_q4_partner_relationship, 
                     s6_q7_dom_abuse, s6_q7_perpetrator_partner,  
                     s9_q1_alcohol, s9_q2_binge_drink, s11_q2_impulsivity, s11_q4_temper_control, 

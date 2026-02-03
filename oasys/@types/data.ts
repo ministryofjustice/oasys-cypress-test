@@ -9,6 +9,7 @@ declare type EndpointParams = {
     endpoint: Endpoint,
     crnSource?: Provider
     crn?: string,
+    additionalParameter?: 'Y' | 'N',
     laoPrivilege: 'ALLOW' | 'LIMIT' | 'rubbish',
     assessmentPk?: number,
     expectedStatus?: string
@@ -55,7 +56,8 @@ declare type Endpoint =
     'v4RiskIndividual' |
     'v4RiskScoresAss' |
     'v4RiskScoresRsr' |
-    'crimNeeds'
+    'crimNeeds' |
+    'pni'
 
 declare type CheckAPIResult = {
     failed: boolean,

@@ -36,7 +36,7 @@ export class V4EndpointResponse extends common.EndpointResponse {
         if (offenderData.nomisId != null) this.prisNumber = offenderData.nomisId
 
         // Remove standard properties in the v1-3 endpoints that are not used in v4
-        if (parameters.endpoint != 'v4AssList') {
+        if (!['v4AssList', 'pni'].includes(parameters.endpoint)) {
             delete this.inputs['crn']
         }
         if (this.probNumber == null) delete this.probNumber

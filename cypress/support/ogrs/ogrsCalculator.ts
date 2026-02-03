@@ -1,9 +1,9 @@
 import { Decimal } from 'decimal.js'
 
-import { TestCaseParameters, TestCaseResult, OutputParameters, OgrsTestParameters } from './types'
-import { calculate } from './calculateScore'
-import { ospRsrCalc } from './ospRsr'
-import { createOutputObject } from './createOutput'
+import { TestCaseParameters, TestCaseResult, OutputParameters, OgrsTestParameters } from 'ogrs/types'
+import { calculate } from 'ogrs/calculateScore'
+import { ospRsrCalc } from 'ogrs/ospRsr'
+import { createOutputObject } from 'ogrs/createOutput'
 
 const tolerance = new Decimal('1E-37')
 const precision = 40
@@ -18,7 +18,9 @@ export function calculateTestCase(testCaseParams: TestCaseParameters, expectedRe
         outputParams: createOutputObject(),
         identifier: testCaseRef,
     }
-    testCaseResult.outputParams.ASSESSMENT_DATE = `'${testCaseParams.ASSESSMENT_DATE.format('DD-MMM-YY').toUpperCase()}'`
+
+    const assDate = testCaseParams.ASSESSMENT_DATE
+    testCaseResult.outputParams.ASSESSMENT_DATE = `'${String(assDate.day).padStart(2, '0')}-${monthLookup[assDate.month]}-${assDate.year.toString().substring(2)}'`
 
     // Calculate individual scores
     // Extended versions for SNSV, OGP and OVP if possible
@@ -121,4 +123,19 @@ function checkResults(expectedResults: OutputParameters, actualResults: OutputPa
     })
 
     return failed
+}
+
+const monthLookup = {
+    1: 'JAN',
+    2: 'FEB',
+    3: 'APR',
+    4: 'MAR',
+    5: 'MAY',
+    6: 'JUN',
+    7: 'JUL',
+    8: 'AUG',
+    9: 'SEP',
+    10: 'OCT',
+    11: 'NOV',
+    12: 'DEC',
 }

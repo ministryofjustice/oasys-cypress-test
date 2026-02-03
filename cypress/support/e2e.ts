@@ -16,16 +16,6 @@
 import './commands'
 import { testEnvironment, noDatabaseConnection, noOasys } from '../../localSettings'
 
-import dayjs from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-import utc from 'dayjs/plugin/utc'
-import isLeapYear from 'dayjs/plugin/isLeapYear'
-
-Cypress.dayjs = dayjs
-Cypress.dayjs.extend(customParseFormat)
-Cypress.dayjs.extend(utc)
-Cypress.dayjs.extend(isLeapYear)
-
 beforeEach(() => {
 
     if (noDatabaseConnection) {
@@ -35,8 +25,9 @@ beforeEach(() => {
     } else {
         cy.task('getAppConfig').then((appConfig: AppConfig) => {
 
-            const appVersion = appConfig.versionHistory[0].version
+            const appVersion = appConfig.currentVersion
             cy.wrap(appVersion).as('appVersion')
+            cy.wrap(appConfig.appVersions).as('appVersions')
             cy.wrap(appConfig).as('appConfig')
 
             cy.log(`OASys ${appVersion} (${testEnvironment.name}), ${Cypress.browser.name.toUpperCase()} (v${Cypress.browser.majorVersion}). Script: ${Cypress.spec.relative}`)

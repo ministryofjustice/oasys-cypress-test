@@ -5,12 +5,12 @@
  * 
  * @module SAN Assessments
  */
-
-
 import { User } from 'classes'
 
 import * as oasys from 'oasys'
 import { sanIds } from '../../tests/data/sanIds'
+import { OasysDateTime } from 'oasys'
+import { Temporal } from '@js-temporal/polyfill'
 
 /**
  * Navigates to the SAN assessment, assuming you are somewhere in the OASys assessment.
@@ -28,6 +28,7 @@ export function gotoSan(section: SanSection = null, subPage: 'information' | 'an
         goto(section, subPage, supressLog)
     }
 }
+
 /**
  * Navigates to the SAN assessment in readonly mode (no landingPage), assuming you are somewhere in the OASys assessment.
  * 
@@ -608,17 +609,15 @@ function findGoalCount(linkText: string) {
  */
 export function checkLastUpdateTime(pk: number, resultAlias: string) {
 
-    const query = `select to_char(lastupd_from_san, 'YYYY-MM-DD HH24:MI:SS'), to_char(sysdate, 'YYYY-MM-DD HH24:MI:SS') 
+    const query = `select to_char(lastupd_from_san, '${OasysDateTime.oracleTimestampFormat}'), to_char(sysdate, '${OasysDateTime.oracleTimestampFormat}') 
                     from eor.oasys_set where oasys_set_pk = ${pk}`
 
     oasys.Db.getData(query, 'updateTimes')
     cy.get<string[][]>('@updateTimes').then((updateTimes) => {
-        const updated = Cypress.dayjs(updateTimes[0][0], 'YYYY-MM-DD HH:mm:ss')
-        const timeNow = Cypress.dayjs(updateTimes[0][1], 'YYYY-MM-DD HH:mm:ss')
-        const diff = timeNow.diff(updated)  // ms
+        const diff = OasysDateTime.timestampDiffString(updateTimes[0][0], updateTimes[0][1])  // ms
         let failed = false
         if (diff > 30000) {  // 30 seconds - allows time from updating SAN, returning to OASys and updating the db.
-            cy.log(`FAILED - SAN update time mismatch in oasys_set- expected: ${timeNow}, updated: ${updated}`)
+            cy.log(`FAILED - SAN update time mismatch in oasys_set- expected: ${updateTimes[0][0]}, updated: ${updateTimes[0][1]}`)
             failed = true
         }
         cy.wrap(failed).as(resultAlias)
@@ -626,16 +625,16 @@ export function checkLastUpdateTime(pk: number, resultAlias: string) {
 }
 
 /**
- * Gets the time for the last API call of the specified type for a given PK, returned using an alias as a Dayjs date/time object including milliseconds
+ * Gets the time for the last API call of the specified type for a given PK, returned using an alias as a Temporal date/time object including milliseconds
  */
 export function getSanApiTime(pk: number, type: 'SAN_GET_ASSESSMENT' | 'SAN_CREATE_ASSESSMENT' | 'SAN_LOCK_INCOMPLETE', resultAlias: string) {
 
-    const query = `select to_char(time_stamp, 'YYYY-MM-DD HH24:MI:SS.FF3') from eor.clog where log_source like '%${pk}%${type}%' order by time_stamp desc`
+    const query = `select to_char(time_stamp, '${OasysDateTime.oracleTimestampFormatMs}') from eor.clog where log_source like '%${pk}%${type}%' order by time_stamp desc`
     oasys.Db.getData(query, 'clogData')
     cy.get<string[][]>('@clogData').then((clogData) => {
-        let result: Dayjs = null
+        let result: Temporal.PlainDateTime = null
         if (clogData.length > 0) {
-            result = Cypress.dayjs(clogData[0][0], 'YYYY-MM-DD HH:mm:ss.SSS')
+            result = OasysDateTime.stringToTimestamp(clogData[0][0])
         }
 
         cy.wrap(result).as(resultAlias)
@@ -815,7 +814,7 @@ export function checkSanOtlCall(pk: number, expectedSubjectDetails: { [keys: str
 
     cy.log(`Checking OTL call for ${pk}`)
     if (expectedSubjectDetails['dateOfBirth']) {  // reformat the date
-        expectedSubjectDetails['dateOfBirth'] = Cypress.dayjs(oasys.oasysDate(expectedSubjectDetails['dateOfBirth']), 'DD/MM/YYYY').format('YYYY-MM-DD')
+        expectedSubjectDetails['dateOfBirth'] = OasysDateTime.oasysDateAsPlainDate(expectedSubjectDetails['dateOfBirth']).toString()
     }
 
     const query = `select log_text from eor.clog where log_source like '%${pk}%onetime%' order by time_stamp desc fetch first 2 rows only`
@@ -1004,6 +1003,36 @@ export function checkCountOfQuestionsInSection(pk: number, section: string, expe
     oasys.Db.selectCount(sanSectionQuery, 'result')
     cy.get<number>('@result').then((count) => {
         expect(count).equal(expectedCount)
+    })
+}
+
+/**
+ * Gets the SAN update tiem from clog, then checks the SAN update details in oasys_set
+ */
+export function getSanApiTimeAndCheckDbValues(pk: number, linkedInd: 'Y' | 'N', clonedPk: number, sanVersion: number, spVersion: number = null) {
+
+    oasys.San.getSanApiTime(pk, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
+    cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((sanDataTime) => {
+        oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+            SAN_ASSESSMENT_LINKED_IND: linkedInd,
+            CLONED_FROM_PREV_OASYS_SAN_PK: clonedPk?.toString() ?? null,
+            SAN_ASSESSMENT_VERSION_NO: sanVersion?.toString() ?? null,
+            SSP_PLAN_VERSION_NO: sanVersion?.toString() ?? null,
+            LASTUPD_FROM_SAN: sanDataTime
+        })
+    })
+}
+/**
+ * 
+ */
+export function checkSanLockIncompleteTimestamp(pk: number) {
+
+    oasys.San.getSanApiTime(pk, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
+    oasys.San.getSanApiTime(pk, 'SAN_LOCK_INCOMPLETE', 'lockIncompleteTime')
+    cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((getSanDataTime) => {
+        cy.get<Temporal.PlainDateTime>('@lockIncompleteTime').then((lockIncompleteTime) => {
+            expect(oasys.OasysDateTime.timestampDiff(getSanDataTime, lockIncompleteTime)).gt(0)
+        })
     })
 }
 

@@ -1,4 +1,3 @@
-import * as dayjs from 'dayjs'
 import * as oasys from 'oasys'
 import * as testData from '../../data/testRef36'
 
@@ -23,15 +22,8 @@ describe('SAN integration - test ref 37 part 1', () => {
 
             cy.get<number>('@result').then((pk) => {
                 // Check values in OASYS_SET
-                oasys.San.getSanApiTime(pk, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                cy.get<dayjs.Dayjs>('@getSanDataTime').then((sanDataTime) => {
-                    oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
-                        SAN_ASSESSMENT_LINKED_IND: 'Y',
-                        CLONED_FROM_PREV_OASYS_SAN_PK: null,
-                        SAN_ASSESSMENT_VERSION_NO: null,
-                        LASTUPD_FROM_SAN: sanDataTime
-                    })
-                })
+                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', null, null)
+
                 // Check Create call
                 oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'INITIAL', 0, 0)
                 oasys.San.checkSanGetAssessmentCall(pk, 0)

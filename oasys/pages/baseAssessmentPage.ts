@@ -4,10 +4,11 @@ import * as Element from 'classes/elements'
 /**
  * This is a base class for assessment pages that contain the standard navigation buttons
  */
-export abstract class BaseAssessmentPage extends Page {
+export class BaseAssessmentPage extends Page {
 
     name = 'BaseAssessmentPage'
 
+    context = new Element.Text('#contextright')
     save = new Element.Button('Save')
     next = new Element.Button('Next')
     previous = new Element.Button('Previous')
@@ -57,6 +58,14 @@ export abstract class BaseAssessmentPage extends Page {
             })
         }
         return this
+    }
+
+    getPncFromScreenContext(resultAlias: string) {
+
+        this.context.getValue('context')
+        cy.get<string>('@context').then((context) => {
+            cy.wrap(context.split('|')[3].trim()).as(resultAlias)
+        })
     }
 
 }

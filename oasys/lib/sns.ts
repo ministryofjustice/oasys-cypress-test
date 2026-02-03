@@ -84,6 +84,7 @@ export function testSnsMessageData(crn: string, type: AssessmentOrRsr, expecting
                         cy.groupedLog(`Expected subject: ${expectedSnsMessage.messageSubject}, got: ${actualSnsMessage.messageSubject}`)
                     }
                     else {
+                        cy.groupedLog(JSON.stringify(actualSnsMessage))
                         if (validateSNS(expectedSnsMessage, actualSnsMessage)) {
                             failed = true
                         }

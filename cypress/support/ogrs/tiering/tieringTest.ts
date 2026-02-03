@@ -1,4 +1,4 @@
-import { TieringTestParameters, TieringTestResult } from '../types'
+import { TieringTestParameters, TieringTestResult } from '../../../../oasys/ogrs/types'
 import * as db from '../../oasysDb'
 import { getTieringTestData } from './getTieringData'
 import { testTieringCase } from './tieringTestCase'
