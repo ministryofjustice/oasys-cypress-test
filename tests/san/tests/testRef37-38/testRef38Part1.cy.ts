@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill'
 import * as oasys from 'oasys'
 import * as testData from '../../data/testRef38'
 
@@ -26,15 +25,8 @@ describe('SAN integration - test ref 38 part 1', () => {
 
             cy.get<number[]>('@pks').then((pks) => {
                 // Check values in OASYS_SET
-                oasys.San.getSanApiTime(pks[0], 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((sanDataTime) => {
-                    oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pks[0]}`, {
-                        SAN_ASSESSMENT_LINKED_IND: 'Y',
-                        CLONED_FROM_PREV_OASYS_SAN_PK: pks[1].toString(),
-                        SAN_ASSESSMENT_VERSION_NO: null,
-                        LASTUPD_FROM_SAN: sanDataTime
-                    })
-                })
+                oasys.San.getSanApiTimeAndCheckDbValues(pks[0], 'Y', pks[1], null)
+
                 // Check Create call
                 oasys.San.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW', 1, 3)
                 oasys.San.checkSanGetAssessmentCall(pks[0], 1)

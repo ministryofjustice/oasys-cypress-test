@@ -1,5 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill'
-
 import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 27', () => {
@@ -55,14 +53,7 @@ describe('SAN integration - test ref 27', () => {
 
                     oasys.San.checkSanGetAssessmentCall(pk, 0)
                     oasys.San.checkSanLockIncompleteCall(pk, oasys.Users.prisSanUnappr, 0, 0)
-
-                    oasys.San.getSanApiTime(pk, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                    oasys.San.getSanApiTime(pk, 'SAN_LOCK_INCOMPLETE', 'lockIncompleteTime')
-                    cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((getSanDataTime) => {
-                        cy.get<Temporal.PlainDateTime>('@lockIncompleteTime').then((lockIncompleteTime) => {
-                            expect(oasys.OasysDateTime.timestampDiff(getSanDataTime,lockIncompleteTime)).gt(0)
-                        })
-                    })
+                    oasys.San.checkSanLockIncompleteTimestamp(pk)
 
                     oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                         SAN_ASSESSMENT_LINKED_IND: 'Y',

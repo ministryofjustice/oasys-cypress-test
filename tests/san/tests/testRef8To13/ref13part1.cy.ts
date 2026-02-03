@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill'
 import * as oasys from 'oasys'
 import * as testData from '../../data/testRef13'
 
@@ -30,30 +29,22 @@ describe('SAN integration - test ref 13 part 1', () => {
                     expect(answerCheck).equal(false)
                 })
 
-                oasys.San.getSanApiTime(pk, 'SAN_CREATE_ASSESSMENT', 'getSanDataTime')
-                cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((sanDataTime) => {
-                    oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
-                        SAN_ASSESSMENT_LINKED_IND: 'Y',
-                        CLONED_FROM_PREV_OASYS_SAN_PK: prevSanPk.toString(),
-                        SAN_ASSESSMENT_VERSION_NO: null,
-                        LASTUPD_FROM_SAN: sanDataTime,
-                    })
+                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', prevSanPk, null)
 
-                    cy.log(`Fully complete the 3.2 OASys, you may want to go into the SAN Assessment and change some data and then ensure the SAN assessment is
+                cy.log(`Fully complete the 3.2 OASys, you may want to go into the SAN Assessment and change some data and then ensure the SAN assessment is
                         fully marked as complete for all sections.`)
-                    oasys.San.gotoSan()
-                    oasys.San.populateSanSections('TestRef13 modify SAN', testData.modifySan)
-                    oasys.San.checkSanSectionsCompletionStatus(9)
-                    oasys.San.returnToOASys()
+                oasys.San.gotoSan()
+                oasys.San.populateSanSections('TestRef13 modify SAN', testData.modifySan)
+                oasys.San.checkSanSectionsCompletionStatus(9)
+                oasys.San.returnToOASys()
 
-                    oasys.Assessment.signAndLock({ page: oasys.Pages.SentencePlan.RspSection72to10, expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu })
-                    oasys.logout()
+                oasys.Assessment.signAndLock({ page: oasys.Pages.SentencePlan.RspSection72to10, expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu })
+                oasys.logout()
 
-                    oasys.login(oasys.Users.probSanHeadPdu)
-                    oasys.Assessment.countersign({ offender: offender })
-                    oasys.logout()
+                oasys.login(oasys.Users.probSanHeadPdu)
+                oasys.Assessment.countersign({ offender: offender })
+                oasys.logout()
 
-                })
             })
         })
     })

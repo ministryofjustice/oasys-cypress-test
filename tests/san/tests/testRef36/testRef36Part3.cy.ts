@@ -26,15 +26,8 @@ describe('SAN integration - test ref 36', () => {
 
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'result')
             cy.get<number[]>('@result').then((pks) => {
-                oasys.San.getSanApiTime(pks[0], 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((sanDataTime) => {
-                    oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pks[0]}`, {
-                        SAN_ASSESSMENT_LINKED_IND: 'Y',
-                        CLONED_FROM_PREV_OASYS_SAN_PK: pks[2].toString(),
-                        SAN_ASSESSMENT_VERSION_NO: null,
-                        LASTUPD_FROM_SAN: sanDataTime
-                    })
-                })
+                oasys.San.getSanApiTimeAndCheckDbValues(pks[0], 'Y', pks[2], null)
+
                 oasys.San.checkSanCreateAssessmentCall(pks[0], pks[2], oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW', 2, 3)
                 oasys.San.checkSanGetAssessmentCall(pks[0], 2)
 
@@ -67,16 +60,7 @@ describe('SAN integration - test ref 36', () => {
                 // Lock incomplete, check API call and OASYS_SET
                 oasys.Assessment.lockIncomplete()
                 oasys.San.checkSanLockIncompleteCall(pks[0], oasys.Users.probSanUnappr, 2, 3)
-                oasys.San.getSanApiTime(pks[0], 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((sanDataTime) => {
-                    oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pks[0]}`, {
-                        SAN_ASSESSMENT_LINKED_IND: 'Y',
-                        CLONED_FROM_PREV_OASYS_SAN_PK: pks[2].toString(),
-                        SAN_ASSESSMENT_VERSION_NO: '2',
-                        SSP_PLAN_VERSION_NO: '3',
-                        LASTUPD_FROM_SAN: sanDataTime
-                    })
-                })
+
                 oasys.logout()
             })
 

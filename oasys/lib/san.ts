@@ -28,6 +28,7 @@ export function gotoSan(section: SanSection = null, subPage: 'information' | 'an
         goto(section, subPage, supressLog)
     }
 }
+
 /**
  * Navigates to the SAN assessment in readonly mode (no landingPage), assuming you are somewhere in the OASys assessment.
  * 
@@ -1002,6 +1003,36 @@ export function checkCountOfQuestionsInSection(pk: number, section: string, expe
     oasys.Db.selectCount(sanSectionQuery, 'result')
     cy.get<number>('@result').then((count) => {
         expect(count).equal(expectedCount)
+    })
+}
+
+/**
+ * Gets the SAN update tiem from clog, then checks the SAN update details in oasys_set
+ */
+export function getSanApiTimeAndCheckDbValues(pk: number, linkedInd: 'Y' | 'N', clonedPk: number, sanVersion: number, spVersion: number = null) {
+
+    oasys.San.getSanApiTime(pk, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
+    cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((sanDataTime) => {
+        oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+            SAN_ASSESSMENT_LINKED_IND: linkedInd,
+            CLONED_FROM_PREV_OASYS_SAN_PK: clonedPk?.toString() ?? null,
+            SAN_ASSESSMENT_VERSION_NO: sanVersion?.toString() ?? null,
+            SSP_PLAN_VERSION_NO: sanVersion?.toString() ?? null,
+            LASTUPD_FROM_SAN: sanDataTime
+        })
+    })
+}
+/**
+ * 
+ */
+export function checkSanLockIncompleteTimestamp(pk: number) {
+
+    oasys.San.getSanApiTime(pk, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
+    oasys.San.getSanApiTime(pk, 'SAN_LOCK_INCOMPLETE', 'lockIncompleteTime')
+    cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((getSanDataTime) => {
+        cy.get<Temporal.PlainDateTime>('@lockIncompleteTime').then((lockIncompleteTime) => {
+            expect(oasys.OasysDateTime.timestampDiff(getSanDataTime, lockIncompleteTime)).gt(0)
+        })
     })
 }
 

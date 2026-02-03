@@ -1,5 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill'
-
 import * as oasys from 'oasys'
 import * as testData from '../../../data/testRef27'
 
@@ -105,14 +103,7 @@ describe('SAN integration - test ref 27', () => {
 
                     oasys.San.checkSanGetAssessmentCall(pk, 0)
                     oasys.San.checkSanLockIncompleteCall(pk, oasys.Users.prisHomds, 0, 0)
-
-                    oasys.San.getSanApiTime(pk, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                    oasys.San.getSanApiTime(pk, 'SAN_LOCK_INCOMPLETE', 'lockIncompleteTime')
-                    cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((getSanDataTime) => {
-                        cy.get<Temporal.PlainDateTime>('@lockIncompleteTime').then((lockIncompleteTime) => {
-                            expect(oasys.OasysDateTime.timestampDiff(getSanDataTime, lockIncompleteTime)).gt(0)
-                        })
-                    })
+                    oasys.San.checkSanLockIncompleteTimestamp(pk)
 
                     oasys.Db.checkSingleAnswer(pk, '9', '9.2', 'refAnswer', '2')  // change from offender record sets binge drinking
 

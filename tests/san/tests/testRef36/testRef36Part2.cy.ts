@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill'
 import * as oasys from 'oasys'
 import * as testData from '../../data/testRef36'
 
@@ -28,15 +27,8 @@ describe('SAN integration - test ref 36', () => {
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'result')
             cy.get<number[]>('@result').then((pks) => {
                 // Check OASYS_SET and API calls
-                oasys.San.getSanApiTime(pks[0], 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((sanDataTime) => {
-                    oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pks[0]}`, {
-                        SAN_ASSESSMENT_LINKED_IND: 'Y',
-                        CLONED_FROM_PREV_OASYS_SAN_PK: pks[1].toString(),
-                        SAN_ASSESSMENT_VERSION_NO: null,
-                        LASTUPD_FROM_SAN: sanDataTime
-                    })
-                })
+                oasys.San.getSanApiTimeAndCheckDbValues(pks[0], 'Y', pks[1], null)
+
                 oasys.San.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW', 1, 2)
                 oasys.San.checkSanGetAssessmentCall(pks[0], 1)
                 oasys.Db.checkCloning(pks[0], pks[1], ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13',

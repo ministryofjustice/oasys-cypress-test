@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill'
 import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 37 part 3', () => {
@@ -45,15 +44,7 @@ describe('SAN integration - test ref 37 part 3', () => {
                 oasys.Assessment.rollBack('Test 37 part 3 rollback')
 
                 // Check OASYS_SET and API calls
-                oasys.San.getSanApiTime(pk, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((sanDataTime) => {
-                    oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
-                        SAN_ASSESSMENT_LINKED_IND: 'Y',
-                        CLONED_FROM_PREV_OASYS_SAN_PK: null,
-                        SAN_ASSESSMENT_VERSION_NO: null,
-                        LASTUPD_FROM_SAN: sanDataTime
-                    })
-                })
+                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', null, null)
                 oasys.San.checkSanRollbackCall(pk, oasys.Users.admin, 0, 0)
                 oasys.logout()
 

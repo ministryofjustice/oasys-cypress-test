@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill'
 import * as oasys from 'oasys'
 import * as testData from '../../data/testRef10'
 
@@ -48,20 +47,15 @@ describe('SAN integration - test ref 10', () => {
                         RSR and OSP-IIC and OSP-DC are all calculated.
                         The SAN 'Strengths and Needs Sections' menu option has a green tick against it for the data being complete.`)
 
-                oasys.San.getSanApiTime(pk, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((sanDataTime) => {
-                    oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
-                        SAN_ASSESSMENT_LINKED_IND: 'Y',
-                        CLONED_FROM_PREV_OASYS_SAN_PK: prevPk.toString(),
-                        SAN_ASSESSMENT_VERSION_NO: null,
-                        LASTUPD_FROM_SAN: sanDataTime,
-                        RSR_PERCENTAGE_SCORE: '9.96',
-                        RSR_STATIC_OR_DYNAMIC: 'DYNAMIC',
-                        RSR_ERROR_COUNT: '0',
-                        OSP_IIC_PERCENTAGE_SCORE: '3.33',
-                        OSP_DC_PERCENTAGE_SCORE: '6.18',
-                    })
+                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', prevPk, null)
+                oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                    RSR_PERCENTAGE_SCORE: '9.96',
+                    RSR_STATIC_OR_DYNAMIC: 'DYNAMIC',
+                    RSR_ERROR_COUNT: '0',
+                    OSP_IIC_PERCENTAGE_SCORE: '3.33',
+                    OSP_DC_PERCENTAGE_SCORE: '6.18',
                 })
+
                 const r62 = new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkIsNotOnMenu()
                 const rmp = new oasys.Pages.Rosh.RiskManagementPlan().checkIsNotOnMenu()
                 const san = new oasys.Pages.Assessment.SanSections().checkCompletionStatus(true)
