@@ -102,7 +102,7 @@ export class Section2Assessment extends v4Common.V4AssessmentCommon {
         this.offenceLinkedToReoffending = common.getTextAnswer(dbAssessment.textData, '2', '2.98')
         this.offenceLinkedToHarm = common.getSingleAnswer(dbAssessment.qaData, '2', '2.99')
 
-        if (OasysDateTime.appVersionHistory.after6_35(dbAssessment.initiationDate)) {
+        if (OasysDateTime.checkIfAfterReleaseNode('6.35', dbAssessment.initiationDate)) {
             this.involveCarryingWeapon = common.getSingleAnswer(dbAssessment.qaData, '2', '2.2_V2_WEAPON')
             this.involveViolenceOrThreat = common.getSingleAnswer(dbAssessment.qaData, '2', '2.2_V2_ANYVIOL')
             this.involveExcessiveViolence = common.getSingleAnswer(dbAssessment.qaData, '2', '2.2_V2_EXCESSIVE')
@@ -133,7 +133,7 @@ export class Section2Assessment extends v4Common.V4AssessmentCommon {
             this.whichWeapon = common.getTextAnswer(dbAssessment.textData, '2', '2.2.t')
         }
 
-        if (OasysDateTime.appVersionHistory.after6_35(dbAssessment.initiationDate)) {
+        if (OasysDateTime.checkIfAfterReleaseNode('6.35', dbAssessment.initiationDate)) {
             this.sexual = common.getSingleAnswer(dbAssessment.qaData, '2', '2.9_V2_SEXUAL')
             this.financial = common.getSingleAnswer(dbAssessment.qaData, '2', '2.9_V2_FINANCIAL')
             this.addictions = common.getSingleAnswer(dbAssessment.qaData, '2', '2.9_V2_ADDICTION')

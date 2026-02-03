@@ -15,7 +15,6 @@
 
 import './commands'
 import { testEnvironment, noDatabaseConnection, noOasys } from '../../localSettings'
-import { AppVersionHistory } from 'lib/dateTime'
 
 beforeEach(() => {
 
@@ -24,22 +23,19 @@ beforeEach(() => {
         cy.log(`Script: ${Cypress.spec.relative}`)
 
     } else {
-        cy.task('getAppVersionHistory').then((appVersionHistory: AppVersionHistory) => {
+        cy.task('getAppConfig').then((appConfig: AppConfig) => {
 
-            cy.task('getAppConfig').then((appConfig: AppConfig) => {
+            const appVersion = appConfig.currentVersion
+            cy.wrap(appVersion).as('appVersion')
+            cy.wrap(appConfig.appVersions).as('appVersions')
+            cy.wrap(appConfig).as('appConfig')
 
-                const appVersion = appVersionHistory.currentVersion
-                cy.wrap(appVersion).as('appVersion')
-                cy.wrap(appVersionHistory).as('appVersionHistory')
-                cy.wrap(appConfig).as('appConfig')
+            cy.log(`OASys ${appVersion} (${testEnvironment.name}), ${Cypress.browser.name.toUpperCase()} (v${Cypress.browser.majorVersion}). Script: ${Cypress.spec.relative}`)
+            cy.task('consoleLog', `OASys version ${appVersion} in ${testEnvironment.name}`)
 
-                cy.log(`OASys ${appVersion} (${testEnvironment.name}), ${Cypress.browser.name.toUpperCase()} (v${Cypress.browser.majorVersion}). Script: ${Cypress.spec.relative}`)
-                cy.task('consoleLog', `OASys version ${appVersion} in ${testEnvironment.name}`)
-
-                if (!noOasys) {
-                    cy.visit(testEnvironment.url)
-                }
-            })
+            if (!noOasys) {
+                cy.visit(testEnvironment.url)
+            }
         })
     }
 })

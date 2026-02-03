@@ -20,4 +20,8 @@ declare type AppConfig = {
 
     probForceCrn: boolean,
     offences: {},
+    appVersions: {},
+    currentVersion: string,
 }
+
+declare type SignificantAppVersions = '6.20' | '6.30' | '6.35'

@@ -1,14 +1,16 @@
 import { Temporal } from '@js-temporal/polyfill'
 
+export type AppVersions = { [keys: string]: Temporal.PlainDate }
+export const appVersions: AppVersions = {}
+export let currentVersion = ''
+
 export class OasysDateTime {
 
     static testStartDate = Temporal.Now.plainDateISO()
-
     static dateFormat = 'YYYY-MM-DD'                // RFC 9557 format for Temporal
     static timestampFormat = 'YYYY-MM-DDTHH:mm:ss'
     static oracleTimestampFormat = ' YYYY-MM-DD\"T\"HH24:MI:SS'
     static oracleTimestampFormatMs = ' YYYY-MM-DD\"T\"HH24:MI:SS.FF3'
-    static appVersionHistory: AppVersionHistory
     static timers: { [keys: string]: Temporal.PlainDateTime } = {}
 
     // Convert date string to Temporal Plain date.  Might be in RFC9557 format, but also need to allow for DD/MM/YYYY in OASys string fields or DD-MM-YYYY from CSV loads
@@ -146,32 +148,38 @@ export class OasysDateTime {
 
         return OasysDateTime.timestampDiff(OasysDateTime.timers[name], Temporal.Now.plainDateTimeISO())
     }
+
+
+    static checkIfAfterReleaseCypress(version: SignificantAppVersions, date: Temporal.PlainDate | string, resultAlias: string) {
+
+        cy.get<AppVersions>('@appVersions').then((appVersions) => {
+
+            const result = checkIfAfter(version, date, appVersions)
+            cy.wrap(result).as(resultAlias)
+        })
+    }
+
+    static checkIfAfterReleaseNode(version: SignificantAppVersions, date: Temporal.PlainDate | string): boolean {
+
+        return checkIfAfter(version, date, appVersions)
+    }
+
 }
 
-export class AppVersionHistory {
+function checkIfAfter(version: SignificantAppVersions, date: Temporal.PlainDate | string, appVersions: AppVersions): boolean {
 
-    versions: { [keys: string]: Temporal.PlainDate } = {}
-    currentVersion: string
+    const versionDate = appVersions[versionLookup[version]]
+    const testDate = typeof date == 'string' ? OasysDateTime.stringToDate(date) : date
+    return versionDate ? Temporal.PlainDate.compare(testDate, versionDate) == 1 : null
+}
 
+const versionLookup = {
+    '6.20': '6.20.0.0',
+    '6.30': '6.30.0.0',
+    '6.35': '6.35.0.0',
+}
 
-    constructor(versionData: string[][]) {
+export function setCurrentVersion(version: string) {
 
-        versionData.forEach((version) => {
-            this.versions[version[0]] = OasysDateTime.stringToDate(version[1])
-        })
-        this.currentVersion = versionData[0][0]
-    }
-
-
-    after6_20(date: Temporal.PlainDate | string): boolean { return this.checkIfAfter('6.20.0.0', date) }
-    after6_30(date: Temporal.PlainDate | string): boolean { return this.checkIfAfter('6.30.0.0', date) }
-    after6_35(date: Temporal.PlainDate | string): boolean { return this.checkIfAfter('6.35.0.0', date) }
-
-    checkIfAfter(version: string, date: Temporal.PlainDate | string): boolean {
-
-        const versionDate = this.versions[version]
-
-        const testDate = typeof date == 'string' ? OasysDateTime.stringToDate(date) : date
-        return versionDate ? Temporal.PlainDate.compare(versionDate, testDate) >= 0 : null
-    }
+    currentVersion = version
 }

@@ -1,9 +1,8 @@
 var oracledb = require('oracledb')
-import { Temporal } from '@js-temporal/polyfill'
 
 import { testEnvironment, userSuffix } from '../../localSettings'
 import { ogrsFunctionCall } from './ogrs/getTestData/oracleFunctionCall'
-import { AppVersionHistory, OasysDateTime } from 'lib/dateTime'
+import { appVersions, currentVersion, OasysDateTime, setCurrentVersion } from 'lib/dateTime'
 
 var connection
 
@@ -131,10 +130,13 @@ export async function getAppConfig(): Promise<AppConfig> {
 
     const configData = await selectSingleValue(`select system_parameter_value from eor.system_parameter_mv where system_parameter_code ='PROB_FORCE_CRN'`)
     const offencesData = await selectData('select offence_group_code || sub_code, rsr_category_desc from eor.ct_offence order by 1')
+    const versionData = await selectData(`select version_number, to_char(release_date, '${OasysDateTime.dateFormat}')
+                                            from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc`)
 
-    if (configData.error != null || offencesData.error != null) {
+    if (configData.error != null || offencesData.error != null || versionData.error != null) {
         console.log(configData.error)
         console.log(offencesData.error)
+        console.log(versionData.error)
         return null
     }
 
@@ -143,26 +145,18 @@ export async function getAppConfig(): Promise<AppConfig> {
         offences[offence[0]] = offence[1]
     })
 
+    const versions = versionData.data as string[][]
+    versions.forEach((version) => {
+        appVersions[version[0]] = OasysDateTime.stringToDate(version[1])
+    })
+    setCurrentVersion(versions[0][0])
+
     return {
         probForceCrn: (configData.data as string) == 'Y',
         offences: offences,
+        appVersions: appVersions,
+        currentVersion: currentVersion,
     }
-}
-
-/** 
- * Get the application version and config items.  Returns an AppConfig object
- */
-export async function getAppVersionHistory(): Promise<AppVersionHistory> {
-
-    const versionData = await selectData(`select version_number, to_char(release_date, '${OasysDateTime.dateFormat}')
-                                            from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc`)
-
-    if (versionData.error != null) {
-        console.log(versionData.error)
-        return null
-    }
-    OasysDateTime.appVersionHistory = new AppVersionHistory(versionData.data as string[][])
-    return OasysDateTime.appVersionHistory
 }
 
 /** 

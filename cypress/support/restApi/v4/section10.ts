@@ -73,7 +73,7 @@ export class Section10Assessment extends v4Common.V4AssessmentCommon {
         this.emoLinkedToHarm = common.getSingleAnswer(dbAssessment.qaData, '10', '10.98')
         this.emoLinkedToReoffending = common.getSingleAnswer(dbAssessment.qaData, '10', '10.99')
 
-        if (OasysDateTime.appVersionHistory.after6_35(dbAssessment.initiationDate)) {
+        if (OasysDateTime.checkIfAfterReleaseNode('6.35', dbAssessment.initiationDate)) {
             this.childhoodBehavourProblems = common.getSingleAnswer(dbAssessment.qaData, '10', '10.7_V2_CHILDHOOD')
             this.failureToCooperateWithPsychiatricTreatment = common.getSingleAnswer(dbAssessment.qaData, '10', '10.7_V2_FAILEDTOCOOP')
             this.historyOfHeadInjuriesFitsEtc = common.getSingleAnswer(dbAssessment.qaData, '10', '10.7_V2_HISTHEADINJ')

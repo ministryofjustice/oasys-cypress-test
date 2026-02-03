@@ -12,7 +12,7 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, appConfig: 
     const today = testStartDate
 
     const initiationDate = Temporal.PlainDate.from(assessment.initiationDate)
-    const after6_35 = OasysDateTime.appVersionHistory.after6_35(initiationDate)
+    const after6_35 = OasysDateTime.checkIfAfterReleaseNode('6.35', initiationDate)
 
     let staticCalc = 'N'
     if (assessment.type == 'LAYER1' && assessment.version == 2) {  // RoSHA - set static flag according to 1.39 (offender interview)
