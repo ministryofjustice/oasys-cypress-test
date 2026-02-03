@@ -83,3 +83,18 @@ export function problemsAnswerToNumeric(param: ProblemsAnswer | ProblemsMissingA
     }
     return null  // includes 'Missing'
 }
+
+export const genderNumberLookup = {
+    '0': 'N',
+    '1': 'M',
+    '2': 'F',
+    '3': 'O',
+    '9': 'U',
+}
+
+export const yesNoToYNLookup = {
+    YES: 'Y',
+    NO: 'N',
+    Yes: 'Y',
+    No: 'N',
+}

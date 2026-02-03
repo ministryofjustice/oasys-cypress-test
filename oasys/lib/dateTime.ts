@@ -164,6 +164,11 @@ export class OasysDateTime {
         return checkIfAfter(version, date, appVersions)
     }
 
+    static checkIfAfterRelease(versions: {}, version: SignificantAppVersions, date: Temporal.PlainDate | string): boolean {
+
+        return checkIfAfter(version, date, versions)
+    }
+
 }
 
 function checkIfAfter(version: SignificantAppVersions, date: Temporal.PlainDate | string, appVersions: AppVersions): boolean {

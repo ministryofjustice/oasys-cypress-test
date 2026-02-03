@@ -47,16 +47,19 @@ export function q141(q130: string, q141: string, offence: string, offences: {}):
     return q141
 }
 
-export function q22(q22Weapon: string): number {
+export function q22(q22Weapon: string, oldQ22: string, after6_35: boolean): number {
 
-    return q22Weapon == null ? null : q22Weapon == 'YES' ? 1 : 0
+    if (after6_35) {
+        return q22Weapon == null ? null : q22Weapon == 'YES' ? 1 : 0
+    } else {
+        return oldQ22 == null ? null : oldQ22.includes('WEAPON') ? 1 : 0
+    }
 }
 
 export function da(q67: string, q67da: string): number {
 
     return (q67 == 'YES' ? q67da : q67) == 'YES' ? 1 : 0
 }
-
 
 export function dailyDrugUser(q81: string, drugs: {}): 'Y' | 'N' {
 
@@ -105,4 +108,24 @@ export function getDrugsUsage(data: {}): {} {
         KETAMINE: lookupString('8.2.16.1', data),
     }
 
+}
+export function yesNoTo1_0(param: YesNoAnswer): number {
+
+    return param == 'Yes' ? 1 : param == 'No' ? 0 : null
+}
+
+export function yesNoToYN(param: YesNoAnswer): string {
+
+    return param == 'Yes' ? 'Y' : param == 'No' ? 'N' : null
+}
+
+export const q6_8Lookup = {
+    'In a relationship, living together': 1,
+    'In a relationship, not living together': 2,
+    'Not in a relationship': 3,
+}
+
+export const yesNo1_0Lookup = {
+    'YES': 1,
+    'NO': 0,
 }

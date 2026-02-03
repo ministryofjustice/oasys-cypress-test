@@ -54,7 +54,7 @@ export function testTieringCase(tieringCase: TieringCase, logText: string[]): Ti
     // If failed on step 1, only take the final result if it's A
     if (step1 == null && finalTier != 'A') {
         finalTier = null
-    } 
+    }
 
     return finalTier
 }

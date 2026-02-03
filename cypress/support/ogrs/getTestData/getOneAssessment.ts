@@ -1,29 +1,34 @@
-import { stringToFloat } from 'lib/utils'
+import { stringToFloat, stringToInt } from 'lib/utils'
 import { OasysDateTime } from 'lib/dateTime'
 import * as db from '../../oasysDb'
+import { Temporal } from '@js-temporal/polyfill'
 
-export async function getOneAssessment(assessmentPk: number): Promise<OgrsRegressionTestAssessment> {
+export async function getOneAssessment(assessmentPk: number | string): Promise<OgrsAssessment> {
 
-    const assessmentData = await db.selectData(OgrsRegressionTestAssessment.query(assessmentPk))
+    const assessmentData = await db.selectData(OgrsAssessment.query(assessmentPk))
     if (assessmentData.error != null) throw new Error(assessmentData.error)
     const assessments = assessmentData.data as string[][]
     if (assessments.length == 0) throw new Error(`Assessment not found: ${assessmentPk}`)
 
     // Add OASYS_SET data to the return object
-    const assessment = new OgrsRegressionTestAssessment(assessmentPk, assessments[0])
+    const assessment = new OgrsAssessment(assessmentPk, assessments[0])
 
     // Questions and answers
-    const qaData = await db.selectData(OgrsRegressionTestAssessment.qaQuery(assessmentPk))
+    const qaData = await db.selectData(OgrsAssessment.qaQuery(assessmentPk))
     if (qaData.error != null) throw new Error(qaData.error)
 
     assessment.qaData = {}
     const qa = qaData.data as string[][]
     qa.forEach((q) => {
-        assessment.qaData[q[0]] = q[1]
+        if (assessment.qaData[q[0]] == undefined) {
+            assessment.qaData[q[0]] = q[1]
+        } else {
+            assessment.qaData[q[0]] += `,${q[1]}`
+        }
     })
 
     // Offence
-    const offencesData = await db.selectData(OgrsRegressionTestAssessment.offenceQuery(assessmentPk))
+    const offencesData = await db.selectData(OgrsAssessment.offenceQuery(assessmentPk))
     if (offencesData.error != null) throw new Error(offencesData.error)
     const offences = offencesData.data as string[][]
     if (offences.length > 0 && offences[0].length > 0) {
@@ -33,12 +38,14 @@ export async function getOneAssessment(assessmentPk: number): Promise<OgrsRegres
     return assessment
 }
 
-export class OgrsRegressionTestAssessment {
+export class OgrsAssessment {
 
     pk: number
     type: string
     version: number
-    dob: string
+    status: string
+    initiationDate: Temporal.PlainDate
+    dob: Temporal.PlainDate
     gender: string
     prisonInd: string
 
@@ -64,13 +71,15 @@ export class OgrsRegressionTestAssessment {
     offence: string
     qaData: {}
 
-    constructor(assessmentPk: number, assessmentData: string[]) {
+    constructor(assessmentPk: number | string, assessmentData: string[]) {
 
         let i = 0
-        this.pk = assessmentPk
+        this.pk = typeof assessmentPk == 'string' ? stringToInt(assessmentPk) : assessmentPk
         this.type = assessmentData[i++]
-        this.version = Number.parseInt(assessmentData[i++])
-        this.dob = assessmentData[i++]
+        this.version = stringToInt(assessmentData[i++])
+        this.status = assessmentData[i++]
+        this.initiationDate = OasysDateTime.stringToDate(assessmentData[i++])
+        this.dob = OasysDateTime.stringToDate(assessmentData[i++])
         this.gender = assessmentData[i++]
         this.prisonInd = assessmentData[i++]
 
@@ -94,9 +103,10 @@ export class OgrsRegressionTestAssessment {
         this.snsvDynamicCalculated = assessmentData[i++]
     }
 
-    static query(assessmentPk): string {
+    static query(assessmentPk: number | string): string {
 
-        return `select assessment_type_elm, version_number, to_char(date_of_birth, '${OasysDateTime.dateFormat}'), gender_elm, prison_ind,
+        return `select assessment_type_elm, version_number, assessment_status_elm, to_char(initiation_date, '${OasysDateTime.dateFormat}'),
+                        to_char(date_of_birth, '${OasysDateTime.dateFormat}'), gender_elm, prison_ind,
                         ogrs4g_percentage_2yr, ogrs4g_band_risk_recon_elm, ogrs4g_calculated, 
                         ogrs4v_percentage_2yr, ogrs4v_band_risk_recon_elm, ogrs4v_calculated, 
                         ogp2_percentage_2yr, ogp2_band_risk_recon_elm, ogp2_calculated, 
@@ -108,7 +118,7 @@ export class OgrsRegressionTestAssessment {
                     order by create_date desc`
     }
 
-    static offenceQuery(assessmentPk: number): string {
+    static offenceQuery(assessmentPk: number | string): string {
 
         return `select p.offence_group_code || p.sub_code 
                     from eor.offence_block o, eor.ct_offence_pivot p
@@ -116,7 +126,7 @@ export class OgrsRegressionTestAssessment {
                     and p.offence_block_pk = o.offence_block_pk and p.additional_offence_ind = 'N'`
     }
 
-    static qaQuery(assessmentPk: number): string {
+    static qaQuery(assessmentPk: number | string): string {
 
         return `SELECT REF_QUESTION_CODE, ANSWER
                     FROM
@@ -132,7 +142,7 @@ export class OgrsRegressionTestAssessment {
                     WHERE OS.OASYS_SET_PK = ${assessmentPk}
                     AND OQ.CURRENTLY_HIDDEN_IND = 'N'
                     AND OQ.REF_QUESTION_CODE IN ('1.39','1.32','1.40','1.34','1.45','1.46','1.37','1.44','1.8','1.29','1.33','1.38','1.41','1.43','1.30',
-                                                '2.2_V2_WEAPON',
+                                                '2.2_V2_WEAPON', '2.2',
                                                 '3.4',
                                                 '4.2',
                                                 '6.4',

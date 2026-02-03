@@ -5,12 +5,13 @@ import { calculateTestCase } from './ogrsCalculator'
 import { loadParameterSet, loadOracleOutputValues } from './loadTestData'
 import { getOgrsResult, offences } from '../oasysDb'
 import { getAssessmentTestData, getRsrTestData } from './getTestData/getTestData'
-import { createAssessmentTestCase } from './getTestData/createAssessmentTestCase'
+import { createAssessmentTestCase } from 'ogrs/createAssessmentTestCase'
 import { createRsrTestCase } from './getTestData/createRsrTestCase'
-import { OgrsAssessment, OgrsRsr } from './getTestData/dbClasses'
+import { OgrsRsr } from './getTestData/dbClasses'
 import { stringParameterToString, numericParameterToString } from 'lib/utils'
-import { OasysDateTime } from 'lib/dateTime'
+import { appVersions, OasysDateTime } from 'lib/dateTime'
 import { createOutputObject } from 'ogrs/createOutput'
+import { OgrsAssessment } from './getTestData/getOneAssessment'
 
 const dataFilePath = './cypress/support/ogrs/data/'
 
@@ -98,7 +99,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
             const errorLog: string[] = []
             try {
                 const testCaseParams = testParams.dbDetails.type == 'assessment' ?
-                    createAssessmentTestCase(assessmentOrRsr as OgrsAssessment, offences) : createRsrTestCase(assessmentOrRsr as OgrsRsr, offences)
+                    createAssessmentTestCase(assessmentOrRsr as OgrsAssessment, offences, appVersions) : createRsrTestCase(assessmentOrRsr as OgrsRsr, offences)
                 errorLog.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
                 // Run generate two sets of scores, for static flag Y and N
                 for (let staticFlag of ['Y', 'N']) {
@@ -113,7 +114,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                         errorLog.push(`    Oracle call:    ${JSON.stringify(functionCall)}`)
                         const oracleTestCaseValues = await getOgrsResult(functionCall)
                         errorLog.push(`    Oracle  results:   ${oracleTestCaseValues}`)
-                        
+
                         oracleTestCaseResult = loadOracleOutputValues(oracleTestCaseValues.split('|'))
                         errorLog.push(`    Oracle  result object:   ${JSON.stringify(oracleTestCaseResult)}`)
                     } else {

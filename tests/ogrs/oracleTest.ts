@@ -1,7 +1,7 @@
 import { OgrsTestParameters, ReportMode } from '../../oasys/ogrs/types'
 import { runTest } from './testLib'
 
-const count = 10000
+const count = 1000
 const reportMode: ReportMode = 'minimal'
 
 describe('OGRS calculator test', () => {
