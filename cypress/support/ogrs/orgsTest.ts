@@ -10,6 +10,7 @@ import { createRsrTestCase } from './getTestData/createRsrTestCase'
 import { OgrsAssessment, OgrsRsr } from './getTestData/dbClasses'
 import { stringParameterToString, numericParameterToString } from 'lib/utils'
 import { OasysDateTime } from 'lib/dateTime'
+import { createOutputObject } from 'ogrs/createOutput'
 
 const dataFilePath = './cypress/support/ogrs/data/'
 
@@ -104,14 +105,20 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
                     scriptResults.cases++
                     testCaseParams.STATIC_CALC = staticFlag
 
-                    // Call the calculator in Oracle
-                    const functionCall = getFunctionCall(testCaseParams)
-                    errorLog.push(`    Oracle call:    ${JSON.stringify(functionCall)}`)
-                    const oracleTestCaseValues = await getOgrsResult(functionCall)
-                    errorLog.push(`    Oracle  results:   ${oracleTestCaseValues}`)
+                    let oracleTestCaseResult: OutputParameters
+                    if (testParams.cypressOnly != true) {
 
-                    const oracleTestCaseResult = loadOracleOutputValues(oracleTestCaseValues.split('|'))
-                    errorLog.push(`    Oracle  result object:   ${JSON.stringify(oracleTestCaseResult)}`)
+                        // Call the calculator in Oracle unless switched off in test parameters
+                        const functionCall = getFunctionCall(testCaseParams)
+                        errorLog.push(`    Oracle call:    ${JSON.stringify(functionCall)}`)
+                        const oracleTestCaseValues = await getOgrsResult(functionCall)
+                        errorLog.push(`    Oracle  results:   ${oracleTestCaseValues}`)
+                        
+                        oracleTestCaseResult = loadOracleOutputValues(oracleTestCaseValues.split('|'))
+                        errorLog.push(`    Oracle  result object:   ${JSON.stringify(oracleTestCaseResult)}`)
+                    } else {
+                        oracleTestCaseResult = createOutputObject()
+                    }
 
                     // Call the calculator in Cypress and compare against the Oracle result
                     const testCaseResult = calculateTestCase(testCaseParams, oracleTestCaseResult, assessmentOrRsr.pk.toString(), testParams)

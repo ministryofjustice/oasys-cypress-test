@@ -18,6 +18,7 @@ describe('OGRS calculator test', () => {
             staticFlag: 'N',
             reportMode: reportMode,
             includeObjects: true,
+            // cypressOnly: true,
         }
 
         runTest(dbTestParams, '', false, false)

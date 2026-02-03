@@ -15,7 +15,7 @@ export function runTest(params: OgrsTestParameters, outputFile: string, summaryO
         cases = result.cases
 
     }).then(() => {
-        if (failures > 0) {
+        if (failures > 0 && params.cypressOnly != true) {
             throw new Error(`${failures} failed out of ${cases}`)
         }
     })

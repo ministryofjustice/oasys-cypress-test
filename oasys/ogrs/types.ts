@@ -18,6 +18,7 @@ export type OgrsTestParameters = {
     staticFlag: 'Y' | 'N',
     reportMode: ReportMode,
     includeObjects: boolean,
+    cypressOnly?: boolean,
 }
 
 export type OgrsTestScriptResult = {
