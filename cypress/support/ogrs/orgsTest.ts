@@ -3,7 +3,7 @@ import * as fs from 'fs-extra'
 import { OgrsTestParameters, OgrsTestScriptResult, OutputParameters, TestCaseParameters, TestCaseResult } from '../../../oasys/ogrs/types'
 import { calculateTestCase } from './ogrsCalculator'
 import { loadParameterSet, loadOracleOutputValues } from './loadTestData'
-import { getOgrsResult } from '../oasysDb'
+import { getOgrsResult, offences } from '../oasysDb'
 import { getAssessmentTestData, getRsrTestData } from './getTestData/getTestData'
 import { createAssessmentTestCase } from './getTestData/createAssessmentTestCase'
 import { createRsrTestCase } from './getTestData/createRsrTestCase'
@@ -35,7 +35,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
             const errorLog: string[] = []
             scriptResults.cases++
             try {
-                const testCaseParams = loadParameterSet(inputParameters[i], testParams.appConfig.offences)
+                const testCaseParams = loadParameterSet(inputParameters[i], offences)
                 errorLog.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
                 if (testParams.staticFlag) {
                     testCaseParams.STATIC_CALC = testParams.staticFlag
@@ -97,7 +97,7 @@ export async function ogrsTest(testParams: OgrsTestParameters): Promise<OgrsTest
             const errorLog: string[] = []
             try {
                 const testCaseParams = testParams.dbDetails.type == 'assessment' ?
-                    createAssessmentTestCase(assessmentOrRsr as OgrsAssessment, testParams.appConfig) : createRsrTestCase(assessmentOrRsr as OgrsRsr, testParams.appConfig.offences)
+                    createAssessmentTestCase(assessmentOrRsr as OgrsAssessment, offences) : createRsrTestCase(assessmentOrRsr as OgrsRsr, offences)
                 errorLog.push(`    Input parameters: ${JSON.stringify(testCaseParams)}`)
                 // Run generate two sets of scores, for static flag Y and N
                 for (let staticFlag of ['Y', 'N']) {

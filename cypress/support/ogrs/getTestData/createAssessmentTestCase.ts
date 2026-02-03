@@ -4,7 +4,7 @@ import { addCalculatedInputParameters, getOffenceCat } from 'ogrs/common'
 import { lookupString } from 'lib/utils'
 import { OasysDateTime } from 'lib/dateTime'
 
-export function createAssessmentTestCase(assessment: OgrsAssessment, appConfig: AppConfig): TestCaseParameters {
+export function createAssessmentTestCase(assessment: OgrsAssessment, offences: {}): TestCaseParameters {
 
     const initiationDate = OasysDateTime.stringToDate(assessment.initiationDate)
     const after6_35 = OasysDateTime.checkIfAfterReleaseNode('6.35', initiationDate)
@@ -32,7 +32,7 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, appConfig: 
         AGE_AT_FIRST_SANCTION: getNumericAnswer(assessment.textData, '1', '1.8'),
         LAST_SANCTION_DATE: OasysDateTime.stringToDate(getTextAnswer(assessment.textData, '1', '1.29')),
         DATE_RECENT_SEXUAL_OFFENCE: OasysDateTime.stringToDate(getTextAnswer(assessment.textData, '1', '1.33')),
-        CURR_SEX_OFF_MOTIVATION: q141(assessment, appConfig.offences),
+        CURR_SEX_OFF_MOTIVATION: q141(assessment, offences),
         MOST_RECENT_OFFENCE: OasysDateTime.stringToDate(getTextAnswer(assessment.textData, '1', '1.43')),
         COMMUNITY_DATE: OasysDateTime.stringToDate(getTextAnswer(assessment.textData, '1', '1.38')),
         ONE_POINT_THIRTY: getSingleAnswer(assessment.qaData, '1', '1.30', ynLookup),
@@ -84,7 +84,7 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, appConfig: 
         CUSTODY_IND: getString(assessment.prisonInd) == 'C' ? 'Y' : 'N',
     }
 
-    addCalculatedInputParameters(p, appConfig.offences)
+    addCalculatedInputParameters(p, offences)
     return p
 }
 

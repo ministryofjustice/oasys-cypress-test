@@ -5,6 +5,7 @@ import { ogrsFunctionCall } from './ogrs/getTestData/oracleFunctionCall'
 import { appVersions, currentVersion, OasysDateTime, setCurrentVersion } from 'lib/dateTime'
 
 var connection
+export let offences = {}
 
 /** 
  * Connect to the Oracle database using parameters configured in environments.ts and localSettings.ts, returns a null string for success, or an error for failure.
@@ -140,7 +141,6 @@ export async function getAppConfig(): Promise<AppConfig> {
         return null
     }
 
-    const offences = {};
     (offencesData.data as string[][]).forEach(offence => {
         offences[offence[0]] = offence[1]
     })

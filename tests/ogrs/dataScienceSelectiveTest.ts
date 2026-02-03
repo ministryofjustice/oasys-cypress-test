@@ -9,43 +9,35 @@ describe('OGRS calculator test - data science test cases', () => {
     it('Data science test cases - static flag = N', () => {
 
 
-        cy.get<AppConfig>('@appConfig').then((appConfig) => {
+        const csvTestParams: OgrsTestParameters = {
+            testType: 'csv',
+            csvDetails: {
+                dataFile: 'dsTestCases',
+            },
+            staticFlag: 'N',
+            reportMode: 'normal',
+            includeObjects: false,
+        }
 
-            const csvTestParams: OgrsTestParameters = {
-                testType: 'csv',
-                csvDetails: {
-                    dataFile: 'dsTestCases',
-                },
-                staticFlag: 'N',
-                reportMode: 'normal',
-                includeObjects: false,
-                appConfig: appConfig,
-            }
-
-            csvTestParams.csvDetails.start = start
-            csvTestParams.csvDetails.end = end
-            runTest(csvTestParams, 'dsOutputN', true, false)
-        })
+        csvTestParams.csvDetails.start = start
+        csvTestParams.csvDetails.end = end
+        runTest(csvTestParams, 'dsOutputN', true, false)
     })
 
     it('Data science test cases - static flag = Y', () => {
-        cy.get<AppConfig>('@appConfig').then((appConfig) => {
 
+        const csvTestParams: OgrsTestParameters = {
+            testType: 'csv',
+            csvDetails: {
+                dataFile: 'dsTestCases',
+            },
+            staticFlag: 'Y',
+            reportMode: 'normal',
+            includeObjects: false,
+        }
 
-            const csvTestParams: OgrsTestParameters = {
-                testType: 'csv',
-                csvDetails: {
-                    dataFile: 'dsTestCases',
-                },
-                staticFlag: 'Y',
-                reportMode: 'normal',
-                includeObjects: false,
-                appConfig: appConfig,
-            }
-
-            csvTestParams.csvDetails.start = start
-            csvTestParams.csvDetails.end = end
-            runTest(csvTestParams, 'dsOutputY', true, false)
-        })
+        csvTestParams.csvDetails.start = start
+        csvTestParams.csvDetails.end = end
+        runTest(csvTestParams, 'dsOutputY', true, false)
     })
 })

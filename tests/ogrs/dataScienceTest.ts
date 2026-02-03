@@ -13,22 +13,18 @@ function test(part: number, staticFlag: 'Y' | 'N') {
 
     it(`Data science test cases - static ${staticFlag}, part ${part}`, () => {
 
-        cy.get<AppConfig>('@appConfig').then((appConfig) => {
+        const csvTestParams: OgrsTestParameters = {
+            testType: 'csv',
+            csvDetails: {
+                dataFile: 'dsTestCases',
+                start: part == 1 ? 0 : 5000,
+                end: part == 1 ? 4999 : 9999,
+            },
+            staticFlag: staticFlag,
+            reportMode: 'none',
+            includeObjects: true,
+        }
 
-            const csvTestParams: OgrsTestParameters = {
-                testType: 'csv',
-                csvDetails: {
-                    dataFile: 'dsTestCases',
-                    start: part == 1 ? 0 : 5000,
-                    end: part == 1 ? 4999 : 9999,
-                },
-                staticFlag: staticFlag,
-                reportMode: 'none',
-                includeObjects: true,
-                appConfig: appConfig,
-            }
-
-            runTest(csvTestParams, `dsOutput${staticFlag}`, true, false)
-        })
+        runTest(csvTestParams, `dsOutput${staticFlag}`, true, false)
     })
 }

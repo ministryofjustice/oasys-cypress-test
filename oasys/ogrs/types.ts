@@ -18,7 +18,6 @@ export type OgrsTestParameters = {
     staticFlag: 'Y' | 'N',
     reportMode: ReportMode,
     includeObjects: boolean,
-    appConfig: AppConfig,
 }
 
 export type OgrsTestScriptResult = {
