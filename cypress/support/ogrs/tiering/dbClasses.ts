@@ -24,7 +24,7 @@ export class TieringCase {
     stalking: string
     da: string
     daHistory: string
-    childProtection: string
+    cpRegistered: string
     step1OgrsRsr: string
     dcsrpTier: string
     iicsrpTier: string
@@ -32,6 +32,22 @@ export class TieringCase {
     alternativeTier: string
     custodyInd: string
     communityDate: string
+
+    // Old OSP scores for fallback
+    ospCRiskReconElm: string
+    ospCPercentageScore: number
+    ospIRiskReconElm: string
+    ospIPercentageScore: number
+
+    // Additional CP flags
+    barredChildren: string
+    childSexExploitHist: string
+    altBarredChildren: string
+    childCrimExploit: string
+    childSexExploit: string
+    childConcerns: string
+    riskToChildren: string
+    childProtection: string
 
     constructor(tieringData: string[]) {
 
@@ -58,7 +74,7 @@ export class TieringCase {
         this.stalking = tieringData[i++]
         this.da = tieringData[i++]
         this.daHistory = tieringData[i++]
-        this.childProtection = tieringData[i++]
+        this.cpRegistered = tieringData[i++]
         this.step1OgrsRsr = tieringData[i++]
         this.dcsrpTier = tieringData[i++]
         this.iicsrpTier = tieringData[i++]
@@ -66,6 +82,20 @@ export class TieringCase {
         this.alternativeTier = tieringData[i++]
         this.custodyInd = tieringData[i++]
         this.communityDate = tieringData[i++]
+
+        this.ospCRiskReconElm = tieringData[i++]
+        this.ospCPercentageScore = getDbFloat(tieringData[i++])
+        this.ospIRiskReconElm = tieringData[i++]
+        this.ospIPercentageScore = getDbFloat(tieringData[i++])
+
+        this.barredChildren = tieringData[i++]
+        this.childSexExploitHist = tieringData[i++]
+        this.altBarredChildren = tieringData[i++]
+        this.childCrimExploit = tieringData[i++]
+        this.childSexExploit = tieringData[i++]
+        this.childConcerns = tieringData[i++]
+        this.riskToChildren = tieringData[i++]
+        this.childProtection = tieringData[i++]
     }
 
     static query(rows: number, whereClause: string): string {
@@ -77,7 +107,10 @@ export class TieringCase {
                     ogrs4g_percentage_2yr, ogp2_percentage_2yr, 
                     mappa, lifer, stalking, da, da_history, cp_registered,  
                     step1_ogrs_rsr, dcsrp_tier, iicsrp_tier, final_tier, alternative_tier,
-                    custody_ind, to_char(community_date, '${dateFormat}')
+                    custody_ind, to_char(community_date, '${dateFormat}'),
+                    osp_c_risk_recon_elm, osp_c_percentage_score, osp_i_risk_recon_elm, osp_i_percentage_score,
+                    barred_children, child_sex_exploit_hist, alt_barred_children, child_crim_exploit, 
+                    child_sex_exploit, child_concerns, risk_to_children, child_protection
                 from eor.df453_new_prediction 
                     where ${whereClause} 
                     fetch first ${rows} rows only`

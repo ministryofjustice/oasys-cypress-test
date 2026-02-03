@@ -6,11 +6,13 @@ const timeout = 10000000
 describe('Tier calculations test', () => {
 
     const testParams: TieringTestParameters = {
-        whereClause: `ignore <> 'Y'`,
+        // whereClause: `ignore <> 'Y' and run_number = 4`,
+        whereClause: `ignore = 'N' or ignore is null`,
+        // whereClause : `cms_prob_number = 'V166775'`,
         count: count,
     }
 
-    it(`Layer 3 v1 complete`, () => {
+    it(`Tiering calculation`, () => {
 
         let failed = false
         cy.task('tieringTest', testParams, { timeout: timeout }).then((result: TieringTestResult) => {
