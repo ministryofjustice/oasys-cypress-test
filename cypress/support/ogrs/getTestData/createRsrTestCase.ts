@@ -1,17 +1,12 @@
-import { Temporal } from '@js-temporal/polyfill'
-
 import { TestCaseParameters } from 'ogrs/types'
 import { OgrsRsr } from './dbClasses'
 import { addCalculatedInputParameters } from 'ogrs/common'
 import { OasysDateTime } from 'lib/dateTime'
-import { testStartDate } from 'oasys'
 
 export function createRsrTestCase(rsr: OgrsRsr, offences: {}): TestCaseParameters {
 
-    const today = testStartDate
-
     const p: TestCaseParameters = {
-        ASSESSMENT_DATE: today,
+        ASSESSMENT_DATE: OasysDateTime.testStartDate,
         STATIC_CALC: 'N',
         DOB: OasysDateTime.stringToDate(rsr.dob),
         GENDER: lookupValue(rsr.gender, genderLookup),

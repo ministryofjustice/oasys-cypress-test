@@ -6,10 +6,6 @@
  * @module Autodata
  */
 
-import { Temporal } from '@js-temporal/polyfill'
-
-export let testStartDate = Temporal.Now.plainDateISO()
-
 /** 
  * Returns a string with x characters.  The string includes some spaces and carriage returns, and a counter at regular intervals.
  */

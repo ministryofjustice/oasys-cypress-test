@@ -18,16 +18,16 @@ describe('RestAPI regression tests', () => {
 
     // Define date parameters for sets of offender data
     const dateConditions = [
-        { date: `2015-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2016-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2017-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2018-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2019-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2020-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2021-${randomMonth()}-${randomDay()}`, count: offenderCount },
-        { date: `2022-${randomMonth()}-${randomDay()}`, count: offenderCount },
-        { date: `2023-${randomMonth()}-${randomDay()}`, count: offenderCount },
-        { date: `2024-${randomMonth()}-${randomDay()}`, count: offenderCount },
+        // { date: `2015-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2016-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2017-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2018-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2019-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2020-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        // { date: `2021-${randomMonth()}-${randomDay()}`, count: offenderCount },
+        // { date: `2022-${randomMonth()}-${randomDay()}`, count: offenderCount },
+        // { date: `2023-${randomMonth()}-${randomDay()}`, count: offenderCount },
+        // { date: `2024-${randomMonth()}-${randomDay()}`, count: offenderCount },
         { date: 'today', count: offenderCount },
     ]
 

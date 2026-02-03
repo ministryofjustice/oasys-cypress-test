@@ -9,8 +9,8 @@ export class OasysDateTime {
     static testStartDate = Temporal.Now.plainDateISO()
     static dateFormat = 'YYYY-MM-DD'                // RFC 9557 format for Temporal
     static timestampFormat = 'YYYY-MM-DDTHH:mm:ss'
-    static oracleTimestampFormat = ' YYYY-MM-DD\"T\"HH24:MI:SS'
-    static oracleTimestampFormatMs = ' YYYY-MM-DD\"T\"HH24:MI:SS.FF3'
+    static oracleTimestampFormat = 'YYYY-MM-DD\"T\"HH24:MI:SS'
+    static oracleTimestampFormatMs = 'YYYY-MM-DD\"T\"HH24:MI:SS.FF3'
     static timers: { [keys: string]: Temporal.PlainDateTime } = {}
 
     // Convert date string to Temporal Plain date.  Might be in RFC9557 format, but also need to allow for DD/MM/YYYY in OASys string fields or DD-MM-YYYY from CSV loads

@@ -1,17 +1,12 @@
-import { Temporal } from '@js-temporal/polyfill'
-
 import { RescoringTestParameters, TestCaseParameters } from '../../../../oasys/ogrs/types'
 import { RescoringAssessment } from './dbClasses'
 import { addCalculatedInputParameters, getOffenceCat } from 'ogrs/common'
 import { getString } from 'lib/utils'
 import { OasysDateTime } from 'lib/dateTime'
-import { testStartDate } from 'oasys'
 
 export function createAssessmentTestCase(assessment: RescoringAssessment, testParams: RescoringTestParameters): TestCaseParameters {
 
-    const today = testStartDate
-
-    const initiationDate = Temporal.PlainDate.from(assessment.initiationDate)
+    const initiationDate = OasysDateTime.stringToDate(assessment.initiationDate)
     const after6_30 = OasysDateTime.checkIfAfterReleaseNode('6.30', initiationDate)
     const after6_35 = OasysDateTime.checkIfAfterReleaseNode('6.35', initiationDate)
 
@@ -23,7 +18,7 @@ export function createAssessmentTestCase(assessment: RescoringAssessment, testPa
     }
 
     const p: TestCaseParameters = {
-        ASSESSMENT_DATE: testParams.useCurrentDate ? today : OasysDateTime.stringToDate(assessment.completedDate),
+        ASSESSMENT_DATE: testParams.useCurrentDate ? OasysDateTime.testStartDate : OasysDateTime.stringToDate(assessment.completedDate),
         STATIC_CALC: staticCalc,
         DOB: OasysDateTime.stringToDate(assessment.dob),
         GENDER: lookupValue(assessment.gender, genderLookup),

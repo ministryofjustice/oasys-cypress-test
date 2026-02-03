@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill'
 import * as oasys from 'oasys'
 import * as testData from '../../../data/testRef27'
 

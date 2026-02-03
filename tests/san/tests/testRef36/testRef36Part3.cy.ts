@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill'
 import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 36', () => {

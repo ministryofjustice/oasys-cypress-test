@@ -1,6 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill'
-
-import { testStartDate } from 'lib/autoData'
 import { TestCaseParameters } from 'ogrs/types'
 import { OgrsAssessment } from './dbClasses'
 import { addCalculatedInputParameters, getOffenceCat } from 'ogrs/common'
@@ -9,9 +6,7 @@ import { OasysDateTime } from 'lib/dateTime'
 
 export function createAssessmentTestCase(assessment: OgrsAssessment, appConfig: AppConfig): TestCaseParameters {
 
-    const today = testStartDate
-
-    const initiationDate = Temporal.PlainDate.from(assessment.initiationDate)
+    const initiationDate = OasysDateTime.stringToDate(assessment.initiationDate)
     const after6_35 = OasysDateTime.checkIfAfterReleaseNode('6.35', initiationDate)
 
     let staticCalc = 'N'
@@ -22,7 +17,7 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, appConfig: 
     }
 
     const p: TestCaseParameters = {
-        ASSESSMENT_DATE: today,
+        ASSESSMENT_DATE: OasysDateTime.testStartDate,
         STATIC_CALC: staticCalc,
         DOB: OasysDateTime.stringToDate(assessment.dob),
         GENDER: lookupString(assessment.gender, genderLookup),
