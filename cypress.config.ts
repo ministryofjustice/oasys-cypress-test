@@ -222,7 +222,7 @@ module.exports = defineConfig({
           })
         },
 
-        getOgrAssessment(assessmentPk: number): Promise<OgrsAssessment> {
+        getOgrsAssessment(assessmentPk: number): Promise<OgrsAssessment> {
           return new Promise((resolve) => {
             getOneAssessment(assessmentPk).then((response) => {
               resolve(response)

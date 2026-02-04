@@ -16,7 +16,7 @@ export function checkOgrs4CalcsOffender(offender: OffenderDef, resultAlias?: str
 
 export function checkOgrs4CalcsPk(assessmentPk: number, resultAlias = null) {
 
-    cy.task('getOgrAssessment', assessmentPk).then((assessment: OgrsAssessment) => {
+    cy.task('getOgrsAssessment', assessmentPk).then((assessment: OgrsAssessment) => {
 
 
         cy.get<AppConfig>('@appConfig').then((appConfig) => {
