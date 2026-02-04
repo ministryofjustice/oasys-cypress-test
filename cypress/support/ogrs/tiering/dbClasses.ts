@@ -25,11 +25,7 @@ export class TieringCase {
     da: string
     daHistory: string
     cpRegistered: string
-    step1OgrsRsr: string
-    dcsrpTier: string
-    iicsrpTier: string
     finalTier: string
-    alternativeTier: string
     custodyInd: string
     communityDate: string
 
@@ -75,11 +71,7 @@ export class TieringCase {
         this.da = tieringData[i++]
         this.daHistory = tieringData[i++]
         this.cpRegistered = tieringData[i++]
-        this.step1OgrsRsr = tieringData[i++]
-        this.dcsrpTier = tieringData[i++]
-        this.iicsrpTier = tieringData[i++]
         this.finalTier = tieringData[i++]
-        this.alternativeTier = tieringData[i++]
         this.custodyInd = tieringData[i++]
         this.communityDate = tieringData[i++]
 
@@ -99,6 +91,8 @@ export class TieringCase {
     }
 
     static query(rows: number, whereClause: string): string {
+
+        const where = whereClause == null ? '' : `where ${whereClause}`
         return `select 
                     cms_prob_number, cms_pris_number, oasys_set_pk, offender_pk,
                     to_char(date_completed, '${dateFormat}'), rosh, rosh_level_elm, 
@@ -106,17 +100,17 @@ export class TieringCase {
                     nc_osp_dc_risk_recon_elm, nc_osp_dc_percentage_score, nc_osp_iic_risk_recon_elm, nc_osp_iic_percentage_score, dc_srp_risk_reduction, 
                     ogrs4g_percentage_2yr, ogp2_percentage_2yr, 
                     mappa, lifer, stalking, da, da_history, cp_registered,  
-                    step1_ogrs_rsr, dcsrp_tier, iicsrp_tier, final_tier, alternative_tier,
+                    final_tier, 
                     custody_ind, to_char(community_date, '${dateFormat}'),
                     osp_c_risk_recon_elm, osp_c_percentage_score, osp_i_risk_recon_elm, osp_i_percentage_score,
                     barred_children, child_sex_exploit_hist, alt_barred_children, child_crim_exploit, 
                     child_sex_exploit, child_concerns, risk_to_children, child_protection
-                from eor.df453_new_prediction 
-                    where ${whereClause} 
+                    from eor.df453_new_prediction 
+                    ${where}
                     fetch first ${rows} rows only`
-    }
-}
-
+                }
+            }
+            
 
 function getDbFloat(dbValue: string): number {
     return Number.isNaN(Number.parseFloat(dbValue)) ? null : Number.parseFloat(dbValue)
