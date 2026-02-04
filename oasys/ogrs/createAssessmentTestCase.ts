@@ -1,11 +1,12 @@
-import { OgrsAssessment } from '../../cypress/support/ogrs/getTestData/getOneAssessment'
-import { addCalculatedInputParameters, da, dailyDrugUser, getDrugsUsage, getDrugUsed, q141, q22, q6_8Lookup, q88, yesNo1_0Lookup, yesNoTo1_0, yesNoToYN } from 'ogrs/common'
-import { lookupString, lookupInteger, problemsAnswerToNumeric, yesNoToYNLookup, genderNumberLookup } from 'lib/utils'
+import { OgrsAssessment } from '../../cypress/support/ogrs/getTestData/dbClasses'
+import { addCalculatedInputParameters, da, dailyDrugUser, getDrugsUsage, getDrugUsed, q141, q22, q88, yesNo1_0Lookup } from 'ogrs/common'
+import { lookupString, lookupInteger, yesNoToYNLookup, genderNumberLookup } from 'lib/utils'
 import { TestCaseParameters } from './types'
 import { OasysDateTime } from 'oasys'
 
 export function createAssessmentTestCase(assessment: OgrsAssessment, offences: {}, versions: {}): TestCaseParameters {
 
+    const after6_30 = OasysDateTime.checkIfAfterRelease(versions, '6.30', assessment.initiationDate)
     const after6_35 = OasysDateTime.checkIfAfterRelease(versions, '6.35', assessment.initiationDate)
 
     const drugs = getDrugsUsage(assessment.qaData)
@@ -17,7 +18,6 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, offences: {
             staticCalc = 'Y'
         }
     }
-    // TODO add old versions
     const result = {
 
         ASSESSMENT_DATE: OasysDateTime.testStartDate,
@@ -43,7 +43,7 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, offences: {
         THREE_POINT_FOUR: lookupInteger('3.4', assessment.qaData),
         FOUR_POINT_TWO: lookupInteger('4.2', assessment.qaData, yesNo1_0Lookup),
         SIX_POINT_FOUR: lookupInteger('6.4', assessment.qaData),
-        SIX_POINT_SEVEN: da(lookupString('6.7da', assessment.qaData), lookupString('6.7.2.1da', assessment.qaData)),
+        SIX_POINT_SEVEN: da(assessment.qaData, after6_30),
         SIX_POINT_EIGHT: lookupInteger('6.8', assessment.qaData),
         SEVEN_POINT_TWO: lookupInteger('7.2', assessment.qaData),
         DAILY_DRUG_USER: dailyDrugUser(q81, drugs),

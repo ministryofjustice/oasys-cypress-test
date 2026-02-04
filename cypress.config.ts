@@ -10,7 +10,8 @@ import { ogrsTest } from './cypress/support/ogrs/orgsTest'
 import { OgrsTestParameters, OgrsTestScriptResult, RescoringResult, RescoringTestParameters, TieringTestParameters, TieringTestResult } from './oasys/ogrs/types'
 import { rescoringTest } from './cypress/support/ogrs/rescoring/rescoringTest'
 import { tieringTest } from './cypress/support/ogrs/tiering/tieringTest'
-import { getOneAssessment, OgrsAssessment } from './cypress/support/ogrs/getTestData/getOneAssessment'
+import { getOneAssessment } from './cypress/support/ogrs/getTestData/getTestData'
+import { OgrsAssessment } from './cypress/support/ogrs/getTestData/dbClasses'
 
 const reportFolder = 'report'
 const persistedData = {}
@@ -221,7 +222,7 @@ module.exports = defineConfig({
           })
         },
 
-        getOgrsRegressionTestAssessment(assessmentPk: number): Promise<OgrsAssessment> {
+        getOgrAssessment(assessmentPk: number): Promise<OgrsAssessment> {
           return new Promise((resolve) => {
             getOneAssessment(assessmentPk).then((response) => {
               resolve(response)

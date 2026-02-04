@@ -56,9 +56,25 @@ export function q22(q22Weapon: string, oldQ22: string, after6_35: boolean): numb
     }
 }
 
-export function da(q67: string, q67da: string): number {
+export function da(qaData: {}, after6_30: boolean): number {
 
-    return (q67 == 'YES' ? q67da : q67) == 'YES' ? 1 : 0
+    if (after6_30) {
+        const q67 = lookupString('6.7da', qaData)
+        if (q67 != 'YES') {
+            return 0
+        } else {
+            const q67da = lookupString('6.7.2.1da', qaData)
+            return q67da == 'YES' ? 1 : 0
+        }
+    } else {
+        const q67 = lookupString('6.7', qaData)
+        if (q67 != 'YES') {
+            return 0
+        } else {
+            const q671 = lookupString('6.7.1', qaData)
+            return q671 == null ? null : q671.includes('PERPETRATOR') ? 1 : 0
+        }
+    }
 }
 
 export function dailyDrugUser(q81: string, drugs: {}): 'Y' | 'N' {

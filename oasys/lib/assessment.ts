@@ -8,7 +8,7 @@
 import * as oasys from 'oasys'
 import { IPage } from 'classes/page'
 import { User } from 'classes/user'
-import { checkOgrs4Calcs } from './ogrs'
+import { checkOgrs4CalcsPk } from './ogrs'
 
 let assessmentPk: number // Updated on creating an assessment.  Used at lock incomplete and sign&lock to call the OGRS4 regression test
 
@@ -216,7 +216,7 @@ export function lockIncomplete(message?: string) {
     cy.get<string>('@pnc').then((pnc) => {
         oasys.Db.getLatestSetPkByPnc(pnc, 'pk')
         cy.get<number>('@pk').then((pk) => {
-            checkOgrs4Calcs(pk)
+            checkOgrs4CalcsPk(pk)
 
             oasys.Nav.clickButton('Lock Incomplete', true)
             cy.log('Locked assessment incomplete')
@@ -290,7 +290,7 @@ export function signAndLock(
         // Check the OGRS4 calculations
         oasys.Db.getLatestSetPkByPnc(pnc, 'pk')
         cy.get<number>('@pk').then((pk) => {
-            checkOgrs4Calcs(pk)
+            checkOgrs4CalcsPk(pk)
         })
 
         // Check for unwanted countersigning

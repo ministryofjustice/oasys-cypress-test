@@ -11,7 +11,7 @@ import { OgrsRsr } from './getTestData/dbClasses'
 import { stringParameterToString, numericParameterToString } from 'lib/utils'
 import { appVersions, OasysDateTime } from 'lib/dateTime'
 import { createOutputObject } from 'ogrs/createOutput'
-import { OgrsAssessment } from './getTestData/getOneAssessment'
+import { OgrsAssessment } from './getTestData/dbClasses'
 
 const dataFilePath = './cypress/support/ogrs/data/'
 
