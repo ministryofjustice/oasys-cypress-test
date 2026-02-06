@@ -3,6 +3,8 @@
  * These objects are created by the RestDb functions in cypress/support/restApidb.ts using the queries defined here.
  */
 
+import { OasysDateTime } from 'oasys'
+
 
 /**
  * Single offender with all relevant assessment data
@@ -133,34 +135,17 @@ export class DbAssessment extends DbAssessmentOrRsr {
 
     static query(offenderPk: number): string {
 
-        return `select s.oasys_set_pk, s.ref_ass_version_code, s.assessment_status_elm,
-                    to_char(s.initiation_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'),
-                    to_char(s.assessor_signed_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'),
-                    to_char(s.date_completed, 'YYYY-MM-DD\"T\"HH24:MI:SS'), 
-                    to_char(c.lastupd_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'), 
-                    ogp_st_wesc, ogp_dy_wesc, ogp_tot_wesc, ogp_1year, ogp_2year, ogp_risk_recon_elm, 
-                    ovp_st_wesc, ovp_dy_wesc, ovp_tot_wesc, ovp_1year, ovp_2year, ovp_risk_recon_elm, 
-                    ovp_prev_wesc, ovp_non_vio_wesc, ovp_age_wesc, ovp_vio_wesc, ovp_sex_wesc, 
-                    s.ogrs3_1year, s.ogrs3_2year, s.ogrs3_risk_recon_elm, s.rsr_static_or_dynamic, 
-                    s.rsr_exception_error, 
-                    s.rsr_algorithm_version, s.rsr_percentage_score, s.rsr_risk_recon_elm, 
-                    s.osp_i_percentage_score, s.osp_c_percentage_score, s.osp_i_risk_recon_elm, s.osp_c_risk_recon_elm, s.rosh_level_elm,
-                    s.cms_event_number, s.purpose_assessment_elm, s.purpose_assmt_other_ftxt, assessor_name, s.version_number, s.parent_oasys_set_pk, 
-                    s.osp_iic_risk_recon_elm, s.osp_iic_percentage_score, s.osp_dc_risk_recon_elm, s.osp_dc_percentage_score, s.osp_c_risk_reduction, 
-                    s.san_assessment_linked_ind, 
-                    s.ogrs4g_percentage_2yr, s.ogrs4g_band_risk_recon_elm, s.ogrs4g_calculated, 
-                    s.ogrs4v_percentage_2yr, s.ogrs4v_band_risk_recon_elm, s.ogrs4v_calculated, 
-                    s.ogp2_percentage_2yr, s.ogp2_band_risk_recon_elm, s.ogp2_calculated, 
-                    s.ovp2_percentage_2yr, s.ovp2_band_risk_recon_elm, s.ovp2_calculated, 
-                    s.snsv_percentage_2yr_static, s.snsv_stat_band_risk_recon_elm, s.snsv_calculated_static, 
-                    s.snsv_percentage_2yr_dynamic, s.snsv_dyn_band_risk_recon_elm, s.snsv_calculated_dynamic,
-                    to_char(s.date_of_birth, 'YYYY-MM-DD'),
-                    s.learning_tool_score, s.ldc_sub_total, s.ldc_func_proc
-                    from eor.oasys_assessment_group g, eor.oasys_set s, eor.oasys_set_change c 
-                    where g.offender_pk = ${offenderPk} and g.oasys_assessment_group_pk = s.oasys_assessment_group_pk 
-                    and c.oasys_set_pk = s.oasys_set_pk 
-                    and s.deleted_date is null
-                    order by s.initiation_date`
+        let query = 'select '
+        query = query.concat(getColumns(commonColumnsAssessment, 'os'))
+        query = query.concat(getColumns(riskColumns, 'os'))
+        query = query.concat(getColumns(assessmentColumns, 'os')).slice(0, -1).concat(' \n') // remove last comma}
+
+        return query.concat(
+            `from eor.oasys_assessment_group oag, eor.oasys_set os, eor.oasys_set_change osc 
+                    where oag.offender_pk = ${offenderPk} and oag.oasys_assessment_group_pk = os.oasys_assessment_group_pk 
+                    and osc.oasys_set_pk = os.oasys_set_pk 
+                    and os.deleted_date is null
+                    order by os.initiation_date`)
     }
 
     static courtQuery(assessmentPk: number): string {
@@ -272,39 +257,40 @@ export class DbRiskDetails {
     rsrExceptionError: string
     rsrAlgorithmVersion: number
     rsrPercentageScore: number
-    scoreLevel: string
+    rsrRisk: string
 
     ospImagePercentageScore: number = 0
     ospContactPercentageScore: number = 0
-    ospImageScoreLevel: string = 'NA'
-    ospContactScoreLevel: string = 'NA'
+    ospIRisk: string = 'NA'
+    ospCRisk: string = 'NA'
 
-    ospIndirectImagesChildrenScoreLevel: string
-    ospIndirectImagesChildrenPercentageScore: number
-    ospDirectContactScoreLevel: string
-    ospDirectContactPercentageScore: number
-    ospDirectContactRiskReduction: string
+    ospIicRisk: string
+    ospIicPercentageScore: number
+    ospDcRisk: string
+    ospDcPercentageScore: number
+    ospCRiskReduction: string
 
-    ogrs4gYr2: number
-    ogrs4gBand: string
+    ogrs4gPercentageScore: number
+    ogrs4gRisk: string
     ogrs4gCalculated: string
-    ogrs4vYr2: number
-    ogrs4vBand: string
+    ogrs4vPercentageScore: number
+    ogrs4vRisk: string
     ogrs4vCalculated: string
-    ogp2Yr2: number
-    ogp2Band: string
+    ogp2PercentageScore: number
+    ogp2Risk: string
     ogp2Calculated: string
-    ovp2Yr2: number
-    ovp2Band: string
+    ovp2PercentageScore: number
+    ovp2Risk: string
     ovp2Calculated: string
-    snsvStaticYr2: number
-    snsvStaticYr2Band: string
+    snsvStaticPercentageScore: number
+    snsvStaticRisk: string
     snsvStaticCalculated: string
-    snsvDynamicYr2: number
-    snsvDynamicYr2Band: string
+    snsvDynamicPercentageScore: number
+    snsvDynamicRisk: string
     snsvDynamicCalculated: string
 
     constructor(riskData: string[], standaloneRsr: boolean = false) {
+
 
         if (standaloneRsr) {
             let i = 5
@@ -316,35 +302,35 @@ export class DbRiskDetails {
             this.rsrExceptionError = riskData[i++]
             this.rsrAlgorithmVersion = getDbInt(riskData[i++])
             this.rsrPercentageScore = getDbFloat(riskData[i++])
-            this.scoreLevel = riskData[i++]
+            this.rsrRisk = riskData[i++]
             this.ospImagePercentageScore = getDbFloat(riskData[i++])
             this.ospContactPercentageScore = getDbFloat(riskData[i++])
-            this.ospImageScoreLevel = riskData[i++]
-            this.ospContactScoreLevel = riskData[i++]
+            this.ospIRisk = riskData[i++]
+            this.ospCRisk = riskData[i++]
 
-            this.ospIndirectImagesChildrenScoreLevel = riskData[i++]
-            this.ospIndirectImagesChildrenPercentageScore = getDbFloat(riskData[i++])
-            this.ospDirectContactScoreLevel = riskData[i++]
-            this.ospDirectContactPercentageScore = getDbFloat(riskData[i++])
-            this.ospDirectContactRiskReduction = riskData[i++]
+            this.ospIicRisk = riskData[i++]
+            this.ospIicPercentageScore = getDbFloat(riskData[i++])
+            this.ospDcRisk = riskData[i++]
+            this.ospDcPercentageScore = getDbFloat(riskData[i++])
+            this.ospCRiskReduction = riskData[i++]
 
-            this.ogrs4gYr2 = getDbFloat(riskData[i++])
-            this.ogrs4gBand = riskData[i++]
+            this.ogrs4gPercentageScore = getDbFloat(riskData[i++])
+            this.ogrs4gRisk = riskData[i++]
             this.ogrs4gCalculated = riskData[i++]
-            this.ogrs4vYr2 = getDbFloat(riskData[i++])
-            this.ogrs4vBand = riskData[i++]
+            this.ogrs4vPercentageScore = getDbFloat(riskData[i++])
+            this.ogrs4vRisk = riskData[i++]
             this.ogrs4vCalculated = riskData[i++]
-            this.ogp2Yr2 = getDbFloat(riskData[i++])
-            this.ogp2Band = riskData[i++]
+            this.ogp2PercentageScore = getDbFloat(riskData[i++])
+            this.ogp2Risk = riskData[i++]
             this.ogp2Calculated = riskData[i++]
-            this.ovp2Yr2 = getDbFloat(riskData[i++])
-            this.ovp2Band = riskData[i++]
+            this.ovp2PercentageScore = getDbFloat(riskData[i++])
+            this.ovp2Risk = riskData[i++]
             this.ovp2Calculated = riskData[i++]
-            this.snsvStaticYr2 = getDbFloat(riskData[i++])
-            this.snsvStaticYr2Band = riskData[i++]
+            this.snsvStaticPercentageScore = getDbFloat(riskData[i++])
+            this.snsvStaticRisk = riskData[i++]
             this.snsvStaticCalculated = riskData[i++]
-            this.snsvDynamicYr2 = getDbFloat(riskData[i++])
-            this.snsvDynamicYr2Band = riskData[i++]
+            this.snsvDynamicPercentageScore = getDbFloat(riskData[i++])
+            this.snsvDynamicRisk = riskData[i++]
             this.snsvDynamicCalculated = riskData[i++]
         } else {
             let i = 7
@@ -375,38 +361,38 @@ export class DbRiskDetails {
             this.rsrExceptionError = riskData[i++]
             this.rsrAlgorithmVersion = getDbInt(riskData[i++])
             this.rsrPercentageScore = getDbFloat(riskData[i++])
-            this.scoreLevel = riskData[i++]
+            this.rsrRisk = riskData[i++]
 
             this.ospImagePercentageScore = getDbFloat(riskData[i++])
             this.ospContactPercentageScore = getDbFloat(riskData[i++])
-            this.ospImageScoreLevel = riskData[i++]
-            this.ospContactScoreLevel = riskData[i++]
+            this.ospIRisk = riskData[i++]
+            this.ospCRisk = riskData[i++]
 
             i = 43
-            this.ospIndirectImagesChildrenScoreLevel = riskData[i++]
-            this.ospIndirectImagesChildrenPercentageScore = getDbFloat(riskData[i++])
-            this.ospDirectContactScoreLevel = riskData[i++]
-            this.ospDirectContactPercentageScore = getDbFloat(riskData[i++])
-            this.ospDirectContactRiskReduction = riskData[i++]
+            this.ospIicRisk = riskData[i++]
+            this.ospIicPercentageScore = getDbFloat(riskData[i++])
+            this.ospDcRisk = riskData[i++]
+            this.ospDcPercentageScore = getDbFloat(riskData[i++])
+            this.ospCRiskReduction = riskData[i++]
 
             i = 49
-            this.ogrs4gYr2 = getDbFloat(riskData[i++])
-            this.ogrs4gBand = riskData[i++]
+            this.ogrs4gPercentageScore = getDbFloat(riskData[i++])
+            this.ogrs4gRisk = riskData[i++]
             this.ogrs4gCalculated = riskData[i++]
-            this.ogrs4vYr2 = getDbFloat(riskData[i++])
-            this.ogrs4vBand = riskData[i++]
+            this.ogrs4vPercentageScore = getDbFloat(riskData[i++])
+            this.ogrs4vRisk = riskData[i++]
             this.ogrs4vCalculated = riskData[i++]
-            this.ogp2Yr2 = getDbFloat(riskData[i++])
-            this.ogp2Band = riskData[i++]
+            this.ogp2PercentageScore = getDbFloat(riskData[i++])
+            this.ogp2Risk = riskData[i++]
             this.ogp2Calculated = riskData[i++]
-            this.ovp2Yr2 = getDbFloat(riskData[i++])
-            this.ovp2Band = riskData[i++]
+            this.ovp2PercentageScore = getDbFloat(riskData[i++])
+            this.ovp2Risk = riskData[i++]
             this.ovp2Calculated = riskData[i++]
-            this.snsvStaticYr2 = getDbFloat(riskData[i++])
-            this.snsvStaticYr2Band = riskData[i++]
+            this.snsvStaticPercentageScore = getDbFloat(riskData[i++])
+            this.snsvStaticRisk = riskData[i++]
             this.snsvStaticCalculated = riskData[i++]
-            this.snsvDynamicYr2 = getDbFloat(riskData[i++])
-            this.snsvDynamicYr2Band = riskData[i++]
+            this.snsvDynamicPercentageScore = getDbFloat(riskData[i++])
+            this.snsvDynamicRisk = riskData[i++]
             this.snsvDynamicCalculated = riskData[i++]
 
         }
@@ -641,4 +627,139 @@ function getDbInt(dbValue: string): number {
 
 function getDbFloat(dbValue: string): number {
     return Number.isNaN(Number.parseFloat(dbValue)) ? null : Number.parseFloat(dbValue)
+}
+
+type Table = '' | 'oag' | 'osc'
+type ColumnType = 'date' | 'integer' | 'float' | 'string'
+type ColumnDef = { table: Table, name: string, type: ColumnType }
+type Columns = { [keys: string]: ColumnDef }
+// oag - oasys_assessment_group, osc = oasys_set_change.  Blank for default (oasys_set or offender_rsr_scores)
+
+function getColumns(columns: Columns, defaultTable: string): string {
+
+    let result = ''
+    Object.keys(columns).forEach((key) => {
+        result = result.concat(column(columns[key], defaultTable))
+    })
+    return result
+}
+
+function column(column: ColumnDef, defaultTable: string): string {
+
+    let table = column.table == '' ? defaultTable : column.table
+
+    return column.type == 'date'
+        ? `to_char(${table}.${column.name}, '${OasysDateTime.oracleTimestampFormat}'),`
+        : `${table}.${column.name},`
+}
+
+function assignValues(obj: {}, columns: Columns, data: string[], startIndex: number) {
+
+    let i = startIndex
+    Object.keys(columns).forEach((key) => {
+        const column = columns[key]
+        switch (column.type) {
+            case 'date':
+                break
+            case 'float':
+                break
+            case 'integer':
+                break
+            case 'string':
+                obj[key] = data[i++]
+        }
+    })
+}
+
+const commonColumnsAssessment: Columns = {
+
+    assessmentPk: { table: '', name: 'oasys_set_pk', type: 'integer' },
+    assessmentType: { table: '', name: 'ref_ass_version_code', type: 'string' },
+    assessmentVersion: { table: '', name: 'version_number', type: 'integer' },
+    status: { table: '', name: 'assessment_status_elm', type: 'string' },
+    initiationDate: { table: '', name: 'initiation_date', type: 'date' },
+    completedDate: { table: '', name: 'date_completed', type: 'date' },
+    lastUpdatedDate: { table: 'osc', name: 'lastupd_date', type: 'date' },
+    cmsEventNumber: { table: '', name: 'cms_event_number', type: 'integer' },
+}
+
+const assessmentColumns: Columns = {
+
+    dateOfBirth: { table: '', name: 'date_of_birth', type: 'date' },
+    assessorName: { table: '', name: 'assessor_name', type: 'string' },
+    pOAssessment: { table: '', name: 'purpose_assessment_elm', type: 'string' },
+    pOAssessmentDesc: { table: '', name: 'purpose_assmt_other_ftxt', type: 'string' },
+    parentAssessmentPk: { table: '', name: 'parent_oasys_set_pk', type: 'integer' },
+    signedDate: { table: '', name: 'assessor_signed_date', type: 'date' },
+    sanIndicator: { table: '', name: 'san_assessment_linked_ind', type: 'string' },
+    roshLevel: { table: '', name: 'rosh_level_elm', type: 'string' },
+    learningToolScore: { table: '', name: 'learning_tool_score', type: 'integer' },
+    ldcSubTotal: { table: '', name: 'ldc_sub_total', type: 'integer' },
+    ldcFuncProc: { table: '', name: 'ldc_func_proc', type: 'string' },
+}
+
+const riskColumns: Columns = {
+
+    ogrs31Year: { table: '', name: 'ogrs3_1year', type: 'integer' },
+    ogrs32Year: { table: '', name: 'ogrs3_2year', type: 'integer' },
+    ogrs3RiskRecon: { table: '', name: 'ogrs3_risk_recon_elm', type: 'string' },
+
+    ogpStWesc: { table: '', name: 'ogp_st_wesc', type: 'integer' },
+    ogpDyWesc: { table: '', name: 'ogp_dy_wesc', type: 'integer' },
+    ogpTotWesc: { table: '', name: 'ogp_tot_wesc', type: 'integer' },
+    ogp1Year: { table: '', name: 'ogp_1year', type: 'integer' },
+    ogp2Year: { table: '', name: 'ogp_2year', type: 'integer' },
+    ogpRisk: { table: '', name: 'ogp_risk_recon_elm', type: 'string' },
+
+    ovpStWesc: { table: '', name: 'ovp_st_wesc', type: 'integer' },
+    ovpDyWesc: { table: '', name: 'ovp_dy_wesc', type: 'integer' },
+    ovpTotWesc: { table: '', name: 'ovp_tot_wesc', type: 'integer' },
+    ovp1Year: { table: '', name: 'ovp_1year', type: 'integer' },
+    ovp2Year: { table: '', name: 'ovp_2year', type: 'integer' },
+    ovpRisk: { table: '', name: 'ovp_risk_recon_elm', type: 'string' },
+    ovpPrevWesc: { table: '', name: 'ovp_prev_wesc', type: 'integer' },
+    ovpNonVioWesc: { table: '', name: 'ovp_non_vio_wesc', type: 'integer' },
+    ovpAgeWesc: { table: '', name: 'ovp_age_wesc', type: 'integer' },
+    ovpVioWesc: { table: '', name: 'ovp_vio_wesc', type: 'integer' },
+    ovpSexWesc: { table: '', name: 'ovp_sex_wesc', type: 'integer' },
+
+    ospImagePercentageScore: { table: '', name: 'osp_i_percentage_score', type: 'float' },
+    ospIRisk: { table: '', name: 'osp_i_risk_recon_elm', type: 'string' },
+    ospContactPercentageScore: { table: '', name: 'osp_c_percentage_score', type: 'float' },
+    ospCRisk: { table: '', name: 'osp_c_risk_recon_elm', type: 'string' },
+
+    ospIicPercentageScore: { table: '', name: 'osp_iic_percentage_score', type: 'float' },
+    ospIicRisk: { table: '', name: 'osp_iic_risk_recon_elm', type: 'string' },
+    ospDcPercentageScore: { table: '', name: 'osp_dc_percentage_score', type: 'float' },
+    ospDcRisk: { table: '', name: 'osp_dc_risk_recon_elm', type: 'string' },
+    ospCRiskReduction: { table: '', name: 'osp_c_risk_reduction', type: 'string' },
+
+    ogrs4gPercentageScore: { table: '', name: 'ogrs4g_percentage_2yr', type: 'float' },
+    ogrs4gRisk: { table: '', name: 'ogrs4g_band_risk_recon_elm', type: 'string' },
+    ogrs4gCalculated: { table: '', name: 'ogrs4g_calculated', type: 'string' },
+    ogp2PercentageScore: { table: '', name: 'ogp2_percentage_2yr', type: 'float' },
+    ogp2Risk: { table: '', name: 'ogp2_band_risk_recon_elm', type: 'string' },
+    ogp2Calculated: { table: '', name: 'ogp2_calculated', type: 'string' },
+
+    ogrs4vPercentageScore: { table: '', name: 'ogrs4v_percentage_2yr', type: 'float' },
+    ogrs4vRisk: { table: '', name: 'ogrs4v_band_risk_recon_elm', type: 'string' },
+    ogrs4vCalculated: { table: '', name: 'ogrs4v_calculated', type: 'string' },
+    ovp2PercentageScore: { table: '', name: 'ovp2_percentage_2yr', type: 'float' },
+    ovp2Risk: { table: '', name: 'ovp2_band_risk_recon_elm', type: 'string' },
+    ovp2Calculated: { table: '', name: 'ovp2_calculated', type: 'string' },
+
+    snsvCalculatedStatic: { table: '', name: 'snsv_calculated_static', type: 'string' },
+    snsvStaticPercentageScore: { table: '', name: 'snsv_percentage_2yr_static', type: 'float' },
+    snsvStaticRisk: { table: '', name: 'snsv_stat_band_risk_recon_elm', type: 'string' },
+    snsvCalculatedDynamic: { table: '', name: 'snsv_calculated_dynamic', type: 'string' },
+    snsvDynamicPercentageScore: { table: '', name: 'snsv_percentage_2yr_dynamic', type: 'float' },
+    snsvDynamicRisk: { table: '', name: 'snsv_dyn_band_risk_recon_elm', type: 'string' },
+
+    rsrStaticOrDynamic: { table: '', name: 'rsr_static_or_dynamic', type: 'string' },
+    rsrExceptionError: { table: '', name: 'rsr_exception_error', type: 'string' },
+    rsrAlgorithmVersion: { table: '', name: 'rsr_algorithm_version', type: 'integer' },
+    rsrPercentageScore: { table: '', name: 'rsr_percentage_score', type: 'float' },
+    rsrRisk: { table: '', name: 'rsr_risk_recon_elm', type: 'string' },
+
+
 }

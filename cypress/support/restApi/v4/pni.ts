@@ -197,8 +197,8 @@ class RsrOspData {
 
     constructor(dbAssessment: dbClasses.DbAssessment) {
 
-        this.ospCdcScoreLevel = common.riskLabel(dbAssessment.riskDetails.ospDirectContactScoreLevel) ?? common.riskLabel(dbAssessment.riskDetails.ospContactScoreLevel)  // For pre-6.49 assessments
-        this.ospIiicScoreLevel = common.riskLabel(dbAssessment.riskDetails.ospIndirectImagesChildrenScoreLevel) ?? common.riskLabel(dbAssessment.riskDetails.ospImageScoreLevel)  // For pre-6.49 assessments
+        this.ospCdcScoreLevel = common.riskLabel(dbAssessment.riskDetails.ospDcRisk) ?? common.riskLabel(dbAssessment.riskDetails.ospCRisk)  // For pre-6.49 assessments
+        this.ospIiicScoreLevel = common.riskLabel(dbAssessment.riskDetails.ospIicRisk) ?? common.riskLabel(dbAssessment.riskDetails.ospIRisk)  // For pre-6.49 assessments
         this.rsrPercentageScore = common.fixDp(dbAssessment.riskDetails.rsrPercentageScore)
         this.rsrAlgorithmVersion = dbAssessment.riskDetails.rsrAlgorithmVersion
         this.offenderAge = OasysDateTime.dateDiffString(dbAssessment.dateOfBirth, dbAssessment.initiationDate, 'year')
@@ -405,8 +405,8 @@ function pniCalc(dbAssessment: dbClasses.DbAssessment, community: boolean, saraR
     // RISKS
     const ogrs3RiskRecon = dbAssessment.riskDetails.ogrs3RiskRecon
     const ovpRisk = dbAssessment.riskDetails.ovpRisk
-    const ospCdc = dbAssessment.riskDetails.ospDirectContactScoreLevel
-    const ospIiic = dbAssessment.riskDetails.ospIndirectImagesChildrenScoreLevel
+    const ospCdc = dbAssessment.riskDetails.ospDcRisk
+    const ospIiic = dbAssessment.riskDetails.ospIicRisk
     const rsrPercentageScore = dbAssessment.riskDetails.rsrPercentageScore
 
     const rsrRiskLevel: 'L' | 'M' | 'H' = rsrPercentageScore == null ? null
