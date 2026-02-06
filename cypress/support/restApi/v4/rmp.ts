@@ -82,11 +82,18 @@ export class RmpAssessment extends v4Common.V4AssessmentCommon {
     tickRiskToKnownAdult: string
     tickRiskToPrisoners: string
     tickRiskToStaff: string
+    tickRiskToPublic: string
     tickEmotionalCongruenceWithChildren: string
     tickSexualPreOccupation: string
     tickOffenceRelatedSexualInterests: string
     tickHostileOrientation: string
     tickVictimSafetyPlanning: string
+    tickSanEmploymentAndEducation
+    tickSanPersonalRelationshipsAndCommunity: string
+    tickSanDrugUse: string
+    tickSanAlcoholUse: string
+    tickSanHealthAndWellbeing: string
+    tickSanThinkingBehavioursAndAttitudes: string
     keyInformationAboutCurrentSituation: string
     furtherConsiderations: string
     supervision: string
@@ -97,6 +104,7 @@ export class RmpAssessment extends v4Common.V4AssessmentCommon {
     increaseRisk: string
     contingencyPlans: string
     additionalComments: string
+    factorsStrengthsAndProtective: string
     pre4PillarsCurrentSituation: string
     pre4PillarsOtherAgencies: string
     pre4PillarsExistingSupport: string
@@ -153,11 +161,18 @@ export class RmpAssessment extends v4Common.V4AssessmentCommon {
         this.tickRiskToKnownAdult = common.getSingleAnswer(dbAssessment.qaData, 'RMP', 'RM28.0.22.1')
         this.tickRiskToPrisoners = common.getSingleAnswer(dbAssessment.qaData, 'RMP', 'RM28.0.23.1')
         this.tickRiskToStaff = common.getSingleAnswer(dbAssessment.qaData, 'RMP', 'RM28.0.24.1')
+        this.tickRiskToPublic = common.getSingleAnswer(dbAssessment.qaData, 'RMP', 'RM28.0.30.1')
         this.tickEmotionalCongruenceWithChildren = common.getSingleAnswer(dbAssessment.qaData, 'RMP', 'RM28.0.25.1')
         this.tickSexualPreOccupation = common.getSingleAnswer(dbAssessment.qaData, 'RMP', 'RM28.0.26.1')
         this.tickOffenceRelatedSexualInterests = common.getSingleAnswer(dbAssessment.qaData, 'RMP', 'RM28.0.27.1')
         this.tickHostileOrientation = common.getSingleAnswer(dbAssessment.qaData, 'RMP', 'RM28.0.28.1')
         this.tickVictimSafetyPlanning = common.getSingleAnswer(dbAssessment.qaData, 'RMP', 'RM28.0.29.1')
+        this.tickSanEmploymentAndEducation = common.getSingleAnswer(dbAssessment.qaData, 'RMP', 'RM28.0.4.1_SAN')
+        this.tickSanPersonalRelationshipsAndCommunity = common.getSingleAnswer(dbAssessment.qaData, 'RMP', 'RM28.0.6.1_SAN')
+        this.tickSanDrugUse = common.getSingleAnswer(dbAssessment.qaData, 'RMP', 'RM28.0.8.1_SAN')
+        this.tickSanAlcoholUse = common.getSingleAnswer(dbAssessment.qaData, 'RMP', 'RM28.0.9.1_SAN')
+        this.tickSanHealthAndWellbeing = common.getSingleAnswer(dbAssessment.qaData, 'RMP', 'RM28.0.10.1_SAN')
+        this.tickSanThinkingBehavioursAndAttitudes = common.getSingleAnswer(dbAssessment.qaData, 'RMP', 'RM28.0.30.1_SAN')
         this.keyInformationAboutCurrentSituation = common.getTextAnswer(dbAssessment.textData, 'RMP', 'RM28.1')
         this.furtherConsiderations = common.getTextAnswer(dbAssessment.textData, 'RMP', 'RM28')
         this.supervision = common.getTextAnswer(dbAssessment.textData, 'RMP', 'RM30')
@@ -168,6 +183,7 @@ export class RmpAssessment extends v4Common.V4AssessmentCommon {
         this.increaseRisk = common.getTextAnswer(dbAssessment.textData, 'RMP', 'SUM4')
         this.contingencyPlans = common.getTextAnswer(dbAssessment.textData, 'RMP', 'RM34')
         this.additionalComments = common.getTextAnswer(dbAssessment.textData, 'RMP', 'RM35')
+        this.factorsStrengthsAndProtective = common.getTextAnswer(dbAssessment.textData, 'RMP', 'SUM10')
         this.pre4PillarsCurrentSituation = common.getTextAnswer(dbAssessment.textData, 'RMP', 'RM18')
         this.pre4PillarsOtherAgencies = common.getTextAnswer(dbAssessment.textData, 'RMP', 'RM20')
         this.pre4PillarsExistingSupport = common.getTextAnswer(dbAssessment.textData, 'RMP', 'RM21')

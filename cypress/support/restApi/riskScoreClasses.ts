@@ -94,6 +94,8 @@ export class OSP {
     ospIndirectImagesChildrenPercentageScore: number
     ospDirectContactScoreLevel: string
     ospDirectContactPercentageScore: number
+    ospDirectContactRiskReduction: string
+
 
     constructor(dbRiskDetails: dbClasses.DbRiskDetails) {
 
@@ -106,6 +108,7 @@ export class OSP {
         this.ospIndirectImagesChildrenPercentageScore = common.fixDp(dbRiskDetails.ospIndirectImagesChildrenPercentageScore)
         this.ospDirectContactScoreLevel = common.riskLabel(dbRiskDetails.ospDirectContactScoreLevel)
         this.ospDirectContactPercentageScore = common.fixDp(dbRiskDetails.ospDirectContactPercentageScore)
+        this.ospDirectContactRiskReduction = dbRiskDetails.ospDirectContactRiskReduction
     }
 }
 

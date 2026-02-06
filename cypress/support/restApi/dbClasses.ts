@@ -52,6 +52,7 @@ export class DbAssessmentOrRsr {
 
     assessmentPk: number
     assessmentType: string
+    assessmentVersion: number
     status: string
     initiationDate: string
     signedDate: string
@@ -61,10 +62,12 @@ export class DbAssessmentOrRsr {
     eventNumber: number
     appVersion: string
 
-    constructor(assessmentPk: number, assessmentType: string, status: string, initiationDate: string, signedDate: string, completedDate: string, lastUpdatedDate: string, versionTable: string[][]) {
+    constructor(assessmentPk: number, assessmentType: string, status: string, initiationDate: string, signedDate: string,
+        completedDate: string, lastUpdatedDate: string, assessmentVersion: number, versionTable: string[][]) {
 
         this.assessmentPk = assessmentPk
         this.assessmentType = assessmentType
+        this.assessmentVersion = assessmentVersion
         this.status = status
         this.initiationDate = initiationDate
         this.signedDate = signedDate
@@ -84,7 +87,6 @@ export class DbAssessment extends DbAssessmentOrRsr {
     pOAssessment: string
     pOAssessmentDesc: string
     assessorName: string
-    assessmentVersion: number
     courtCode: string
     courtType: string
     courtName: string
@@ -105,20 +107,21 @@ export class DbAssessment extends DbAssessmentOrRsr {
 
     constructor(assessmentData: string[], versionTable: string[][]) {
 
-        super(Number.parseInt(assessmentData[0]), assessmentData[1], assessmentData[2], assessmentData[3], assessmentData[4], assessmentData[5], assessmentData[6], versionTable)
+        super(Number.parseInt(assessmentData[0]), assessmentData[1], assessmentData[2], assessmentData[3], assessmentData[4],
+            assessmentData[5], assessmentData[6], Number.parseInt(assessmentData[41]), versionTable)
         this.riskDetails = new DbRiskDetails(assessmentData)
         this.roshLevel = assessmentData[36]
         this.eventNumber = getDbInt(assessmentData[37])
         this.pOAssessment = assessmentData[38]
         this.pOAssessmentDesc = assessmentData[39]
         this.assessorName = assessmentData[40]
-        this.assessmentVersion = Number.parseInt(assessmentData[41])
         this.parentAssessmentPk = Number.parseInt(assessmentData[42]) || null
-        this.sanIndicator = assessmentData[47]
-        this.dateOfBirth = assessmentData[66]
-        this.learningToolScore = assessmentData[67] == null ? null : Number.parseInt(assessmentData[67])
-        this.ldcSubTotal = assessmentData[68] == null ? null : Number.parseInt(assessmentData[68])
-        this.ldcFuncProc = assessmentData[69]
+        this.sanIndicator = assessmentData[48]
+
+        this.dateOfBirth = assessmentData[67]
+        this.learningToolScore = assessmentData[68] == null ? null : Number.parseInt(assessmentData[68])
+        this.ldcSubTotal = assessmentData[69] == null ? null : Number.parseInt(assessmentData[69])
+        this.ldcFuncProc = assessmentData[70]
     }
 
     addCourtDetails(courtData: string[]) {
@@ -143,7 +146,7 @@ export class DbAssessment extends DbAssessmentOrRsr {
                     s.rsr_algorithm_version, s.rsr_percentage_score, s.rsr_risk_recon_elm, 
                     s.osp_i_percentage_score, s.osp_c_percentage_score, s.osp_i_risk_recon_elm, s.osp_c_risk_recon_elm, s.rosh_level_elm,
                     s.cms_event_number, s.purpose_assessment_elm, s.purpose_assmt_other_ftxt, assessor_name, s.version_number, s.parent_oasys_set_pk, 
-                    s.osp_iic_risk_recon_elm, s.osp_iic_percentage_score, s.osp_dc_risk_recon_elm, s.osp_dc_percentage_score,
+                    s.osp_iic_risk_recon_elm, s.osp_iic_percentage_score, s.osp_dc_risk_recon_elm, s.osp_dc_percentage_score, s.osp_c_risk_reduction, 
                     s.san_assessment_linked_ind, 
                     s.ogrs4g_percentage_2yr, s.ogrs4g_band_risk_recon_elm, s.ogrs4g_calculated, 
                     s.ogrs4v_percentage_2yr, s.ogrs4v_band_risk_recon_elm, s.ogrs4v_calculated, 
@@ -209,7 +212,7 @@ export class DbRsr extends DbAssessmentOrRsr {
 
     constructor(rsrData: string[], versionTable: string[][]) {
 
-        super(Number.parseInt(rsrData[0]), 'STANDALONE', rsrData[1], rsrData[2], undefined, rsrData[3], rsrData[4], versionTable)
+        super(Number.parseInt(rsrData[0]), 'STANDALONE', rsrData[1], rsrData[2], undefined, rsrData[3], rsrData[4], null, versionTable)
         this.riskDetails = new DbRiskDetails(rsrData, true)
         this.eventNumber = null
     }
@@ -223,7 +226,7 @@ export class DbRsr extends DbAssessmentOrRsr {
                             r.rsr_exception_error, 
                             r.rsr_algorithm_version, r.rsr_percentage_score, r.rsr_risk_recon_elm, 
                             r.osp_i_percentage_score, r.osp_c_percentage_score, r.osp_i_risk_recon_elm, r.osp_c_risk_recon_elm,
-                            r.osp_iic_risk_recon_elm, r.osp_iic_percentage_score, r.osp_dc_risk_recon_elm, r.osp_dc_percentage_score,
+                            r.osp_iic_risk_recon_elm, r.osp_iic_percentage_score, r.osp_dc_risk_recon_elm, r.osp_dc_percentage_score, r.osp_c_risk_reduction,
                             r.ogrs4g_percentage_2yr, r.ogrs4g_band_risk_recon_elm, r.ogrs4g_calculated, 
                             r.ogrs4v_percentage_2yr, r.ogrs4v_band_risk_recon_elm, r.ogrs4v_calculated, 
                             r.ogp2_percentage_2yr, r.ogp2_band_risk_recon_elm, r.ogp2_calculated, 
@@ -280,6 +283,7 @@ export class DbRiskDetails {
     ospIndirectImagesChildrenPercentageScore: number
     ospDirectContactScoreLevel: string
     ospDirectContactPercentageScore: number
+    ospDirectContactRiskReduction: string
 
     ogrs4gYr2: number
     ogrs4gBand: string
@@ -322,6 +326,7 @@ export class DbRiskDetails {
             this.ospIndirectImagesChildrenPercentageScore = getDbFloat(riskData[i++])
             this.ospDirectContactScoreLevel = riskData[i++]
             this.ospDirectContactPercentageScore = getDbFloat(riskData[i++])
+            this.ospDirectContactRiskReduction = riskData[i++]
 
             this.ogrs4gYr2 = getDbFloat(riskData[i++])
             this.ogrs4gBand = riskData[i++]
@@ -342,63 +347,67 @@ export class DbRiskDetails {
             this.snsvDynamicYr2Band = riskData[i++]
             this.snsvDynamicCalculated = riskData[i++]
         } else {
-            this.ogpStWesc = getDbInt(riskData[7])
-            this.ogpDyWesc = getDbInt(riskData[8])
-            this.ogpTotWesc = Number.parseInt(riskData[9]) || null
-            this.ogp1Year = getDbInt(riskData[10])
-            this.ogp2Year = getDbInt(riskData[11])
-            this.ogpRisk = riskData[12]
+            let i = 7
+            this.ogpStWesc = getDbInt(riskData[i++])
+            this.ogpDyWesc = getDbInt(riskData[i++])
+            this.ogpTotWesc = Number.parseInt(riskData[i++]) || null
+            this.ogp1Year = getDbInt(riskData[i++])
+            this.ogp2Year = getDbInt(riskData[i++])
+            this.ogpRisk = riskData[i++]
 
-            this.ovpStWesc = getDbInt(riskData[13])
-            this.ovpDyWesc = getDbInt(riskData[14])
-            this.ovpTotWesc = Number.parseInt(riskData[15]) || null
-            this.ovp1Year = getDbInt(riskData[16])
-            this.ovp2Year = getDbInt(riskData[17])
-            this.ovpRisk = riskData[18]
-            this.ovpPrevWesc = getDbInt(riskData[19])
-            this.ovpNonVioWesc = getDbInt(riskData[20])
-            this.ovpAgeWesc = getDbInt(riskData[21])
-            this.ovpVioWesc = getDbInt(riskData[22])
-            this.ovpSexWesc = getDbInt(riskData[23])
+            this.ovpStWesc = getDbInt(riskData[i++])
+            this.ovpDyWesc = getDbInt(riskData[i++])
+            this.ovpTotWesc = Number.parseInt(riskData[i++]) || null
+            this.ovp1Year = getDbInt(riskData[i++])
+            this.ovp2Year = getDbInt(riskData[i++])
+            this.ovpRisk = riskData[i++]
+            this.ovpPrevWesc = getDbInt(riskData[i++])
+            this.ovpNonVioWesc = getDbInt(riskData[i++])
+            this.ovpAgeWesc = getDbInt(riskData[i++])
+            this.ovpVioWesc = getDbInt(riskData[i++])
+            this.ovpSexWesc = getDbInt(riskData[i++])
 
-            this.ogrs31Year = getDbInt(riskData[24])
-            this.ogrs32Year = getDbInt(riskData[25])
-            this.ogrs3RiskRecon = riskData[26]
+            this.ogrs31Year = getDbInt(riskData[i++])
+            this.ogrs32Year = getDbInt(riskData[i++])
+            this.ogrs3RiskRecon = riskData[i++]
 
-            this.rsrStaticOrDynamic = riskData[27]
-            this.rsrExceptionError = riskData[28]
-            this.rsrAlgorithmVersion = getDbInt(riskData[29])
-            this.rsrPercentageScore = getDbFloat(riskData[30])
-            this.scoreLevel = riskData[31]
+            this.rsrStaticOrDynamic = riskData[i++]
+            this.rsrExceptionError = riskData[i++]
+            this.rsrAlgorithmVersion = getDbInt(riskData[i++])
+            this.rsrPercentageScore = getDbFloat(riskData[i++])
+            this.scoreLevel = riskData[i++]
 
-            this.ospImagePercentageScore = getDbFloat(riskData[32])
-            this.ospContactPercentageScore = getDbFloat(riskData[33])
-            this.ospImageScoreLevel = riskData[34]
-            this.ospContactScoreLevel = riskData[35]
+            this.ospImagePercentageScore = getDbFloat(riskData[i++])
+            this.ospContactPercentageScore = getDbFloat(riskData[i++])
+            this.ospImageScoreLevel = riskData[i++]
+            this.ospContactScoreLevel = riskData[i++]
 
-            this.ospIndirectImagesChildrenScoreLevel = riskData[43]
-            this.ospIndirectImagesChildrenPercentageScore = getDbFloat(riskData[44])
-            this.ospDirectContactScoreLevel = riskData[45]
-            this.ospDirectContactPercentageScore = getDbFloat(riskData[46])
+            i = 43
+            this.ospIndirectImagesChildrenScoreLevel = riskData[i++]
+            this.ospIndirectImagesChildrenPercentageScore = getDbFloat(riskData[i++])
+            this.ospDirectContactScoreLevel = riskData[i++]
+            this.ospDirectContactPercentageScore = getDbFloat(riskData[i++])
+            this.ospDirectContactRiskReduction = riskData[i++]
 
-            this.ogrs4gYr2 = getDbFloat(riskData[48])
-            this.ogrs4gBand = riskData[49]
-            this.ogrs4gCalculated = riskData[50]
-            this.ogrs4vYr2 = getDbFloat(riskData[51])
-            this.ogrs4vBand = riskData[52]
-            this.ogrs4vCalculated = riskData[53]
-            this.ogp2Yr2 = getDbFloat(riskData[54])
-            this.ogp2Band = riskData[55]
-            this.ogp2Calculated = riskData[56]
-            this.ovp2Yr2 = getDbFloat(riskData[57])
-            this.ovp2Band = riskData[58]
-            this.ovp2Calculated = riskData[59]
-            this.snsvStaticYr2 = getDbFloat(riskData[60])
-            this.snsvStaticYr2Band = riskData[61]
-            this.snsvStaticCalculated = riskData[62]
-            this.snsvDynamicYr2 = getDbFloat(riskData[63])
-            this.snsvDynamicYr2Band = riskData[64]
-            this.snsvDynamicCalculated = riskData[65]
+            i=49
+            this.ogrs4gYr2 = getDbFloat(riskData[i++])
+            this.ogrs4gBand = riskData[i++]
+            this.ogrs4gCalculated = riskData[i++]
+            this.ogrs4vYr2 = getDbFloat(riskData[i++])
+            this.ogrs4vBand = riskData[i++]
+            this.ogrs4vCalculated = riskData[i++]
+            this.ogp2Yr2 = getDbFloat(riskData[i++])
+            this.ogp2Band = riskData[i++]
+            this.ogp2Calculated = riskData[i++]
+            this.ovp2Yr2 = getDbFloat(riskData[i++])
+            this.ovp2Band = riskData[i++]
+            this.ovp2Calculated = riskData[i++]
+            this.snsvStaticYr2 = getDbFloat(riskData[i++])
+            this.snsvStaticYr2Band = riskData[i++]
+            this.snsvStaticCalculated = riskData[i++]
+            this.snsvDynamicYr2 = getDbFloat(riskData[i++])
+            this.snsvDynamicYr2Band = riskData[i++]
+            this.snsvDynamicCalculated = riskData[i++]
 
         }
 
@@ -486,19 +495,22 @@ export class DbSection {
     otherWeightedScore: number
     lowScoreNeedsAttn: string
     crimNeedScoreThreshold: number
+    sanCrimNeedScore: number
 
     constructor(sectionData: string[]) {
 
-        this.sectionCode = sectionData[0]
-        this.sectionPk = Number.parseInt(sectionData[1])
-        this.otherWeightedScore = getDbInt(sectionData[2])
-        this.lowScoreNeedsAttn = sectionData[3]
-        this.crimNeedScoreThreshold = getDbInt(sectionData[4])
+        let i = 0
+        this.sectionCode = sectionData[i++]
+        this.sectionPk = Number.parseInt(sectionData[i++])
+        this.otherWeightedScore = getDbInt(sectionData[i++])
+        this.lowScoreNeedsAttn = sectionData[i++]
+        this.crimNeedScoreThreshold = getDbInt(sectionData[i++])
+        this.sanCrimNeedScore = getDbInt(sectionData[i++])
     }
 
     static query(assessmentPk: number): string {
 
-        return `select s.ref_section_code, s.oasys_section_pk, s.sect_other_weighted_score, s.low_score_need_attn_ind, r.crim_need_score_threshold
+        return `select s.ref_section_code, s.oasys_section_pk, s.sect_other_weighted_score, s.low_score_need_attn_ind, r.crim_need_score_threshold, s.san_crim_need_score
                     from eor.oasys_section s, eor.ref_section r 
                     where s.oasys_set_pk = ${assessmentPk}
                     and r.ref_section_code = s.ref_section_code

@@ -7,7 +7,7 @@ export function assessmentFilter(dbAssessment: dbClasses.DbAssessmentOrRsr): boo
     if (dbAssessment.assessmentType != 'LAYER3') return false
     if (!['COMPLETE', 'LOCKED_INCOMPLETE'].includes(dbAssessment.status)) return true
 
-    const dateLimit = OasysDateTime.oasysDateAsPlainDate({months: -6}).toString()
+    const dateLimit = OasysDateTime.oasysDateAsPlainDate({ months: -6 }).toString()
     return dbAssessment.completedDate.substring(0, 10) >= dateLimit  // 6-month limit based on date only
 }
 
@@ -129,6 +129,7 @@ export class APAssessmentCommon {
 
     assessmentPk: number
     assessmentType: string
+    assessmentVersion: number
     dateCompleted: string
     assessorSignedDate: string
     initiationDate: string
@@ -161,6 +162,7 @@ export class APAssessmentCommon {
 
         this.assessmentPk = assessment.assessmentPk
         this.assessmentType = assessment.assessmentType
+        this.assessmentVersion = assessment.assessmentVersion
         this.dateCompleted = assessment.completedDate
         this.assessorSignedDate = assessment.signedDate
         this.initiationDate = assessment.initiationDate

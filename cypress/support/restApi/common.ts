@@ -178,6 +178,9 @@ export function riskLabel(risk: string): string {
 
 export function getSectionScore(dbAssessment: dbClasses.DbAssessment, sectionCode: string): number {
 
+    if (dbAssessment.assessmentType != 'LAYER3' || dbAssessment.assessmentVersion != 1) {
+        return null
+    }
     const section = dbAssessment.sections.filter((s) => s.sectionCode == sectionCode)
     return section.length == 0 ? null : section[0].otherWeightedScore
 }

@@ -46,6 +46,7 @@ export class VictimAssessment extends v4Common.V4AssessmentCommon {
 
         // Remove standard stuff not included in this endpoint
         delete this.assessmentPk
+        delete this.assessmentVersion
         delete this.assessmentType
         delete this.dateCompleted
         delete this.assessorSignedDate

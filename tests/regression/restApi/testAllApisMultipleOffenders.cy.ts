@@ -28,7 +28,8 @@ describe('RestAPI regression tests', () => {
         // { date: `2022-${randomMonth()}-${randomDay()}`, count: offenderCount },
         // { date: `2023-${randomMonth()}-${randomDay()}`, count: offenderCount },
         // { date: `2024-${randomMonth()}-${randomDay()}`, count: offenderCount },
-        { date: 'today', count: offenderCount },
+         { date: `2025-${randomMonth()}-${randomDay()}`, count: offenderCount },
+       { date: 'today', count: offenderCount },
     ]
 
     const offendersToSkip = `('D011517', 'X083869', 'X334486')` // Duff test data in T2.  ; 2: , 3: 
