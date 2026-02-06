@@ -389,7 +389,7 @@ export class DbRiskDetails {
             this.ospDirectContactPercentageScore = getDbFloat(riskData[i++])
             this.ospDirectContactRiskReduction = riskData[i++]
 
-            i=49
+            i = 49
             this.ogrs4gYr2 = getDbFloat(riskData[i++])
             this.ogrs4gBand = riskData[i++]
             this.ogrs4gCalculated = riskData[i++]
@@ -497,15 +497,17 @@ export class DbSection {
     crimNeedScoreThreshold: number
     sanCrimNeedScore: number
 
-    constructor(sectionData: string[]) {
+    constructor(sectionData: string[], assessmentType: string, assessmentVersion: number) {
 
-        let i = 0
-        this.sectionCode = sectionData[i++]
-        this.sectionPk = Number.parseInt(sectionData[i++])
-        this.otherWeightedScore = getDbInt(sectionData[i++])
-        this.lowScoreNeedsAttn = sectionData[i++]
-        this.crimNeedScoreThreshold = getDbInt(sectionData[i++])
-        this.sanCrimNeedScore = getDbInt(sectionData[i++])
+        const l31 = assessmentType == 'LAYER3' && assessmentVersion == 1
+        const san = assessmentType == 'LAYER3' && assessmentVersion == 2
+
+        this.sectionCode = sectionData[0]
+        this.sectionPk = Number.parseInt(sectionData[1])
+        this.otherWeightedScore = l31 ? getDbInt(sectionData[2]) : null
+        this.lowScoreNeedsAttn = sectionData[3]
+        this.crimNeedScoreThreshold = getDbInt(sectionData[4])
+        this.sanCrimNeedScore = san ? getDbInt(sectionData[5]) : null
     }
 
     static query(assessmentPk: number): string {

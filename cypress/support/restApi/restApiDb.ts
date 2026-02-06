@@ -46,7 +46,7 @@ export async function getOffenderWithAssessments(crnSource: Provider, crn: strin
         const sectionsData = await db.selectData(DbSection.query(assessment.assessmentPk))
         if (sectionsData.error != null) throw new Error(sectionsData.error)
         const sections = sectionsData.data as string[][]
-        sections.forEach((section) => assessment.sections.push(new DbSection(section)))
+        sections.forEach((section) => assessment.sections.push(new DbSection(section, assessment.assessmentType, assessment.assessmentVersion)))
 
         // Questions and answers
         const qaData = await db.selectData(DbAssessment.qaQuery(assessment.assessmentPk))
