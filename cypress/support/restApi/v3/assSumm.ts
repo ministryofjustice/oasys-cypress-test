@@ -223,7 +223,7 @@ class FurtherInformation {
         const reviewType = common.getSingleAnswer(dbAssessment.qaData, 'RSP', 'RP.3')
         this.reviewTerm = reviewType == 'Termination' ? 'Y' : 'N'
 
-        this.cmsEventNumber = dbAssessment.eventNumber
+        this.cmsEventNumber = dbAssessment.cmsEventNumber
         this.courtCode = dbAssessment.courtCode
         this.courtType = dbAssessment.courtType
         this.courtName = dbAssessment.courtName

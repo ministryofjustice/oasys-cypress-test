@@ -34,8 +34,6 @@ export async function getOffenderWithAssessments(crnSource: Provider, crn: strin
     let dbOffender = new DbOffenderWithAssessments(offenderData.data[0])
 
     // Get OASYS_SET data, then loop through assessments
-    console.log(DbAssessment.query(dbOffender.offenderPk))
-    return null
     const assessmentData = await db.selectData(DbAssessment.query(dbOffender.offenderPk))
     if (assessmentData.error != null) throw new Error(assessmentData.error)
     const assessments = assessmentData.data as string[][]
