@@ -1,6 +1,7 @@
-import { OasysDateTime } from 'oasys'
 import * as db from '../oasysDb'
+import { OasysDateTime } from 'oasys'
 import { DbOffenderWithAssessments, DbAssessment, DbVictim, DbOffence, DbRsr, DbSection, DbAction, DbObjective, DbBspObjective, DbNeed } from './dbClasses'
+import { QaData } from './qaData'
 
 let versionTable: string[][] = null
 
@@ -51,12 +52,7 @@ export async function getOffenderWithAssessments(crnSource: Provider, crn: strin
         // Questions and answers
         const qaData = await db.selectData(DbAssessment.qaQuery(assessment.assessmentPk))
         if (qaData.error != null) throw new Error(qaData.error)
-        assessment.qaData = qaData.data as string[][]
-
-        const textData = await db.selectData(DbAssessment.textAnswerQuery(assessment.assessmentPk))
-        if (textData.error != null) throw new Error(textData.error)
-        assessment.textData = textData.data as string[][]
-
+        assessment.qaData = new QaData(qaData.data as string[][])
 
         // Offences
         const offencesData = await db.selectData(DbOffence.query(assessment.assessmentPk))

@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as apCommon from './apCommon'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -63,21 +62,21 @@ export class APRiskAssAssessment extends apCommon.APAssessmentCommon {
 
     addRiskIndDetails(assessment: dbClasses.DbAssessment) {
 
-        this.currentOffenceDetails = common.getTextAnswer(assessment.textData, 'ROSHFULL', 'FA1')
-        this.currentWhereAndWhen = common.getTextAnswer(assessment.textData, 'ROSHFULL', 'FA2')
-        this.currentHowDone = common.getTextAnswer(assessment.textData, 'ROSHFULL', 'FA3')
-        this.currentWhoVictims = common.getTextAnswer(assessment.textData, 'ROSHFULL', 'FA4')
-        this.currentAnyoneElsePresent = common.getTextAnswer(assessment.textData, 'ROSHFULL', 'FA5')
-        this.currentWhyDone = common.getTextAnswer(assessment.textData, 'ROSHFULL', 'FA6')
-        this.currentSources = common.getTextAnswer(assessment.textData, 'ROSHFULL', 'FA7')
-        this.previousWhatDone = common.getTextAnswer(assessment.textData, 'ROSHFULL', 'FA8')
-        this.previousWhereAndWhen = common.getTextAnswer(assessment.textData, 'ROSHFULL', 'FA9')
-        this.previousHowDone = common.getTextAnswer(assessment.textData, 'ROSHFULL', 'FA10')
-        this.previousWhoVictims = common.getTextAnswer(assessment.textData, 'ROSHFULL', 'FA11')
-        this.previousAnyoneElsePresent = common.getTextAnswer(assessment.textData, 'ROSHFULL', 'FA12')
-        this.previousWhyDone = common.getTextAnswer(assessment.textData, 'ROSHFULL', 'FA13')
-        this.previousSources = common.getTextAnswer(assessment.textData, 'ROSHFULL', 'FA14')
-        this.identifyBehavioursIncidents = common.getTextAnswer(assessment.textData, 'ROSHFULL', 'FA61')
-        this.analysisBehavioursIncidents = common.getTextAnswer(assessment.textData, 'ROSHFULL', 'FA67')
+        this.currentOffenceDetails = assessment.qaData.getString('FA1')
+        this.currentWhereAndWhen = assessment.qaData.getString('FA2')
+        this.currentHowDone = assessment.qaData.getString('FA3')
+        this.currentWhoVictims = assessment.qaData.getString('FA4')
+        this.currentAnyoneElsePresent = assessment.qaData.getString('FA5')
+        this.currentWhyDone = assessment.qaData.getString('FA6')
+        this.currentSources = assessment.qaData.getString('FA7')
+        this.previousWhatDone = assessment.qaData.getString('FA8')
+        this.previousWhereAndWhen = assessment.qaData.getString('FA9')
+        this.previousHowDone = assessment.qaData.getString('FA10')
+        this.previousWhoVictims = assessment.qaData.getString('FA11')
+        this.previousAnyoneElsePresent = assessment.qaData.getString('FA12')
+        this.previousWhyDone = assessment.qaData.getString('FA13')
+        this.previousSources = assessment.qaData.getString('FA14')
+        this.identifyBehavioursIncidents = assessment.qaData.getString('FA61')
+        this.analysisBehavioursIncidents = assessment.qaData.getString('FA67')
     }
 }

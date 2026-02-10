@@ -7,9 +7,9 @@ describe('RestAPI regression tests', () => {
 
 
     const testCases = [,
-        ['ZABUOBO', null],    // fully populated L3/L1v2/L1v1
-        // ['X770507', null],
-        // ['VU48912', null],
+        // ['ZABUOBO', null],    // fully populated L3/L1v2/L1v1
+        // ['H923484', null],    // SARA
+        ['X552020', null],
         // ['YL32101', null],
         // ['', ''],      
 

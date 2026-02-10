@@ -1,5 +1,4 @@
 import * as v1Common from './v1Common'
-import * as common from '../common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
 
@@ -38,7 +37,10 @@ export class RmpEndpointResponse extends v1Common.V1EndpointResponse {
             const assessment = dbAssessments[i] as dbClasses.DbAssessment
             if (['M', 'H', 'V'].includes(assessment.roshLevel)) {
 
-                if (assessment.textData.filter((q) => q[0] == 'RMP' && ['RM28', 'RM28.1', 'RM30', 'RM31', 'RM32', 'RM33', 'RM34'].includes(q[1])).length > 0) {
+                // if (assessment.textData.filter((q) => q[0] == 'RMP' && ['RM28', 'RM28.1', 'RM30', 'RM31', 'RM32', 'RM33', 'RM34'].includes(q[1])).length > 0) {
+                if (assessment.qaData['RM28'] ?? assessment.qaData['RM28.1'] ?? assessment.qaData['RM30'] ?? assessment.qaData['RM31']
+                    ?? assessment.qaData['RM32'] ?? assessment.qaData['RM33'] ?? assessment.qaData['RM34'] != null) {
+                        
                     if (this.rmpTimeline == undefined) {
                         this.rmpTimeline = []
                     }
@@ -75,13 +77,13 @@ class RMPAssessment extends v1Common.V1AssessmentCommon {
     addRmpDetails(assessment: dbClasses.DbAssessment) {
 
         if (['M', 'H', 'V'].includes(assessment.roshLevel)) {
-            this.keyInformationCurrentSituation = common.getTextAnswer(assessment.textData, 'RMP', 'RM28.1')
-            this.furtherConsiderationsCurrentSituation = common.getTextAnswer(assessment.textData, 'RMP', 'RM28')
-            this.supervision = common.getTextAnswer(assessment.textData, 'RMP', 'RM30')
-            this.monitoringAndControl = common.getTextAnswer(assessment.textData, 'RMP', 'RM31')
-            this.interventionsAndTreatment = common.getTextAnswer(assessment.textData, 'RMP', 'RM32')
-            this.victimSafetyPlanning = common.getTextAnswer(assessment.textData, 'RMP', 'RM33')
-            this.contingencyPlans = common.getTextAnswer(assessment.textData, 'RMP', 'RM34')
+            this.keyInformationCurrentSituation = assessment.qaData.getString('RM28.1')
+            this.furtherConsiderationsCurrentSituation = assessment.qaData.getString('RM28')
+            this.supervision = assessment.qaData.getString('RM30')
+            this.monitoringAndControl = assessment.qaData.getString('RM31')
+            this.interventionsAndTreatment = assessment.qaData.getString('RM32')
+            this.victimSafetyPlanning = assessment.qaData.getString('RM33')
+            this.contingencyPlans = assessment.qaData.getString('RM34')
         }
     }
 }

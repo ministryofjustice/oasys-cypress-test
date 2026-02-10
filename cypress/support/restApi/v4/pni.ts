@@ -77,21 +77,21 @@ export class PniAssessment extends v4Common.V4AssessmentCommon {
 
         delete this.assessor
 
-        this.everCommittedSexualOffence = common.getSingleAnswer(dbAssessment.qaData, '1', '1.30')
-        this.openSexualOffendingQuestions = common.getSingleAnswer(dbAssessment.qaData, '6', '6.11')
-        this.sexualPreOccupation = common.getSingleAnswer(dbAssessment.qaData, '11', '11.11')
-        this.offenceRelatedSexualInterests = common.getSingleAnswer(dbAssessment.qaData, '11', '11.12')
-        this.emotionalCongruence = common.getSingleAnswer(dbAssessment.qaData, '6', '6.12')
-        this.proCriminalAttitudes = common.getSingleAnswer(dbAssessment.qaData, '12', '12.1')
-        this.hostileOrientation = common.getSingleAnswer(dbAssessment.qaData, '12', '12.9')
-        this.relCloseFamily = common.getSingleAnswer(dbAssessment.qaData, '6', '6.1')
-        this.prevCloseRelationships = common.getSingleAnswer(dbAssessment.qaData, '6', '6.6')
-        this.easilyInfluenced = common.getSingleAnswer(dbAssessment.qaData, '7', '7.3')
-        this.aggressiveControllingBehavour = common.getSingleAnswer(dbAssessment.qaData, '11', '11.3')
-        this.impulsivity = common.getSingleAnswer(dbAssessment.qaData, '11', '11.2')
-        this.temperControl = common.getSingleAnswer(dbAssessment.qaData, '11', '11.4')
-        this.problemSolvingSkills = common.getSingleAnswer(dbAssessment.qaData, '11', '11.6')
-        this.difficultiesCoping = common.getSingleAnswer(dbAssessment.qaData, '10', '10.1')
+        this.everCommittedSexualOffence = dbAssessment.qaData.getString('1.30')
+        this.openSexualOffendingQuestions = dbAssessment.qaData.getString('6.11')
+        this.sexualPreOccupation = dbAssessment.qaData.getString('11.11')
+        this.offenceRelatedSexualInterests = dbAssessment.qaData.getString('11.12')
+        this.emotionalCongruence = dbAssessment.qaData.getString('6.12')
+        this.proCriminalAttitudes = dbAssessment.qaData.getString('12.1')
+        this.hostileOrientation = dbAssessment.qaData.getString('12.9')
+        this.relCloseFamily = dbAssessment.qaData.getString('6.1')
+        this.prevCloseRelationships = dbAssessment.qaData.getString('6.6')
+        this.easilyInfluenced = dbAssessment.qaData.getString('7.3')
+        this.aggressiveControllingBehavour = dbAssessment.qaData.getString('11.3')
+        this.impulsivity = dbAssessment.qaData.getString('11.2')
+        this.temperControl = dbAssessment.qaData.getString('11.4')
+        this.problemSolvingSkills = dbAssessment.qaData.getString('11.6')
+        this.difficultiesCoping = dbAssessment.qaData.getString('10.1')
 
         this.ogpOvp = new OgpOvp(dbAssessment.riskDetails)
         this.ldcData = new LdcData(dbAssessment)
@@ -125,8 +125,8 @@ class PniCalc {
 
         const age = OasysDateTime.dateDiffString(dbAssessment.dateOfBirth, dbAssessment.initiationDate, 'year')
         if (age >= 18) {
-            const saraRiskLevelToPartner = common.getSingleAnswer(saraAssessment?.qaData, 'SARA', 'SR76.1.1')
-            const saraRiskLevelToOther = common.getSingleAnswer(saraAssessment?.qaData, 'SARA', 'SR77.1.1')
+            const saraRiskLevelToPartner = saraAssessment?.qaData.getString('SR76.1.1')
+            const saraRiskLevelToOther = saraAssessment?.qaData.getString('SR77.1.1')
             if (saraRiskLevelToPartner != null && saraRiskLevelToOther != null) {
                 this.saraRiskLevelToPartner = saraRiskLevelToPartner == 'Low' ? 1 : saraRiskLevelToPartner == 'Medium' ? 2 : 3
                 this.saraRiskLevelToOther = saraRiskLevelToOther == 'Low' ? 1 : saraRiskLevelToOther == 'Medium' ? 2 : 3
@@ -197,8 +197,8 @@ class RsrOspData {
 
     constructor(dbAssessment: dbClasses.DbAssessment) {
 
-        this.ospCdcScoreLevel = common.riskLabel(dbAssessment.riskDetails.ospDcRisk) ?? common.riskLabel(dbAssessment.riskDetails.ospCRisk)  // For pre-6.49 assessments
-        this.ospIiicScoreLevel = common.riskLabel(dbAssessment.riskDetails.ospIicRisk) ?? common.riskLabel(dbAssessment.riskDetails.ospIRisk)  // For pre-6.49 assessments
+        this.ospCdcScoreLevel = (dbAssessment.riskDetails.ospDcRisk) ?? common.riskLabel(dbAssessment.riskDetails.ospCRisk)  // For pre-6.49 assessments
+        this.ospIiicScoreLevel = (dbAssessment.riskDetails.ospIicRisk) ?? common.riskLabel(dbAssessment.riskDetails.ospIRisk)  // For pre-6.49 assessments
         this.rsrPercentageScore = common.fixDp(dbAssessment.riskDetails.rsrPercentageScore)
         this.rsrAlgorithmVersion = dbAssessment.riskDetails.rsrAlgorithmVersion
         this.offenderAge = OasysDateTime.dateDiffString(dbAssessment.dateOfBirth, dbAssessment.initiationDate, 'year')
@@ -228,12 +228,12 @@ function pniCalc(dbAssessment: dbClasses.DbAssessment, community: boolean, saraR
     // The domain levels have to be repoorted
 
     // Calculate the SEX DOMAIN SCORE
-    const s1_30 = common.getSingleAnswer(dbAssessment.qaData, '1', '1.30')              // Sexual motivation
-    let s6_11 = common.getSingleAnswer(dbAssessment.qaData, '6', '6.11')              // Open Sex Questions
+    const s1_30 = dbAssessment.qaData.getString('1.30')              // Sexual motivation
+    let s6_11 = dbAssessment.qaData.getString('6.11')              // Open Sex Questions
     if (s6_11 == null) s6_11 = 'No'
-    const s11_11 = common.getSingleAnswerAsScore(dbAssessment.qaData, '11', '11.11')    // Sexual pre-occupation
-    const s11_12 = common.getSingleAnswerAsScore(dbAssessment.qaData, '11', '11.12')    // Offence related sexual interest
-    const s6_12 = common.getSingleAnswerAsScore(dbAssessment.qaData, '6', '6.12')       // Emotional congruence with children
+    const s11_11 = dbAssessment.qaData.getOasysScore('11.11')    // Sexual pre-occupation
+    const s11_12 = dbAssessment.qaData.getOasysScore('11.12')    // Offence related sexual interest
+    const s6_12 = dbAssessment.qaData.getOasysScore('6.12')       // Emotional congruence with children
 
     let sexDomainScore = 0
     let sexDomainProject = 0
@@ -276,8 +276,8 @@ function pniCalc(dbAssessment: dbClasses.DbAssessment, community: boolean, saraR
     sexDomainProject = sexDomainProject < 2 ? 0 : sexDomainProject < 4 ? 1 : 2
 
     // THINKING DOMAIN
-    const s12_1 = common.getSingleAnswerAsScore(dbAssessment.qaData, '12', '12.1')      // Pro-criminal attitudes
-    const s12_9 = common.getSingleAnswerAsScore(dbAssessment.qaData, '12', '12.9')      // Hostile orientation
+    const s12_1 = dbAssessment.qaData.getOasysScore('12.1')      // Pro-criminal attitudes
+    const s12_9 = dbAssessment.qaData.getOasysScore('12.9')      // Hostile orientation
     let thinkingDomainScore = 0
     let thinkingDomainProject = 0
 
@@ -307,10 +307,10 @@ function pniCalc(dbAssessment: dbClasses.DbAssessment, community: boolean, saraR
     thinkingDomainProject = thinkingDomainProject < 1 ? 0 : thinkingDomainProject < 3 ? 1 : 2
 
     // RELATIONSHIPS DOMAIN
-    const s6_1 = common.getSingleAnswerAsScore(dbAssessment.qaData, '6', '6.1')         // Current relationship with close family member 0, 1, 2, M
-    const s6_6 = common.getSingleAnswerAsScore(dbAssessment.qaData, '6', '6.6')         // Previous experience of close relationships 0, 1, 2, M
-    const s7_3 = common.getSingleAnswerAsScore(dbAssessment.qaData, '7', '7.3')         // Easily influenced by criminal associates 0, 1, 2, M
-    const s11_3 = common.getSingleAnswerAsScore(dbAssessment.qaData, '11', '11.3')      // Aggressive controlling behaviour
+    const s6_1 = dbAssessment.qaData.getOasysScore('6.1')         // Current relationship with close family member 0, 1, 2, M
+    const s6_6 = dbAssessment.qaData.getOasysScore('6.6')         // Previous experience of close relationships 0, 1, 2, M
+    const s7_3 = dbAssessment.qaData.getOasysScore('7.3')         // Easily influenced by criminal associates 0, 1, 2, M
+    const s11_3 = dbAssessment.qaData.getOasysScore('11.3')      // Aggressive controlling behaviour
 
     let relationshipsDomainScore = 0
     let relationshipDomainScoreProject = 0
@@ -352,10 +352,10 @@ function pniCalc(dbAssessment: dbClasses.DbAssessment, community: boolean, saraR
     relationshipDomainScoreProject = relationshipDomainScoreProject < 2 ? 0 : relationshipDomainScoreProject < 5 ? 1 : 2
 
     // SELF MANAGEMENT DOMAIN
-    const s11_2 = common.getSingleAnswerAsScore(dbAssessment.qaData, '11', '11.2')      // Impulsivity
-    const s11_4 = common.getSingleAnswerAsScore(dbAssessment.qaData, '11', '11.4')      // Temper Control
-    const s11_6 = common.getSingleAnswerAsScore(dbAssessment.qaData, '11', '11.6')      // Problem solving skills
-    const s10_1 = common.getSingleAnswerAsScore(dbAssessment.qaData, '10', '10.1')      // Difficulties coping
+    const s11_2 = dbAssessment.qaData.getOasysScore('11.2')      // Impulsivity
+    const s11_4 = dbAssessment.qaData.getOasysScore('11.4')      // Temper Control
+    const s11_6 = dbAssessment.qaData.getOasysScore('11.6')      // Problem solving skills
+    const s10_1 = dbAssessment.qaData.getOasysScore('10.1')      // Difficulties coping
 
     let selfManagementDomainScore = 0
     let selfManagementDomainScoreProject = 0

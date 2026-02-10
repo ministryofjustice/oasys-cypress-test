@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -54,15 +53,15 @@ export class Section12Assessment extends v4Common.V4AssessmentCommon {
 
     addDetails(dbAssessment: dbClasses.DbAssessment) {
 
-        this.proCriminalAttitudes = common.getSingleAnswer(dbAssessment.qaData, '12', '12.1')
-        this.attitudesTowardsStaff = common.getSingleAnswer(dbAssessment.qaData, '12', '12.3')
-        this.attitudesTowardsSupervision = common.getSingleAnswer(dbAssessment.qaData, '12', '12.4')
-        this.attitudesTowardsCommunitySociety = common.getSingleAnswer(dbAssessment.qaData, '12', '12.5')
-        this.understandsMotivationForOffending = common.getSingleAnswer(dbAssessment.qaData, '12', '12.6')
-        this.motivationToAddressBehaviour = common.getSingleAnswer(dbAssessment.qaData, '12', '12.8')
-        this.hostileOrientation = common.getSingleAnswer(dbAssessment.qaData, '12', '12.9')
-        this.attIssuesDetails = common.getTextAnswer(dbAssessment.textData, '12', '12.97')
-        this.attLinkedToHarm = common.getSingleAnswer(dbAssessment.qaData, '12', '12.98')
-        this.attLinkedToReoffending = common.getSingleAnswer(dbAssessment.qaData, '12', '12.99')
+        this.proCriminalAttitudes = dbAssessment.qaData.getString('12.1')
+        this.attitudesTowardsStaff = dbAssessment.qaData.getString('12.3')
+        this.attitudesTowardsSupervision = dbAssessment.qaData.getString('12.4')
+        this.attitudesTowardsCommunitySociety = dbAssessment.qaData.getString('12.5')
+        this.understandsMotivationForOffending = dbAssessment.qaData.getString('12.6')
+        this.motivationToAddressBehaviour = dbAssessment.qaData.getString('12.8')
+        this.hostileOrientation = dbAssessment.qaData.getString('12.9')
+        this.attIssuesDetails = dbAssessment.qaData.getString('12.97')
+        this.attLinkedToHarm = dbAssessment.qaData.getString('12.98')
+        this.attLinkedToReoffending = dbAssessment.qaData.getString('12.99')
     }
 }

@@ -1,6 +1,5 @@
 import * as common from '../common'
 import * as dbClasses from '../dbClasses'
-import * as env from '../restApiUrls'
 
 /**
  * Base class for version 1 endpoints (based on the overall common endpoint base class), which includes the V1 timeline and V1 base assessment.

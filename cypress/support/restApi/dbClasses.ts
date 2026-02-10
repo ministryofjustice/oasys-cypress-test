@@ -5,6 +5,7 @@
 
 import { stringToFloat, stringToInt } from 'lib/utils'
 import { OasysDateTime } from 'oasys'
+import { QaData } from './qaData'
 
 
 /**
@@ -98,8 +99,7 @@ export class DbAssessment extends DbAssessmentOrRsr {
     objectives: DbObjective[] = []
 
     sections: DbSection[] = []
-    qaData: string[][]
-    textData: string[][]
+    qaData: QaData
 
     constructor(assessmentData: string[], versionTable: string[][]) {
 
@@ -142,35 +142,22 @@ export class DbAssessment extends DbAssessmentOrRsr {
 
     static qaQuery(assessmentPk: number): string {
 
-        return `select q.ref_section_code, q.ref_question_code, ra.ref_section_answer
-                    from eor.oasys_set st
-                    left outer join eor.oasys_section s
-                    on s.oasys_set_pk = st.oasys_set_pk
-                    left outer join eor.oasys_question q
-                    on q.oasys_section_pk = s.oasys_section_pk
-                    left outer join eor.oasys_answer a
-                    on a.oasys_question_pk = q.oasys_question_pk
-                    left outer join eor.ref_answer ra
-                    on (ra.ref_ass_version_code = a.ref_ass_version_code
-                    and ra.version_number = a.version_number
-                    and ra.ref_section_code = a.ref_section_code
-                    and ra.ref_question_code = a.ref_question_code
-                    and ra.ref_answer_code = a.ref_answer_code )
-                    where st.oasys_set_pk = ${assessmentPk}
-                    and q.currently_hidden_ind = 'N'
-                    and a.ref_answer_code is not null
-                    order by q.ref_section_code, q.ref_question_code`
-
-    }
-
-    static textAnswerQuery(assessmentPk: number): string {
-
-        return `select q.ref_section_code, q.ref_question_code, q.free_format_answer, q.additional_note
-                    from eor.oasys_set st
-                    left outer join eor.oasys_section s on s.oasys_set_pk = st.oasys_set_pk
-                    left outer join eor.oasys_question q on q.oasys_section_pk = s.oasys_section_pk
-                    where st.oasys_set_pk = ${assessmentPk}
-                    and q.currently_hidden_ind = 'N'`
+        return `select oq.ref_question_code, oq.free_format_answer, oq.additional_note, ra.ref_section_answer
+                        from eor.oasys_set os
+                        left outer join eor.oasys_section osec
+                        on osec.oasys_set_pk = os.oasys_set_pk
+                        left outer join eor.oasys_question oq
+                        on oq.oasys_section_pk = osec.oasys_section_pk
+                        left outer join eor.oasys_answer oa
+                        on oa.oasys_question_pk = oq.oasys_question_pk
+                        left outer join eor.ref_answer ra
+                        on (ra.ref_ass_version_code = oa.ref_ass_version_code
+                        and ra.version_number = oa.version_number
+                        and ra.ref_section_code = oa.ref_section_code
+                        and ra.ref_question_code = oa.ref_question_code
+                        and ra.ref_answer_code = oa.ref_answer_code )
+                        where os.oasys_set_pk =  ${assessmentPk}
+                        and oq.currently_hidden_ind = 'N'`
     }
 }
 

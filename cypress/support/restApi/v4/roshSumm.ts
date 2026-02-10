@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -61,23 +60,23 @@ export class RoshSummAssessment extends v4Common.V4AssessmentCommon {
 
     addDetails(dbAssessment: dbClasses.DbAssessment) {
 
-        this.whoAtRisk = common.getTextAnswer(dbAssessment.textData, 'ROSHSUM', 'SUM1')
-        this.riskChildrenCommunity = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.1.1')
-        this.riskPublicCommunity = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.2.1')
-        this.riskKnownAdultCommunity = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.3.1')
-        this.riskStaffCommunity = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.4.1')
-        this.natureOfRisk = common.getTextAnswer(dbAssessment.textData, 'ROSHSUM', 'SUM2')
-        this.riskChildrenCustody = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.1.2')
-        this.riskPublicCustody = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.2.2')
-        this.riskKnownAdultCustody = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.3.2')
-        this.riskStaffCustody = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.4.2')
-        this.riskPrisonersCustody = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.5.2')
-        this.riskGreatest = common.getTextAnswer(dbAssessment.textData, 'ROSHSUM', 'SUM3')
-        this.factorsLikelyToIncreaseRisk = common.getTextAnswer(dbAssessment.textData, 'ROSHSUM', 'SUM4')
-        this.factorsLikelyToReduceRisk = common.getTextAnswer(dbAssessment.textData, 'ROSHSUM', 'SUM5')
-        this.factorsAnalysisOfRisk = common.getTextAnswer(dbAssessment.textData, 'ROSHSUM', 'SUM9')
-        this.factorsStrengthsAndProtective = common.getTextAnswer(dbAssessment.textData, 'ROSHSUM', 'SUM10')
-        this.factorsSituationsLikelyToOffend = common.getTextAnswer(dbAssessment.textData, 'ROSHSUM', 'SUM11')
+        this.whoAtRisk = dbAssessment.qaData.getString('SUM1')
+        this.riskChildrenCommunity = dbAssessment.qaData.getString('SUM6.1.1')
+        this.riskPublicCommunity = dbAssessment.qaData.getString('SUM6.2.1')
+        this.riskKnownAdultCommunity = dbAssessment.qaData.getString('SUM6.3.1')
+        this.riskStaffCommunity = dbAssessment.qaData.getString('SUM6.4.1')
+        this.natureOfRisk = dbAssessment.qaData.getString('SUM2')
+        this.riskChildrenCustody = dbAssessment.qaData.getString('SUM6.1.2')
+        this.riskPublicCustody = dbAssessment.qaData.getString('SUM6.2.2')
+        this.riskKnownAdultCustody = dbAssessment.qaData.getString('SUM6.3.2')
+        this.riskStaffCustody = dbAssessment.qaData.getString('SUM6.4.2')
+        this.riskPrisonersCustody = dbAssessment.qaData.getString('SUM6.5.2')
+        this.riskGreatest = dbAssessment.qaData.getString('SUM3')
+        this.factorsLikelyToIncreaseRisk = dbAssessment.qaData.getString('SUM4')
+        this.factorsLikelyToReduceRisk = dbAssessment.qaData.getString('SUM5')
+        this.factorsAnalysisOfRisk = dbAssessment.qaData.getString('SUM9')
+        this.factorsStrengthsAndProtective = dbAssessment.qaData.getString('SUM10')
+        this.factorsSituationsLikelyToOffend = dbAssessment.qaData.getString('SUM11')
 
     }
 }

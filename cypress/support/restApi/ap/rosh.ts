@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as apCommon from './apCommon'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -54,14 +53,14 @@ export class APRoSHAssessment extends apCommon.APAssessmentCommon {
 
     addRoshSumDetails(assessment: dbClasses.DbAssessment) {
 
-        this.riskChildrenCommunity = common.getSingleAnswer(assessment.qaData, 'ROSHSUM', 'SUM6.1.1')
-        this.riskPublicCommunity = common.getSingleAnswer(assessment.qaData, 'ROSHSUM', 'SUM6.2.1')
-        this.riskKnownAdultCommunity = common.getSingleAnswer(assessment.qaData, 'ROSHSUM', 'SUM6.3.1')
-        this.riskStaffCommunity = common.getSingleAnswer(assessment.qaData, 'ROSHSUM', 'SUM6.4.1')
-        this.riskChildrenCustody = common.getSingleAnswer(assessment.qaData, 'ROSHSUM', 'SUM6.1.2')
-        this.riskPublicCustody = common.getSingleAnswer(assessment.qaData, 'ROSHSUM', 'SUM6.2.2')
-        this.riskKnownAdultCustody = common.getSingleAnswer(assessment.qaData, 'ROSHSUM', 'SUM6.3.2')
-        this.riskStaffCustody = common.getSingleAnswer(assessment.qaData, 'ROSHSUM', 'SUM6.4.2')
-        this.riskPrisonersCustody = common.getSingleAnswer(assessment.qaData, 'ROSHSUM', 'SUM6.5.2')
+        this.riskChildrenCommunity = assessment.qaData.getString('SUM6.1.1')
+        this.riskPublicCommunity = assessment.qaData.getString('SUM6.2.1')
+        this.riskKnownAdultCommunity = assessment.qaData.getString('SUM6.3.1')
+        this.riskStaffCommunity = assessment.qaData.getString('SUM6.4.1')
+        this.riskChildrenCustody = assessment.qaData.getString('SUM6.1.2')
+        this.riskPublicCustody = assessment.qaData.getString('SUM6.2.2')
+        this.riskKnownAdultCustody = assessment.qaData.getString('SUM6.3.2')
+        this.riskStaffCustody = assessment.qaData.getString('SUM6.4.2')
+        this.riskPrisonersCustody = assessment.qaData.getString('SUM6.5.2')
     }
 }

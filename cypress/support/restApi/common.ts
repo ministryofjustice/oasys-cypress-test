@@ -1,6 +1,8 @@
 import { OasysDateTime } from 'oasys'
 import * as dbClasses from './dbClasses'
 
+export { lookupString, lookupInteger } from 'lib/utils'
+
 /**
  * Base class for all API endpoints, defining the response data that is common to all.
  * 
@@ -39,47 +41,6 @@ export class EndpointResponse {
 
 }
 
-
-/**
- * Return a single answer from the expected column in a 2-D array, the first column contains the question code.
- * Other columns contain answer code, free-format answer and additional note.
- * 
- * An optional dictionary can be provided to translate answer codes.
- */
-export function getSingleAnswer(data: string[][], section: string, question: string, lookupDictionary: { [keys: string]: string } = {}): string {
-
-    if (data == undefined || data == null) return null
-
-    const answers = data.filter((a) => a[0] == section && a[1] == question)
-    if (answers.length > 0) {
-        return transformValue(answers[0][2], lookupDictionary)
-    }
-    return null
-}
-
-/**
- * Similar to the above, but returns an array of multiple answers that match an input array of possible question codes.
- */
-export function getMultipleAnswers(data: string[][], section: string, questions: string[], resultColumn: number, lookupDictionary: { [keys: string]: string } = {}): string[] {
-
-    if (data == undefined) return null
-
-    let result: string[] = null
-    const answers = data.filter((a) => a[0] == section && questions.includes(a[1]) && a[2] != 'No' && a[2] != null)
-
-    if (answers.length > 0) {
-        result = []
-        answers.forEach((a) => {
-            let answer = transformValue(a[resultColumn], lookupDictionary)
-            if (answer != null) {
-                result.push(answer)
-            }
-        })
-    }
-
-    return result?.length == 0 ? null : result
-}
-
 /**
  * Return a single answer from the expected column in a 2-D array, the first column contains the question code.
  * Other columns contain free-format answer and additional note, plus currently_hidden_ind.
@@ -99,57 +60,6 @@ export function getTextAnswer(data: string[][], section: string, question: strin
     }
     return undefined
 }
-
-/**
- * Similar to the above but converts string to score, e.g. '0-No problems' to 0.  M (missing) is returned as null returned as null
- */
-export function getSingleAnswerAsScore(data: string[][], section: string, question: string): number {
-
-    if (data == undefined || data == null) return null
-
-    const answers = data.filter((a) => a[0] == section && a[1] == question)
-    if (answers.length > 0) {
-        if (answers[0][2] != null) {
-            const c = answers[0][2].substring(0, 1)
-            return Number.isNaN(Number.parseInt(c)) ? null : Number.parseInt(c)
-        }
-    }
-    return null
-}
-
-/**
- * As above, but reformats the text into the required date format.
- */
-export function getReformattedDateAnswer(data: string[][], section: string, question: string): string {
-
-    if (data == undefined) return undefined
-    if (data == null) return ''
-
-    let dateString = getTextAnswer(data, section, question)
-
-    const result = OasysDateTime.stringToDate(dateString)
-
-    return result == null ?  '' : result.toString()
-}
-
-/**
- * Return a single answer from the expected column in a 2-D array, the first column contains the question code.
- * Other columns contain answer code, free-format answer and additional note.
- */
-export function getNumericAnswer(data: string[][], section: string, question: string): number {
-
-    if (data == undefined) return undefined
-    if (data == null) return null
-
-    const answers = data.filter((a) => a[0] == section && a[1] == question && a[4] != 'Y')  // Check for currently hidden
-
-    if (answers.length > 0) {
-        const answer = answers[0][2] == null ? answers[0][3] : answers[0][2]
-        return answer == null ? null : Number.parseInt(answer)
-    }
-    return undefined
-}
-
 
 export function getSuperStatus(status: string) {
 

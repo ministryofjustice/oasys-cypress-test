@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as apCommon from './apCommon'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -53,13 +52,13 @@ export class APRoshSumAssessment extends apCommon.APAssessmentCommon {
 
     addRoshSumDetails(assessment: dbClasses.DbAssessment) {
 
-        this.whoAtRisk = common.getTextAnswer(assessment.textData, 'ROSHSUM', 'SUM1')
-        this.natureOfRisk = common.getTextAnswer(assessment.textData, 'ROSHSUM', 'SUM2')
-        this.riskGreatest = common.getTextAnswer(assessment.textData, 'ROSHSUM', 'SUM3')
-        this.factorsLikelyToIncreaseRisk = common.getTextAnswer(assessment.textData, 'ROSHSUM', 'SUM4')
-        this.factorsLikelyToReduceRisk = common.getTextAnswer(assessment.textData, 'ROSHSUM', 'SUM5')
-        this.factorsAnalysisOfRisk = common.getTextAnswer(assessment.textData, 'ROSHSUM', 'SUM9')
-        this.factorsStrengthsAndProtective = common.getTextAnswer(assessment.textData, 'ROSHSUM', 'SUM10')
-        this.factorsSituationsLikelyToOffend = common.getTextAnswer(assessment.textData, 'ROSHSUM', 'SUM11')
+        this.whoAtRisk = assessment.qaData.getString('SUM1')
+        this.natureOfRisk = assessment.qaData.getString('SUM2')
+        this.riskGreatest = assessment.qaData.getString('SUM3')
+        this.factorsLikelyToIncreaseRisk = assessment.qaData.getString('SUM4')
+        this.factorsLikelyToReduceRisk = assessment.qaData.getString('SUM5')
+        this.factorsAnalysisOfRisk = assessment.qaData.getString('SUM9')
+        this.factorsStrengthsAndProtective = assessment.qaData.getString('SUM10')
+        this.factorsSituationsLikelyToOffend = assessment.qaData.getString('SUM11')
     }
 }

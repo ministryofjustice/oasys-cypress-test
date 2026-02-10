@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -126,7 +125,7 @@ export class CrimNeedsAssessment extends v4Common.V4AssessmentCommon {
         addSectionDetails(this.emo, dbAssessment, 'emo', '10', '10.98', '10.99')
         addSectionDetails(this.think, dbAssessment, 'think', '11', '11.98', '11.99')
         addSectionDetails(this.att, dbAssessment, 'att', '12', '12.98', '12.99')
-        
+
         this.sanCrimNeedScore = new SanCrimNeedScore(dbAssessment)
     }
 }
@@ -134,8 +133,8 @@ export class CrimNeedsAssessment extends v4Common.V4AssessmentCommon {
 function addSectionDetails(result: object, dbAssessment: dbClasses.DbAssessment, prefix: string, sectionCode: string, harm: string, reoffending: string) {
 
     result[`${prefix}Threshold`] = dbAssessment.sections.find((s) => s.sectionCode == sectionCode)?.crimNeedScoreThreshold
-    result[`${prefix}LinkedToHarm`] = common.getSingleAnswer(dbAssessment.qaData, sectionCode, harm)
-    result[`${prefix}LinkedToReoffending`] = common.getSingleAnswer(dbAssessment.qaData, sectionCode, reoffending)
+    result[`${prefix}LinkedToHarm`] = dbAssessment.qaData.getString(harm)
+    result[`${prefix}LinkedToReoffending`] = dbAssessment.qaData.getString(reoffending)
     result[`${prefix}LowScoreNeedsAttention`] = dbAssessment.sections.find((s) => s.sectionCode == sectionCode)?.lowScoreNeedsAttn
     result[`${prefix}OtherWeightedScore`] = dbAssessment.sections.find((s) => s.sectionCode == sectionCode)?.otherWeightedScore
 }
