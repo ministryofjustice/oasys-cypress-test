@@ -1,3 +1,4 @@
+import { Temporal } from '@js-temporal/polyfill'
 import { OasysDateTime } from 'lib/dateTime'
 
 export class RescoringOffenderWithAssessment {
@@ -55,7 +56,7 @@ export class RescoringAssessment {
     status: string
     purpose: string
     purposeOther: string
-    initiationDate: string
+    initiationDate: Temporal.PlainDateTime
     completedDate: string
     gender: string
     prisonInd: string
@@ -109,7 +110,7 @@ export class RescoringAssessment {
         this.status = assessmentData[i++]
         this.purpose = assessmentData[i++]
         this.purposeOther = assessmentData[i++]
-        this.initiationDate = assessmentData[i++]
+        this.initiationDate = OasysDateTime.stringToTimestamp(assessmentData[i++])
         this.completedDate = assessmentData[i++]
         this.gender = assessmentData[i++]
         this.prisonInd = assessmentData[i++]
@@ -154,7 +155,7 @@ export class RescoringAssessment {
 
         return `select s.oasys_set_pk, s.cms_prob_number, s.cms_pris_number, 
                     s.assessment_type_elm, s.version_number, s.assessment_status_elm, s.purpose_assessment_elm, s.purpose_assmt_other_ftxt,
-                    to_char(s.initiation_date, '${OasysDateTime.dateFormat}'), 
+                    to_char(s.initiation_date, '${OasysDateTime.oracleTimestampFormat}'), 
                     to_char(s.date_completed, '${OasysDateTime.dateFormat}'), 
                     s.gender_elm, s.prison_ind, to_char(s.date_of_birth, '${OasysDateTime.dateFormat}'),
                     s.rosh_level_elm, 

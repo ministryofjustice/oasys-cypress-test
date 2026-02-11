@@ -3,9 +3,10 @@
  * These objects are created by the RestDb functions in cypress/support/restApidb.ts using the queries defined here.
  */
 
-import { stringToFloat, stringToInt } from 'lib/utils'
+import { stringToInt } from 'lib/utils'
 import { OasysDateTime } from 'oasys'
-import { QaData } from './qaData'
+import { QaData } from '../data/qaData'
+import { assignValues, buildQuery, getColumns } from '../data/queryBuilder'
 
 
 /**
@@ -68,10 +69,6 @@ export class DbAssessmentOrRsr {
     cmsEventNumber: number
     appVersion: string
 
-    addAppVersion(versionTable: string[][]) {
-
-        this.appVersion = getVersionNumber(this.initiationDate, versionTable)
-    }
 }
 
 /**
@@ -101,16 +98,26 @@ export class DbAssessment extends DbAssessmentOrRsr {
     sections: DbSection[] = []
     qaData: QaData
 
-    constructor(assessmentData: string[], versionTable: string[][]) {
+    constructor(assessmentData: string[]) {
 
         super()
 
         assignValues(this, assessmentColumns, assessmentData, 0)
         this.riskDetails = new DbRiskDetails(assessmentData, Object.keys(assessmentColumns).length, 'assessment')
-        this.addAppVersion(versionTable)
+        this.appVersion = OasysDateTime.dateToVersion(this.initiationDate)
     }
 
     static query(offenderPk: number): string {
+
+        return buildQuery(
+            [assessmentColumns, riskColumns, riskColumnsAssessmentOnly],
+            ['oasys_set', 'oasys_assessment_group', 'oasys_set_change'],
+            `eor.oasys_assessment_group.offender_pk = ${offenderPk} 
+                and eor.oasys_assessment_group.oasys_assessment_group_pk = eor.oasys_set.oasys_assessment_group_pk 
+                and eor.oasys_set_change.oasys_set_pk = eor.oasys_set.oasys_set_pk 
+                and eor.oasys_set.deleted_date is null`,
+            `eor.oasys_set.initiation_date`
+        )
 
         let query = 'select '
         query = query.concat(getColumns(assessmentColumns, 'os'))
@@ -166,13 +173,13 @@ export class DbAssessment extends DbAssessmentOrRsr {
  */
 export class DbRsr extends DbAssessmentOrRsr {
 
-    constructor(assessmentData: string[], versionTable: string[][]) {
+    constructor(assessmentData: string[]) {
 
         super()
 
         assignValues(this, rsrColumns, assessmentData, 0)
         this.riskDetails = new DbRiskDetails(assessmentData, Object.keys(rsrColumns).length, 'rsr')
-        this.addAppVersion(versionTable)
+        this.appVersion = OasysDateTime.dateToVersion(this.initiationDate)
 
         this.cmsEventNumber = null
         this.assessmentType = 'STANDALONE'
@@ -482,58 +489,6 @@ export class DbAction {
     }
 }
 
-function getVersionNumber(initiationDate: string, versionTable: string[][]) {
-    for (let i in versionTable) {
-        if (initiationDate >= versionTable[i][1]) return versionTable[i][0]
-    }
-    return 'unknown version'
-}
-
-type Table = '' | 'oag' | 'osc'
-type ColumnType = 'date' | 'integer' | 'float' | 'string'
-type ColumnDef = { table: Table, name: string, type: ColumnType }
-type Columns = { [keys: string]: ColumnDef }
-// oag - oasys_assessment_group, osc = oasys_set_change.  Blank for default (oasys_set or offender_rsr_scores)
-
-function getColumns(columns: Columns, defaultTable: string): string {
-
-    let result = ''
-    Object.keys(columns).forEach((key) => {
-        result = result.concat(column(columns[key], defaultTable))
-    })
-    return result
-}
-
-function column(column: ColumnDef, defaultTable: string): string {
-
-    let table = column.table == '' ? defaultTable : column.table
-
-    return column.type == 'date'
-        ? `to_char(${table}.${column.name}, '${OasysDateTime.oracleTimestampFormat}'),`
-        : `${table}.${column.name},`
-}
-
-function assignValues(obj: {}, columns: Columns, data: string[], startIndex: number) {
-
-    let i = startIndex
-    Object.keys(columns).forEach((key) => {
-        const column = columns[key]
-        switch (column.type) {
-            case 'date':
-                obj[key] = data[i++]
-                break
-            case 'float':
-                obj[key] = stringToFloat(data[i++])
-                break
-            case 'integer':
-                obj[key] = stringToInt(data[i++])
-                break
-            case 'string':
-                obj[key] = data[i++]
-        }
-    })
-}
-
 const assessmentColumns: Columns = {
 
     assessmentPk: { table: '', name: 'oasys_set_pk', type: 'integer' },
@@ -542,7 +497,7 @@ const assessmentColumns: Columns = {
     status: { table: '', name: 'assessment_status_elm', type: 'string' },
     initiationDate: { table: '', name: 'initiation_date', type: 'date' },
     completedDate: { table: '', name: 'date_completed', type: 'date' },
-    lastUpdatedDate: { table: 'osc', name: 'lastupd_date', type: 'date' },
+    lastUpdatedDate: { table: 'oasys_set_change', name: 'lastupd_date', type: 'date' },
     cmsEventNumber: { table: '', name: 'cms_event_number', type: 'integer' },
 
     dateOfBirth: { table: '', name: 'date_of_birth', type: 'date' },

@@ -94,3 +94,8 @@ declare type OasysAnswer = { section: string, q: string, a: string }
 declare type AnswerType = 'refAnswer' | 'freeFormat' | 'additionalNote' | 'multipleRefAnswer'
 declare type Victim = { age: string, gender: string, ethnicCat: string, relationship: string }
 declare type CheckDbSectionResponse = { failed: boolean, report: string[] }
+
+declare type Table = '' | 'oasys_set' | 'oasys_assessment_group' | 'oasys_set_change' // Blank for the main query table
+declare type ColumnType = 'date' | 'integer' | 'float' | 'string'
+declare type ColumnDef = { table: Table; name: string; type: ColumnType }
+declare type Columns = { [keys: string]: ColumnDef }

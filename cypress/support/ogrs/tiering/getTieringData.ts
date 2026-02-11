@@ -1,4 +1,4 @@
-import * as db from '../../oasysDb'
+import * as db from '../../data/oasysDb'
 import { TieringCase } from './dbClasses'
 
 export async function getTieringTestData(rows: number, whereClause: string): Promise<TieringCase[]> {
