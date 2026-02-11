@@ -1,7 +1,7 @@
 import { TieringTestParameters, TieringTestResult } from '../../../../oasys/ogrs/types'
 import * as db from '../../oasysDb'
 import { getTieringTestData } from './getTieringData'
-import { testTieringCase } from './tieringTestCase'
+import { testTieringCase, testTieringCaseNew } from './tieringTestCase'
 
 export const dateFormat = 'DD-MM-YYYY'
 
@@ -20,8 +20,26 @@ export async function tieringTest(testParams: TieringTestParameters): Promise<Ti
         const logTextAlternative: string[] = []
         let failed = false
 
-        // Original process
-        const caseResult = testTieringCase(tieringCase, logText)
+        // // Original process
+        // const caseResult = testTieringCase(tieringCase, logText)
+
+        // if (caseResult != tieringCase.finalTier) {
+        //     result.logText.push(`CRN: ${tieringCase.probationCrn} / ${tieringCase.prisonCrn} FAILED`)
+        //     result.logText.push(`     ${JSON.stringify(tieringCase)}`)
+        //     result.logText.push(`     ROSH: ${tieringCase.rosh}`)
+        //     result.logText.push(`     MAPPA: ${tieringCase.mappa}`)
+        //     result.logText.push(`     Lifer: ${tieringCase.lifer}`)
+        //     result.logText.push(`     Custody: ${tieringCase.custodyInd}`)
+        //     result.logText.push(`     Oracle: ${tieringCase.finalTier}, Cypress: ${caseResult}`)
+        //     logText.forEach((log) => {
+        //         result.logText.push(log)
+        //     })
+        //     result.logText.push('')
+        //     failed = true
+        // }
+
+        // New process
+        const caseResult = testTieringCaseNew(tieringCase, logText)
 
         if (caseResult != tieringCase.finalTier) {
             result.logText.push(`CRN: ${tieringCase.probationCrn} / ${tieringCase.prisonCrn} FAILED`)
