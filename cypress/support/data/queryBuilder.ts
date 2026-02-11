@@ -21,6 +21,7 @@ export function buildQuery(columns: Columns | Columns[], tables: Table[], whereC
     let tableList = ''
     tables.forEach((table) => {
         tableList = tableList.concat(`eor.${table}, `)
+        query.replaceAll(table, `eor.${table}`)
     })
     tableList = tableList.slice(0, -2)
 

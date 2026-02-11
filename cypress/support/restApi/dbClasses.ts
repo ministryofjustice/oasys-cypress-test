@@ -112,24 +112,13 @@ export class DbAssessment extends DbAssessmentOrRsr {
         return buildQuery(
             [assessmentColumns, riskColumns, riskColumnsAssessmentOnly],
             ['oasys_set', 'oasys_assessment_group', 'oasys_set_change'],
-            `eor.oasys_assessment_group.offender_pk = ${offenderPk} 
-                and eor.oasys_assessment_group.oasys_assessment_group_pk = eor.oasys_set.oasys_assessment_group_pk 
-                and eor.oasys_set_change.oasys_set_pk = eor.oasys_set.oasys_set_pk 
-                and eor.oasys_set.deleted_date is null`,
-            `eor.oasys_set.initiation_date`
+            `oasys_assessment_group.offender_pk = ${offenderPk} 
+                and oasys_assessment_group.oasys_assessment_group_pk = oasys_set.oasys_assessment_group_pk 
+                and oasys_set_change.oasys_set_pk = oasys_set.oasys_set_pk 
+                and oasys_set.deleted_date is null`,
+            `oasys_set.initiation_date`
         )
 
-        let query = 'select '
-        query = query.concat(getColumns(assessmentColumns, 'os'))
-        query = query.concat(getColumns(riskColumns, 'os'))
-        query = query.concat(getColumns(riskColumnsAssessmentOnly, 'os')).slice(0, -1).concat(' \n') // remove last comma}
-
-        return query.concat(
-            `from eor.oasys_assessment_group oag, eor.oasys_set os, eor.oasys_set_change osc 
-            where oag.offender_pk = ${offenderPk} and oag.oasys_assessment_group_pk = os.oasys_assessment_group_pk 
-            and osc.oasys_set_pk = os.oasys_set_pk 
-            and os.deleted_date is null
-            order by os.initiation_date`)
     }
 
     addCourtDetails(courtData: string[]) {
@@ -149,7 +138,7 @@ export class DbAssessment extends DbAssessmentOrRsr {
 
     static qaQuery(assessmentPk: number): string {
 
-        return `select oq.ref_question_code, oq.free_format_answer, oq.additional_note, ra.ref_section_answer
+        return `select oq.ref_question_code, oq.free_format_answer, oq.additional_note, ra.ref_section_answer, osec.ref_section_code
                         from eor.oasys_set os
                         left outer join eor.oasys_section osec
                         on osec.oasys_set_pk = os.oasys_set_pk

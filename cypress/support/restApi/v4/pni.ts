@@ -197,8 +197,8 @@ class RsrOspData {
 
     constructor(dbAssessment: dbClasses.DbAssessment) {
 
-        this.ospCdcScoreLevel = (dbAssessment.riskDetails.ospDcRisk) ?? common.riskLabel(dbAssessment.riskDetails.ospCRisk)  // For pre-6.49 assessments
-        this.ospIiicScoreLevel = (dbAssessment.riskDetails.ospIicRisk) ?? common.riskLabel(dbAssessment.riskDetails.ospIRisk)  // For pre-6.49 assessments
+        this.ospCdcScoreLevel = common.riskLabel(dbAssessment.riskDetails.ospDcRisk) ?? common.riskLabel(dbAssessment.riskDetails.ospCRisk)  // For pre-6.49 assessments
+        this.ospIiicScoreLevel = common.riskLabel(dbAssessment.riskDetails.ospIicRisk) ?? common.riskLabel(dbAssessment.riskDetails.ospIRisk)  // For pre-6.49 assessments
         this.rsrPercentageScore = common.fixDp(dbAssessment.riskDetails.rsrPercentageScore)
         this.rsrAlgorithmVersion = dbAssessment.riskDetails.rsrAlgorithmVersion
         this.offenderAge = OasysDateTime.dateDiffString(dbAssessment.dateOfBirth, dbAssessment.initiationDate, 'year')

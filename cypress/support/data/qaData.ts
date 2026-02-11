@@ -7,43 +7,47 @@ export class QaData {
 
         qa.forEach((q) => {
 
-            // select oq.ref_question_code, oq.free_format_answer, oq.additional_note, ra.ref_section_answer
+            // select oq.ref_question_code, oq.free_format_answer, oq.additional_note, ra.ref_section_answer, osec.ref_section_code
             const question = q[0]
 
-            switch (qaDetails[question]) {
-                case undefined:
-                case null:
-                    this[question] = null
-                    break
-                case 'date':
-                    const date = OasysDateTime.stringToDate(q[1])
-                    this[question] = date == null ? '' : date.toString()
-                    break
-                case 'text':
-                    this[question] = q[1]
-                    break
-                case 'textarea':
-                    this[question] = q[2]
-                    break
-                case 'integer':
-                    this[question] = stringToInt(q[1])
-                    break
-                case 'float':
-                    this[question] = stringToFloat(q[1])
-                    break
-                case 'checkbox':
-                    if (q[3] != null) {
-                        if (this[question] == undefined) {
-                            this[question] = []
+            if (sectionFilter[question] == undefined || q[4] == sectionFilter[question]) {
+                // Ignore any where there is a section filter defined and the section doesn't match
+
+                switch (qaDetails[question]) {
+                    case undefined:
+                    case null:
+                        this[question] = null
+                        break
+                    case 'date':
+                        const date = OasysDateTime.stringToDate(q[1])
+                        this[question] = date == null ? '' : date.toString()
+                        break
+                    case 'text':
+                        this[question] = q[1]
+                        break
+                    case 'textarea':
+                        this[question] = q[2]
+                        break
+                    case 'integer':
+                        this[question] = stringToInt(q[1])
+                        break
+                    case 'float':
+                        this[question] = stringToFloat(q[1])
+                        break
+                    case 'checkbox':
+                        if (q[3] != null) {
+                            if (this[question] == undefined) {
+                                this[question] = []
+                            }
+                            this[question].push(q[3])
                         }
-                        this[question].push(q[3])
-                    }
-                    break
-                case 'singleCheckboxYes':
-                    this[question] = q[3] ? 'Yes' : null
-                    break
-                default:
-                    this[question] = q[3]
+                        break
+                    case 'singleCheckboxYes':
+                        this[question] = q[3] ? 'Yes' : null
+                        break
+                    default:
+                        this[question] = q[3]
+                }
             }
 
         })
@@ -1170,4 +1174,12 @@ export const qaDetails: { [keys: string]: OasysQuestionType } = {
     'SUM6.5.2': 'select',
     'SUM8': 'textarea',
     'SUM9': 'textarea',
+}
+
+// Items that are duplicated across sections, make sure the correct one is selected
+
+const sectionFilter = {
+    'SUM4': 'ROSHSUM',
+    'SUM5': 'ROSHSUM',
+    'SUM10': 'ROSHSUM',
 }
