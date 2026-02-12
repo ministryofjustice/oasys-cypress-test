@@ -7,7 +7,7 @@ export function getInteger(param: string): number {
     return param == '' || param == null || param.toLowerCase() == 'null' ? null : Number.parseInt(param)
 }
 
-export function lookupString(value: string, lookup: { [keys: string]: string }, translation: { [keys: string]: string } = null): string {
+export function lookupString(value: string, lookup: { [keys: string]: string }, translation: { [keys: string]: string }= null): string {
 
     const result = lookup[value]
     if (result == null || result == undefined) {

@@ -1,10 +1,9 @@
 import { defineConfig } from 'cypress'
-import { populateAutoData } from './cypress/support/autoData'
-import * as oasysDb from './cypress/support/oasysDb'
+import { populateAutoData } from './cypress/support/data/autoData'
+import * as oasysDb from './cypress/support/data/oasysDb'
 import * as restApi from './cypress/support/restApi'
 import * as fs from 'fs-extra'
 import * as pdf from './cypress/support/pdf'
-import { getLatestElogAndUnprocEventTime } from './cypress/support/oasysDb'
 import { noDatabaseConnection } from './localSettings'
 import { ogrsTest } from './cypress/support/ogrs/orgsTest'
 import { OgrsTestParameters, OgrsTestScriptResult, RescoringResult, RescoringTestParameters, TieringTestParameters, TieringTestResult } from './oasys/ogrs/types'
@@ -234,14 +233,14 @@ module.exports = defineConfig({
 
       on('before:run', (details) => {
         if (!noDatabaseConnection) {
-          getLatestElogAndUnprocEventTime('store')
+          oasysDb.getLatestElogAndUnprocEventTime('store')
         }
         fs.remove(reportFolder)
       })
 
       on('after:run', (results) => {
         if (!noDatabaseConnection) {
-          getLatestElogAndUnprocEventTime('check').then(() => {
+          oasysDb.getLatestElogAndUnprocEventTime('check').then(() => {
             oasysDb.closeConnection()
           })
         }

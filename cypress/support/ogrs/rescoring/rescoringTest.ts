@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra'
 
 import { OutputParameters, RescoringResult, RescoringTestParameters, TestCaseParameters } from '../../../../oasys/ogrs/types'
-import { getOgrsResult } from '../../oasysDb'
+import { getOgrsResult } from '../../data/oasysDb'
 import { getOffenderData } from './getOffenderData'
 import { createAssessmentTestCase } from './createAssessmentTestCase'
 import { stringParameterToString, numericParameterToString, numericParameterToCsvOutputString, stringParameterToCsvOutputString } from 'lib/utils'

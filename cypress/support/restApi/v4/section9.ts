@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -53,14 +52,14 @@ export class Section9Assessment extends v4Common.V4AssessmentCommon {
 
     addDetails(dbAssessment: dbClasses.DbAssessment) {
 
-        this.alcoholProblemDescription = common.getTextAnswer(dbAssessment.textData, '9', '9.1.t')
-        this.currentUse = common.getSingleAnswer(dbAssessment.qaData, '9', '9.1')
-        this.bingeDrinking = common.getSingleAnswer(dbAssessment.qaData, '9', '9.2')
-        this.frequencyAndLevel = common.getSingleAnswer(dbAssessment.qaData, '9', '9.3')
-        this.alcoholViolentBehaviour = common.getSingleAnswer(dbAssessment.qaData, '9', '9.4')
-        this.alcoholTackleMotivation = common.getSingleAnswer(dbAssessment.qaData, '9', '9.5')
-        this.alcoholIssuesDetails = common.getTextAnswer(dbAssessment.textData, '9', '9.97')
-        this.alcoholLinkedToHarm = common.getSingleAnswer(dbAssessment.qaData, '9', '9.98')
-        this.alcoholLinkedToReoffending = common.getSingleAnswer(dbAssessment.qaData, '9', '9.99')
+        this.alcoholProblemDescription = dbAssessment.qaData.getString('9.1.t')
+        this.currentUse = dbAssessment.qaData.getString('9.1')
+        this.bingeDrinking = dbAssessment.qaData.getString('9.2')
+        this.frequencyAndLevel = dbAssessment.qaData.getString('9.3')
+        this.alcoholViolentBehaviour = dbAssessment.qaData.getString('9.4')
+        this.alcoholTackleMotivation = dbAssessment.qaData.getString('9.5')
+        this.alcoholIssuesDetails = dbAssessment.qaData.getString('9.97')
+        this.alcoholLinkedToHarm = dbAssessment.qaData.getString('9.98')
+        this.alcoholLinkedToReoffending = dbAssessment.qaData.getString('9.99')
     }
 }

@@ -1,6 +1,7 @@
+import * as db from '../data/oasysDb'
 import { OasysDateTime } from 'oasys'
-import * as db from '../oasysDb'
 import { DbOffenderWithAssessments, DbAssessment, DbVictim, DbOffence, DbRsr, DbSection, DbAction, DbObjective, DbBspObjective, DbNeed } from './dbClasses'
+import { QaData } from '../data/qaData'
 
 let versionTable: string[][] = null
 
@@ -17,13 +18,6 @@ export async function getOffenderWithAssessments(crnSource: Provider, crn: strin
 
     OasysDateTime.startTimer('getOffenderWithAssessments')
 
-    // Get application versions
-    if (versionTable == null) {
-        const versionTableData = await db.selectData(`select version_number, to_char(release_date, 'YYYY-MM-DD\"T\"HH24:MI:SS') 
-        from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc`)
-        if (versionTableData.error != null) throw new Error(versionTableData.error)
-        versionTable = versionTableData.data as string[][]
-    }
     // Get offender data
     const offenderData = await db.selectData(DbOffenderWithAssessments.query(crnSource, crn))
     if (offenderData.error != null) throw new Error(offenderData.error)
@@ -40,23 +34,18 @@ export async function getOffenderWithAssessments(crnSource: Provider, crn: strin
 
     for (let a = 0; a < assessments.length; a++) {
         // Add OASYS_SET data to the return object
-        let assessment = new DbAssessment(assessments[a], versionTable)
+        let assessment = new DbAssessment(assessments[a])
 
         // Section data
         const sectionsData = await db.selectData(DbSection.query(assessment.assessmentPk))
         if (sectionsData.error != null) throw new Error(sectionsData.error)
         const sections = sectionsData.data as string[][]
-        sections.forEach((section) => assessment.sections.push(new DbSection(section)))
+        sections.forEach((section) => assessment.sections.push(new DbSection(section, assessment.assessmentType, assessment.assessmentVersion)))
 
         // Questions and answers
         const qaData = await db.selectData(DbAssessment.qaQuery(assessment.assessmentPk))
         if (qaData.error != null) throw new Error(qaData.error)
-        assessment.qaData = qaData.data as string[][]
-
-        const textData = await db.selectData(DbAssessment.textAnswerQuery(assessment.assessmentPk))
-        if (textData.error != null) throw new Error(textData.error)
-        assessment.textData = textData.data as string[][]
-
+        assessment.qaData = new QaData(qaData.data as string[][])
 
         // Offences
         const offencesData = await db.selectData(DbOffence.query(assessment.assessmentPk))
@@ -128,7 +117,7 @@ export async function getOffenderWithAssessments(crnSource: Provider, crn: strin
     const rsrs = rsrData.data as string[][]
 
     rsrs.forEach((rsr) => {
-        dbOffender.assessments.push(new DbRsr(rsr, versionTable))
+        dbOffender.assessments.push(new DbRsr(rsr))
     })
 
     // Sort by initiation date

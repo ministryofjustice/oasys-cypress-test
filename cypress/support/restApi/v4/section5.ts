@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -52,13 +51,13 @@ export class Section5Assessment extends v4Common.V4AssessmentCommon {
 
     addDetails(dbAssessment: dbClasses.DbAssessment) {
 
-        this.financialSituation = common.getSingleAnswer(dbAssessment.qaData, '5', '5.2')
-        this.financialManagement = common.getSingleAnswer(dbAssessment.qaData, '5', '5.3')
-        this.illegalEarnings = common.getSingleAnswer(dbAssessment.qaData, '5', '5.4')
-        this.overReliance = common.getSingleAnswer(dbAssessment.qaData, '5', '5.5')
-        this.budgeting = common.getSingleAnswer(dbAssessment.qaData, '5', '5.6')
-        this.financeIssuesDetails = common.getTextAnswer(dbAssessment.textData, '5', '5.97')
-        this.financeLinkedToHarm = common.getSingleAnswer(dbAssessment.qaData, '5', '5.98')
-        this.financeLinkedToReoffending = common.getSingleAnswer(dbAssessment.qaData, '5', '5.99')
+        this.financialSituation = dbAssessment.qaData.getString('5.2')
+        this.financialManagement = dbAssessment.qaData.getString('5.3')
+        this.illegalEarnings = dbAssessment.qaData.getString('5.4')
+        this.overReliance = dbAssessment.qaData.getString('5.5')
+        this.budgeting = dbAssessment.qaData.getString('5.6')
+        this.financeIssuesDetails = dbAssessment.qaData.getString('5.97')
+        this.financeLinkedToHarm = dbAssessment.qaData.getString('5.98')
+        this.financeLinkedToReoffending = dbAssessment.qaData.getString('5.99')
     }
 }

@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -62,28 +61,28 @@ export class Section10Assessment extends v4Common.V4AssessmentCommon {
 
     addDetails(dbAssessment: dbClasses.DbAssessment) {
 
-        this.difficultiesCoping = common.getSingleAnswer(dbAssessment.qaData, '10', '10.1')
-        this.currPsychologicalProblems = common.getSingleAnswer(dbAssessment.qaData, '10', '10.2')
-        this.socialIsolation = common.getSingleAnswer(dbAssessment.qaData, '10', '10.3')
-        this.attitudeToThemselves = common.getSingleAnswer(dbAssessment.qaData, '10', '10.4')
-        this.selfHarmSuicidal = common.getSingleAnswer(dbAssessment.qaData, '10', '10.5')
-        this.currPsychiatricProblems = common.getSingleAnswer(dbAssessment.qaData, '10', '10.6')
-        this.specialistReportRequired = common.getSingleAnswer(dbAssessment.qaData, '10', '10.8')
-        this.emoIssuesDetails = common.getTextAnswer(dbAssessment.textData, '10', '10.97')
-        this.emoLinkedToHarm = common.getSingleAnswer(dbAssessment.qaData, '10', '10.98')
-        this.emoLinkedToReoffending = common.getSingleAnswer(dbAssessment.qaData, '10', '10.99')
+        this.difficultiesCoping = dbAssessment.qaData.getString('10.1')
+        this.currPsychologicalProblems = dbAssessment.qaData.getString('10.2')
+        this.socialIsolation = dbAssessment.qaData.getString('10.3')
+        this.attitudeToThemselves = dbAssessment.qaData.getString('10.4')
+        this.selfHarmSuicidal = dbAssessment.qaData.getString('10.5')
+        this.currPsychiatricProblems = dbAssessment.qaData.getString('10.6')
+        this.specialistReportRequired = dbAssessment.qaData.getString('10.8')
+        this.emoIssuesDetails = dbAssessment.qaData.getString('10.97')
+        this.emoLinkedToHarm = dbAssessment.qaData.getString('10.98')
+        this.emoLinkedToReoffending = dbAssessment.qaData.getString('10.99')
 
         if (OasysDateTime.checkIfAfterReleaseNode('6.35', dbAssessment.initiationDate)) {
-            this.childhoodBehavourProblems = common.getSingleAnswer(dbAssessment.qaData, '10', '10.7_V2_CHILDHOOD')
-            this.failureToCooperateWithPsychiatricTreatment = common.getSingleAnswer(dbAssessment.qaData, '10', '10.7_V2_FAILEDTOCOOP')
-            this.historyOfHeadInjuriesFitsEtc = common.getSingleAnswer(dbAssessment.qaData, '10', '10.7_V2_HISTHEADINJ')
-            this.historyOfPsychiatricTreatment = common.getSingleAnswer(dbAssessment.qaData, '10', '10.7_V2_HISTPSYCH')
-            this.medicationForMentalHealth = common.getSingleAnswer(dbAssessment.qaData, '10', '10.7_V2_MEDICATION')
-            this.patientInSpecialHospitalOrRsu = common.getSingleAnswer(dbAssessment.qaData, '10', '10.7_V2_PATIENT')
-            this.psychiatricTreatmentOrPending = common.getSingleAnswer(dbAssessment.qaData, '10', '10.7_V2_PSYCHTREAT')
+            this.childhoodBehavourProblems = dbAssessment.qaData.getString('10.7_V2_CHILDHOOD')
+            this.failureToCooperateWithPsychiatricTreatment = dbAssessment.qaData.getString('10.7_V2_FAILEDTOCOOP')
+            this.historyOfHeadInjuriesFitsEtc = dbAssessment.qaData.getString('10.7_V2_HISTHEADINJ')
+            this.historyOfPsychiatricTreatment = dbAssessment.qaData.getString('10.7_V2_HISTPSYCH')
+            this.medicationForMentalHealth = dbAssessment.qaData.getString('10.7_V2_MEDICATION')
+            this.patientInSpecialHospitalOrRsu = dbAssessment.qaData.getString('10.7_V2_PATIENT')
+            this.psychiatricTreatmentOrPending = dbAssessment.qaData.getString('10.7_V2_PSYCHTREAT')
         } else {
 
-            const reported = common.getMultipleAnswers(dbAssessment.qaData, '10', ['10.7'], 2)
+            const reported = dbAssessment.qaData.getStringArray('10.7')
             if (reported != null && reported != undefined) {
                 this.childhoodBehavourProblems = reported.includes('Evidence of childhood behavioural problems (optional)') ? 'Yes' : null
                 this.failureToCooperateWithPsychiatricTreatment = reported.includes('Previously failed to co-operate with psychiatric treatment (optional)') ? 'Yes' : null

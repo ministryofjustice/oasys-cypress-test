@@ -1,7 +1,7 @@
 var oracledb = require('oracledb')
 
-import { testEnvironment, userSuffix } from '../../localSettings'
-import { ogrsFunctionCall } from './ogrs/getTestData/oracleFunctionCall'
+import { testEnvironment, userSuffix } from '../../../localSettings'
+import { ogrsFunctionCall } from '../ogrs/getTestData/oracleFunctionCall'
 import { appVersions, currentVersion, OasysDateTime, setCurrentVersion } from 'lib/dateTime'
 
 var connection
@@ -131,7 +131,7 @@ export async function getAppConfig(): Promise<AppConfig> {
 
     const configData = await selectSingleValue(`select system_parameter_value from eor.system_parameter_mv where system_parameter_code ='PROB_FORCE_CRN'`)
     const offencesData = await selectData('select offence_group_code || sub_code, rsr_category_desc from eor.ct_offence order by 1')
-    const versionData = await selectData(`select version_number, to_char(release_date, '${OasysDateTime.dateFormat}')
+    const versionData = await selectData(`select version_number, to_char(release_date, '${OasysDateTime.oracleTimestampFormat}')
                                             from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc`)
 
     if (configData.error != null || offencesData.error != null || versionData.error != null) {
@@ -147,7 +147,7 @@ export async function getAppConfig(): Promise<AppConfig> {
 
     const versions = versionData.data as string[][]
     versions.forEach((version) => {
-        appVersions[version[0]] = OasysDateTime.stringToDate(version[1])
+        appVersions[version[0]] = OasysDateTime.stringToTimestamp(version[1])
     })
     setCurrentVersion(versions[0][0])
 

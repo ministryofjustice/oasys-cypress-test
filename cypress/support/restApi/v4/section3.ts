@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -50,13 +49,13 @@ export class Section3Assessment extends v4Common.V4AssessmentCommon {
 
     addDetails(dbAssessment: dbClasses.DbAssessment) {
 
-        this.noFixedAbodeOrTransient = common.getSingleAnswer(dbAssessment.qaData, '3', '3.3')
-        this.suitabilityOfAccommodation = common.getSingleAnswer(dbAssessment.qaData, '3', '3.4')
-        this.permanenceOfAccommodation = common.getSingleAnswer(dbAssessment.qaData, '3', '3.5')
-        this.locationOfAccommodation = common.getSingleAnswer(dbAssessment.qaData, '3', '3.6')
-        this.accIssuesDetails = common.getTextAnswer(dbAssessment.textData, '3', '3.97')
-        this.accLinkedToHarm = common.getSingleAnswer(dbAssessment.qaData, '3', '3.98')
-        this.accLinkedToReoffending = common.getSingleAnswer(dbAssessment.qaData, '3', '3.99')
+        this.noFixedAbodeOrTransient = dbAssessment.qaData.getString('3.3')
+        this.suitabilityOfAccommodation = dbAssessment.qaData.getString('3.4')
+        this.permanenceOfAccommodation = dbAssessment.qaData.getString('3.5')
+        this.locationOfAccommodation = dbAssessment.qaData.getString('3.6')
+        this.accIssuesDetails = dbAssessment.qaData.getString('3.97')
+        this.accLinkedToHarm = dbAssessment.qaData.getString('3.98')
+        this.accLinkedToReoffending = dbAssessment.qaData.getString('3.99')
     }
 }
 

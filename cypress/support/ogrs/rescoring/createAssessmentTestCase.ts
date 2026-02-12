@@ -6,9 +6,8 @@ import { OasysDateTime } from 'lib/dateTime'
 
 export function createAssessmentTestCase(assessment: RescoringAssessment, testParams: RescoringTestParameters): TestCaseParameters {
 
-    const initiationDate = OasysDateTime.stringToDate(assessment.initiationDate)
-    const after6_30 = OasysDateTime.checkIfAfterReleaseNode('6.30', initiationDate)
-    const after6_35 = OasysDateTime.checkIfAfterReleaseNode('6.35', initiationDate)
+    const after6_30 = OasysDateTime.checkIfAfterReleaseNode('6.30', assessment.initiationDate)
+    const after6_35 = OasysDateTime.checkIfAfterReleaseNode('6.35', assessment.initiationDate)
 
     let staticCalc = testParams.staticFlag
     if (staticCalc == 'N' && assessment.type == 'LAYER_1' && assessment.version == 2) {  // RoSHA - set static flag according to 1.39 (offender interview)

@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as apCommon from './apCommon'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -54,15 +53,15 @@ export class APOffenceAssessment extends apCommon.APAssessmentCommon {
 
     addOffencesDetails(assessment: dbClasses.DbAssessment) {
 
-        this.offenceAnalysis = common.getTextAnswer(assessment.textData, '2', '2.1')
-        this.victimPerpetratorRel = common.getTextAnswer(assessment.textData, '2', '2.4.2')
-        this.victimInfo = common.getTextAnswer(assessment.textData, '2', '2.4.1')
-        this.victimImpact = common.getTextAnswer(assessment.textData, '2', '2.5')
-        this.othersInvolved = common.getTextAnswer(assessment.textData, '2', '2.7.3')
-        this.offenceMotivation = common.getTextAnswer(assessment.textData, '2', '2.8')
-        this.acceptsResponsibility = common.getTextAnswer(assessment.textData, '2', '2.11.t')
-        this.patternOffending = common.getTextAnswer(assessment.textData, '2', '2.12')
-        this.issueContributingToRisk = common.getTextAnswer(assessment.textData, '2', '2.98')
+        this.offenceAnalysis = assessment.qaData.getString('2.1')
+        this.victimPerpetratorRel = assessment.qaData.getString('2.4.2')
+        this.victimInfo = assessment.qaData.getString('2.4.1')
+        this.victimImpact = assessment.qaData.getString('2.5')
+        this.othersInvolved = assessment.qaData.getString('2.7.3')
+        this.offenceMotivation = assessment.qaData.getString('2.8')
+        this.acceptsResponsibility = assessment.qaData.getString('2.11.t')
+        this.patternOffending = assessment.qaData.getString('2.12')
+        this.issueContributingToRisk = assessment.qaData.getString('2.98')
     }
 }
 

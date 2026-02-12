@@ -51,6 +51,7 @@ export class RiskScoresRsrAssessment extends v4Common.V4AssessmentCommon {
         // Remove standard stuff not included in this endpoint
         delete this.assessmentPk
         delete this.assessmentType
+        delete this.assessmentVersion
         delete this.dateCompleted
         delete this.assessorSignedDate
         delete this.initiationDate

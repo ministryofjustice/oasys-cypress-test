@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -52,13 +51,13 @@ export class Section7Assessment extends v4Common.V4AssessmentCommon {
 
     addDetails(dbAssessment: dbClasses.DbAssessment) {
 
-        this.communityIntegration = common.getSingleAnswer(dbAssessment.qaData, '7', '7.1')
-        this.regActivitiesEncourageOffending = common.getSingleAnswer(dbAssessment.qaData, '7', '7.2')
-        this.easilyInfluenced = common.getSingleAnswer(dbAssessment.qaData, '7', '7.3')
-        this.manipulativePredatory = common.getSingleAnswer(dbAssessment.qaData, '7', '7.4')
-        this.recklessness = common.getSingleAnswer(dbAssessment.qaData, '7', '7.5')
-        this.lifestyleIssuesDetails = common.getTextAnswer(dbAssessment.textData, '7', '7.97')
-        this.lifestyleLinkedToHarm = common.getSingleAnswer(dbAssessment.qaData, '7', '7.98')
-        this.lifestyleLinkedToReoffending = common.getSingleAnswer(dbAssessment.qaData, '7', '7.99')
+        this.communityIntegration = dbAssessment.qaData.getString('7.1')
+        this.regActivitiesEncourageOffending = dbAssessment.qaData.getString('7.2')
+        this.easilyInfluenced = dbAssessment.qaData.getString('7.3')
+        this.manipulativePredatory = dbAssessment.qaData.getString('7.4')
+        this.recklessness = dbAssessment.qaData.getString('7.5')
+        this.lifestyleIssuesDetails = dbAssessment.qaData.getString('7.97')
+        this.lifestyleLinkedToHarm = dbAssessment.qaData.getString('7.98')
+        this.lifestyleLinkedToReoffending = dbAssessment.qaData.getString('7.99')
     }
 }

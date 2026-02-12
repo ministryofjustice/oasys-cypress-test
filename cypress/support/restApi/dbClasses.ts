@@ -2,16 +2,34 @@
  * Classes used to extract data from the OASys database for use in API regression testing.
  * These objects are created by the RestDb functions in cypress/support/restApidb.ts using the queries defined here.
  */
+import { stringToInt } from 'lib/utils'
+import { OasysDateTime } from 'oasys'
+import { QaData } from '../data/qaData'
+import { assignValues, buildQuery, getColumns } from '../data/queryBuilder'
 
 
 /**
  * Single offender with all relevant assessment data
  */
+
+const offenderColumns: Columns = {
+    offenderPk: { name: 'offender_pk', type: 'integer' },
+    probationCrn: { name: 'cms_prob_number', type: 'string' },
+    nomisId: { name: 'cms_pris_number', type: 'string' },
+    riskToOthers: { name: 'risk_to_others_elm', type: 'string' },
+    limitedAccessOffender: { name: 'limited_access_offender ', type: 'ynToBool' },
+    pnc: { name: 'pnc', type: 'string' },
+    forename1: { name: 'forename_1', type: 'string' },
+    surname: { name: 'family_name', type: 'string' },
+    gender: { name: 'gender_elm', type: 'integer' },
+    custodyInd: { name: 'custody_ind', type: 'string' },
+}
+
 export class DbOffenderWithAssessments {
 
+    offenderPk: number
     probationCrn: string
     nomisId: string
-    offenderPk: number
     riskToOthers: string
     limitedAccessOffender: boolean
     pnc: string
@@ -19,30 +37,20 @@ export class DbOffenderWithAssessments {
     surname: string
     gender: number
     custodyInd: string
-    assessments: DbAssessmentOrRsr[] = []
 
+    assessments: DbAssessmentOrRsr[] = []
     dbElapsedTime: number
+
+    static query(crnSource: Provider, crn: string): string {
+
+        return buildQuery(offenderColumns, ['offender'], `deleted_date is null and ${crnSource == 'prob' ? 'cms_prob_number' : 'cms_pris_number'} = '${crn}'`, null)
+    }
 
     constructor(offenderData: string[]) {
 
-        this.offenderPk = Number.parseInt(offenderData[0])
-        this.probationCrn = offenderData[1]
-        this.nomisId = offenderData[2]
-        this.riskToOthers = offenderData[3]
-        this.limitedAccessOffender = offenderData[4] == 'Y'
-        this.pnc = offenderData[5]
-        this.forename1 = offenderData[6]
-        this.surname = offenderData[7]
-        this.gender = Number.parseInt(offenderData[8])
-        this.custodyInd = offenderData[9]
+        assignValues(this, offenderColumns, offenderData, 0)
     }
 
-    static query(crnSource: Provider, crn: string): string {
-        return `select offender_pk, cms_prob_number, cms_pris_number, risk_to_others_elm, limited_access_offender, 
-                    pnc, forename_1, family_name, gender_elm, custody_ind
-                    from eor.offender where deleted_date is null 
-                    and ${crnSource == 'prob' ? 'cms_prob_number' : 'cms_pris_number'} = '${crn}'`
-    }
 }
 
 /**
@@ -52,31 +60,45 @@ export class DbAssessmentOrRsr {
 
     assessmentPk: number
     assessmentType: string
+    assessmentVersion: number
     status: string
     initiationDate: string
     signedDate: string
     completedDate: string
     lastUpdatedDate: string
     riskDetails: DbRiskDetails
-    eventNumber: number
+    cmsEventNumber: number
     appVersion: string
 
-    constructor(assessmentPk: number, assessmentType: string, status: string, initiationDate: string, signedDate: string, completedDate: string, lastUpdatedDate: string, versionTable: string[][]) {
-
-        this.assessmentPk = assessmentPk
-        this.assessmentType = assessmentType
-        this.status = status
-        this.initiationDate = initiationDate
-        this.signedDate = signedDate
-        this.completedDate = completedDate
-        this.lastUpdatedDate = lastUpdatedDate
-        this.appVersion = getVersionNumber(initiationDate, versionTable)
-    }
 }
 
 /**
  * OASys assessment including sections, questions and answers, offences, victims and objectives
  */
+const assessmentColumns: Columns = {
+
+    assessmentPk: { name: 'oasys_set_pk', type: 'integer' },
+    assessmentType: { name: 'ref_ass_version_code', type: 'string' },
+    assessmentVersion: { name: 'version_number', type: 'integer' },
+    status: { name: 'assessment_status_elm', type: 'string' },
+    initiationDate: { name: 'initiation_date', type: 'date' },
+    completedDate: { name: 'date_completed', type: 'date' },
+    lastUpdatedDate: { table: 'oasys_set_change', name: 'lastupd_date', type: 'date' },
+    cmsEventNumber: { name: 'cms_event_number', type: 'integer' },
+
+    dateOfBirth: { name: 'date_of_birth', type: 'date' },
+    assessorName: { name: 'assessor_name', type: 'string' },
+    pOAssessment: { name: 'purpose_assessment_elm', type: 'string' },
+    pOAssessmentDesc: { name: 'purpose_assmt_other_ftxt', type: 'string' },
+    parentAssessmentPk: { name: 'parent_oasys_set_pk', type: 'integer' },
+    signedDate: { name: 'assessor_signed_date', type: 'date' },
+    sanIndicator: { name: 'san_assessment_linked_ind', type: 'string' },
+    roshLevel: { name: 'rosh_level_elm', type: 'string' },
+    learningToolScore: { name: 'learning_tool_score', type: 'integer' },
+    ldcSubTotal: { name: 'ldc_sub_total', type: 'integer' },
+    ldcFuncProc: { name: 'ldc_func_proc', type: 'string' },
+}
+
 export class DbAssessment extends DbAssessmentOrRsr {
 
     signedDate: string
@@ -84,7 +106,6 @@ export class DbAssessment extends DbAssessmentOrRsr {
     pOAssessment: string
     pOAssessmentDesc: string
     assessorName: string
-    assessmentVersion: number
     courtCode: string
     courtType: string
     courtName: string
@@ -94,31 +115,42 @@ export class DbAssessment extends DbAssessmentOrRsr {
     learningToolScore: number
     ldcSubTotal: number
     ldcFuncProc: string
+
     offences: DbOffence[] = []
     victims: DbVictim[] = []
     basicSentencePlan: DbBspObjective[] = []
     objectives: DbObjective[] = []
-
     sections: DbSection[] = []
-    qaData: string[][]
-    textData: string[][]
+    qaData: QaData
 
-    constructor(assessmentData: string[], versionTable: string[][]) {
+    constructor(assessmentData: string[]) {
 
-        super(Number.parseInt(assessmentData[0]), assessmentData[1], assessmentData[2], assessmentData[3], assessmentData[4], assessmentData[5], assessmentData[6], versionTable)
-        this.riskDetails = new DbRiskDetails(assessmentData)
-        this.roshLevel = assessmentData[36]
-        this.eventNumber = getDbInt(assessmentData[37])
-        this.pOAssessment = assessmentData[38]
-        this.pOAssessmentDesc = assessmentData[39]
-        this.assessorName = assessmentData[40]
-        this.assessmentVersion = Number.parseInt(assessmentData[41])
-        this.parentAssessmentPk = Number.parseInt(assessmentData[42]) || null
-        this.sanIndicator = assessmentData[47]
-        this.dateOfBirth = assessmentData[66]
-        this.learningToolScore = assessmentData[67] == null ? null : Number.parseInt(assessmentData[67])
-        this.ldcSubTotal = assessmentData[68] == null ? null : Number.parseInt(assessmentData[68])
-        this.ldcFuncProc = assessmentData[69]
+        super()
+
+        assignValues(this, assessmentColumns, assessmentData, 0)
+        this.riskDetails = new DbRiskDetails(assessmentData, Object.keys(assessmentColumns).length, 'assessment')
+        this.appVersion = OasysDateTime.dateToVersion(this.initiationDate)
+    }
+
+    static query(offenderPk: number): string {
+
+        return buildQuery(
+            { ...assessmentColumns, ...riskColumns, ...riskColumnsAssessmentOnly },
+            ['oasys_set', 'oasys_assessment_group', 'oasys_set_change'],
+            `oasys_assessment_group.offender_pk = ${offenderPk} 
+                and oasys_assessment_group.oasys_assessment_group_pk = oasys_set.oasys_assessment_group_pk 
+                and oasys_set_change.oasys_set_pk = oasys_set.oasys_set_pk 
+                and oasys_set.deleted_date is null`,
+            'oasys_set.initiation_date'
+        )
+    }
+
+    static courtQuery(assessmentPk: number): string {
+
+        return `select c.court_code, c.court_name, c.court_type_elm 
+                        from eor.court c, eor.offence_block o 
+                        where o.oasys_set_pk = ${assessmentPk} and o.offence_block_type_elm = 'CURRENT' 
+                        and c.court_pk = o.court_pk`
     }
 
     addCourtDetails(courtData: string[]) {
@@ -128,119 +160,145 @@ export class DbAssessment extends DbAssessmentOrRsr {
         this.courtType = courtData[2]
     }
 
-    static query(offenderPk: number): string {
-
-        return `select s.oasys_set_pk, s.ref_ass_version_code, s.assessment_status_elm,
-                    to_char(s.initiation_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'),
-                    to_char(s.assessor_signed_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'),
-                    to_char(s.date_completed, 'YYYY-MM-DD\"T\"HH24:MI:SS'), 
-                    to_char(c.lastupd_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'), 
-                    ogp_st_wesc, ogp_dy_wesc, ogp_tot_wesc, ogp_1year, ogp_2year, ogp_risk_recon_elm, 
-                    ovp_st_wesc, ovp_dy_wesc, ovp_tot_wesc, ovp_1year, ovp_2year, ovp_risk_recon_elm, 
-                    ovp_prev_wesc, ovp_non_vio_wesc, ovp_age_wesc, ovp_vio_wesc, ovp_sex_wesc, 
-                    s.ogrs3_1year, s.ogrs3_2year, s.ogrs3_risk_recon_elm, s.rsr_static_or_dynamic, 
-                    s.rsr_exception_error, 
-                    s.rsr_algorithm_version, s.rsr_percentage_score, s.rsr_risk_recon_elm, 
-                    s.osp_i_percentage_score, s.osp_c_percentage_score, s.osp_i_risk_recon_elm, s.osp_c_risk_recon_elm, s.rosh_level_elm,
-                    s.cms_event_number, s.purpose_assessment_elm, s.purpose_assmt_other_ftxt, assessor_name, s.version_number, s.parent_oasys_set_pk, 
-                    s.osp_iic_risk_recon_elm, s.osp_iic_percentage_score, s.osp_dc_risk_recon_elm, s.osp_dc_percentage_score,
-                    s.san_assessment_linked_ind, 
-                    s.ogrs4g_percentage_2yr, s.ogrs4g_band_risk_recon_elm, s.ogrs4g_calculated, 
-                    s.ogrs4v_percentage_2yr, s.ogrs4v_band_risk_recon_elm, s.ogrs4v_calculated, 
-                    s.ogp2_percentage_2yr, s.ogp2_band_risk_recon_elm, s.ogp2_calculated, 
-                    s.ovp2_percentage_2yr, s.ovp2_band_risk_recon_elm, s.ovp2_calculated, 
-                    s.snsv_percentage_2yr_static, s.snsv_stat_band_risk_recon_elm, s.snsv_calculated_static, 
-                    s.snsv_percentage_2yr_dynamic, s.snsv_dyn_band_risk_recon_elm, s.snsv_calculated_dynamic,
-                    to_char(s.date_of_birth, 'YYYY-MM-DD'),
-                    s.learning_tool_score, s.ldc_sub_total, s.ldc_func_proc
-                    from eor.oasys_assessment_group g, eor.oasys_set s, eor.oasys_set_change c 
-                    where g.offender_pk = ${offenderPk} and g.oasys_assessment_group_pk = s.oasys_assessment_group_pk 
-                    and c.oasys_set_pk = s.oasys_set_pk 
-                    and s.deleted_date is null
-                    order by s.initiation_date`
-    }
-
-    static courtQuery(assessmentPk: number): string {
-
-        return `select c.court_code, c.court_name, c.court_type_elm 
-                    from eor.court c, eor.offence_block o 
-                    where o.oasys_set_pk = ${assessmentPk} and o.offence_block_type_elm = 'CURRENT' 
-                    and c.court_pk = o.court_pk`
-    }
-
     static qaQuery(assessmentPk: number): string {
 
-        return `select q.ref_section_code, q.ref_question_code, ra.ref_section_answer
-                    from eor.oasys_set st
-                    left outer join eor.oasys_section s
-                    on s.oasys_set_pk = st.oasys_set_pk
-                    left outer join eor.oasys_question q
-                    on q.oasys_section_pk = s.oasys_section_pk
-                    left outer join eor.oasys_answer a
-                    on a.oasys_question_pk = q.oasys_question_pk
-                    left outer join eor.ref_answer ra
-                    on (ra.ref_ass_version_code = a.ref_ass_version_code
-                    and ra.version_number = a.version_number
-                    and ra.ref_section_code = a.ref_section_code
-                    and ra.ref_question_code = a.ref_question_code
-                    and ra.ref_answer_code = a.ref_answer_code )
-                    where st.oasys_set_pk = ${assessmentPk}
-                    and q.currently_hidden_ind = 'N'
-                    and a.ref_answer_code is not null
-                    order by q.ref_section_code, q.ref_question_code`
-
-    }
-
-    static textAnswerQuery(assessmentPk: number): string {
-
-        return `select q.ref_section_code, q.ref_question_code, q.free_format_answer, q.additional_note
-                    from eor.oasys_set st
-                    left outer join eor.oasys_section s on s.oasys_set_pk = st.oasys_set_pk
-                    left outer join eor.oasys_question q on q.oasys_section_pk = s.oasys_section_pk
-                    where st.oasys_set_pk = ${assessmentPk}
-                    and q.currently_hidden_ind = 'N'`
+        return `select oq.ref_question_code, oq.free_format_answer, oq.additional_note, ra.ref_section_answer, osec.ref_section_code
+                        from eor.oasys_set os
+                        left outer join eor.oasys_section osec
+                        on osec.oasys_set_pk = os.oasys_set_pk
+                        left outer join eor.oasys_question oq
+                        on oq.oasys_section_pk = osec.oasys_section_pk
+                        left outer join eor.oasys_answer oa
+                        on oa.oasys_question_pk = oq.oasys_question_pk
+                        left outer join eor.ref_answer ra
+                        on (ra.ref_ass_version_code = oa.ref_ass_version_code
+                        and ra.version_number = oa.version_number
+                        and ra.ref_section_code = oa.ref_section_code
+                        and ra.ref_question_code = oa.ref_question_code
+                        and ra.ref_answer_code = oa.ref_answer_code )
+                        where os.oasys_set_pk =  ${assessmentPk}
+                        and oq.currently_hidden_ind = 'N'`
     }
 }
 
 /**
  * Standalone RSR assessments
  */
+const rsrColumns: Columns = {
+
+    assessmentPk: { name: 'offender_rsr_scores_pk', type: 'integer' },
+    status: { name: 'rsr_status', type: 'string' },
+    initiationDate: { name: 'initiation_date', type: 'date' },
+    completedDate: { name: 'date_completed', type: 'date' },
+    lastUpdatedDate: { name: 'lastupd_date', type: 'date' },
+}
+
 export class DbRsr extends DbAssessmentOrRsr {
 
-    constructor(rsrData: string[], versionTable: string[][]) {
+    constructor(assessmentData: string[]) {
 
-        super(Number.parseInt(rsrData[0]), 'STANDALONE', rsrData[1], rsrData[2], undefined, rsrData[3], rsrData[4], versionTable)
-        this.riskDetails = new DbRiskDetails(rsrData, true)
-        this.eventNumber = null
+        super()
+
+        assignValues(this, rsrColumns, assessmentData, 0)
+        this.riskDetails = new DbRiskDetails(assessmentData, Object.keys(rsrColumns).length, 'rsr')
+        this.appVersion = OasysDateTime.dateToVersion(this.initiationDate)
+
+        this.cmsEventNumber = null
+        this.assessmentType = 'STANDALONE'
+        this.assessmentVersion = null
     }
 
     static query(offenderPk: number): string {
 
-        return `select r.offender_rsr_scores_pk, r.rsr_status, to_char(r.initiation_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'), 
-                            to_char(r.date_completed, 'YYYY-MM-DD\"T\"HH24:MI:SS'), 
-                            to_char(r.lastupd_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'), 
-                            r.ogrs3_1year, r.ogrs3_2year, r.ogrs3_risk_recon_elm, r.rsr_static_or_dynamic, 
-                            r.rsr_exception_error, 
-                            r.rsr_algorithm_version, r.rsr_percentage_score, r.rsr_risk_recon_elm, 
-                            r.osp_i_percentage_score, r.osp_c_percentage_score, r.osp_i_risk_recon_elm, r.osp_c_risk_recon_elm,
-                            r.osp_iic_risk_recon_elm, r.osp_iic_percentage_score, r.osp_dc_risk_recon_elm, r.osp_dc_percentage_score,
-                            r.ogrs4g_percentage_2yr, r.ogrs4g_band_risk_recon_elm, r.ogrs4g_calculated, 
-                            r.ogrs4v_percentage_2yr, r.ogrs4v_band_risk_recon_elm, r.ogrs4v_calculated, 
-                            r.ogp2_percentage_2yr, r.ogp2_band_risk_recon_elm, r.ogp2_calculated, 
-                            r.ovp2_percentage_2yr, r.ovp2_band_risk_recon_elm, r.ovp2_calculated, 
-                            r.snsv_percentage_2yr_static, r.snsv_stat_band_risk_recon_elm, r.snsv_calculated_static, 
-                            r.snsv_percentage_2yr_dynamic, r.snsv_dyn_band_risk_recon_elm, r.snsv_calculated_dynamic   
-                            from eor.offender_rsr_scores r 
-                            where r.offender_pk = ${offenderPk} 
-                            and r.deleted_date is null 
-                            order by r.initiation_date`
+        return buildQuery({ ...rsrColumns, ...riskColumns }, ['offender_rsr_scores'], `offender_pk = ${offenderPk} and deleted_date is null`, 'initiation_date')
     }
 }
 
 /**
  * Risk data from the oasys_set or standalone_rsr record
  */
+const riskColumns: Columns = {
+
+    ogrs31Year: { name: 'ogrs3_1year', type: 'integer' },
+    ogrs32Year: { name: 'ogrs3_2year', type: 'integer' },
+    ogrs3RiskRecon: { name: 'ogrs3_risk_recon_elm', type: 'string' },
+
+    ospImagePercentageScore: { name: 'osp_i_percentage_score', type: 'float' },
+    ospIRisk: { name: 'osp_i_risk_recon_elm', type: 'string' },
+    ospContactPercentageScore: { name: 'osp_c_percentage_score', type: 'float' },
+    ospCRisk: { name: 'osp_c_risk_recon_elm', type: 'string' },
+
+    ospIicPercentageScore: { name: 'osp_iic_percentage_score', type: 'float' },
+    ospIicRisk: { name: 'osp_iic_risk_recon_elm', type: 'string' },
+    ospDcPercentageScore: { name: 'osp_dc_percentage_score', type: 'float' },
+    ospDcRisk: { name: 'osp_dc_risk_recon_elm', type: 'string' },
+    ospCRiskReduction: { name: 'osp_c_risk_reduction', type: 'string' },
+
+    ogrs4gPercentageScore: { name: 'ogrs4g_percentage_2yr', type: 'float' },
+    ogrs4gRisk: { name: 'ogrs4g_band_risk_recon_elm', type: 'string' },
+    ogrs4gCalculated: { name: 'ogrs4g_calculated', type: 'string' },
+    ogp2PercentageScore: { name: 'ogp2_percentage_2yr', type: 'float' },
+    ogp2Risk: { name: 'ogp2_band_risk_recon_elm', type: 'string' },
+    ogp2Calculated: { name: 'ogp2_calculated', type: 'string' },
+
+    ogrs4vPercentageScore: { name: 'ogrs4v_percentage_2yr', type: 'float' },
+    ogrs4vRisk: { name: 'ogrs4v_band_risk_recon_elm', type: 'string' },
+    ogrs4vCalculated: { name: 'ogrs4v_calculated', type: 'string' },
+    ovp2PercentageScore: { name: 'ovp2_percentage_2yr', type: 'float' },
+    ovp2Risk: { name: 'ovp2_band_risk_recon_elm', type: 'string' },
+    ovp2Calculated: { name: 'ovp2_calculated', type: 'string' },
+
+    snsvStaticCalculated: { name: 'snsv_calculated_static', type: 'string' },
+    snsvStaticPercentageScore: { name: 'snsv_percentage_2yr_static', type: 'float' },
+    snsvStaticRisk: { name: 'snsv_stat_band_risk_recon_elm', type: 'string' },
+    snsvDynamicCalculated: { name: 'snsv_calculated_dynamic', type: 'string' },
+    snsvDynamicPercentageScore: { name: 'snsv_percentage_2yr_dynamic', type: 'float' },
+    snsvDynamicRisk: { name: 'snsv_dyn_band_risk_recon_elm', type: 'string' },
+
+    rsrStaticOrDynamic: { name: 'rsr_static_or_dynamic', type: 'string' },
+    rsrExceptionError: { name: 'rsr_exception_error', type: 'string' },
+    rsrAlgorithmVersion: { name: 'rsr_algorithm_version', type: 'integer' },
+    rsrPercentageScore: { name: 'rsr_percentage_score', type: 'float' },
+    rsrRisk: { name: 'rsr_risk_recon_elm', type: 'string' },
+}
+
+const riskColumnsAssessmentOnly: Columns = {
+
+    ogpStWesc: { name: 'ogp_st_wesc', type: 'integer' },
+    ogpDyWesc: { name: 'ogp_dy_wesc', type: 'integer' },
+    ogpTotWesc: { name: 'ogp_tot_wesc', type: 'integer' },
+    ogp1Year: { name: 'ogp_1year', type: 'integer' },
+    ogp2Year: { name: 'ogp_2year', type: 'integer' },
+    ogpRisk: { name: 'ogp_risk_recon_elm', type: 'string' },
+
+    ovpStWesc: { name: 'ovp_st_wesc', type: 'integer' },
+    ovpDyWesc: { name: 'ovp_dy_wesc', type: 'integer' },
+    ovpTotWesc: { name: 'ovp_tot_wesc', type: 'integer' },
+    ovp1Year: { name: 'ovp_1year', type: 'integer' },
+    ovp2Year: { name: 'ovp_2year', type: 'integer' },
+    ovpRisk: { name: 'ovp_risk_recon_elm', type: 'string' },
+    ovpPrevWesc: { name: 'ovp_prev_wesc', type: 'integer' },
+    ovpNonVioWesc: { name: 'ovp_non_vio_wesc', type: 'integer' },
+    ovpAgeWesc: { name: 'ovp_age_wesc', type: 'integer' },
+    ovpVioWesc: { name: 'ovp_vio_wesc', type: 'integer' },
+    ovpSexWesc: { name: 'ovp_sex_wesc', type: 'integer' },
+}
 export class DbRiskDetails {
+
+    ogrs31Year: number
+    ogrs32Year: number
+    ogrs3RiskRecon: string
+
+    ospImagePercentageScore: number = 0
+    ospContactPercentageScore: number = 0
+    ospIRisk: string = 'NA'
+    ospCRisk: string = 'NA'
+
+    ospIicRisk: string
+    ospIicPercentageScore: number
+    ospDcRisk: string
+    ospDcPercentageScore: number
+    ospCRiskReduction: string
 
     ogpStWesc: number = null
     ogpDyWesc: number = null
@@ -261,147 +319,39 @@ export class DbRiskDetails {
     ovpVioWesc: number = null
     ovpSexWesc: number = null
 
-    ogrs31Year: number
-    ogrs32Year: number
-    ogrs3RiskRecon: string
+    ogrs4gPercentageScore: number
+    ogrs4gRisk: string
+    ogrs4gCalculated: string
+    ogp2PercentageScore: number
+    ogp2Risk: string
+    ogp2Calculated: string
+
+    ogrs4vPercentageScore: number
+    ogrs4vRisk: string
+    ogrs4vCalculated: string
+    ovp2PercentageScore: number
+    ovp2Risk: string
+    ovp2Calculated: string
+
+    snsvStaticPercentageScore: number
+    snsvStaticRisk: string
+    snsvStaticCalculated: string
+    snsvDynamicPercentageScore: number
+    snsvDynamicRisk: string
+    snsvDynamicCalculated: string
 
     rsrStaticOrDynamic: string
     rsrExceptionError: string
     rsrAlgorithmVersion: number
     rsrPercentageScore: number
-    scoreLevel: string
+    rsrRisk: string
 
-    ospImagePercentageScore: number = 0
-    ospContactPercentageScore: number = 0
-    ospImageScoreLevel: string = 'NA'
-    ospContactScoreLevel: string = 'NA'
+    constructor(riskData: string[], start: number, type: 'assessment' | 'rsr') {
 
-    ospIndirectImagesChildrenScoreLevel: string
-    ospIndirectImagesChildrenPercentageScore: number
-    ospDirectContactScoreLevel: string
-    ospDirectContactPercentageScore: number
-
-    ogrs4gYr2: number
-    ogrs4gBand: string
-    ogrs4gCalculated: string
-    ogrs4vYr2: number
-    ogrs4vBand: string
-    ogrs4vCalculated: string
-    ogp2Yr2: number
-    ogp2Band: string
-    ogp2Calculated: string
-    ovp2Yr2: number
-    ovp2Band: string
-    ovp2Calculated: string
-    snsvStaticYr2: number
-    snsvStaticYr2Band: string
-    snsvStaticCalculated: string
-    snsvDynamicYr2: number
-    snsvDynamicYr2Band: string
-    snsvDynamicCalculated: string
-
-    constructor(riskData: string[], standaloneRsr: boolean = false) {
-
-        if (standaloneRsr) {
-            let i = 5
-            this.ogrs31Year = getDbInt(riskData[i++])
-            this.ogrs32Year = getDbInt(riskData[i++])
-            this.ogrs3RiskRecon = riskData[i++]
-
-            this.rsrStaticOrDynamic = riskData[i++]
-            this.rsrExceptionError = riskData[i++]
-            this.rsrAlgorithmVersion = getDbInt(riskData[i++])
-            this.rsrPercentageScore = getDbFloat(riskData[i++])
-            this.scoreLevel = riskData[i++]
-            this.ospImagePercentageScore = getDbFloat(riskData[i++])
-            this.ospContactPercentageScore = getDbFloat(riskData[i++])
-            this.ospImageScoreLevel = riskData[i++]
-            this.ospContactScoreLevel = riskData[i++]
-
-            this.ospIndirectImagesChildrenScoreLevel = riskData[i++]
-            this.ospIndirectImagesChildrenPercentageScore = getDbFloat(riskData[i++])
-            this.ospDirectContactScoreLevel = riskData[i++]
-            this.ospDirectContactPercentageScore = getDbFloat(riskData[i++])
-
-            this.ogrs4gYr2 = getDbFloat(riskData[i++])
-            this.ogrs4gBand = riskData[i++]
-            this.ogrs4gCalculated = riskData[i++]
-            this.ogrs4vYr2 = getDbFloat(riskData[i++])
-            this.ogrs4vBand = riskData[i++]
-            this.ogrs4vCalculated = riskData[i++]
-            this.ogp2Yr2 = getDbFloat(riskData[i++])
-            this.ogp2Band = riskData[i++]
-            this.ogp2Calculated = riskData[i++]
-            this.ovp2Yr2 = getDbFloat(riskData[i++])
-            this.ovp2Band = riskData[i++]
-            this.ovp2Calculated = riskData[i++]
-            this.snsvStaticYr2 = getDbFloat(riskData[i++])
-            this.snsvStaticYr2Band = riskData[i++]
-            this.snsvStaticCalculated = riskData[i++]
-            this.snsvDynamicYr2 = getDbFloat(riskData[i++])
-            this.snsvDynamicYr2Band = riskData[i++]
-            this.snsvDynamicCalculated = riskData[i++]
-        } else {
-            this.ogpStWesc = getDbInt(riskData[7])
-            this.ogpDyWesc = getDbInt(riskData[8])
-            this.ogpTotWesc = Number.parseInt(riskData[9]) || null
-            this.ogp1Year = getDbInt(riskData[10])
-            this.ogp2Year = getDbInt(riskData[11])
-            this.ogpRisk = riskData[12]
-
-            this.ovpStWesc = getDbInt(riskData[13])
-            this.ovpDyWesc = getDbInt(riskData[14])
-            this.ovpTotWesc = Number.parseInt(riskData[15]) || null
-            this.ovp1Year = getDbInt(riskData[16])
-            this.ovp2Year = getDbInt(riskData[17])
-            this.ovpRisk = riskData[18]
-            this.ovpPrevWesc = getDbInt(riskData[19])
-            this.ovpNonVioWesc = getDbInt(riskData[20])
-            this.ovpAgeWesc = getDbInt(riskData[21])
-            this.ovpVioWesc = getDbInt(riskData[22])
-            this.ovpSexWesc = getDbInt(riskData[23])
-
-            this.ogrs31Year = getDbInt(riskData[24])
-            this.ogrs32Year = getDbInt(riskData[25])
-            this.ogrs3RiskRecon = riskData[26]
-
-            this.rsrStaticOrDynamic = riskData[27]
-            this.rsrExceptionError = riskData[28]
-            this.rsrAlgorithmVersion = getDbInt(riskData[29])
-            this.rsrPercentageScore = getDbFloat(riskData[30])
-            this.scoreLevel = riskData[31]
-
-            this.ospImagePercentageScore = getDbFloat(riskData[32])
-            this.ospContactPercentageScore = getDbFloat(riskData[33])
-            this.ospImageScoreLevel = riskData[34]
-            this.ospContactScoreLevel = riskData[35]
-
-            this.ospIndirectImagesChildrenScoreLevel = riskData[43]
-            this.ospIndirectImagesChildrenPercentageScore = getDbFloat(riskData[44])
-            this.ospDirectContactScoreLevel = riskData[45]
-            this.ospDirectContactPercentageScore = getDbFloat(riskData[46])
-
-            this.ogrs4gYr2 = getDbFloat(riskData[48])
-            this.ogrs4gBand = riskData[49]
-            this.ogrs4gCalculated = riskData[50]
-            this.ogrs4vYr2 = getDbFloat(riskData[51])
-            this.ogrs4vBand = riskData[52]
-            this.ogrs4vCalculated = riskData[53]
-            this.ogp2Yr2 = getDbFloat(riskData[54])
-            this.ogp2Band = riskData[55]
-            this.ogp2Calculated = riskData[56]
-            this.ovp2Yr2 = getDbFloat(riskData[57])
-            this.ovp2Band = riskData[58]
-            this.ovp2Calculated = riskData[59]
-            this.snsvStaticYr2 = getDbFloat(riskData[60])
-            this.snsvStaticYr2Band = riskData[61]
-            this.snsvStaticCalculated = riskData[62]
-            this.snsvDynamicYr2 = getDbFloat(riskData[63])
-            this.snsvDynamicYr2Band = riskData[64]
-            this.snsvDynamicCalculated = riskData[65]
-
+        assignValues(this, riskColumns, riskData, start)
+        if (type == 'assessment') {
+            assignValues(this, riskColumnsAssessmentOnly, riskData, start + Object.keys(riskColumns).length)
         }
-
     }
 }
 
@@ -486,19 +436,24 @@ export class DbSection {
     otherWeightedScore: number
     lowScoreNeedsAttn: string
     crimNeedScoreThreshold: number
+    sanCrimNeedScore: number
 
-    constructor(sectionData: string[]) {
+    constructor(sectionData: string[], assessmentType: string, assessmentVersion: number) {
+
+        const l31 = assessmentType == 'LAYER3' && assessmentVersion == 1
+        const san = assessmentType == 'LAYER3' && assessmentVersion == 2
 
         this.sectionCode = sectionData[0]
         this.sectionPk = Number.parseInt(sectionData[1])
-        this.otherWeightedScore = getDbInt(sectionData[2])
+        this.otherWeightedScore = l31 ? stringToInt(sectionData[2]) : null
         this.lowScoreNeedsAttn = sectionData[3]
-        this.crimNeedScoreThreshold = getDbInt(sectionData[4])
+        this.crimNeedScoreThreshold = stringToInt(sectionData[4])
+        this.sanCrimNeedScore = san ? stringToInt(sectionData[5]) : null
     }
 
     static query(assessmentPk: number): string {
 
-        return `select s.ref_section_code, s.oasys_section_pk, s.sect_other_weighted_score, s.low_score_need_attn_ind, r.crim_need_score_threshold
+        return `select s.ref_section_code, s.oasys_section_pk, s.sect_other_weighted_score, s.low_score_need_attn_ind, r.crim_need_score_threshold, s.san_crim_need_score
                     from eor.oasys_section s, eor.ref_section r 
                     where s.oasys_set_pk = ${assessmentPk}
                     and r.ref_section_code = s.ref_section_code
@@ -590,41 +545,30 @@ export class DbNeed {
     }
 }
 
+const actionColumns: Columns = {
+
+    action: { name: 'intervention_elm', type: 'string' },
+    actionDesc: { table: 'ref_element', name: 'ref_element_desc', type: 'string' },
+    actionComment: { name: 'intervention_comment', type: 'string' },
+}
+
 export class DbAction {
 
     action: string
     actionDesc: string
     actionComment: string
 
+    static query(objectivePk: string): string {
+
+        return buildQuery(actionColumns, ['ssp_intervention_in_set', 'ssp_obj_intervene_pivot', 'ref_element'],
+            `ssp_obj_intervene_pivot.ssp_intervention_in_set_pk = ssp_intervention_in_set.ssp_intervention_in_set_pk
+                        and ssp_obj_intervene_pivot.ssp_objectives_in_set_pk = ${objectivePk}
+                        and ref_element.ref_category_code = ssp_intervention_in_set.intervention_cat and ref_element.ref_element_code = ssp_intervention_in_set.intervention_elm`
+            , null)
+    }
 
     constructor(actionData: string[]) {
 
-        this.action = actionData[0]
-        this.actionDesc = actionData[1]
-        this.actionComment = actionData[2]
+        assignValues(this, actionColumns, actionData, 0)
     }
-
-    static query(objectivePk: string): string {
-
-        return `select i.intervention_elm, r.ref_element_desc, i.intervention_comment
-                    from eor.ssp_intervention_in_set i, eor.ssp_obj_intervene_pivot p, eor.ref_element r
-                    where p.ssp_intervention_in_set_pk = i.ssp_intervention_in_set_pk
-                    and p.ssp_objectives_in_set_pk = ${objectivePk}
-                    and r.ref_category_code = i.intervention_cat and r.ref_element_code = i.intervention_elm`
-    }
-}
-
-function getVersionNumber(initiationDate: string, versionTable: string[][]) {
-    for (let i in versionTable) {
-        if (initiationDate >= versionTable[i][1]) return versionTable[i][0]
-    }
-    return 'unknown version'
-}
-
-function getDbInt(dbValue: string): number {
-    return Number.isNaN(Number.parseInt(dbValue)) ? null : Number.parseInt(dbValue)
-}
-
-function getDbFloat(dbValue: string): number {
-    return Number.isNaN(Number.parseFloat(dbValue)) ? null : Number.parseFloat(dbValue)
 }
