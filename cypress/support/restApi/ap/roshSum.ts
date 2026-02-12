@@ -55,10 +55,10 @@ export class APRoshSumAssessment extends apCommon.APAssessmentCommon {
         this.whoAtRisk = assessment.qaData.getString('SUM1')
         this.natureOfRisk = assessment.qaData.getString('SUM2')
         this.riskGreatest = assessment.qaData.getString('SUM3')
-        this.factorsLikelyToIncreaseRisk = assessment.qaData.getString('SUM4')
-        this.factorsLikelyToReduceRisk = assessment.qaData.getString('SUM5')
+        this.factorsLikelyToIncreaseRisk = assessment.qaData.getString('ROSHSUM-SUM4')
+        this.factorsLikelyToReduceRisk = assessment.qaData.getString('ROSHSUM-SUM5')
         this.factorsAnalysisOfRisk = assessment.qaData.getString('SUM9')
-        this.factorsStrengthsAndProtective = assessment.qaData.getString('SUM10')
+        this.factorsStrengthsAndProtective = assessment.qaData.getString('ROSHSUM-SUM10')
         this.factorsSituationsLikelyToOffend = assessment.qaData.getString('SUM11')
     }
 }

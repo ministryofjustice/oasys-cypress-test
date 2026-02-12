@@ -8,46 +8,44 @@ export class QaData {
         qa.forEach((q) => {
 
             // select oq.ref_question_code, oq.free_format_answer, oq.additional_note, ra.ref_section_answer, osec.ref_section_code
-            const question = q[0]
 
-            if (sectionFilter[question] == undefined || q[4] == sectionFilter[question]) {
-                // Ignore any where there is a section filter defined and the section doesn't match
+            // Some questions require the section name added for uniqueness
+            const question = addSectionName.includes(q[0]) ? `${q[4]}-${q[0]}` : q[0]
 
-                switch (qaDetails[question]) {
-                    case undefined:
-                    case null:
-                        this[question] = null
-                        break
-                    case 'date':
-                        const date = OasysDateTime.stringToDate(q[1])
-                        this[question] = date == null ? '' : date.toString()
-                        break
-                    case 'text':
-                        this[question] = q[1]
-                        break
-                    case 'textarea':
-                        this[question] = q[2]
-                        break
-                    case 'integer':
-                        this[question] = stringToInt(q[1])
-                        break
-                    case 'float':
-                        this[question] = stringToFloat(q[1])
-                        break
-                    case 'checkbox':
-                        if (q[3] != null) {
-                            if (this[question] == undefined) {
-                                this[question] = []
-                            }
-                            this[question].push(q[3])
+            switch (qaDetails[question]) {
+                case undefined:
+                case null:
+                    this[question] = null
+                    break
+                case 'date':
+                    const date = OasysDateTime.stringToDate(q[1])
+                    this[question] = date == null ? '' : date.toString()
+                    break
+                case 'text':
+                    this[question] = q[1]
+                    break
+                case 'textarea':
+                    this[question] = q[2]
+                    break
+                case 'integer':
+                    this[question] = stringToInt(q[1])
+                    break
+                case 'float':
+                    this[question] = stringToFloat(q[1])
+                    break
+                case 'checkbox':
+                    if (q[3] != null) {
+                        if (this[question] == undefined) {
+                            this[question] = []
                         }
-                        break
-                    case 'singleCheckboxYes':
-                        this[question] = q[3] ? 'Yes' : null
-                        break
-                    default:
-                        this[question] = q[3]
-                }
+                        this[question].push(q[3])
+                    }
+                    break
+                case 'singleCheckboxYes':
+                    this[question] = q[3] ? 'Yes' : null
+                    break
+                default:
+                    this[question] = q[3]
             }
 
         })
@@ -889,42 +887,42 @@ export const qaDetails: { [keys: string]: OasysQuestionType } = {
     'RM26': 'textarea',
     'RM27': 'textarea',
     'RM28': 'textarea',
-    'RM28.0.1.1': 'checkbox',
-    'RM28.0.10.1': 'checkbox',
-    'RM28.0.10.1_SAN': 'checkbox',
-    'RM28.0.11.1': 'checkbox',
-    'RM28.0.12.1': 'checkbox',
-    'RM28.0.13.1': 'checkbox',
-    'RM28.0.14.1': 'checkbox',
-    'RM28.0.15.1': 'checkbox',
-    'RM28.0.16.1': 'checkbox',
-    'RM28.0.17.1': 'checkbox',
-    'RM28.0.18.1': 'checkbox',
-    'RM28.0.19.1': 'checkbox',
-    'RM28.0.2.1': 'checkbox',
-    'RM28.0.20.1': 'checkbox',
-    'RM28.0.21.1': 'checkbox',
-    'RM28.0.22.1': 'checkbox',
-    'RM28.0.23.1': 'checkbox',
-    'RM28.0.24.1': 'checkbox',
-    'RM28.0.25.1': 'checkbox',
-    'RM28.0.26.1': 'checkbox',
-    'RM28.0.27.1': 'checkbox',
-    'RM28.0.28.1': 'checkbox',
-    'RM28.0.29.1': 'checkbox',
-    'RM28.0.3.1': 'checkbox',
-    'RM28.0.30.1': 'checkbox',
-    'RM28.0.30.1_SAN': 'checkbox',
-    'RM28.0.4.1': 'checkbox',
-    'RM28.0.4.1_SAN': 'checkbox',
-    'RM28.0.5.1': 'checkbox',
-    'RM28.0.6.1': 'checkbox',
-    'RM28.0.6.1_SAN': 'checkbox',
-    'RM28.0.7.1': 'checkbox',
-    'RM28.0.8.1': 'checkbox',
-    'RM28.0.8.1_SAN': 'checkbox',
-    'RM28.0.9.1': 'checkbox',
-    'RM28.0.9.1_SAN': 'checkbox',
+    'RM28.0.1.1': 'singleCheckboxYes',
+    'RM28.0.10.1': 'singleCheckboxYes',
+    'RM28.0.10.1_SAN': 'singleCheckboxYes',
+    'RM28.0.11.1': 'singleCheckboxYes',
+    'RM28.0.12.1': 'singleCheckboxYes',
+    'RM28.0.13.1': 'singleCheckboxYes',
+    'RM28.0.14.1': 'singleCheckboxYes',
+    'RM28.0.15.1': 'singleCheckboxYes',
+    'RM28.0.16.1': 'singleCheckboxYes',
+    'RM28.0.17.1': 'singleCheckboxYes',
+    'RM28.0.18.1': 'singleCheckboxYes',
+    'RM28.0.19.1': 'singleCheckboxYes',
+    'RM28.0.2.1': 'singleCheckboxYes',
+    'RM28.0.20.1': 'singleCheckboxYes',
+    'RM28.0.21.1': 'singleCheckboxYes',
+    'RM28.0.22.1': 'singleCheckboxYes',
+    'RM28.0.23.1': 'singleCheckboxYes',
+    'RM28.0.24.1': 'singleCheckboxYes',
+    'RM28.0.25.1': 'singleCheckboxYes',
+    'RM28.0.26.1': 'singleCheckboxYes',
+    'RM28.0.27.1': 'singleCheckboxYes',
+    'RM28.0.28.1': 'singleCheckboxYes',
+    'RM28.0.29.1': 'singleCheckboxYes',
+    'RM28.0.3.1': 'singleCheckboxYes',
+    'RM28.0.30.1': 'singleCheckboxYes',
+    'RM28.0.30.1_SAN': 'singleCheckboxYes',
+    'RM28.0.4.1': 'singleCheckboxYes',
+    'RM28.0.4.1_SAN': 'singleCheckboxYes',
+    'RM28.0.5.1': 'singleCheckboxYes',
+    'RM28.0.6.1': 'singleCheckboxYes',
+    'RM28.0.6.1_SAN': 'singleCheckboxYes',
+    'RM28.0.7.1': 'singleCheckboxYes',
+    'RM28.0.8.1': 'singleCheckboxYes',
+    'RM28.0.8.1_SAN': 'singleCheckboxYes',
+    'RM28.0.9.1': 'singleCheckboxYes',
+    'RM28.0.9.1_SAN': 'singleCheckboxYes',
     'RM28.1': 'textarea',
     'RM3': 'select',
     'RM30': 'textarea',
@@ -1157,12 +1155,15 @@ export const qaDetails: { [keys: string]: OasysQuestionType } = {
     'SR95.1': 'select',
     'SR96.1': 'select',
     'SUM1': 'textarea',
-    'SUM10': 'textarea',
+    'ROSHSUM-SUM10': 'textarea',
+    'RMP-SUM10': 'textarea',
     'SUM11': 'textarea',
     'SUM2': 'textarea',
     'SUM3': 'textarea',
-    'SUM4': 'textarea',
-    'SUM5': 'textarea',
+    'ROSHSUM-SUM4': 'textarea',
+    'RMP-SUM4': 'textarea',
+    'ROSHSUM-SUM5': 'textarea',
+    'RMP-SUM5': 'textarea',
     'SUM6.1.1': 'select',
     'SUM6.1.2': 'select',
     'SUM6.2.1': 'select',
@@ -1176,10 +1177,5 @@ export const qaDetails: { [keys: string]: OasysQuestionType } = {
     'SUM9': 'textarea',
 }
 
-// Items that are duplicated across sections, make sure the correct one is selected
-
-const sectionFilter = {
-    'SUM4': 'ROSHSUM',
-    'SUM5': 'ROSHSUM',
-    'SUM10': 'ROSHSUM',
-}
+// Items that are duplicated across sections and require the section name added for uniqueness
+const addSectionName = ['SUM4', 'SUM5', 'SUM10']
