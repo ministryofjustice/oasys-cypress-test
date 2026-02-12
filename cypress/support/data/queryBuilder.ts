@@ -2,17 +2,11 @@ import { stringToFloat, stringToInt } from 'lib/utils';
 import { OasysDateTime } from 'oasys';
 
 
-export function buildQuery(columns: Columns | Columns[], tables: Table[], whereCondition: string, orderBy: string): string {
+export function buildQuery(columns: Columns, tables: Table[], whereCondition: string, orderBy: string): string {
 
     let query = 'select '
 
-    if (columns.constructor.name == 'Array') {
-        for (let columnSet of (columns as Columns[])) {
-            query = query.concat(getColumns(columnSet, tables[0]))
-        }
-    } else {
-        query = query.concat(getColumns(columns as Columns, tables[0]))
-    }
+    query = query.concat(getColumns(columns as Columns, tables[0]))
     query = query.slice(0, -1).concat(' \n') // remove last comma, add newline for readability when debugging
 
     const where = whereCondition == null ? '' : `where ${whereCondition}`
@@ -20,10 +14,10 @@ export function buildQuery(columns: Columns | Columns[], tables: Table[], whereC
 
     let tableList = ''
     tables.forEach((table) => {
-        tableList = tableList.concat(`eor.${table}, `)
+        tableList = tableList.concat(`eor.${table},`)
         query.replaceAll(table, `eor.${table}`)
     })
-    tableList = tableList.slice(0, -2)
+    tableList = tableList.slice(0, -1)
 
     return query.concat(`from ${tableList}
                             ${where}
@@ -44,7 +38,7 @@ export function getColumns(columns: Columns, defaultTable: string): string {
 
 function column(column: ColumnDef, defaultTable: string): string {
 
-    let table = column.table == '' ? defaultTable : column.table
+    let table = column.table ?? defaultTable
 
     return column.type == 'date'
         ? `to_char(${table}.${column.name}, '${OasysDateTime.oracleTimestampFormat}'),`
@@ -68,6 +62,10 @@ export function assignValues(obj: {}, columns: Columns, data: string[], startInd
                 break
             case 'string':
                 obj[key] = data[i++]
+                break
+            case 'ynToBool':
+                obj[key] = data[i++] == 'Y'
+                break
         }
     })
 }

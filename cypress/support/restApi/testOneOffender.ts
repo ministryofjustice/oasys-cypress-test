@@ -25,7 +25,7 @@ export async function testOneOffender(parameters: { crn: string, crnSource: Prov
     const apEndpoints: Endpoint[] = [
         'apOffence',
         'apNeeds',
-        'apRmp',
+        // 'apRmp',
         'apRoshSum',
         'apRiskInd',
         'apRiskAss',
@@ -39,7 +39,7 @@ export async function testOneOffender(parameters: { crn: string, crnSource: Prov
         'v4section3',
         'v4section4',
         'v4section5',
-        'v4section6',
+        // 'v4section6',
         'v4section7',
         'v4section8',
         'v4section9',
@@ -47,13 +47,13 @@ export async function testOneOffender(parameters: { crn: string, crnSource: Prov
         'v4section11',
         'v4section12',
         'v4section13',
-        'v4Rmp',
+        // 'v4Rmp',
         'v4RoshFull',
         'v4RoshSumm',
         'v4Victim',
         'v4RiskIndividual',
         'v4RiskScoresAss',
-        'crimNeeds',
+        // 'crimNeeds',
     ]
 
     const v4RsrEndpoints: Endpoint[] = [

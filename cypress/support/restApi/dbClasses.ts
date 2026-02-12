@@ -2,7 +2,6 @@
  * Classes used to extract data from the OASys database for use in API regression testing.
  * These objects are created by the RestDb functions in cypress/support/restApidb.ts using the queries defined here.
  */
-
 import { stringToInt } from 'lib/utils'
 import { OasysDateTime } from 'oasys'
 import { QaData } from '../data/qaData'
@@ -12,11 +11,25 @@ import { assignValues, buildQuery, getColumns } from '../data/queryBuilder'
 /**
  * Single offender with all relevant assessment data
  */
+
+const offenderColumns: Columns = {
+    offenderPk: { name: 'offender_pk', type: 'integer' },
+    probationCrn: { name: 'cms_prob_number', type: 'string' },
+    nomisId: { name: 'cms_pris_number', type: 'string' },
+    riskToOthers: { name: 'risk_to_others_elm', type: 'string' },
+    limitedAccessOffender: { name: 'limited_access_offender ', type: 'ynToBool' },
+    pnc: { name: 'pnc', type: 'string' },
+    forename1: { name: 'forename_1', type: 'string' },
+    surname: { name: 'family_name', type: 'string' },
+    gender: { name: 'gender_elm', type: 'integer' },
+    custodyInd: { name: 'custody_ind', type: 'string' },
+}
+
 export class DbOffenderWithAssessments {
 
+    offenderPk: number
     probationCrn: string
     nomisId: string
-    offenderPk: number
     riskToOthers: string
     limitedAccessOffender: boolean
     pnc: string
@@ -24,32 +37,20 @@ export class DbOffenderWithAssessments {
     surname: string
     gender: number
     custodyInd: string
+
     assessments: DbAssessmentOrRsr[] = []
-
     dbElapsedTime: number
-
-    constructor(offenderData: string[]) {
-
-        let i = 0
-        this.offenderPk = Number.parseInt(offenderData[i++])
-        this.probationCrn = offenderData[i++]
-        this.nomisId = offenderData[i++]
-        this.riskToOthers = offenderData[i++]
-        this.limitedAccessOffender = offenderData[i++] == 'Y'
-        this.pnc = offenderData[i++]
-        this.forename1 = offenderData[i++]
-        this.surname = offenderData[i++]
-        this.gender = Number.parseInt(offenderData[i++])
-        this.custodyInd = offenderData[i++]
-    }
 
     static query(crnSource: Provider, crn: string): string {
 
-        return `select offender_pk, cms_prob_number, cms_pris_number, risk_to_others_elm, limited_access_offender, 
-                    pnc, forename_1, family_name, gender_elm, custody_ind
-                    from eor.offender where deleted_date is null 
-                    and ${crnSource == 'prob' ? 'cms_prob_number' : 'cms_pris_number'} = '${crn}'`
+        return buildQuery(offenderColumns, ['offender'], `deleted_date is null and ${crnSource == 'prob' ? 'cms_prob_number' : 'cms_pris_number'} = '${crn}'`, null)
     }
+
+    constructor(offenderData: string[]) {
+
+        assignValues(this, offenderColumns, offenderData, 0)
+    }
+
 }
 
 /**
@@ -74,6 +75,30 @@ export class DbAssessmentOrRsr {
 /**
  * OASys assessment including sections, questions and answers, offences, victims and objectives
  */
+const assessmentColumns: Columns = {
+
+    assessmentPk: { name: 'oasys_set_pk', type: 'integer' },
+    assessmentType: { name: 'ref_ass_version_code', type: 'string' },
+    assessmentVersion: { name: 'version_number', type: 'integer' },
+    status: { name: 'assessment_status_elm', type: 'string' },
+    initiationDate: { name: 'initiation_date', type: 'date' },
+    completedDate: { name: 'date_completed', type: 'date' },
+    lastUpdatedDate: { table: 'oasys_set_change', name: 'lastupd_date', type: 'date' },
+    cmsEventNumber: { name: 'cms_event_number', type: 'integer' },
+
+    dateOfBirth: { name: 'date_of_birth', type: 'date' },
+    assessorName: { name: 'assessor_name', type: 'string' },
+    pOAssessment: { name: 'purpose_assessment_elm', type: 'string' },
+    pOAssessmentDesc: { name: 'purpose_assmt_other_ftxt', type: 'string' },
+    parentAssessmentPk: { name: 'parent_oasys_set_pk', type: 'integer' },
+    signedDate: { name: 'assessor_signed_date', type: 'date' },
+    sanIndicator: { name: 'san_assessment_linked_ind', type: 'string' },
+    roshLevel: { name: 'rosh_level_elm', type: 'string' },
+    learningToolScore: { name: 'learning_tool_score', type: 'integer' },
+    ldcSubTotal: { name: 'ldc_sub_total', type: 'integer' },
+    ldcFuncProc: { name: 'ldc_func_proc', type: 'string' },
+}
+
 export class DbAssessment extends DbAssessmentOrRsr {
 
     signedDate: string
@@ -90,11 +115,11 @@ export class DbAssessment extends DbAssessmentOrRsr {
     learningToolScore: number
     ldcSubTotal: number
     ldcFuncProc: string
+
     offences: DbOffence[] = []
     victims: DbVictim[] = []
     basicSentencePlan: DbBspObjective[] = []
     objectives: DbObjective[] = []
-
     sections: DbSection[] = []
     qaData: QaData
 
@@ -110,15 +135,22 @@ export class DbAssessment extends DbAssessmentOrRsr {
     static query(offenderPk: number): string {
 
         return buildQuery(
-            [assessmentColumns, riskColumns, riskColumnsAssessmentOnly],
+            { ...assessmentColumns, ...riskColumns, ...riskColumnsAssessmentOnly },
             ['oasys_set', 'oasys_assessment_group', 'oasys_set_change'],
             `oasys_assessment_group.offender_pk = ${offenderPk} 
                 and oasys_assessment_group.oasys_assessment_group_pk = oasys_set.oasys_assessment_group_pk 
                 and oasys_set_change.oasys_set_pk = oasys_set.oasys_set_pk 
                 and oasys_set.deleted_date is null`,
-            `oasys_set.initiation_date`
+            'oasys_set.initiation_date'
         )
+    }
 
+    static courtQuery(assessmentPk: number): string {
+
+        return `select c.court_code, c.court_name, c.court_type_elm 
+                        from eor.court c, eor.offence_block o 
+                        where o.oasys_set_pk = ${assessmentPk} and o.offence_block_type_elm = 'CURRENT' 
+                        and c.court_pk = o.court_pk`
     }
 
     addCourtDetails(courtData: string[]) {
@@ -126,14 +158,6 @@ export class DbAssessment extends DbAssessmentOrRsr {
         this.courtCode = courtData[0]
         this.courtName = courtData[1]
         this.courtType = courtData[2]
-    }
-
-    static courtQuery(assessmentPk: number): string {
-
-        return `select c.court_code, c.court_name, c.court_type_elm 
-                    from eor.court c, eor.offence_block o 
-                    where o.oasys_set_pk = ${assessmentPk} and o.offence_block_type_elm = 'CURRENT' 
-                    and c.court_pk = o.court_pk`
     }
 
     static qaQuery(assessmentPk: number): string {
@@ -160,6 +184,15 @@ export class DbAssessment extends DbAssessmentOrRsr {
 /**
  * Standalone RSR assessments
  */
+const rsrColumns: Columns = {
+
+    assessmentPk: { name: 'offender_rsr_scores_pk', type: 'integer' },
+    status: { name: 'rsr_status', type: 'string' },
+    initiationDate: { name: 'initiation_date', type: 'date' },
+    completedDate: { name: 'date_completed', type: 'date' },
+    lastUpdatedDate: { name: 'lastupd_date', type: 'date' },
+}
+
 export class DbRsr extends DbAssessmentOrRsr {
 
     constructor(assessmentData: string[]) {
@@ -177,21 +210,79 @@ export class DbRsr extends DbAssessmentOrRsr {
 
     static query(offenderPk: number): string {
 
-        let query = 'select '
-        query = query.concat(getColumns(rsrColumns, 'r'))
-        query = query.concat(getColumns(riskColumns, 'r')).slice(0, -1).concat(' \n') // remove last comma}
-
-        return query.concat(
-            `from eor.offender_rsr_scores r 
-                    where r.offender_pk = ${offenderPk}
-                    and r.deleted_date is null
-                    order by r.initiation_date`)
+        return buildQuery({ ...rsrColumns, ...riskColumns }, ['offender_rsr_scores'], `offender_pk = ${offenderPk} and deleted_date is null`, 'initiation_date')
     }
 }
 
 /**
  * Risk data from the oasys_set or standalone_rsr record
  */
+const riskColumns: Columns = {
+
+    ogrs31Year: { name: 'ogrs3_1year', type: 'integer' },
+    ogrs32Year: { name: 'ogrs3_2year', type: 'integer' },
+    ogrs3RiskRecon: { name: 'ogrs3_risk_recon_elm', type: 'string' },
+
+    ospImagePercentageScore: { name: 'osp_i_percentage_score', type: 'float' },
+    ospIRisk: { name: 'osp_i_risk_recon_elm', type: 'string' },
+    ospContactPercentageScore: { name: 'osp_c_percentage_score', type: 'float' },
+    ospCRisk: { name: 'osp_c_risk_recon_elm', type: 'string' },
+
+    ospIicPercentageScore: { name: 'osp_iic_percentage_score', type: 'float' },
+    ospIicRisk: { name: 'osp_iic_risk_recon_elm', type: 'string' },
+    ospDcPercentageScore: { name: 'osp_dc_percentage_score', type: 'float' },
+    ospDcRisk: { name: 'osp_dc_risk_recon_elm', type: 'string' },
+    ospCRiskReduction: { name: 'osp_c_risk_reduction', type: 'string' },
+
+    ogrs4gPercentageScore: { name: 'ogrs4g_percentage_2yr', type: 'float' },
+    ogrs4gRisk: { name: 'ogrs4g_band_risk_recon_elm', type: 'string' },
+    ogrs4gCalculated: { name: 'ogrs4g_calculated', type: 'string' },
+    ogp2PercentageScore: { name: 'ogp2_percentage_2yr', type: 'float' },
+    ogp2Risk: { name: 'ogp2_band_risk_recon_elm', type: 'string' },
+    ogp2Calculated: { name: 'ogp2_calculated', type: 'string' },
+
+    ogrs4vPercentageScore: { name: 'ogrs4v_percentage_2yr', type: 'float' },
+    ogrs4vRisk: { name: 'ogrs4v_band_risk_recon_elm', type: 'string' },
+    ogrs4vCalculated: { name: 'ogrs4v_calculated', type: 'string' },
+    ovp2PercentageScore: { name: 'ovp2_percentage_2yr', type: 'float' },
+    ovp2Risk: { name: 'ovp2_band_risk_recon_elm', type: 'string' },
+    ovp2Calculated: { name: 'ovp2_calculated', type: 'string' },
+
+    snsvStaticCalculated: { name: 'snsv_calculated_static', type: 'string' },
+    snsvStaticPercentageScore: { name: 'snsv_percentage_2yr_static', type: 'float' },
+    snsvStaticRisk: { name: 'snsv_stat_band_risk_recon_elm', type: 'string' },
+    snsvDynamicCalculated: { name: 'snsv_calculated_dynamic', type: 'string' },
+    snsvDynamicPercentageScore: { name: 'snsv_percentage_2yr_dynamic', type: 'float' },
+    snsvDynamicRisk: { name: 'snsv_dyn_band_risk_recon_elm', type: 'string' },
+
+    rsrStaticOrDynamic: { name: 'rsr_static_or_dynamic', type: 'string' },
+    rsrExceptionError: { name: 'rsr_exception_error', type: 'string' },
+    rsrAlgorithmVersion: { name: 'rsr_algorithm_version', type: 'integer' },
+    rsrPercentageScore: { name: 'rsr_percentage_score', type: 'float' },
+    rsrRisk: { name: 'rsr_risk_recon_elm', type: 'string' },
+}
+
+const riskColumnsAssessmentOnly: Columns = {
+
+    ogpStWesc: { name: 'ogp_st_wesc', type: 'integer' },
+    ogpDyWesc: { name: 'ogp_dy_wesc', type: 'integer' },
+    ogpTotWesc: { name: 'ogp_tot_wesc', type: 'integer' },
+    ogp1Year: { name: 'ogp_1year', type: 'integer' },
+    ogp2Year: { name: 'ogp_2year', type: 'integer' },
+    ogpRisk: { name: 'ogp_risk_recon_elm', type: 'string' },
+
+    ovpStWesc: { name: 'ovp_st_wesc', type: 'integer' },
+    ovpDyWesc: { name: 'ovp_dy_wesc', type: 'integer' },
+    ovpTotWesc: { name: 'ovp_tot_wesc', type: 'integer' },
+    ovp1Year: { name: 'ovp_1year', type: 'integer' },
+    ovp2Year: { name: 'ovp_2year', type: 'integer' },
+    ovpRisk: { name: 'ovp_risk_recon_elm', type: 'string' },
+    ovpPrevWesc: { name: 'ovp_prev_wesc', type: 'integer' },
+    ovpNonVioWesc: { name: 'ovp_non_vio_wesc', type: 'integer' },
+    ovpAgeWesc: { name: 'ovp_age_wesc', type: 'integer' },
+    ovpVioWesc: { name: 'ovp_vio_wesc', type: 'integer' },
+    ovpSexWesc: { name: 'ovp_sex_wesc', type: 'integer' },
+}
 export class DbRiskDetails {
 
     ogrs31Year: number
@@ -454,126 +545,30 @@ export class DbNeed {
     }
 }
 
+const actionColumns: Columns = {
+
+    action: { name: 'intervention_elm', type: 'string' },
+    actionDesc: { table: 'ref_element', name: 'ref_element_desc', type: 'string' },
+    actionComment: { name: 'intervention_comment', type: 'string' },
+}
+
 export class DbAction {
 
     action: string
     actionDesc: string
     actionComment: string
 
+    static query(objectivePk: string): string {
+
+        return buildQuery(actionColumns, ['ssp_intervention_in_set', 'ssp_obj_intervene_pivot', 'ref_element'],
+            `ssp_obj_intervene_pivot.ssp_intervention_in_set_pk = ssp_intervention_in_set.ssp_intervention_in_set_pk
+                        and ssp_obj_intervene_pivot.ssp_objectives_in_set_pk = ${objectivePk}
+                        and ref_element.ref_category_code = ssp_intervention_in_set.intervention_cat and ref_element.ref_element_code = ssp_intervention_in_set.intervention_elm`
+            , null)
+    }
 
     constructor(actionData: string[]) {
 
-        this.action = actionData[0]
-        this.actionDesc = actionData[1]
-        this.actionComment = actionData[2]
+        assignValues(this, actionColumns, actionData, 0)
     }
-
-    static query(objectivePk: string): string {
-
-        return `select i.intervention_elm, r.ref_element_desc, i.intervention_comment
-                    from eor.ssp_intervention_in_set i, eor.ssp_obj_intervene_pivot p, eor.ref_element r
-                    where p.ssp_intervention_in_set_pk = i.ssp_intervention_in_set_pk
-                    and p.ssp_objectives_in_set_pk = ${objectivePk}
-                    and r.ref_category_code = i.intervention_cat and r.ref_element_code = i.intervention_elm`
-    }
-}
-
-const assessmentColumns: Columns = {
-
-    assessmentPk: { table: '', name: 'oasys_set_pk', type: 'integer' },
-    assessmentType: { table: '', name: 'ref_ass_version_code', type: 'string' },
-    assessmentVersion: { table: '', name: 'version_number', type: 'integer' },
-    status: { table: '', name: 'assessment_status_elm', type: 'string' },
-    initiationDate: { table: '', name: 'initiation_date', type: 'date' },
-    completedDate: { table: '', name: 'date_completed', type: 'date' },
-    lastUpdatedDate: { table: 'oasys_set_change', name: 'lastupd_date', type: 'date' },
-    cmsEventNumber: { table: '', name: 'cms_event_number', type: 'integer' },
-
-    dateOfBirth: { table: '', name: 'date_of_birth', type: 'date' },
-    assessorName: { table: '', name: 'assessor_name', type: 'string' },
-    pOAssessment: { table: '', name: 'purpose_assessment_elm', type: 'string' },
-    pOAssessmentDesc: { table: '', name: 'purpose_assmt_other_ftxt', type: 'string' },
-    parentAssessmentPk: { table: '', name: 'parent_oasys_set_pk', type: 'integer' },
-    signedDate: { table: '', name: 'assessor_signed_date', type: 'date' },
-    sanIndicator: { table: '', name: 'san_assessment_linked_ind', type: 'string' },
-    roshLevel: { table: '', name: 'rosh_level_elm', type: 'string' },
-    learningToolScore: { table: '', name: 'learning_tool_score', type: 'integer' },
-    ldcSubTotal: { table: '', name: 'ldc_sub_total', type: 'integer' },
-    ldcFuncProc: { table: '', name: 'ldc_func_proc', type: 'string' },
-}
-
-const rsrColumns: Columns = {
-
-    assessmentPk: { table: '', name: 'offender_rsr_scores_pk', type: 'integer' },
-    status: { table: '', name: 'rsr_status', type: 'string' },
-    initiationDate: { table: '', name: 'initiation_date', type: 'date' },
-    completedDate: { table: '', name: 'date_completed', type: 'date' },
-    lastUpdatedDate: { table: '', name: 'lastupd_date', type: 'date' },
-}
-
-const riskColumns: Columns = {
-
-    ogrs31Year: { table: '', name: 'ogrs3_1year', type: 'integer' },
-    ogrs32Year: { table: '', name: 'ogrs3_2year', type: 'integer' },
-    ogrs3RiskRecon: { table: '', name: 'ogrs3_risk_recon_elm', type: 'string' },
-
-    ospImagePercentageScore: { table: '', name: 'osp_i_percentage_score', type: 'float' },
-    ospIRisk: { table: '', name: 'osp_i_risk_recon_elm', type: 'string' },
-    ospContactPercentageScore: { table: '', name: 'osp_c_percentage_score', type: 'float' },
-    ospCRisk: { table: '', name: 'osp_c_risk_recon_elm', type: 'string' },
-
-    ospIicPercentageScore: { table: '', name: 'osp_iic_percentage_score', type: 'float' },
-    ospIicRisk: { table: '', name: 'osp_iic_risk_recon_elm', type: 'string' },
-    ospDcPercentageScore: { table: '', name: 'osp_dc_percentage_score', type: 'float' },
-    ospDcRisk: { table: '', name: 'osp_dc_risk_recon_elm', type: 'string' },
-    ospCRiskReduction: { table: '', name: 'osp_c_risk_reduction', type: 'string' },
-
-    ogrs4gPercentageScore: { table: '', name: 'ogrs4g_percentage_2yr', type: 'float' },
-    ogrs4gRisk: { table: '', name: 'ogrs4g_band_risk_recon_elm', type: 'string' },
-    ogrs4gCalculated: { table: '', name: 'ogrs4g_calculated', type: 'string' },
-    ogp2PercentageScore: { table: '', name: 'ogp2_percentage_2yr', type: 'float' },
-    ogp2Risk: { table: '', name: 'ogp2_band_risk_recon_elm', type: 'string' },
-    ogp2Calculated: { table: '', name: 'ogp2_calculated', type: 'string' },
-
-    ogrs4vPercentageScore: { table: '', name: 'ogrs4v_percentage_2yr', type: 'float' },
-    ogrs4vRisk: { table: '', name: 'ogrs4v_band_risk_recon_elm', type: 'string' },
-    ogrs4vCalculated: { table: '', name: 'ogrs4v_calculated', type: 'string' },
-    ovp2PercentageScore: { table: '', name: 'ovp2_percentage_2yr', type: 'float' },
-    ovp2Risk: { table: '', name: 'ovp2_band_risk_recon_elm', type: 'string' },
-    ovp2Calculated: { table: '', name: 'ovp2_calculated', type: 'string' },
-
-    snsvStaticCalculated: { table: '', name: 'snsv_calculated_static', type: 'string' },
-    snsvStaticPercentageScore: { table: '', name: 'snsv_percentage_2yr_static', type: 'float' },
-    snsvStaticRisk: { table: '', name: 'snsv_stat_band_risk_recon_elm', type: 'string' },
-    snsvDynamicCalculated: { table: '', name: 'snsv_calculated_dynamic', type: 'string' },
-    snsvDynamicPercentageScore: { table: '', name: 'snsv_percentage_2yr_dynamic', type: 'float' },
-    snsvDynamicRisk: { table: '', name: 'snsv_dyn_band_risk_recon_elm', type: 'string' },
-
-    rsrStaticOrDynamic: { table: '', name: 'rsr_static_or_dynamic', type: 'string' },
-    rsrExceptionError: { table: '', name: 'rsr_exception_error', type: 'string' },
-    rsrAlgorithmVersion: { table: '', name: 'rsr_algorithm_version', type: 'integer' },
-    rsrPercentageScore: { table: '', name: 'rsr_percentage_score', type: 'float' },
-    rsrRisk: { table: '', name: 'rsr_risk_recon_elm', type: 'string' },
-}
-
-const riskColumnsAssessmentOnly: Columns = {
-
-    ogpStWesc: { table: '', name: 'ogp_st_wesc', type: 'integer' },
-    ogpDyWesc: { table: '', name: 'ogp_dy_wesc', type: 'integer' },
-    ogpTotWesc: { table: '', name: 'ogp_tot_wesc', type: 'integer' },
-    ogp1Year: { table: '', name: 'ogp_1year', type: 'integer' },
-    ogp2Year: { table: '', name: 'ogp_2year', type: 'integer' },
-    ogpRisk: { table: '', name: 'ogp_risk_recon_elm', type: 'string' },
-
-    ovpStWesc: { table: '', name: 'ovp_st_wesc', type: 'integer' },
-    ovpDyWesc: { table: '', name: 'ovp_dy_wesc', type: 'integer' },
-    ovpTotWesc: { table: '', name: 'ovp_tot_wesc', type: 'integer' },
-    ovp1Year: { table: '', name: 'ovp_1year', type: 'integer' },
-    ovp2Year: { table: '', name: 'ovp_2year', type: 'integer' },
-    ovpRisk: { table: '', name: 'ovp_risk_recon_elm', type: 'string' },
-    ovpPrevWesc: { table: '', name: 'ovp_prev_wesc', type: 'integer' },
-    ovpNonVioWesc: { table: '', name: 'ovp_non_vio_wesc', type: 'integer' },
-    ovpAgeWesc: { table: '', name: 'ovp_age_wesc', type: 'integer' },
-    ovpVioWesc: { table: '', name: 'ovp_vio_wesc', type: 'integer' },
-    ovpSexWesc: { table: '', name: 'ovp_sex_wesc', type: 'integer' },
 }
