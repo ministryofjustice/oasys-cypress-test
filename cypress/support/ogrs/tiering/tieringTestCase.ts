@@ -73,13 +73,13 @@ export function testTieringCaseNew(tieringCase: TieringCase, logText: string[]):
         tieringCase.childConcerns == 'Y' || tieringCase.riskToChildren == 'Y' || tieringCase.childProtection == 'Y'
 
     // Step 1 - ARP/CSRP
-    const step1 = calculateStep1(arpRisk, tieringCase.ncRsrPercentageScore ?? 0)  // Treat null as zero
+    const step1 = calculateStep1(arpRisk, tieringCase.ncRsrPercentageScore)
 
     // Step 2 - OSP.
     const step2a = calculateStep2aNew(ospContactRisk, ospContactBand, tieringCase.ncOspDcPercentageScore == null)
     const step2b = calculateStep2bNew(ospImageBand)
 
-    // Step 3 - ROSH and MAPPA.  Highest tier from steps one and two is for the decision between B+ and B-
+    // Step 3 - ROSH and MAPPA.
     const step3 = calculateStep3New(rosh, tieringCase.mappa)
 
     // Step 4 - ROSH
