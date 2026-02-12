@@ -79,7 +79,7 @@ export class Section6Assessment extends v4Common.V4AssessmentCommon {
 
         this.relCloseFamily = dbAssessment.qaData.getString('6.1')
         this.experienceOfChildhood = dbAssessment.qaData.getString('6.3')
-        this.relCurrRelationshipStatus = dbAssessment.qaData.getString('6.8')
+        this.relCurrRelationshipStatus = dbAssessment.assessmentType == 'LAYER3' ? dbAssessment.qaData.getString('6.8') : null
         this.relationshipWithPartner = dbAssessment.qaData.getString('6.4')
         this.prevCloseRelationships = dbAssessment.qaData.getString('6.6')
         this.relParentalResponsibilities = dbAssessment.qaData.getString('6.9')
