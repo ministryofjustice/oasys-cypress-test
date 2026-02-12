@@ -35,7 +35,7 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, offences: {
         AGE_AT_FIRST_SANCTION: lookupInteger('1.8', assessment.qaData),
         LAST_SANCTION_DATE: OasysDateTime.stringToDate(lookupString('1.29', assessment.qaData)),
         DATE_RECENT_SEXUAL_OFFENCE: OasysDateTime.stringToDate(lookupString('1.33', assessment.qaData)),
-        CURR_SEX_OFF_MOTIVATION: q141(lookupString('1.30', assessment.qaData), lookupString('1.40', assessment.qaData), assessment.offence, offences),
+        CURR_SEX_OFF_MOTIVATION: q141(lookupString('1.30', assessment.qaData), lookupString('1.41', assessment.qaData), assessment.offence, offences),
         MOST_RECENT_OFFENCE: OasysDateTime.stringToDate(lookupString('1.43', assessment.qaData)),
         COMMUNITY_DATE: OasysDateTime.stringToDate(lookupString('1.38', assessment.qaData)),
         ONE_POINT_THIRTY: lookupString('1.30', assessment.qaData, yesNoToYNLookup),
