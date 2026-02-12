@@ -13,8 +13,8 @@ describe('RestAPI regression tests', () => {
     let offendersTested = 0
 
     // Number of offenders for each date range
-    const offenderCountEarly = 20  // Used for pre-2023
-    const offenderCount = 60  // 2023 and later
+    const offenderCountEarly = 25     // Used for pre-2023
+    const offenderCount = 75          // 2023 and later
 
     // Response time thresholds
     const slow = 100
