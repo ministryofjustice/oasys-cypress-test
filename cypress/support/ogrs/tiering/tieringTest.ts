@@ -1,5 +1,5 @@
 import { TieringTestParameters, TieringTestResult } from '../../../../oasys/ogrs/types'
-import * as db from '../../oasysDb'
+import * as db from '../../data/oasysDb'
 import { getTieringTestData } from './getTieringData'
 import { testTieringCase, testTieringCaseNew } from './tieringTestCase'
 

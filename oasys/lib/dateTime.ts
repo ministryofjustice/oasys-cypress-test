@@ -1,6 +1,6 @@
 import { Temporal } from '@js-temporal/polyfill'
 
-export type AppVersions = { [keys: string]: Temporal.PlainDate }
+export type AppVersions = { [keys: string]: Temporal.PlainDateTime }
 export const appVersions: AppVersions = {}
 export let currentVersion = ''
 
@@ -150,7 +150,7 @@ export class OasysDateTime {
     }
 
 
-    static checkIfAfterReleaseCypress(version: SignificantAppVersions, date: Temporal.PlainDate | string, resultAlias: string) {
+    static checkIfAfterReleaseCypress(version: SignificantAppVersions, date: Temporal.PlainDateTime | string, resultAlias: string) {
 
         cy.get<AppVersions>('@appVersions').then((appVersions) => {
 
@@ -159,23 +159,35 @@ export class OasysDateTime {
         })
     }
 
-    static checkIfAfterReleaseNode(version: SignificantAppVersions, date: Temporal.PlainDate | string): boolean {
+    static checkIfAfterReleaseNode(version: SignificantAppVersions, date: Temporal.PlainDateTime | string): boolean {
 
         return checkIfAfter(version, date, appVersions)
     }
 
-    static checkIfAfterRelease(versions: {}, version: SignificantAppVersions, date: Temporal.PlainDate | string): boolean {
+    // Generic version for use in code that could be called from either Cypress or Node
+    static checkIfAfterRelease(versions: {}, version: SignificantAppVersions, date: Temporal.PlainDateTime | string): boolean {
 
         return checkIfAfter(version, date, versions)
     }
 
+    static dateToVersion(date: string | Temporal.PlainDateTime): string {
+
+        const testDate = typeof date == 'string' ? OasysDateTime.stringToTimestamp(date) : date
+
+        for (let key of Object.keys(appVersions)) {
+            if (Temporal.PlainDateTime.compare(testDate, appVersions[key]) >=0) {
+                return key
+            }
+        }
+        return 'unknown version'
+    }
 }
 
-function checkIfAfter(version: SignificantAppVersions, date: Temporal.PlainDate | string, appVersions: AppVersions): boolean {
+function checkIfAfter(version: SignificantAppVersions, date: Temporal.PlainDateTime | string, appVersions: AppVersions): boolean {
 
     const versionDate = appVersions[versionLookup[version]]
-    const testDate = typeof date == 'string' ? OasysDateTime.stringToDate(date) : date
-    return versionDate ? Temporal.PlainDate.compare(testDate, versionDate) == 1 : null
+    const testDate = typeof date == 'string' ? OasysDateTime.stringToTimestamp(date) : date
+    return versionDate ? Temporal.PlainDateTime.compare(testDate, versionDate) == 1 : null
 }
 
 const versionLookup = {

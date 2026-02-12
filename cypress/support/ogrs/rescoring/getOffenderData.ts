@@ -1,4 +1,4 @@
-import * as db from '../../oasysDb'
+import * as db from '../../data/oasysDb'
 import { RescoringOffenderWithAssessment, RescoringAssessment } from './dbClasses'
 
 export async function getOffenderData(crnSource: Provider, crn: string, includeLayer1: boolean): Promise<RescoringOffenderWithAssessment> {

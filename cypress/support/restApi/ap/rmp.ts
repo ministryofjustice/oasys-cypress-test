@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as apCommon from './apCommon'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -41,28 +40,28 @@ export class APRmpEndpointResponse extends apCommon.APEndpointResponse {
 
 export class APRmpAssessment extends apCommon.APAssessmentCommon {
 
-    keyInformationAboutCurrentSituation: string
-    furtherConsiderations: string
-    supervision: string
-    monitoringAndControl: string
-    interventionsAndTreatment: string
-    victimSafetyPlanning: string
-    contingencyPlans: string
-    additionalComments: string
+    keyInformationAboutCurrentSituation: string = null
+    furtherConsiderations: string = null
+    supervision: string = null
+    monitoringAndControl: string = null
+    interventionsAndTreatment: string = null
+    victimSafetyPlanning: string = null
+    contingencyPlans: string = null
+    additionalComments: string = null
 
 
     addRmpDetails(assessment: dbClasses.DbAssessment) {
 
         if (['M', 'H', 'V'].includes(assessment.roshLevel)) {
 
-            this.keyInformationAboutCurrentSituation = common.getTextAnswer(assessment.textData, 'RMP', 'RM28.1')
-            this.furtherConsiderations = common.getTextAnswer(assessment.textData, 'RMP', 'RM28')
-            this.supervision = common.getTextAnswer(assessment.textData, 'RMP', 'RM30')
-            this.monitoringAndControl = common.getTextAnswer(assessment.textData, 'RMP', 'RM31')
-            this.interventionsAndTreatment = common.getTextAnswer(assessment.textData, 'RMP', 'RM32')
-            this.victimSafetyPlanning = common.getTextAnswer(assessment.textData, 'RMP', 'RM33')
-            this.contingencyPlans = common.getTextAnswer(assessment.textData, 'RMP', 'RM34')
-            this.additionalComments = common.getTextAnswer(assessment.textData, 'RMP', 'RM35')
+            this.keyInformationAboutCurrentSituation = assessment.qaData.getString('RM28.1')
+            this.furtherConsiderations = assessment.qaData.getString('RM28')
+            this.supervision = assessment.qaData.getString('RM30')
+            this.monitoringAndControl = assessment.qaData.getString('RM31')
+            this.interventionsAndTreatment = assessment.qaData.getString('RM32')
+            this.victimSafetyPlanning = assessment.qaData.getString('RM33')
+            this.contingencyPlans = assessment.qaData.getString('RM34')
+            this.additionalComments = assessment.qaData.getString('RM35')
         }
     }
 }

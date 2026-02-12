@@ -85,29 +85,29 @@ export class AssSummAssessment extends v3Common.V3AssessmentCommon {
 
     addAssSummDetails(dbAssessment: dbClasses.DbAssessment) {
 
-        this.riskChildrenCommunity = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.1.1')
-        this.riskChildrenCustody = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.1.2')
-        this.riskPublicCommunity = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.2.1')
-        this.riskPublicCustody = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.2.2')
-        this.riskKnownAdultCommunity = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.3.1')
-        this.riskKnownAdultCustody = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.3.2')
-        this.riskStaffCommunity = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.4.1')
-        this.riskStaffCustody = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.4.2')
-        this.riskPrisonersCustody = common.getSingleAnswer(dbAssessment.qaData, 'ROSHSUM', 'SUM6.5.2')
+        this.riskChildrenCommunity = dbAssessment.qaData.getString('SUM6.1.1')
+        this.riskChildrenCustody = dbAssessment.qaData.getString('SUM6.1.2')
+        this.riskPublicCommunity = dbAssessment.qaData.getString('SUM6.2.1')
+        this.riskPublicCustody = dbAssessment.qaData.getString('SUM6.2.2')
+        this.riskKnownAdultCommunity = dbAssessment.qaData.getString('SUM6.3.1')
+        this.riskKnownAdultCustody = dbAssessment.qaData.getString('SUM6.3.2')
+        this.riskStaffCommunity = dbAssessment.qaData.getString('SUM6.4.1')
+        this.riskStaffCustody = dbAssessment.qaData.getString('SUM6.4.2')
+        this.riskPrisonersCustody = dbAssessment.qaData.getString('SUM6.5.2')
 
-        this.currentConcernsRiskOfSuicide = common.getSingleAnswer(dbAssessment.qaData, 'ROSHFULL', 'FA31')
-        this.currentConcernsRiskOfSelfHarm = common.getSingleAnswer(dbAssessment.qaData, 'ROSHFULL', 'FA32')
-        this.currentConcernsCustody = common.getSingleAnswer(dbAssessment.qaData, 'ROSHFULL', 'FA39')
-        this.currentConcernsHostel = common.getSingleAnswer(dbAssessment.qaData, 'ROSHFULL', 'FA40')
-        this.currentConcernsVulnerability = common.getSingleAnswer(dbAssessment.qaData, 'ROSHFULL', 'FA45')
-        this.currentConcernsEscape = common.getSingleAnswer(dbAssessment.qaData, 'ROSHFULL', 'FA51')
-        this.currentConcernsDisruptive = common.getSingleAnswer(dbAssessment.qaData, 'ROSHFULL', 'FA55')
-        this.currentConcernsBreachOfTrust = common.getSingleAnswer(dbAssessment.qaData, 'ROSHFULL', 'FA58')
-        this.analysisSuicideSelfharm = common.getTextAnswer(dbAssessment.textData, 'ROSHFULL', 'FA62')
-        this.analysisCoping = common.getTextAnswer(dbAssessment.textData, 'ROSHFULL', 'FA63')
-        this.analysisVulnerabilities = common.getTextAnswer(dbAssessment.textData, 'ROSHFULL', 'FA64')
-        this.analysisEscapeAbscond = common.getTextAnswer(dbAssessment.textData, 'ROSHFULL', 'FA65')
-        this.analysisControlBehaveTrust = common.getTextAnswer(dbAssessment.textData, 'ROSHFULL', 'FA66')
+        this.currentConcernsRiskOfSuicide = dbAssessment.qaData.getString('FA31')
+        this.currentConcernsRiskOfSelfHarm = dbAssessment.qaData.getString('FA32')
+        this.currentConcernsCustody = dbAssessment.qaData.getString('FA39')
+        this.currentConcernsHostel = dbAssessment.qaData.getString('FA40')
+        this.currentConcernsVulnerability = dbAssessment.qaData.getString('FA45')
+        this.currentConcernsEscape = dbAssessment.qaData.getString('FA51')
+        this.currentConcernsDisruptive = dbAssessment.qaData.getString('FA55')
+        this.currentConcernsBreachOfTrust = dbAssessment.qaData.getString('FA58')
+        this.analysisSuicideSelfharm = dbAssessment.qaData.getString('FA62')
+        this.analysisCoping = dbAssessment.qaData.getString('FA63')
+        this.analysisVulnerabilities = dbAssessment.qaData.getString('FA64')
+        this.analysisEscapeAbscond = dbAssessment.qaData.getString('FA65')
+        this.analysisControlBehaveTrust = dbAssessment.qaData.getString('FA66')
 
         if (dbAssessment.sanIndicator == 'Y') { // No SP data for SAN assessments
             delete this.initialSpDate
@@ -116,9 +116,9 @@ export class AssSummAssessment extends v3Common.V3AssessmentCommon {
             delete this.basicSentencePlan
             delete this.sentencePlan
         } else {
-            this.initialSpDate = common.getReformattedDateAnswer(dbAssessment.textData, 'ISP', 'IP.42')
-            this.reviewSpDate = common.getReformattedDateAnswer(dbAssessment.textData, 'RSP', 'RP.54')
-            this.reviewNum = common.getSingleAnswer(dbAssessment.textData, 'RSP', 'RP.1')
+            this.initialSpDate = dbAssessment.qaData.getString('IP.42')
+            this.reviewSpDate = dbAssessment.qaData.getString('RP.54')
+            this.reviewNum = dbAssessment.qaData.getString('RP.1')
 
             if (this.initialSpDate == undefined) this.initialSpDate = null
             if (this.reviewSpDate == undefined) this.reviewSpDate = null
@@ -144,10 +144,10 @@ export class AssSummAssessment extends v3Common.V3AssessmentCommon {
         this.indicators = new Indicators(dbAssessment)
 
         const filteredOffences = dbAssessment.offences.filter((o) => o.type != 'PRINCIPAL_PROPOSAL')
-        if (dbAssessment.offences.length > 0) {
+        if (filteredOffences.length == 0) {
+            this.offences = null
+        } else {
             filteredOffences.forEach((offence) => this.offences.push(new Offence(offence)))
-        } else if (dbAssessment.offences.length > 0) {
-            this.offences = [{ offenceCode: null, offenceSubcode: null, additionalOffence: null }] // NOT SURE IF THIS IS CORRECT
         }
     }
 }
@@ -220,10 +220,10 @@ class FurtherInformation {
         this.ogrs1Year = dbAssessment.riskDetails.ogrs31Year
         this.ogrs2Year = dbAssessment.riskDetails.ogrs32Year
 
-        const reviewType = common.getSingleAnswer(dbAssessment.qaData, 'RSP', 'RP.3')
+        const reviewType = dbAssessment.qaData.getString('RP.3')
         this.reviewTerm = reviewType == 'Termination' ? 'Y' : 'N'
 
-        this.cmsEventNumber = dbAssessment.eventNumber
+        this.cmsEventNumber = dbAssessment.cmsEventNumber
         this.courtCode = dbAssessment.courtCode
         this.courtType = dbAssessment.courtType
         this.courtName = dbAssessment.courtName

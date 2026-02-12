@@ -1,4 +1,4 @@
-import * as db from '../../oasysDb'
+import * as db from '../../data/oasysDb'
 import { OgrsRsr } from './dbClasses'
 import { OgrsAssessment } from './dbClasses'
 

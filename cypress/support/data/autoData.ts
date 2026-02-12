@@ -1,5 +1,5 @@
 import * as oasysDb from './oasysDb'
-import { userSuffix } from '../../localSettings'
+import { userSuffix } from '../../../localSettings'
 
 /**
  * Replaces null offender identifiers (surname, Probation CRN, Nomis ID and PNC) with generated unique values.

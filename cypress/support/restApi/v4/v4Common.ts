@@ -1,6 +1,5 @@
 import * as common from '../common'
 import * as dbClasses from '../dbClasses'
-import * as env from '../restApiUrls'
 
 export function assessmentFilter(dbAssessment: dbClasses.DbAssessmentOrRsr): boolean {
 
@@ -115,6 +114,7 @@ export class V4EndpointResponse extends common.EndpointResponse {
 export class V4TimelineAssessment {
 
     assessmentPk: number
+    assessmentVersion: number
     assessmentType: string
     initiationDate: string
     status: string
@@ -125,6 +125,11 @@ export class V4TimelineAssessment {
 
         this.assessmentPk = dbAssessment.assessmentPk
         this.assessmentType = dbAssessment.assessmentType
+        if (this.assessmentType == 'STANDALONE') {
+            delete this.assessmentVersion
+        } else {
+            this.assessmentVersion = dbAssessment.assessmentVersion
+        }
         this.initiationDate = dbAssessment.initiationDate
         this.status = dbAssessment.status
         if (this.status == 'LOCKED_INCOMPLETE') {
@@ -140,6 +145,7 @@ export class V4AssessmentCommon {
 
     assessmentPk: number
     assessmentType: string
+    assessmentVersion: number
     dateCompleted: string
     assessorSignedDate: string
     initiationDate: string
@@ -173,6 +179,11 @@ export class V4AssessmentCommon {
 
         this.assessmentPk = assessment.assessmentPk
         this.assessmentType = assessment.assessmentType
+        if (this.assessmentType == 'STANDALONE') {
+            delete this.assessmentVersion
+        } else {
+            this.assessmentVersion = assessment.assessmentVersion
+        }
         this.dateCompleted = assessment.completedDate
         this.assessorSignedDate = assessment.signedDate
         this.initiationDate = assessment.initiationDate

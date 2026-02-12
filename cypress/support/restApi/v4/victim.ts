@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -46,6 +45,7 @@ export class VictimAssessment extends v4Common.V4AssessmentCommon {
 
         // Remove standard stuff not included in this endpoint
         delete this.assessmentPk
+        delete this.assessmentVersion
         delete this.assessmentType
         delete this.dateCompleted
         delete this.assessorSignedDate

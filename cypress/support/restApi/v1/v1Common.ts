@@ -1,6 +1,5 @@
 import * as common from '../common'
 import * as dbClasses from '../dbClasses'
-import * as env from '../restApiUrls'
 
 /**
  * Base class for version 1 endpoints (based on the overall common endpoint base class), which includes the V1 timeline and V1 base assessment.
@@ -120,6 +119,7 @@ export class TimelineAssessment {
 
     assessmentPk: number
     assessmentType: string
+    assessmentVersion: number
     initiationDate: string
     status: string
     partcompStatus?: string
@@ -129,6 +129,11 @@ export class TimelineAssessment {
 
         this.assessmentPk = dbAssessment.assessmentPk
         this.assessmentType = dbAssessment.assessmentType
+        if (this.assessmentType == 'STANDALONE') {
+            delete this.assessmentVersion
+        } else {
+            this.assessmentVersion = dbAssessment.assessmentVersion
+        }
         this.initiationDate = dbAssessment.initiationDate
         this.status = dbAssessment.status
         if (this.status == 'LOCKED_INCOMPLETE') {
@@ -145,6 +150,7 @@ export class V1AssessmentCommon {
 
     assessmentPk: number
     assessmentType: string
+    assessmentVersion: number
     dateCompleted: string
     assessorSignedDate: string
     initiationDate: string
@@ -176,6 +182,11 @@ export class V1AssessmentCommon {
 
         this.assessmentPk = assessment.assessmentPk
         this.assessmentType = assessment.assessmentType
+        // if (this.assessmentType == 'STANDALONE') {
+            // delete this.assessmentVersion
+        // } else {
+            this.assessmentVersion = assessment.assessmentVersion
+        // }
         this.dateCompleted = assessment.completedDate
         this.assessorSignedDate = assessment.signedDate
         this.initiationDate = assessment.initiationDate

@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -59,21 +58,21 @@ export class Section4Assessment extends v4Common.V4AssessmentCommon {
 
     addDetails(dbAssessment: dbClasses.DbAssessment) {
 
-        this.unemployed = common.getSingleAnswer(dbAssessment.qaData, '4', '4.2')
-        this.problemAreas = common.getMultipleAnswers(dbAssessment.qaData, '4', ['4.7.1'], 2)
-        this.initSkillsCheckerScore = common.getSingleAnswer(dbAssessment.qaData, '4', '4.92')
-        this.employmentHistory = common.getSingleAnswer(dbAssessment.qaData, '4', '4.3')
-        this.workRelatedSkills = common.getSingleAnswer(dbAssessment.qaData, '4', '4.4')
-        this.attitudeToEmployment = common.getSingleAnswer(dbAssessment.qaData, '4', '4.5')
-        this.schoolAttendance = common.getSingleAnswer(dbAssessment.qaData, '4', '4.6')
-        this.problemsReadWriteNum = common.getSingleAnswer(dbAssessment.qaData, '4', '4.7')
-        this.learningDifficulties = common.getSingleAnswer(dbAssessment.qaData, '4', '4.8')
-        this.qualifications = common.getSingleAnswer(dbAssessment.qaData, '4', '4.9')
-        this.attitudeToEducationTraining = common.getSingleAnswer(dbAssessment.qaData, '4', '4.10')
-        this.basicSkillsScore = common.getSingleAnswer(dbAssessment.qaData, '4', '4.90')
-        this.eTEIssuesDetails = common.getTextAnswer(dbAssessment.textData, '4', '4.94')
-        this.eTELinkedToHarm = common.getSingleAnswer(dbAssessment.qaData, '4', '4.96')
-        this.eTELinkedToReoffending = common.getSingleAnswer(dbAssessment.qaData, '4', '4.98')
+        this.unemployed = dbAssessment.qaData.getString('4.2')
+        this.problemAreas = dbAssessment.qaData.getStringArray('4.7.1')
+        this.initSkillsCheckerScore = dbAssessment.qaData.getString('4.92')
+        this.employmentHistory = dbAssessment.qaData.getString('4.3')
+        this.workRelatedSkills = dbAssessment.qaData.getString('4.4')
+        this.attitudeToEmployment = dbAssessment.qaData.getString('4.5')
+        this.schoolAttendance = dbAssessment.qaData.getString('4.6')
+        this.problemsReadWriteNum = dbAssessment.qaData.getString('4.7')
+        this.learningDifficulties = dbAssessment.qaData.getString('4.8')
+        this.qualifications = dbAssessment.qaData.getString('4.9')
+        this.attitudeToEducationTraining = dbAssessment.qaData.getString('4.10')
+        this.basicSkillsScore = dbAssessment.qaData.getString('4.90')
+        this.eTEIssuesDetails = dbAssessment.qaData.getString('4.94')
+        this.eTELinkedToHarm = dbAssessment.qaData.getString('4.96')
+        this.eTELinkedToReoffending = dbAssessment.qaData.getString('4.98')
 
     }
 }
