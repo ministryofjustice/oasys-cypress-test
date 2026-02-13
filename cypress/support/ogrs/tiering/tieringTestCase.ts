@@ -3,121 +3,57 @@ import { TieringCase } from './dbClasses'
 import { OasysDateTime } from 'lib/dateTime'
 
 
-// Original process.  Step one uses CSRP but can be reduced by step 2.
-export function testTieringCase(tieringCase: TieringCase, logText: string[]): Tier {
-
-    const rosh = (tieringCase.rosh == null) ? tieringCase.roshLevelElm : tieringCase.rosh
-    const arpRisk = tieringCase.ogp2Percentage2yr == null ? tieringCase.ogrs4gPercentage2yr : tieringCase.ogp2Percentage2yr
-    const ospContactRisk = tieringCase.ncOspDcPercentageScore == null ? tieringCase.ospCPercentageScore : tieringCase.ncOspDcPercentageScore
-    const ospContactBand = tieringCase.ncOspDcRiskReconElm == null ? tieringCase.ospCRiskReconElm : tieringCase.ncOspDcRiskReconElm
-    const ospImageBand = tieringCase.ncOspIicRiskReconElm == null ? tieringCase.ospIRiskReconElm : tieringCase.ncOspIicRiskReconElm
-
-    const cp = tieringCase.cpRegistered == 'Y' || tieringCase.barredChildren == 'Y' || tieringCase.childSexExploitHist == 'Y' ||
-        tieringCase.altBarredChildren == 'Y' || tieringCase.childCrimExploit == 'Y' || tieringCase.childSexExploit == 'Y' ||
-        tieringCase.childConcerns == 'Y' || tieringCase.riskToChildren == 'Y' || tieringCase.childProtection == 'Y'
-
-    // Step 1 - ARP/CSRP
-    const step1 = calculateStep1(arpRisk, tieringCase.ncRsrPercentageScore)
-
-    // Step 2 - OSP. Higher of 2a and 2b overrules step 1 if either can be calculated
-    const step2a = calculateStep2a(ospContactRisk, ospContactBand, tieringCase.ncOspDcPercentageScore == null)
-    const step2b = calculateStep2b(ospImageBand)
-    const step2Combined = getHigherTier(step2a, step2b)
-
-    // Step 3 - ROSH and MAPPA.  Highest tier from steps one and two is for the decision between B+ and B-
-    const step3 = calculateStep3(rosh, tieringCase.mappa, getHigherTier(step1, step2Combined))
-
-    // Step 4 - ROSH
-    const step4 = calculateStep4(rosh)
-
-    // Step 5 - lifers
-    const step5 = calculateStep5(tieringCase.lifer, tieringCase.custodyInd, tieringCase.communityDate, tieringCase.dateCompleted)
-
-    // Step 6 - can raise the result for stalking, da, cp
-    const step6 = calculateStep6(tieringCase.stalking == 'Y', tieringCase.da == 'Y', tieringCase.daHistory == 'Y', cp)
-
-    // Combine all the results.  Step 2 can overrule step 1 (higher or lower), 3 to 6 can only raise the result
-    let finalTier = step2Combined == null ? step1 : step2Combined
-    finalTier = getHigherTier(finalTier, step3)
-    finalTier = getHigherTier(finalTier, step4)
-    finalTier = getHigherTier(finalTier, step5)
-    finalTier = getHigherTier(finalTier, step6)
-
-    logText.push(`        Step 1  - ${step1}`)
-    logText.push(`        Step 2a - ${step2a}`)
-    logText.push(`        Step 2b - ${step2b}`)
-    logText.push(`        Step 3  - ${step3}`)
-    logText.push(`        Step 4  - ${step4}`)
-    logText.push(`        Step 5  - ${step5}`)
-    logText.push(`        Step 6  - ${step6}`)
-
-    // If failed on step 1, only take the final result if it's A
-    if (step1 == null && finalTier != 'A') {
-        finalTier = null
-    }
-
-    return finalTier
-}
-
-// New process.
 export function testTieringCaseNew(tieringCase: TieringCase, logText: string[]): Tier {
 
     const rosh = (tieringCase.rosh == null) ? tieringCase.roshLevelElm : tieringCase.rosh
-    const arpRisk = tieringCase.ogp2Percentage2yr == null ? tieringCase.ogrs4gPercentage2yr : tieringCase.ogp2Percentage2yr
-    const ospContactRisk = tieringCase.ncOspDcPercentageScore == null ? tieringCase.ospCPercentageScore : tieringCase.ncOspDcPercentageScore
-    const ospContactBand = tieringCase.ncOspDcRiskReconElm == null ? tieringCase.ospCRiskReconElm : tieringCase.ncOspDcRiskReconElm
-    const ospImageBand = tieringCase.ncOspIicRiskReconElm == null ? tieringCase.ospIRiskReconElm : tieringCase.ncOspIicRiskReconElm
+    const arpRisk = tieringCase.arpCsrp.ogp2Percentage2yr == null ? tieringCase.arpCsrp.ogrs4gPercentage2yr : tieringCase.arpCsrp.ogp2Percentage2yr
+    const ospContactRisk = tieringCase.srp.ncOspDcPercentageScore == null ? tieringCase.oldOsp.ospCPercentageScore : tieringCase.srp.ncOspDcPercentageScore
+    const ospContactBand = tieringCase.srp.ncOspDcRiskReconElm == null ? tieringCase.oldOsp.ospCRiskReconElm : tieringCase.srp.ncOspDcRiskReconElm
+    const ospImageBand = tieringCase.srp.ncOspIicRiskReconElm == null ? tieringCase.oldOsp.ospIRiskReconElm : tieringCase.srp.ncOspIicRiskReconElm
 
-    const cp = tieringCase.cpRegistered == 'Y' || tieringCase.barredChildren == 'Y' || tieringCase.childSexExploitHist == 'Y' ||
-        tieringCase.altBarredChildren == 'Y' || tieringCase.childCrimExploit == 'Y' || tieringCase.childSexExploit == 'Y' ||
-        tieringCase.childConcerns == 'Y' || tieringCase.riskToChildren == 'Y' || tieringCase.childProtection == 'Y'
+    const cpCombined = tieringCase.cp.cpRegistered == 'Y' || tieringCase.cp.barredChildren == 'Y' || tieringCase.cp.childSexExploitHist == 'Y' ||
+        tieringCase.cp.altBarredChildren == 'Y' || tieringCase.cp.childCrimExploit == 'Y' || tieringCase.cp.childSexExploit == 'Y' ||
+        tieringCase.cp.childConcerns == 'Y' || tieringCase.cp.riskToChildren == 'Y' || tieringCase.cp.childProtection == 'Y'
 
-    // Step 1 - ARP/CSRP
-    const step1 = calculateStep1(arpRisk, tieringCase.ncRsrPercentageScore)
+    const arpCsrp = calculateArpCsrp(arpRisk, tieringCase.arpCsrp.ncRsrPercentageScore)
+    const arp = calculateArpCsrp(arpRisk, 0)
+    const dc = calculateDc(ospContactRisk, ospContactBand, tieringCase.srp.ncOspDcPercentageScore == null)
+    const iic = calculateIic(ospImageBand)
+    const roshMappa = calculateRoshMappa(rosh, tieringCase.mappa)
+    const lifer = calculateLifer(tieringCase.lifer, tieringCase.custodyInd, tieringCase.communityDate, tieringCase.dateCompleted)
+    const daStalkingCp = calculateDaStalkingCp(tieringCase.daStalking.stalking == 'Y', tieringCase.daStalking.da == 'Y', tieringCase.daStalking.daHistory == 'Y', cpCombined)
 
-    // Step 2 - OSP.
-    const step2a = calculateStep2aNew(ospContactRisk, ospContactBand, tieringCase.ncOspDcPercentageScore == null)
-    const step2b = calculateStep2bNew(ospImageBand)
+    // Combine all the results
+    let finalTier = arpCsrp
 
-    // Step 3 - ROSH and MAPPA.
-    const step3 = calculateStep3New(rosh, tieringCase.mappa)
-
-    // Step 4 - ROSH
-    const step4 = calculateStep4(rosh)
-
-    // Step 5 - lifers
-    const step5 = calculateStep5(tieringCase.lifer, tieringCase.custodyInd, tieringCase.communityDate, tieringCase.dateCompleted)
-
-    // Step 6 - can raise the result for stalking, da, cp
-    const step6 = calculateStep6(tieringCase.stalking == 'Y', tieringCase.da == 'Y', tieringCase.daHistory == 'Y', cp)
-
-    // Combine all the results.  Step 2 can overrule step 1 (higher or lower, depending on OSP type), 3 to 6 can only raise the result
-    let finalTier = step1
-
-    if (tierNumbers[step2a] >= tierNumbers[step2b]) {       // DC overrules step 1 only if higher
-        finalTier = getHigherTier(step1, step2a)
-    } else {
-        const step1WithoutRsr = calculateStep1(arpRisk, 0)  // IIC - get step 1 without RSR, IIC can overrule this if higher
-        finalTier = getHigherTier(step1WithoutRsr, step2b)
+    let iicTrump = false
+    if (tierNumbers[dc] >= tierNumbers[iic] && dc != null) {       // DC overrules ARP-CSRP only if higher
+        finalTier = getHigherTier(arpCsrp, dc)
+    } else if (dc != null && iic != null) {
+        finalTier = getHigherTier(arp, iic)          // IIC wins if it's higher than DC, and compares to ARP only
+        iicTrump = true
     }
 
-    finalTier = getHigherTier(finalTier, step3)
-    finalTier = getHigherTier(finalTier, step4)
-    finalTier = getHigherTier(finalTier, step5)
-    finalTier = getHigherTier(finalTier, step6)
+    finalTier = getHigherTier(finalTier, roshMappa)
+    finalTier = getHigherTier(finalTier, lifer)
+    finalTier = getHigherTier(finalTier, daStalkingCp)
 
-    logText.push(`        Step 1  - ${step1}`)
-    logText.push(`        Step 2a - ${step2a}`)
-    logText.push(`        Step 2b - ${step2b}`)
-    logText.push(`        Step 3  - ${step3}`)
-    logText.push(`        Step 4  - ${step4}`)
-    logText.push(`        Step 5  - ${step5}`)
-    logText.push(`        Step 6  - ${step6}`)
+    if (arpCsrp == null && finalTier != 'A' && !iicTrump) {  // If no CSRP, only accept the final result if it's A or if IIC was used with ARP
+        finalTier = null
+    }
+
+    logText.push(`        ARP/CSRP   - ${arpCsrp}`)
+    logText.push(`        ARP        - ${arp}`)
+    logText.push(`        DC-SRP     - ${dc}`)
+    logText.push(`        IIC-SRP    - ${iic}`)
+    logText.push(`        RoSH/MAPPA - ${roshMappa}`)
+    logText.push(`        Lifer      - ${lifer}`)
+    logText.push(`        DA, st, CP - ${daStalkingCp}`)
 
     return finalTier
 }
 
-function calculateStep1(arp: number, csrp: number): Tier {
+function calculateArpCsrp(arp: number, csrp: number): Tier {
 
     if (arp == null || csrp == null) {
         return null
@@ -151,7 +87,7 @@ function calculateStep1(arp: number, csrp: number): Tier {
     }
 }
 
-function calculateStep2a(ospRisk: number, ospContactBand: string, oldPercentageBands: boolean): Tier {
+function calculateDc(ospRisk: number, ospContactBand: string, oldPercentageBands: boolean): Tier {
 
     if (ospRisk == null || ospContactBand == null) {
         return null
@@ -181,81 +117,24 @@ function calculateStep2a(ospRisk: number, ospContactBand: string, oldPercentageB
             return 'C Lower'
     }
     return null
-
 }
 
-function calculateStep2aNew(ospRisk: number, ospContactBand: string, oldPercentageBands: boolean): Tier {
-
-    if (ospRisk == null || ospContactBand == null) {
-        return 'E'
-    }
-
-    const topMediumReduced = oldPercentageBands ? 2 : 3.36
-    const bottomMediumReduced = oldPercentageBands ? 1.37 : 2.11
-    const topMediumStd = oldPercentageBands ? 0.82 : 1.12
-
-    switch (ospContactBand.substring(0, 1)) {
-        case 'V':
-            return 'A'
-        case 'H':
-            return 'B Upper'
-        case 'M':
-            if (ospRisk >= topMediumReduced) {
-                return 'B Lower'
-            }
-            if (ospRisk >= bottomMediumReduced) {
-                return 'C Upper'
-            }
-            if (ospRisk >= topMediumStd) {
-                return 'B Lower'
-            }
-            return 'C Upper'
-        case 'L':
-            return 'C Lower'
-    }
-    return 'E'
-}
-
-function calculateStep2b(ospBand: string): Tier {
+function calculateIic(ospBand: string): Tier {
 
     if (ospBand == null) {
         return null
     }
 
     const band = ospBand.substring(0, 1)
-    return band == 'H' ? 'B Lower' : band == 'M' ? 'C Upper' : null
+    return band == 'H' ? 'B Lower' : band == 'M' ? 'C Upper' : band == 'L' ? 'C Lower' : null
 }
 
-function calculateStep2bNew(ospBand: string): Tier {
+function calculateRoshMappa(rosh: string, mappa: string): Tier {
 
-    if (ospBand == null) {
-        return 'E'
+    if (rosh == null) {
+        return null
     }
-
-    const band = ospBand.substring(0, 1)
-    return band == 'H' ? 'B Lower' : band == 'M' ? 'C Upper' : band == 'L' ? 'C Lower' : 'E'
-}
-
-function calculateStep3(rosh: string, mappa: string, step1: Tier): Tier {
-
-    if (mappa == 'Y' && rosh != null) {
-        switch (rosh) {
-            case 'V':
-                return 'A'
-            case 'H':
-                return tierNumbers[step1] >= tierNumbers['B Upper'] ? 'B Upper' : 'B Lower'
-            case 'M':
-                return 'C Upper'
-            case 'L':
-                return 'C Lower'
-        }
-    }
-    return null
-}
-
-function calculateStep3New(rosh: string, mappa: string): Tier {
-
-    if (mappa == 'Y' && rosh != null) {
+    if (mappa == 'Y') {
         switch (rosh) {
             case 'V':
                 return 'A'
@@ -266,16 +145,12 @@ function calculateStep3New(rosh: string, mappa: string): Tier {
             case 'L':
                 return 'C Lower'
         }
+    } else {
+        return rosh == 'V' ? 'B Lower' : rosh == 'H' ? 'C Upper' : null
     }
-    return 'E'
 }
 
-function calculateStep4(rosh: string): Tier {
-
-    return rosh == 'V' ? 'B Lower' : rosh == 'H' ? 'C Upper' : null
-}
-
-function calculateStep5(lifer: string, custodyInd: string, communityDate: string, completionDate: string): Tier {
+function calculateLifer(lifer: string, custodyInd: string, communityDate: string, completionDate: string): Tier {
 
     if (lifer != 'Y' || custodyInd == 'Y' || communityDate == null || completionDate == null) {
         return null
@@ -289,7 +164,7 @@ function calculateStep5(lifer: string, custodyInd: string, communityDate: string
     return diffYears >= 1 ? 'D' : 'B Upper'
 }
 
-function calculateStep6(stalking: boolean, da: boolean, daHistory: boolean, cp: boolean): Tier {
+function calculateDaStalkingCp(stalking: boolean, da: boolean, daHistory: boolean, cp: boolean): Tier {
 
     return da || daHistory ? 'C Lower' : stalking || cp ? 'D' : null
 }

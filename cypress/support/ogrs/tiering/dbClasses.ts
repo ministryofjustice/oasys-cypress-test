@@ -7,43 +7,52 @@ export class TieringCase {
     assessmentPk: number
     offenderPk: number
     dateCompleted: string
+    arpCsrp: {
+        ncRsrPercentageScore: number
+        snsvStaticPercentage: number
+        snsvDynamicPercentage: number
+        ogrs4gPercentage2yr: number
+        ogp2Percentage2yr: number
+    }
+    srp: {
+        ncOspDcRiskReconElm: string
+        ncOspDcPercentageScore: number
+        ncOspIicRiskReconElm: string
+        ncOspIicPercentageScore: number
+        dcSrpRiskReduction: string
+    }
+    oldOsp: {
+        ospCRiskReconElm: string
+        ospCPercentageScore: number
+        ospIRiskReconElm: string
+        ospIPercentageScore: number
+    }
     rosh: string
     roshLevelElm: string
-    ncRsrPercentageScore: number
-    snsvStaticPercentage: number
-    snsvDynamicPercentage: number
-    ncOspDcRiskReconElm: string
-    ncOspDcPercentageScore: number
-    ncOspIicRiskReconElm: string
-    ncOspIicPercentageScore: number
-    dcSrpRiskReduction: string
-    ogrs4gPercentage2yr: number
-    ogp2Percentage2yr: number
     mappa: string
     lifer: string
-    stalking: string
-    da: string
-    daHistory: string
-    cpRegistered: string
-    finalTier: string
     custodyInd: string
     communityDate: string
-
-    // Old OSP scores for fallback
-    ospCRiskReconElm: string
-    ospCPercentageScore: number
-    ospIRiskReconElm: string
-    ospIPercentageScore: number
-
-    // Additional CP flags
-    barredChildren: string
-    childSexExploitHist: string
-    altBarredChildren: string
-    childCrimExploit: string
-    childSexExploit: string
-    childConcerns: string
-    riskToChildren: string
-    childProtection: string
+    daStalking: {
+        da: string
+        daHistory: string
+        stalking: string
+    }
+    cp: {
+        cpRegistered: string
+        barredChildren: string
+        childSexExploitHist: string
+        altBarredChildren: string
+        childCrimExploit: string
+        childSexExploit: string
+        childConcerns: string
+        riskToChildren: string
+        childProtection: string
+    }
+    oracleResults: {
+        finalTier: string
+        iicTrump: string
+    }
 
     constructor(tieringData: string[]) {
 
@@ -53,41 +62,52 @@ export class TieringCase {
         this.assessmentPk = Number.parseInt(tieringData[i++])
         this.offenderPk = Number.parseInt(tieringData[i++])
         this.dateCompleted = tieringData[i++]
+        this.arpCsrp = {
+            ncRsrPercentageScore: getDbFloat(tieringData[i++]),
+            snsvStaticPercentage: getDbFloat(tieringData[i++]),
+            snsvDynamicPercentage: getDbFloat(tieringData[i++]),
+            ogrs4gPercentage2yr: getDbFloat(tieringData[i++]),
+            ogp2Percentage2yr: getDbFloat(tieringData[i++]),
+        }
+        this.srp = {
+            ncOspDcRiskReconElm: tieringData[i++],
+            ncOspDcPercentageScore: getDbFloat(tieringData[i++]),
+            ncOspIicRiskReconElm: tieringData[i++],
+            ncOspIicPercentageScore: getDbFloat(tieringData[i++]),
+            dcSrpRiskReduction: tieringData[i++],
+        }
+        this.oldOsp = {
+            ospCRiskReconElm: tieringData[i++],
+            ospCPercentageScore: getDbFloat(tieringData[i++]),
+            ospIRiskReconElm: tieringData[i++],
+            ospIPercentageScore: getDbFloat(tieringData[i++]),
+        }
         this.rosh = tieringData[i++]
         this.roshLevelElm = tieringData[i++]
-        this.ncRsrPercentageScore = getDbFloat(tieringData[i++])
-        this.snsvStaticPercentage = getDbFloat(tieringData[i++])
-        this.snsvDynamicPercentage = getDbFloat(tieringData[i++])
-        this.ncOspDcRiskReconElm = tieringData[i++]
-        this.ncOspDcPercentageScore = getDbFloat(tieringData[i++])
-        this.ncOspIicRiskReconElm = tieringData[i++]
-        this.ncOspIicPercentageScore = getDbFloat(tieringData[i++])
-        this.dcSrpRiskReduction = tieringData[i++]
-        this.ogrs4gPercentage2yr = getDbFloat(tieringData[i++])
-        this.ogp2Percentage2yr = getDbFloat(tieringData[i++])
         this.mappa = tieringData[i++]
         this.lifer = tieringData[i++]
-        this.stalking = tieringData[i++]
-        this.da = tieringData[i++]
-        this.daHistory = tieringData[i++]
-        this.cpRegistered = tieringData[i++]
-        this.finalTier = tieringData[i++]
         this.custodyInd = tieringData[i++]
         this.communityDate = tieringData[i++]
-
-        this.ospCRiskReconElm = tieringData[i++]
-        this.ospCPercentageScore = getDbFloat(tieringData[i++])
-        this.ospIRiskReconElm = tieringData[i++]
-        this.ospIPercentageScore = getDbFloat(tieringData[i++])
-
-        this.barredChildren = tieringData[i++]
-        this.childSexExploitHist = tieringData[i++]
-        this.altBarredChildren = tieringData[i++]
-        this.childCrimExploit = tieringData[i++]
-        this.childSexExploit = tieringData[i++]
-        this.childConcerns = tieringData[i++]
-        this.riskToChildren = tieringData[i++]
-        this.childProtection = tieringData[i++]
+        this.daStalking = {
+            da: tieringData[i++],
+            daHistory: tieringData[i++],
+            stalking: tieringData[i++],
+        }
+        this.cp = {
+            cpRegistered: tieringData[i++],
+            barredChildren: tieringData[i++],
+            childSexExploitHist: tieringData[i++],
+            altBarredChildren: tieringData[i++],
+            childCrimExploit: tieringData[i++],
+            childSexExploit: tieringData[i++],
+            childConcerns: tieringData[i++],
+            riskToChildren: tieringData[i++],
+            childProtection: tieringData[i++],
+        }
+        this.oracleResults = {
+            finalTier: tieringData[i++],
+            iicTrump: tieringData[i++],
+        }
     }
 
     static query(rows: number, whereClause: string): string {
@@ -95,22 +115,23 @@ export class TieringCase {
         const where = whereClause == null ? '' : `where ${whereClause}`
         return `select 
                     cms_prob_number, cms_pris_number, oasys_set_pk, offender_pk,
-                    to_char(date_completed, '${dateFormat}'), rosh, rosh_level_elm, 
+                    to_char(date_completed, '${dateFormat}'), 
                     nc_rsr_percentage_score, snsv_percentage_2yr_static, snsv_percentage_2yr_dynamic,
-                    nc_osp_dc_risk_recon_elm, nc_osp_dc_percentage_score, nc_osp_iic_risk_recon_elm, nc_osp_iic_percentage_score, dc_srp_risk_reduction, 
                     ogrs4g_percentage_2yr, ogp2_percentage_2yr, 
-                    mappa, lifer, stalking, da, da_history, cp_registered,  
-                    final_tier, 
-                    custody_ind, to_char(community_date, '${dateFormat}'),
+                    nc_osp_dc_risk_recon_elm, nc_osp_dc_percentage_score, nc_osp_iic_risk_recon_elm, nc_osp_iic_percentage_score, dc_srp_risk_reduction, 
                     osp_c_risk_recon_elm, osp_c_percentage_score, osp_i_risk_recon_elm, osp_i_percentage_score,
+                    rosh, rosh_level_elm, mappa, lifer, custody_ind, to_char(community_date, '${dateFormat}'),
+                    da, da_history, stalking,
+                    cp_registered,  
                     barred_children, child_sex_exploit_hist, alt_barred_children, child_crim_exploit, 
-                    child_sex_exploit, child_concerns, risk_to_children, child_protection
+                    child_sex_exploit, child_concerns, risk_to_children, child_protection,
+                    final_tier, iic_trump
                     from eor.df453_new_prediction 
                     ${where}
                     fetch first ${rows} rows only`
-                }
-            }
-            
+    }
+}
+
 
 function getDbFloat(dbValue: string): number {
     return Number.isNaN(Number.parseFloat(dbValue)) ? null : Number.parseFloat(dbValue)

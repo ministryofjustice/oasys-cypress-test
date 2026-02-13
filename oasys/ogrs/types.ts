@@ -58,6 +58,7 @@ export type RescoringResult = {
 export type TieringTestParameters = {
     whereClause: string,
     count: number,
+    checkOgrs4: boolean
 }
 
 export type TieringTestResult = {

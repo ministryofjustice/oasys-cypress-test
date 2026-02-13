@@ -145,3 +145,9 @@ export const yesNo1_0Lookup = {
     'YES': 1,
     'NO': 0,
 }
+
+export const q4_2Lookup = {
+    'YES': 1,
+    'NO': 0,
+    'NA': 0,
+}
