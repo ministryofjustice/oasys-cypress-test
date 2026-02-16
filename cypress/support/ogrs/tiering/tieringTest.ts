@@ -38,7 +38,7 @@ export async function tieringTest(testParams: TieringTestParameters): Promise<Ti
                 result.logText.push(log)
             })
             result.logText.push('')
-            // failed = true
+            failed = true
         }
 
         if (testParams.checkOgrs4) {
@@ -55,6 +55,10 @@ export async function tieringTest(testParams: TieringTestParameters): Promise<Ti
                 tieringCase.arpCsrp.ogrs4gPercentage2yr, ogrs4LogText) || ogrsFailed
             ogrsFailed = checkOgrs4Result('OGP2', ogrsResult.details.OGP2_PERCENTAGE?.toNumber(),
                 tieringCase.arpCsrp.ogp2Percentage2yr, ogrs4LogText) || ogrsFailed
+            ogrsFailed = checkOgrs4Result('DC-SRP', ogrsResult.details.OSP_DC_PERCENTAGE?.toNumber(),
+                tieringCase.srp.ncOspDcPercentageScore, ogrs4LogText) || ogrsFailed
+            ogrsFailed = checkOgrs4Result('IIC-SRP ', ogrsResult.details.OSP_IIC_PERCENTAGE?.toNumber(),
+                tieringCase.srp.ncOspIicPercentageScore, ogrs4LogText) || ogrsFailed
 
             if (ogrsFailed) {
                 failed = true
@@ -81,7 +85,7 @@ export async function tieringTest(testParams: TieringTestParameters): Promise<Ti
 function checkOgrs4Result(desc: string, expect: string | number, actual: string | number, logText: string[]): boolean {
 
     if (expect != actual) {
-        logText.push(`${desc}: expected ${expect}, found ${actual}`)
+        logText.push(`${desc} failed: expected ${expect}, found ${actual}`)
         return true
     }
     return false

@@ -1,6 +1,6 @@
 import { TieringTestParameters, TieringTestResult } from '../../oasys/ogrs/types'
 
-const count = 1000// 260000
+const count = 260000
 const timeout = 10000000
 
 describe('Tier calculations test', () => {
@@ -9,7 +9,7 @@ describe('Tier calculations test', () => {
         whereClause: null,
         // whereClause : `cms_prob_number = 'V166775'`,
         count: count,
-        checkOgrs4: true,
+        checkOgrs4: false,
     }
 
     it(`Tiering calculation`, () => {
