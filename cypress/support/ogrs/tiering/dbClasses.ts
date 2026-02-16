@@ -9,6 +9,7 @@ export class TieringCase {
     dateCompleted: string
     arpCsrp: {
         ncRsrPercentageScore: number
+        rsrStaticOrDynamic: string
         snsvStaticPercentage: number
         snsvDynamicPercentage: number
         ogrs4gPercentage2yr: number
@@ -64,6 +65,7 @@ export class TieringCase {
         this.dateCompleted = tieringData[i++]
         this.arpCsrp = {
             ncRsrPercentageScore: getDbFloat(tieringData[i++]),
+            rsrStaticOrDynamic: tieringData[i++],
             snsvStaticPercentage: getDbFloat(tieringData[i++]),
             snsvDynamicPercentage: getDbFloat(tieringData[i++]),
             ogrs4gPercentage2yr: getDbFloat(tieringData[i++]),
@@ -116,7 +118,8 @@ export class TieringCase {
         return `select 
                     cms_prob_number, cms_pris_number, oasys_set_pk, offender_pk,
                     to_char(date_completed, '${dateFormat}'), 
-                    nc_rsr_percentage_score, snsv_percentage_2yr_static, snsv_percentage_2yr_dynamic,
+                    nc_rsr_percentage_score, nc_rsr_static_or_dynamic,
+                    snsv_percentage_2yr_static, snsv_percentage_2yr_dynamic,
                     ogrs4g_percentage_2yr, ogp2_percentage_2yr, 
                     nc_osp_dc_risk_recon_elm, nc_osp_dc_percentage_score, nc_osp_iic_risk_recon_elm, nc_osp_iic_percentage_score, dc_srp_risk_reduction, 
                     osp_c_risk_recon_elm, osp_c_percentage_score, osp_i_risk_recon_elm, osp_i_percentage_score,
