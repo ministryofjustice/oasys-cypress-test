@@ -52,7 +52,7 @@ export function q22(q22Weapon: string, oldQ22: string, after6_35: boolean): numb
     if (after6_35) {
         return q22Weapon == null ? null : q22Weapon == 'YES' ? 1 : 0
     } else {
-        return oldQ22 == null ? null : oldQ22.includes('WEAPON') ? 1 : 0
+        return oldQ22 == null ? null : oldQ22.includes('WEAPON') ? 1 : null
     }
 }
 
