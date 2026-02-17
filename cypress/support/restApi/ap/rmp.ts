@@ -40,14 +40,14 @@ export class APRmpEndpointResponse extends apCommon.APEndpointResponse {
 
 export class APRmpAssessment extends apCommon.APAssessmentCommon {
 
-    keyInformationAboutCurrentSituation: string = null
-    furtherConsiderations: string = null
-    supervision: string = null
-    monitoringAndControl: string = null
-    interventionsAndTreatment: string = null
-    victimSafetyPlanning: string = null
-    contingencyPlans: string = null
-    additionalComments: string = null
+    keyInformationAboutCurrentSituation: string
+    furtherConsiderations: string
+    supervision: string
+    monitoringAndControl: string
+    interventionsAndTreatment: string
+    victimSafetyPlanning: string
+    contingencyPlans: string
+    additionalComments: string
 
 
     addRmpDetails(assessment: dbClasses.DbAssessment) {
