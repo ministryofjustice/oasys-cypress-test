@@ -45,8 +45,14 @@ export function testTieringCaseNew(tieringCase: TieringCase, logText: string[]):
     finalResult = getHigherTier(finalResult, daStalkingCp)
 
     // If no CSRP, only accept the final result if it's A or if IIC was used with ARP
-    if (arpCsrp == null && finalResult != 'A' && !iicTrump) {
-        finalResult = null
+    if (arpCsrp == null && finalResult != 'A') {
+        if (iicTrump) {
+            if (arp == null && finalResult > 'D') {  // Only accept D or higher if ARP was not available (D is the max from ARP only)
+                finalResult = null
+            }
+        } else {
+            finalResult = null
+        }
     }
 
     logText.push(`        ARP/CSRP   - ${arpCsrp}`)
