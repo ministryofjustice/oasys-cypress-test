@@ -23,7 +23,7 @@ export function checkOgrs4CalcsPk(assessmentPk: number, resultAlias = null) {
 
             const calculatorParams = createAssessmentTestCase(assessment, appConfig.offences, appConfig.appVersions)
 
-            const calcResult = getResult(calculatorParams, appConfig)
+            const calcResult = getResult(calculatorParams)
 
             cy.groupedLogStart('Checking OGRS4 calculations')
             let failed = checkResult('ARP static score', calcResult.details.OGRS4G_PERCENTAGE?.toNumber() ?? null, assessment.ogrs4gYr2)
@@ -60,7 +60,7 @@ export function checkOgrs4CalcsPk(assessmentPk: number, resultAlias = null) {
 
 }
 
-function getResult(calculatorParams: TestCaseParameters, appConfig: AppConfig): Ogrs4CalcResult {
+export function getResult(calculatorParams: TestCaseParameters): Ogrs4CalcResult {
 
     const calcResult: Ogrs4CalcResult = {
         details: createOutputObject(),

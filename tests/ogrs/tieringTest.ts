@@ -9,6 +9,7 @@ describe('Tier calculations test', () => {
         whereClause: null,
         // whereClause : `cms_prob_number = 'V166775'`,
         count: count,
+        checkOgrs4: false,
     }
 
     it(`Tiering calculation`, () => {

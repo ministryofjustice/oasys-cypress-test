@@ -1,10 +1,12 @@
+import { Temporal } from '@js-temporal/polyfill'
 import { OgrsAssessment } from '../../cypress/support/ogrs/getTestData/dbClasses'
-import { addCalculatedInputParameters, da, dailyDrugUser, getDrugsUsage, getDrugUsed, q141, q22, q88, yesNo1_0Lookup } from 'ogrs/common'
+import { addCalculatedInputParameters, da, dailyDrugUser, getDrugsUsage, getDrugUsed, q141, q22, q4_2Lookup, q88, yesNo1_0Lookup } from 'ogrs/common'
 import { lookupString, lookupInteger, yesNoToYNLookup, genderNumberLookup } from 'lib/utils'
 import { TestCaseParameters } from './types'
 import { OasysDateTime } from 'oasys'
 
-export function createAssessmentTestCase(assessment: OgrsAssessment, offences: {}, versions: {}): TestCaseParameters {
+export function createAssessmentTestCase(assessment: OgrsAssessment, offences: {}, versions: {},
+    dateParam: string | Temporal.PlainDate = null): TestCaseParameters {
 
     const after6_30 = OasysDateTime.checkIfAfterRelease(versions, '6.30', assessment.initiationDate)
     const after6_35 = OasysDateTime.checkIfAfterRelease(versions, '6.35', assessment.initiationDate)
@@ -18,9 +20,15 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, offences: {
             staticCalc = 'Y'
         }
     }
+
+    let assessmentDate = OasysDateTime.testStartDate
+    if (dateParam != null) {
+        assessmentDate = typeof dateParam == 'string' ? OasysDateTime.stringToDate(dateParam) : dateParam
+    }
+
     const result = {
 
-        ASSESSMENT_DATE: OasysDateTime.testStartDate,
+        ASSESSMENT_DATE: assessmentDate,
         STATIC_CALC: staticCalc,
         DOB: assessment.dob,
         GENDER: lookupString(assessment.gender, genderNumberLookup),
@@ -41,7 +49,7 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, offences: {
         ONE_POINT_THIRTY: lookupString('1.30', assessment.qaData, yesNoToYNLookup),
         TWO_POINT_TWO: q22(lookupString('2.2_V2_WEAPON', assessment.qaData), lookupString('2.2', assessment.qaData), after6_35),
         THREE_POINT_FOUR: lookupInteger('3.4', assessment.qaData),
-        FOUR_POINT_TWO: lookupInteger('4.2', assessment.qaData, yesNo1_0Lookup),
+        FOUR_POINT_TWO: lookupInteger('4.2', assessment.qaData, q4_2Lookup),
         SIX_POINT_FOUR: lookupInteger('6.4', assessment.qaData),
         SIX_POINT_SEVEN: da(assessment.qaData, after6_30),
         SIX_POINT_EIGHT: lookupInteger('6.8', assessment.qaData),

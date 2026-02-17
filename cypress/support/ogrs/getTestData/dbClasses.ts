@@ -180,6 +180,7 @@ export class OgrsAssessment {
     version: number
     status: string
     initiationDate: Temporal.PlainDateTime
+    signedDate: Temporal.PlainDate
     dob: Temporal.PlainDate
     gender: string
     prisonInd: string
@@ -214,6 +215,7 @@ export class OgrsAssessment {
         this.version = stringToInt(assessmentData[i++])
         this.status = assessmentData[i++]
         this.initiationDate = OasysDateTime.stringToTimestamp(assessmentData[i++])
+        this.signedDate = OasysDateTime.stringToDate(assessmentData[i++])
         this.dob = OasysDateTime.stringToDate(assessmentData[i++])
         this.gender = assessmentData[i++]
         this.prisonInd = assessmentData[i++]
@@ -240,7 +242,8 @@ export class OgrsAssessment {
 
     static query(rows: number, whereClause: string): string {
 
-        return `select oasys_set_pk, assessment_type_elm, version_number, assessment_status_elm, to_char(initiation_date, '${OasysDateTime.oracleTimestampFormat}'),
+        return `select oasys_set_pk, assessment_type_elm, version_number, assessment_status_elm, 
+                        to_char(initiation_date, '${OasysDateTime.oracleTimestampFormat}'), to_char(assessor_signed_date, '${OasysDateTime.dateFormat}'),
                         to_char(date_of_birth, '${OasysDateTime.dateFormat}'), gender_elm, prison_ind,
                         ogrs4g_percentage_2yr, ogrs4g_band_risk_recon_elm, ogrs4g_calculated, 
                         ogrs4v_percentage_2yr, ogrs4v_band_risk_recon_elm, ogrs4v_calculated, 
