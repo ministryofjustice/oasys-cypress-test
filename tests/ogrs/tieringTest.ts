@@ -10,20 +10,21 @@ describe('Tier calculations test', () => {
         // whereClause : `cms_prob_number = 'V166775'`,
         count: count,
         checkOgrs4: false,
+        includeStatic: false,
     }
 
     it(`Tiering calculation`, () => {
 
         let failed = false
         cy.task('tieringTest', testParams, { timeout: timeout }).then((result: TieringTestResult) => {
-
+            
+            cy.log(`Passed: ${result.passed}, failed: ${result.failed}`)
+            
             cy.groupedLogStart(` `)
-
             result.logText.forEach((log) => {
                 cy.groupedLog(log)
             })
             cy.groupedLogEnd()
-            cy.log(`Passed: ${result.passed}, failed: ${result.failed}`)
             cy.task('consoleLog', `Passed: ${result.passed}, failed: ${result.failed}`)
             failed = result.failed > 0
 

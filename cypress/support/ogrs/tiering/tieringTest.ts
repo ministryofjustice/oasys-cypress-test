@@ -2,7 +2,7 @@ import { createAssessmentTestCase } from 'ogrs/createAssessmentTestCase'
 import { TieringTestParameters, TieringTestResult } from '../../../../oasys/ogrs/types'
 import { getOneAssessment } from '../getTestData/getTestData'
 import { getTieringTestData } from './getTieringData'
-import { testTieringCaseNew } from './tieringTestCase'
+import { testTieringCase } from './tieringTestCase'
 import { offences } from '../../data/oasysDb'
 import { appVersions } from 'lib/dateTime'
 import { getResult } from 'lib/ogrs'
@@ -24,7 +24,7 @@ export async function tieringTest(testParams: TieringTestParameters): Promise<Ti
         const logTextAlternative: string[] = []
         let failed = false
 
-        const caseResult = testTieringCaseNew(tieringCase, logText)
+        const caseResult = testTieringCase(tieringCase, testParams.includeStatic, logText)
 
         if (caseResult != tieringCase.oracleResults.finalTier) {
             result.logText.push(`CRN: ${tieringCase.probationCrn} / ${tieringCase.prisonCrn} FAILED`)
@@ -65,9 +65,9 @@ export async function tieringTest(testParams: TieringTestParameters): Promise<Ti
                 ogrs4LogText.forEach((log) => {
                     result.logText.push(log)
                 })
-                result.logText.push(JSON.stringify(tieringCase))
-                result.logText.push(JSON.stringify(ogrsParams))
-                result.logText.push(JSON.stringify(ogrsResult))
+                result.logText.push(`Tiering details:  ${JSON.stringify(tieringCase)}`)
+                result.logText.push(`OGRS4 parameters: ${JSON.stringify(ogrsParams)}`)
+                result.logText.push(`OGRS4 result:     ${JSON.stringify(ogrsResult)}`)
                 result.logText.push('')
             }
         }

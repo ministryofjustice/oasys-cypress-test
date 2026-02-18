@@ -3,10 +3,19 @@ import { TieringCase } from './dbClasses'
 import { OasysDateTime } from 'lib/dateTime'
 
 
-export function testTieringCaseNew(tieringCase: TieringCase, logText: string[]): Tier {
+export function testTieringCase(tieringCase: TieringCase, includeStatic: boolean, logText: string[]): Tier {
 
-    // Use dynamic CSRP only
-    const csrpScore = tieringCase.arpCsrp.rsrStaticOrDynamic == 'DYNAMIC' ? tieringCase.arpCsrp.ncRsrPercentageScore : null
+    // Get CSRP score depending on static parameter
+    let csrpScore = tieringCase.arpCsrp.ncRsrPercentageScore
+    if (!includeStatic && tieringCase.arpCsrp.rsrStaticOrDynamic != 'DYNAMIC') {
+        csrpScore = null
+    }
+
+    // Get ARP score depending on static parameter
+    let arpScore = tieringCase.arpCsrp.ogp2Percentage2yr
+    if (arpScore == null && includeStatic) {
+        arpScore = tieringCase.arpCsrp.ogrs4gPercentage2yr
+    }
 
     // OSP percentage and band - use DC and IIC if available, otherwise the old C and I versions
     const oldOsp = tieringCase.srp.ncOspDcPercentageScore == null && tieringCase.srp.ncOspIicPercentageScore == null
@@ -18,8 +27,8 @@ export function testTieringCaseNew(tieringCase: TieringCase, logText: string[]):
     const rosh = (tieringCase.rosh == null) ? tieringCase.roshLevelElm : tieringCase.rosh
 
     // Initial tier calculations - dynamic ARP, dynamic CSRP
-    const arpCsrp = calculateArpCsrp(tieringCase.arpCsrp.ogp2Percentage2yr, csrpScore)
-    const arp = calculateArpCsrp(tieringCase.arpCsrp.ogp2Percentage2yr, 0)
+    const arpCsrp = calculateArpCsrp(arpScore, csrpScore)
+    const arp = calculateArpCsrp(arpScore, 0)
     const dc = calculateDc(ospContactRisk, ospContactBand, oldOsp)
     const iic = calculateIic(ospImageBand)
 
