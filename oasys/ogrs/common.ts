@@ -60,19 +60,21 @@ export function da(qaData: {}, after6_30: boolean): number {
 
     if (after6_30) {
         const q67 = lookupString('6.7da', qaData)
-        if (q67 != 'YES') {
+        if (q67 == 'NO') {
             return 0
+        } else if (q67 == null) {
+            return null
         } else {
             const q67da = lookupString('6.7.2.1da', qaData)
-            return q67da == 'YES' ? 1 : 0
+            return q67da == 'YES' ? 1 : q67da == 'NO' ? 0 : null
         }
     } else {
         const q67 = lookupString('6.7', qaData)
         if (q67 != 'YES') {
-            return 0
+            return null
         } else {
             const q671 = lookupString('6.7.1', qaData)
-            return q671 == null ? null : q671.includes('PERPETRATOR') ? 1 : 0
+            return q671 == null ? null : q671.includes('PERPETRATOR') ? 1 : null
         }
     }
 }
