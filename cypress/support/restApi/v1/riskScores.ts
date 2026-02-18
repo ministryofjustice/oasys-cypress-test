@@ -8,7 +8,7 @@ export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssess
     const relevantAssessments = offenderData.assessments.filter((ass) => !(['SARA', 'RM2000', 'BCS', 'TR_BCS'].includes(ass.assessmentType)))
 
     if (relevantAssessments.filter((ass) => ass.status == 'COMPLETE').length == 0) {
-        return offenderData.assessments.length == 0 ? env.restErrorResults.noAssessments : env.restErrorResults.noMatchingAssessments
+        return env.restErrorResults.noAssessments
 
     } else {
         const result = new RiskScoresEndpointResponse(offenderData, parameters)

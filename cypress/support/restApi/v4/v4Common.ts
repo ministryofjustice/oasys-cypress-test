@@ -11,6 +11,15 @@ export function assessmentWithRsrFilter(dbAssessment: dbClasses.DbAssessmentOrRs
     return ['LAYER1', 'LAYER2', 'LAYER3', 'STANDALONE'].includes(dbAssessment.assessmentType)
 }
 
+export function timelineAssessmentFilter(dbAssessment: dbClasses.DbAssessmentOrRsr): boolean {
+
+    return ['LAYER1', 'LAYER2', 'LAYER3','OASYS2'].includes(dbAssessment.assessmentType)
+}
+
+export function timelineAssessmentWithRsrFilter(dbAssessment: dbClasses.DbAssessmentOrRsr): boolean {
+
+    return ['LAYER1', 'LAYER2', 'LAYER3', 'STANDALONE','OASYS2'].includes(dbAssessment.assessmentType)
+}
 export class V4EndpointResponse extends common.EndpointResponse {
 
     probNumber: string
@@ -44,7 +53,7 @@ export class V4EndpointResponse extends common.EndpointResponse {
         delete this.inputs['expectedStatus']
 
         let includeRsr = ['v4AssList', 'v4RiskScoresRsr'].includes(parameters.endpoint)
-        this.processTimeline(offenderData.assessments.filter(includeRsr ? assessmentWithRsrFilter : assessmentFilter))
+        this.processTimeline(offenderData.assessments.filter(includeRsr ? timelineAssessmentWithRsrFilter : timelineAssessmentFilter))
     }
 
     processTimeline(dbAssessments: dbClasses.DbAssessmentOrRsr[], allAssessments: dbClasses.DbAssessmentOrRsr[] = []) {

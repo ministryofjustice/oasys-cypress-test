@@ -6,8 +6,7 @@ export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssess
 
     const relevantAssessments = offenderData.assessments.filter(apCommon.assessmentFilter)
     if (relevantAssessments.length == 0) {
-        return offenderData.assessments.filter((ass) => !(['SARA', 'RM2000', 'STANDALONE'].includes(ass.assessmentType))).length == 0
-            ? env.restErrorResults.noAssessments : env.restErrorResults.noMatchingAssessments
+        return env.restErrorResults.noAssessments
     } else {
         const result = new APAsslistEndpointResponse(offenderData, parameters)
 

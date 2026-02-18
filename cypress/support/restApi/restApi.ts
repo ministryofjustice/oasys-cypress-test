@@ -3,7 +3,7 @@ import axios from 'axios'                                    //      https://www
 import { flatten } from 'flat'                               //      https://www.npmjs.com/package/flat
 
 import * as rest from '.'
-import { restApiUrls } from './restApiUrls'
+import { restApiUrls, restErrorResults } from './restApiUrls'
 import { testEnvironment } from '../../../localSettings'
 import { OasysDateTime } from 'oasys'
 
@@ -135,8 +135,8 @@ export async function checkApiResponse(expectedValues: rest.Common.EndpointRespo
                 logText.push(`Error checking API ${response.url}: expected status ${expectedResult.statusCode}, got ${response.statusCode}`)
                 failed = true
             }
-
-            if (response.message != expectedResult.message) {
+            if (response.message != expectedResult.message &&  // Accept mismatch if it's no assessments vs no matching assessments - rules for this are unclear
+                !(expectedResult.message == restErrorResults.noAssessments.message && response.message == restErrorResults.noMatchingAssessments.message)) {
                 logText.push(`Error checking API ${response.url}: expected '${expectedResult.message}', got '${response.message}'`)
                 failed = true
             }

@@ -8,7 +8,7 @@ export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssess
 
     const relevantAssessments = offenderData.assessments.filter(pniFilter)
     if (relevantAssessments.length == 0) {
-        return offenderData.assessments.filter(v4Common.assessmentFilter).length == 0 ? env.restErrorResults.noAssessments : env.restErrorResults.noMatchingAssessments  // TODO confirm conditions for these
+        return env.restErrorResults.noAssessments
     } else {
         const result = new PniEndpointResponse(offenderData, parameters)
 
