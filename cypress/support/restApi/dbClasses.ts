@@ -504,7 +504,7 @@ export class DbObjective {
         this.objectivePk = objectiveData[0]
         this.objectiveCode = objectiveData[4]
         this.objectiveCodeDesc = objectiveData[1]
-        this.objectiveDesc = objectiveData[5]
+        this.objectiveDesc = objectiveData[5] == null ? null : JSON.stringify(objectiveData[5]).replaceAll('"', '')
         this.objectiveStatus = objectiveData[2]
         this.objectiveStatusDesc = objectiveData[6]
         this.objectiveSequence = Number.parseInt(objectiveData[3])
@@ -513,7 +513,7 @@ export class DbObjective {
     static query(assessmentPk: number): string {
 
         return `select ois.ssp_objectives_in_set_pk, o.objective_desc, m.objective_status_elm, ois.display_sort, so.objective_code, 
-                    REPLACE( so.objective_desc, chr(2),''), r.ref_element_desc  
+                    so.objective_desc, r.ref_element_desc  
                     from eor.ssp_objectives_in_set ois, eor.ssp_objective so, eor.objective o, eor.ssp_objective_measure m, eor.ref_element r 
                     where so.ssp_objectives_in_set_pk = ois.ssp_objectives_in_set_pk
                     and m.ssp_objectives_in_set_pk = ois.ssp_objectives_in_set_pk

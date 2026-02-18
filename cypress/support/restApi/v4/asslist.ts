@@ -6,7 +6,7 @@ export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssess
 
     const relevantAssessments = offenderData.assessments.filter(v4Common.assessmentWithRsrFilter)
     if (relevantAssessments.length == 0) {
-        return offenderData.assessments.length == 0 ? env.restErrorResults.noAssessments : env.restErrorResults.noMatchingAssessments
+        return env.restErrorResults.noAssessments
     } else {
         const result = new V4AsslistEndpointResponse(offenderData, parameters)
 

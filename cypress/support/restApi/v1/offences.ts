@@ -7,9 +7,7 @@ export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssess
     const relevantAssessments = offenderData.assessments.filter((ass) => !(['SARA', 'RM2000', 'BCS', 'TR_BCS', 'STANDALONE'].includes(ass.assessmentType)))
 
     if (relevantAssessments.filter((ass) => ass.status == 'COMPLETE').length == 0) {
-        return offenderData.assessments.filter((ass) => !(['SARA', 'RM2000', 'STANDALONE'].includes(ass.assessmentType))).length == 0
-            ? env.restErrorResults.noAssessments : env.restErrorResults.noMatchingAssessments
-
+        return env.restErrorResults.noAssessments
     } else {
         const result = new OffencesEndpointResponse(offenderData, parameters)
 
