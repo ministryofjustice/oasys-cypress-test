@@ -26,7 +26,7 @@ export async function tieringTest(testParams: TieringTestParameters): Promise<Ti
 
         const caseResult = testTieringCase(tieringCase, testParams.includeStatic, logText)
 
-        if (caseResult != tieringCase.oracleResults.finalTier) {
+        if (caseResult != tieringCase.oracleResults.finalTier || testParams.reportAll) {
             result.logText.push(`CRN: ${tieringCase.probationCrn} / ${tieringCase.prisonCrn} FAILED`)
             result.logText.push(`     ${JSON.stringify(tieringCase)}`)
             result.logText.push(`     ROSH: ${tieringCase.rosh}`)
@@ -38,7 +38,9 @@ export async function tieringTest(testParams: TieringTestParameters): Promise<Ti
                 result.logText.push(log)
             })
             result.logText.push('')
-            failed = true
+            if (caseResult != tieringCase.oracleResults.finalTier) {
+                failed = true
+            }
         }
 
         if (testParams.checkOgrs4) {

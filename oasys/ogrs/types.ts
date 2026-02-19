@@ -60,6 +60,7 @@ export type TieringTestParameters = {
     count: number,
     checkOgrs4: boolean,
     includeStatic: boolean,
+    reportAll: boolean,
 }
 
 export type TieringTestResult = {

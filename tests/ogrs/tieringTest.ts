@@ -7,10 +7,11 @@ describe('Tier calculations test', () => {
 
     const testParams: TieringTestParameters = {
         whereClause: null,
-        // whereClause : `cms_prob_number = 'V166775'`,
+        // whereClause : `cms_prob_number = 'V017263'`,
         count: count,
         checkOgrs4: false,
         includeStatic: false,
+        reportAll: true,
     }
 
     it(`Tiering calculation`, () => {
