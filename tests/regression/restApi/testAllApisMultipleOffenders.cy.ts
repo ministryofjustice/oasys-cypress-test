@@ -37,10 +37,8 @@ describe('RestAPI regression tests', () => {
         { date: 'today', count: offenderCount },
     ]
 
-    const offendersToSkip = `('D011517', 'X083869', 'X334486')` // Duff test data in T2.  ; 2: , 3: 
     const testDataIssues = [
         `'D011517'`,  // duplicate oasys_set created in 2012
-        // `'X083869'`,  // return/linefeed mismatching
         `'X334486'`,  // 888 offence code issue
     ]
 
