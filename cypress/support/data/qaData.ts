@@ -1,4 +1,4 @@
-import { stringToFloat, stringToInt } from 'lib/utils'
+import { jsonString, stringToFloat, stringToInt } from 'lib/utils'
 import { OasysDateTime } from 'oasys'
 
 export class QaData {
@@ -25,7 +25,7 @@ export class QaData {
                     this[question] = q[1]
                     break
                 case 'textarea':
-                    this[question] = q[2]
+                    this[question] = jsonString(q[2], {remove002: true, removeFf: true})
                     break
                 case 'integer':
                     this[question] = stringToInt(q[1])

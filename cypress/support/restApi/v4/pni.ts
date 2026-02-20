@@ -405,10 +405,12 @@ function pniCalc(dbAssessment: dbClasses.DbAssessment, community: boolean, saraR
     // RISKS
     const ogrs3RiskRecon = dbAssessment.riskDetails.ogrs3RiskRecon
     const ovpRisk = dbAssessment.riskDetails.ovpRisk
-    const ospCdc = dbAssessment.riskDetails.ospDcRisk
-    const ospIiic = dbAssessment.riskDetails.ospIicRisk
-    const rsrPercentageScore = dbAssessment.riskDetails.rsrPercentageScore
 
+    const after649 = OasysDateTime.checkIfAfterReleaseNode('6.49', dbAssessment.initiationDate)
+    const ospCdc = after649 ? dbAssessment.riskDetails.ospDcRisk : dbAssessment.riskDetails.ospCRisk
+    const ospIiic = after649 ? dbAssessment.riskDetails.ospIicRisk : dbAssessment.riskDetails.ospIRisk
+    const rsrPercentageScore = dbAssessment.riskDetails.rsrPercentageScore
+    
     const rsrRiskLevel: 'L' | 'M' | 'H' = rsrPercentageScore == null ? null
         : rsrPercentageScore >= 3 ? 'H'
             : rsrPercentageScore >= 1 ? 'M'
@@ -490,7 +492,7 @@ function pniCalc(dbAssessment: dbClasses.DbAssessment, community: boolean, saraR
     } else if (overallNeedLevelProject == 'M' && riskLevelProject == 'M') {
         interimResultProject = 'M'
     } else if (saraRiskPartner > 1 || saraRiskOther > 1) {
-        interimResult = 'M'
+        interimResultProject = 'M'
     }
 
     // Step 3 Output a PNI calculation

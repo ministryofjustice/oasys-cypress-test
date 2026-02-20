@@ -176,8 +176,13 @@ export async function checkApiResponse(expectedValues: rest.Common.EndpointRespo
         // Check that all expected elements have been received and are correct
         Object.keys(expectedElements).forEach((key) => {
             if (Object.keys(actualElements).includes(key)) {
-                if (expectedElements[key] != actualElements[key]) {
-                    logText.push(`Incorrect value for ${key}: expected '${expectedElements[key]}', received '${actualElements[key]}'`)
+                const stringType = typeof expectedElements[key] == 'string'
+                const expectedValue = stringType ? expectedElements[key]?.substring(0,3500) : expectedElements[key]
+                const receivedValue = stringType ? actualElements[key]?.replaceAll('\x02','')?.substring(0,3500) : actualElements[key]
+
+                if (expectedValue != receivedValue) {
+                    const newline = expectedValue?.length > 100 ? '\n                ' : ''
+                    logText.push(`Incorrect value for ${key}: ${newline}expected '${expectedValue}', ${newline}received '${receivedValue}'`)
                     failed = true
                 }
             }
@@ -216,8 +221,12 @@ function sortArrays(obj: any) {
 
     const isArray = obj instanceof Array
     if (isArray) {
-        obj.forEach((item) => { sortArrays(item) })
-        obj.sort(arraySort)
+        if (obj.length > 0) {
+            obj.forEach((item) => { sortArrays(item) })
+            if (obj[0]['objectiveSequence'] == undefined) {  // Don't attempt to sort objectives, the sequence no is used in the query
+                obj.sort(arraySort)
+            }
+        }
     } else if (typeof obj == 'object') {
         Object.keys(obj).forEach((key) => {
             sortArrays(obj[key])
@@ -227,18 +236,8 @@ function sortArrays(obj: any) {
 
 function arraySort(a: object, b: object): number {
 
-    const aString = concatObject(a)
-    const bString = concatObject(b)
+    const aString = JSON.stringify(a)
+    const bString = JSON.stringify(b)
 
     return aString > bString ? 1 : aString < bString ? -1 : 0
-}
-
-// Concatenate all properties in an object to create a sort order
-function concatObject(obj: object): string {
-
-    let result = ''
-    Object.keys(obj).sort().forEach((key) => {
-        result += obj[key]
-    })
-    return result
 }

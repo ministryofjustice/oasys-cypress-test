@@ -7,7 +7,7 @@ export function getInteger(param: string): number {
     return param == '' || param == null || param.toLowerCase() == 'null' ? null : Number.parseInt(param)
 }
 
-export function lookupString(value: string, lookup: { [keys: string]: string }, translation: { [keys: string]: string }= null): string {
+export function lookupString(value: string, lookup: { [keys: string]: string }, translation: { [keys: string]: string } = null): string {
 
     const result = lookup[value]
     if (result == null || result == undefined) {
@@ -82,6 +82,18 @@ export function problemsAnswerToNumeric(param: ProblemsAnswer | ProblemsMissingA
             return 2
     }
     return null  // includes 'Missing'
+}
+
+export function jsonString(param: string, options?: { removeCrLf?: boolean, remove002?: boolean, removeFf?: boolean }): string {
+
+    if (param == null) {
+        return null
+    }
+    let result = options?.removeCrLf ? JSON.stringify(param.replaceAll('"', '\"')).slice(1, -1) : param.replaceAll('"', '\"')
+
+    result = options?.remove002 ? result.replaceAll('\u0002', '') : result
+    result = options?.removeFf ? result.replaceAll('\u000C', '') : result
+    return result.substring(0, 4000)
 }
 
 export const genderNumberLookup = {

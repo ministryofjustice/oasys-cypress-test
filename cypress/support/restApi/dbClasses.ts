@@ -2,7 +2,7 @@
  * Classes used to extract data from the OASys database for use in API regression testing.
  * These objects are created by the RestDb functions in cypress/support/restApidb.ts using the queries defined here.
  */
-import { stringToInt } from 'lib/utils'
+import { jsonString, stringToInt } from 'lib/utils'
 import { OasysDateTime } from 'oasys'
 import { QaData } from '../data/qaData'
 import { assignValues, buildQuery, getColumns } from '../data/queryBuilder'
@@ -162,7 +162,7 @@ export class DbAssessment extends DbAssessmentOrRsr {
 
     static qaQuery(assessmentPk: number): string {
 
-        return `select oq.ref_question_code, oq.free_format_answer, oq.additional_note, ra.ref_section_answer, osec.ref_section_code
+        return `select oq.ref_question_code, replace(oq.free_format_answer, chr(2),''), replace(oq.additional_note, chr(2),''), ra.ref_section_answer, osec.ref_section_code
                         from eor.oasys_set os
                         left outer join eor.oasys_section osec
                         on osec.oasys_set_pk = os.oasys_set_pk
@@ -504,7 +504,7 @@ export class DbObjective {
         this.objectivePk = objectiveData[0]
         this.objectiveCode = objectiveData[4]
         this.objectiveCodeDesc = objectiveData[1]
-        this.objectiveDesc = objectiveData[5] == null ? null : JSON.stringify(objectiveData[5]).replaceAll('"', '')
+        this.objectiveDesc = jsonString(objectiveData[5], {removeCrLf: true})
         this.objectiveStatus = objectiveData[2]
         this.objectiveStatusDesc = objectiveData[6]
         this.objectiveSequence = Number.parseInt(objectiveData[3])
@@ -520,7 +520,8 @@ export class DbObjective {
                     and o.objective_code = so.objective_code
                     and ois.oasys_set_pk = ${assessmentPk}
                     and r.ref_category_code = m.objective_status_cat and r.ref_element_code = m.objective_status_elm 
-                    and ois.objective_type_elm = 'CURRENT'`
+                    and ois.objective_type_elm = 'CURRENT'
+                    order by ois.display_sort`
     }
 
 }
@@ -560,10 +561,14 @@ export class DbAction {
 
     static query(objectivePk: string): string {
 
-        return buildQuery(actionColumns, ['ssp_intervention_in_set', 'ssp_obj_intervene_pivot', 'ref_element'],
+        return buildQuery(actionColumns, ['ssp_intervention_in_set', 'ssp_obj_intervene_pivot', 'ref_element', 'ssp_intervention_measure'],
             `ssp_obj_intervene_pivot.ssp_intervention_in_set_pk = ssp_intervention_in_set.ssp_intervention_in_set_pk
                         and ssp_obj_intervene_pivot.ssp_objectives_in_set_pk = ${objectivePk}
-                        and ref_element.ref_category_code = ssp_intervention_in_set.intervention_cat and ref_element.ref_element_code = ssp_intervention_in_set.intervention_elm`
+                        and ref_element.ref_category_code = ssp_intervention_in_set.intervention_cat 
+                        and ref_element.ref_element_code = ssp_intervention_in_set.intervention_elm
+                        and ssp_obj_intervene_pivot.deleted_ind <> 'Y'
+                        and ssp_intervention_measure.ssp_intervention_in_set_pk = ssp_obj_intervene_pivot.ssp_intervention_in_set_pk
+                        and ssp_intervention_measure.intervene_meas_code_elm in ('R', 'RII')`
             , null)
     }
 

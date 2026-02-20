@@ -1,6 +1,7 @@
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
+import { jsonString } from 'lib/utils'
 
 export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssessments, parameters: EndpointParams) {
 
@@ -107,7 +108,7 @@ export class RoshFullAssessment extends v4Common.V4AssessmentCommon {
 
     addDetails(dbAssessment: dbClasses.DbAssessment) {
 
-        this.currentOffenceDetails = dbAssessment.qaData.getString('FA1')
+        this.currentOffenceDetails = jsonString(dbAssessment.qaData.getString('FA1'), {remove002: true})
         this.situationWithRiskToIdentifiableChildren = dbAssessment.qaData.getString('FA16')
         this.currentConcernsRiskOfSuicide = dbAssessment.qaData.getString('FA31')
         this.currentConcernsRiskOfSelfHarm = dbAssessment.qaData.getString('FA32')

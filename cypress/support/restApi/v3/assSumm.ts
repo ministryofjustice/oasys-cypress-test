@@ -318,7 +318,13 @@ class SentencePlanObjective {
         this.objectiveSequence = dbObjective.objectiveSequence
 
         dbObjective.criminogenicNeeds.forEach((need) => { this.criminogenicNeeds.push(new CriminogenicNeed(need)) })
+        if (this.criminogenicNeeds.length == 0) {
+            this.criminogenicNeeds = null
+        }
         dbObjective.actions.forEach((action) => { this.actions.push(new SentencePlanAction(action)) })
+        if (this.actions.length == 0) {
+            this.actions = null
+        }
     }
 }
 

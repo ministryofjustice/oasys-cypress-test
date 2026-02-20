@@ -2,6 +2,7 @@ import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
 import { OasysDateTime } from 'oasys'
+import { jsonString } from 'lib/utils'
 
 export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssessments, parameters: EndpointParams) {
 
@@ -82,7 +83,7 @@ export class Section2Assessment extends v4Common.V4AssessmentCommon {
     addDetails(dbAssessment: dbClasses.DbAssessment) {
 
         this.victimPerpetratorRel = dbAssessment.qaData.getString('2.4.2')
-        this.offenceAnalysis = dbAssessment.qaData.getString('2.1')
+        this.offenceAnalysis = jsonString(dbAssessment.qaData.getString('2.1'), {remove002: true})
         this.victimInfo = dbAssessment.qaData.getString('2.4.1')
         this.acceptsResponsibility = dbAssessment.qaData.getString('2.11.t')
         this.whatOccurred = dbAssessment.qaData.getStringArray('2.3')
@@ -92,7 +93,7 @@ export class Section2Assessment extends v4Common.V4AssessmentCommon {
         this.numberOfOthersInvolved = dbAssessment.qaData.getString('2.7.1')
         this.peerGroupInfluences = dbAssessment.qaData.getString('2.7.2')
         this.othersInvolved = dbAssessment.qaData.getString('2.7.3')
-        this.offenceMotivation = dbAssessment.qaData.getString('2.8')
+        this.offenceMotivation = jsonString(dbAssessment.qaData.getString('2.8'), {remove002: true})
         this.disinhibitors = dbAssessment.qaData.getStringArray('2.10')
         this.acceptsResponsibilityYesNo = dbAssessment.qaData.getString('2.11')
         this.patternOffending = dbAssessment.qaData.getString('2.12')

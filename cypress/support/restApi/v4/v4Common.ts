@@ -13,12 +13,12 @@ export function assessmentWithRsrFilter(dbAssessment: dbClasses.DbAssessmentOrRs
 
 export function timelineAssessmentFilter(dbAssessment: dbClasses.DbAssessmentOrRsr): boolean {
 
-    return ['LAYER1', 'LAYER2', 'LAYER3','OASYS2'].includes(dbAssessment.assessmentType)
+    return ['LAYER1', 'LAYER2', 'LAYER3', 'OASYS2'].includes(dbAssessment.assessmentType)
 }
 
 export function timelineAssessmentWithRsrFilter(dbAssessment: dbClasses.DbAssessmentOrRsr): boolean {
 
-    return ['LAYER1', 'LAYER2', 'LAYER3', 'STANDALONE','OASYS2'].includes(dbAssessment.assessmentType)
+    return ['LAYER1', 'LAYER2', 'LAYER3', 'STANDALONE', 'OASYS2'].includes(dbAssessment.assessmentType)
 }
 export class V4EndpointResponse extends common.EndpointResponse {
 

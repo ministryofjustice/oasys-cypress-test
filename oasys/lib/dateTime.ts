@@ -194,6 +194,7 @@ const versionLookup = {
     '6.20': '6.20.0.0',
     '6.30': '6.30.0.0',
     '6.35': '6.35.0.0',
+    '6.49': '6.49.0.0',
 }
 
 export function setCurrentVersion(version: string) {
