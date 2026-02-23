@@ -25,7 +25,7 @@ export class QaData {
                     this[question] = q[1]
                     break
                 case 'textarea':
-                    this[question] = jsonString(q[2], {remove002: true, removeFf: true})
+                    this[question] = jsonString(q[2], { remove002: true, removeFf: true })
                     break
                 case 'integer':
                     this[question] = stringToInt(q[1])
@@ -90,6 +90,13 @@ export class QaData {
             }
         })
         return result.length == 0 ? null : result
+    }
+
+    // Converts Low/Medium/High to 1/2/3
+    getRiskAsNumber(key: string): number {
+
+        const risk = this.getString(key)
+        return risk == 'Low' ? 1 : risk == 'Medium' ? 2 : risk == 'High' ? 3 : null
     }
 
 }

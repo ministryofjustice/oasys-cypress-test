@@ -91,6 +91,7 @@ const assessmentColumns: Columns = {
     pOAssessment: { name: 'purpose_assessment_elm', type: 'string' },
     pOAssessmentDesc: { name: 'purpose_assmt_other_ftxt', type: 'string' },
     parentAssessmentPk: { name: 'parent_oasys_set_pk', type: 'integer' },
+    noSaraDate: {name: 'no_sara_date', type: 'string'},
     signedDate: { name: 'assessor_signed_date', type: 'date' },
     sanIndicator: { name: 'san_assessment_linked_ind', type: 'string' },
     roshLevel: { name: 'rosh_level_elm', type: 'string' },
@@ -110,6 +111,7 @@ export class DbAssessment extends DbAssessmentOrRsr {
     courtType: string
     courtName: string
     parentAssessmentPk: number
+    noSaraDate: string
     sanIndicator: string
     dateOfBirth: string
     learningToolScore: number

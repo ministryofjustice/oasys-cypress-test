@@ -3,6 +3,7 @@ import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
 import { OasysDateTime } from 'oasys'
+import { QaData } from '../../data/qaData'
 
 export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssessments, parameters: EndpointParams) {
 
@@ -16,12 +17,15 @@ export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssess
         result.addAssessment(assessment)
         delete result.timeline
 
-        const saraAssessments = offenderData.assessments.filter(
-            (ass) => ass.assessmentType == 'SARA' && (ass as dbClasses.DbAssessment).parentAssessmentPk == assessment.assessmentPk
-        )
-        const saraAssessment = saraAssessments.length > 0 ? saraAssessments[saraAssessments.length - 1] as dbClasses.DbAssessment : null
+        const saraDateLimit = OasysDateTime.stringToDate(assessment.completedDate).subtract({ weeks: 6 }).toString()
 
-        result.pniCalc.push(new PniCalc(offenderData, assessment as dbClasses.DbAssessment, saraAssessment))
+        const saraAssessments = offenderData.assessments.filter(  // Pass all SARAs for this offender that are complete or locked in 6 weeks up to the main assessment date
+            (ass) => ass.assessmentType == 'SARA'
+                && ['COMPLETE', 'LOCKED_INCOMPLETE'].includes(ass.status)
+                && ass.completedDate.substring(0, 10) >= saraDateLimit && ass.completedDate <= assessment.completedDate
+        )
+
+        result.pniCalc.push(new PniCalc(offenderData, assessment as dbClasses.DbAssessment, saraAssessments as dbClasses.DbAssessment[]))
         return result
     }
 }
@@ -29,6 +33,12 @@ export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssess
 export function pniFilter(dbAssessment: dbClasses.DbAssessmentOrRsr): boolean {
 
     return dbAssessment.assessmentType == 'LAYER3' && dbAssessment.status == 'COMPLETE' && (dbAssessment as dbClasses.DbAssessment).pOAssessment != '620'
+}
+
+function saraFilter(dbAssessment: dbClasses.DbAssessmentOrRsr): boolean {
+    // Get all SARAs for the offender
+    if (dbAssessment.assessmentType != 'SARA') return false
+    return ['COMPLETE', 'LOCKED_INCOMPLETE'].includes(dbAssessment.status)
 }
 
 export class PniEndpointResponse extends v4Common.V4EndpointResponse {
@@ -118,24 +128,65 @@ class PniCalc {
     saraRiskLevelToPartner: number
     saraRiskLevelToOther: number
 
-    constructor(offenderData: dbClasses.DbOffenderWithAssessments, dbAssessment: dbClasses.DbAssessment, saraAssessment: dbClasses.DbAssessment) {
+    constructor(offenderData: dbClasses.DbOffenderWithAssessments, dbAssessment: dbClasses.DbAssessment, saraAssessments: dbClasses.DbAssessment[]) {
 
+        /*
+            2.3 means physical violence against partner = YES
+            6.7 means DA perp against partner = YES (allow for pre and post 6.30 versions)
+
+            1. Age at initiation date <18 - both 1
+            2. Completed SARA associated with the assessment - both as answered in SARA
+            3. SARA prompted but declined (OASYS_SET.NO_SARA_DATE is not null).  If not 6.7 and not 2.3, both 1
+            4. Associated SARA is locked incomplete and (6.7 or 2.3), then check SARA answers.  If both answered, or one is 2 or 3, then pass both as answered.
+                    Otherwise: find any earlier non-deleted SARA in 6 weeks prior to completion date.
+                                If any found, apply rules as above, stop if answers found.
+                                Otherwise - both 1
+            5. Otherwise, both 1.
+        */
         this.saraRiskLevelToPartner = 1
         this.saraRiskLevelToOther = 1
 
         const age = OasysDateTime.dateDiffString(dbAssessment.dateOfBirth, dbAssessment.initiationDate, 'year')
-        if (age >= 18) {
-            const saraRiskLevelToPartner = saraAssessment?.qaData.getString('SR76.1.1')
-            const saraRiskLevelToOther = saraAssessment?.qaData.getString('SR77.1.1')
-            if (saraRiskLevelToPartner != null && saraRiskLevelToOther != null) {
-                this.saraRiskLevelToPartner = saraRiskLevelToPartner == 'Low' ? 1 : saraRiskLevelToPartner == 'Medium' ? 2 : 3
-                this.saraRiskLevelToOther = saraRiskLevelToOther == 'Low' ? 1 : saraRiskLevelToOther == 'Medium' ? 2 : 3
-            } else {
 
+        if (age >= 18) { // Rule 1
+            const associatedSaras = saraAssessments.filter((sara) => { sara.parentAssessmentPk == dbAssessment.assessmentPk })
+            const associatedSara = associatedSaras.length > 0 ? associatedSaras[0] : null
+
+            const associatedSaraRiskToPartner = associatedSara?.qaData.getRiskAsNumber('SR76.1.1')
+            const associatedSaraRiskToOther = associatedSara?.qaData.getRiskAsNumber('SR77.1.1')
+
+            if (associatedSara?.status == 'COMPLETE') { // Rule 2
+                this.saraRiskLevelToPartner = associatedSaraRiskToPartner
+                this.saraRiskLevelToOther = associatedSaraRiskToPartner
+
+            } else {
+                const q2_3 = dbAssessment.qaData.getStringArray('2.3')?.includes('Physical violence towards partner')
+                const after6_30 = OasysDateTime.checkIfAfterReleaseNode('6.30', dbAssessment.initiationDate)
+                const q6_7 = da(dbAssessment.qaData, after6_30)
+
+                if (dbAssessment.noSaraDate == null || q2_3 || q6_7) {  // Rule 3 - allow to drop through and retain the 1s
+
+                    if (associatedSara?.status == 'LOCKED_INCOMPLETE') { // Rule 4 - 
+                        if ((associatedSaraRiskToPartner != null && associatedSaraRiskToOther != null) || associatedSaraRiskToPartner > 1 || associatedSaraRiskToOther > 1) {
+                            this.saraRiskLevelToPartner = associatedSaraRiskToPartner
+                            this.saraRiskLevelToOther = associatedSaraRiskToPartner
+                        } else {
+                            for (let i = saraAssessments.length - 1; i > 0; i++) {  // Step backwards through the other SARAs, use the values and drop out if applicable
+                                if (saraAssessments[i].parentAssessmentPk != dbAssessment.assessmentPk) {
+                                    const riskToPartner = saraAssessments[i].qaData.getRiskAsNumber('SR76.1.1')
+                                    const riskToOther = saraAssessments[i].qaData.getRiskAsNumber('SR77.1.1')
+                                    if ((riskToPartner != null && riskToOther != null) || riskToPartner > 1 || riskToOther > 1) {
+                                        this.saraRiskLevelToPartner = riskToPartner
+                                        this.saraRiskLevelToOther = riskToOther
+                                        break
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
-
-
 
         const pniCalcResult = pniCalc(dbAssessment, true, this.saraRiskLevelToPartner, this.saraRiskLevelToOther)
 
@@ -154,6 +205,25 @@ class PniCalc {
         this.totalDomainScore = pniCalcResult.totalDomainScore
         this.overallNeedLevel = pniCalcResult.overallNeedLevel
 
+    }
+}
+
+function da(qaData: QaData, after6_30: boolean): boolean {
+
+    if (after6_30) {
+        const q67 = qaData.getString('6.7da')
+        if (q67 != 'Yes') {
+            return false
+        } else {
+            return qaData.getString('6.7.2.1da') == 'Yes'
+        }
+    } else {
+        const q67 = qaData.getString('6.7')
+        if (q67 != 'Yes') {
+            return false
+        } else {
+            return qaData.getString('6.7.1')?.includes('Perpetrator') ?? false
+        }
     }
 }
 
@@ -410,7 +480,7 @@ function pniCalc(dbAssessment: dbClasses.DbAssessment, community: boolean, saraR
     const ospCdc = after649 ? dbAssessment.riskDetails.ospDcRisk : dbAssessment.riskDetails.ospCRisk
     const ospIiic = after649 ? dbAssessment.riskDetails.ospIicRisk : dbAssessment.riskDetails.ospIRisk
     const rsrPercentageScore = dbAssessment.riskDetails.rsrPercentageScore
-    
+
     const rsrRiskLevel: 'L' | 'M' | 'H' = rsrPercentageScore == null ? null
         : rsrPercentageScore >= 3 ? 'H'
             : rsrPercentageScore >= 1 ? 'M'
