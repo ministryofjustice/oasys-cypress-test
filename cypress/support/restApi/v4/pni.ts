@@ -149,7 +149,7 @@ class PniCalc {
         const age = OasysDateTime.dateDiffString(dbAssessment.dateOfBirth, dbAssessment.initiationDate, 'year')
 
         if (age >= 18) { // Rule 1
-            const associatedSaras = saraAssessments.filter((sara) => { sara.parentAssessmentPk == dbAssessment.assessmentPk })
+            const associatedSaras = saraAssessments.filter((sara) => sara.parentAssessmentPk == dbAssessment.assessmentPk)
             const associatedSara = associatedSaras.length > 0 ? associatedSaras[0] : null
 
             const associatedSaraRiskToPartner = associatedSara?.qaData.getRiskAsNumber('SR76.1.1')
@@ -157,7 +157,7 @@ class PniCalc {
 
             if (associatedSara?.status == 'COMPLETE') { // Rule 2
                 this.saraRiskLevelToPartner = associatedSaraRiskToPartner
-                this.saraRiskLevelToOther = associatedSaraRiskToPartner
+                this.saraRiskLevelToOther = associatedSaraRiskToOther
 
             } else {
                 const q2_3 = dbAssessment.qaData.getStringArray('2.3')?.includes('Physical violence towards partner')
@@ -169,7 +169,7 @@ class PniCalc {
                     if (associatedSara?.status == 'LOCKED_INCOMPLETE') { // Rule 4 - 
                         if ((associatedSaraRiskToPartner != null && associatedSaraRiskToOther != null) || associatedSaraRiskToPartner > 1 || associatedSaraRiskToOther > 1) {
                             this.saraRiskLevelToPartner = associatedSaraRiskToPartner
-                            this.saraRiskLevelToOther = associatedSaraRiskToPartner
+                            this.saraRiskLevelToOther = associatedSaraRiskToOther
                         } else {
                             for (let i = saraAssessments.length - 1; i > 0; i++) {  // Step backwards through the other SARAs, use the values and drop out if applicable
                                 if (saraAssessments[i].parentAssessmentPk != dbAssessment.assessmentPk) {
