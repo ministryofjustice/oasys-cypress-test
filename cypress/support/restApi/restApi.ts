@@ -116,7 +116,7 @@ function getStatusCode(status: number): RestStatus {
  * 
  * Returns a CheckAPIResult object with two properties: failed (boolean) and output (string[] with the log details). 
  */
-export async function checkApiResponse(expectedValues: rest.Common.EndpointResponse | RestErrorResult, response: RestResponse): Promise<CheckAPIResult> {
+export async function checkApiResponse(expectedValues: rest.Common.EndpointResponse | RestErrorResult, response: RestResponse, reportPasses: boolean): Promise<CheckAPIResult> {
 
     let failed = false
     let logText: string[] = []
@@ -177,8 +177,8 @@ export async function checkApiResponse(expectedValues: rest.Common.EndpointRespo
         Object.keys(expectedElements).forEach((key) => {
             if (Object.keys(actualElements).includes(key)) {
                 const stringType = typeof expectedElements[key] == 'string'
-                const expectedValue = stringType ? expectedElements[key]?.substring(0,3500) : expectedElements[key]
-                const receivedValue = stringType ? actualElements[key]?.replaceAll('\x02','')?.substring(0,3500) : actualElements[key]
+                const expectedValue = stringType ? expectedElements[key]?.substring(0, 3500) : expectedElements[key]
+                const receivedValue = stringType ? actualElements[key]?.replaceAll('\x02', '')?.substring(0, 3500) : actualElements[key]
 
                 if (expectedValue != receivedValue) {
                     const newline = expectedValue?.length > 100 ? '\n                ' : ''
@@ -208,7 +208,9 @@ export async function checkApiResponse(expectedValues: rest.Common.EndpointRespo
         logText.push('**********************************')
     } else {
         logText.push('Passed')
-        logText.push(`    response: ${JSON.stringify(response)}`)
+        if (reportPasses) {
+            logText.push(`    response: ${JSON.stringify(response)}`)
+        }
     }
     return { failed: failed, output: logText }
 

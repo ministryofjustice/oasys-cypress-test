@@ -4,7 +4,7 @@ import * as env from '../restApiUrls'
 
 export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssessments, parameters: EndpointParams) {
 
-    const relevantAssessments = offenderData.assessments.filter(v4Common.assessmentWithRsrFilter)
+    const relevantAssessments = offenderData.assessments.filter(v4Common.timelineAssessmentWithRsrFilter)
     if (relevantAssessments.length == 0) {
         return env.restErrorResults.noAssessments
     } else {
