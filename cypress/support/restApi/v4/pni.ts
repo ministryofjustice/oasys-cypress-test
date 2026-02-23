@@ -35,12 +35,6 @@ export function pniFilter(dbAssessment: dbClasses.DbAssessmentOrRsr): boolean {
     return dbAssessment.assessmentType == 'LAYER3' && dbAssessment.status == 'COMPLETE' && (dbAssessment as dbClasses.DbAssessment).pOAssessment != '620'
 }
 
-function saraFilter(dbAssessment: dbClasses.DbAssessmentOrRsr): boolean {
-    // Get all SARAs for the offender
-    if (dbAssessment.assessmentType != 'SARA') return false
-    return ['COMPLETE', 'LOCKED_INCOMPLETE'].includes(dbAssessment.status)
-}
-
 export class PniEndpointResponse extends v4Common.V4EndpointResponse {
 
     assessments: PniAssessment[] = []
@@ -149,8 +143,11 @@ class PniCalc {
         const age = OasysDateTime.dateDiffString(dbAssessment.dateOfBirth, dbAssessment.initiationDate, 'year')
 
         if (age >= 18) { // Rule 1
-            const associatedSaras = saraAssessments.filter((sara) => sara.parentAssessmentPk == dbAssessment.assessmentPk)
-            const associatedSara = associatedSaras.length > 0 ? associatedSaras[0] : null
+            const associatedSaras = offenderData.assessments.filter((ass) =>
+                ass.assessmentType == 'SARA' &&
+                (ass as dbClasses.DbAssessment).parentAssessmentPk == dbAssessment.assessmentPk
+            )
+            const associatedSara = associatedSaras.length > 0 ? associatedSaras[0] as dbClasses.DbAssessment : null
 
             const associatedSaraRiskToPartner = associatedSara?.qaData.getRiskAsNumber('SR76.1.1')
             const associatedSaraRiskToOther = associatedSara?.qaData.getRiskAsNumber('SR77.1.1')
