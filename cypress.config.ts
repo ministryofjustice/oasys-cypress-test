@@ -142,7 +142,7 @@ module.exports = defineConfig({
         /**
          * Call all RestApi endpoints for a single offender.
          */
-        testApisForOffender(parameters: { crn: string, crnSource: Provider, skipPkOnlyCalls: boolean, stats: EndpointStat[] }): Promise<OffenderApisResult> {
+        testApisForOffender(parameters: { crn: string, crnSource: Provider, skipPkOnlyCalls: boolean, reportPasses: boolean, stats: EndpointStat[] }): Promise<OffenderApisResult> {
 
           return new Promise((resolve) => {
             restApi.testOneOffender(parameters).then((response) => {
