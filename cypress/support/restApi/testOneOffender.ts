@@ -13,7 +13,7 @@ import * as restApiDb from './restApiDb'
  *  - skipPkOnlyCalls - if true, any APIs that are called with just an assessment PK will be skipped on the basis that the calling script is repeating an offender 
  *                      (selected this time using the prison CRN instead of probation) so these calls will be identical.
  */
-export async function testOneOffender(parameters: { crn: string, crnSource: Provider, skipPkOnlyCalls: boolean }): Promise<OffenderApisResult> {
+export async function testOneOffender(parameters: { crn: string, crnSource: Provider, skipPkOnlyCalls: boolean, reportPasses: boolean }): Promise<OffenderApisResult> {
 
     const v1Endpoints: Endpoint[] = [
         'offences',
@@ -164,7 +164,7 @@ export async function testOneOffender(parameters: { crn: string, crnSource: Prov
             }
 
             // Compare expected vs actuals and write results to the log
-            const result = await restApi.checkApiResponse(expectedValues[i], actualValues[i])
+            const result = await restApi.checkApiResponse(expectedValues[i], actualValues[i], parameters.reportPasses)
 
             if (result.failed) {
                 // Ignore defect that is low priority and not yet fixed - old assessments not found for AP endpoints when CRN contains lower-case letters

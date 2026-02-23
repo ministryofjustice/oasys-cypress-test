@@ -28,7 +28,7 @@ describe('RestAPI regression tests', () => {
             cy.task('consoleLog', `Offender ${count++}: ${offender[0]} / ${offender[1]}`)
 
             if (offender[0] != null) {  // call with probation CRN
-                oasys.Api.testOneOffender(offender[0], 'prob', 'probationFailedAlias', false)
+                oasys.Api.testOneOffender(offender[0], 'prob', 'probationFailedAlias', false, true)
                 cy.get<boolean>('@probationFailedAlias').then((offenderFailed) => {
                     if (offenderFailed) {
                         cy.task('consoleLog', 'Failed')
@@ -37,7 +37,7 @@ describe('RestAPI regression tests', () => {
                 })
             }
             if (offender[1] != null) {  // call with NomisId
-                oasys.Api.testOneOffender(offender[1], 'pris', 'prisonFailedAlias', offender[0] != null)  // skipPrisSubsequents if already done for prob crn
+                oasys.Api.testOneOffender(offender[1], 'pris', 'prisonFailedAlias', offender[0] != null, true)  // skipPrisSubsequents if already done for prob crn
                 cy.get<boolean>('@prisonFailedAlias').then((offenderFailed) => {
                     if (offenderFailed) {
                         cy.task('consoleLog', 'Failed')

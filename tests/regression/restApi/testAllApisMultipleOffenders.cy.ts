@@ -37,6 +37,9 @@ describe('RestAPI regression tests', () => {
         { date: 'today', count: offenderCount },
     ]
 
+    // Hide details from the report for passes
+    const reportPasses = false
+
     const testDataIssues = [
         `'D011517'`,  // duplicate oasys_set created in 2012
         `'X334486'`,  // 888 offence code issue
@@ -121,7 +124,7 @@ describe('RestAPI regression tests', () => {
             offendersTested++
 
             if (offender[0] != null) {  // call with probation CRN
-                oasys.Api.testOneOffender(offender[0], 'prob', 'probationFailedAlias', false, stats)
+                oasys.Api.testOneOffender(offender[0], 'prob', 'probationFailedAlias', false, reportPasses, stats)
                 cy.get<boolean>('@probationFailedAlias').then((offenderFailed) => {
                     if (offenderFailed) {
                         cy.task('consoleLog', 'Failed')
@@ -130,7 +133,7 @@ describe('RestAPI regression tests', () => {
                 })
             }
             if (offender[1] != null) {  // call with NomisId
-                oasys.Api.testOneOffender(offender[1], 'pris', 'prisonFailedAlias', offender[0] != null, stats)  // skipPrisSubsequents if already done for prob crn
+                oasys.Api.testOneOffender(offender[1], 'pris', 'prisonFailedAlias', offender[0] != null, reportPasses, stats)  // skipPrisSubsequents if already done for prob crn
                 cy.get<boolean>('@prisonFailedAlias').then((offenderFailed) => {
                     if (offenderFailed) {
                         cy.task('consoleLog', 'Failed')
@@ -191,8 +194,8 @@ describe('RestAPI regression tests', () => {
             } else {
                 totalApiCount += result.count
                 totalApiTimeMs += result.totalTime
+                failed ||= result.failed
             }
-            failed ||= result.failed
         })
         return failed
     }
