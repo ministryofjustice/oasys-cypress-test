@@ -137,12 +137,14 @@ class PniCalc {
                                 Otherwise - both 1
             5. Otherwise, both 1.
         */
-        this.saraRiskLevelToPartner = 1
-        this.saraRiskLevelToOther = 1
 
         const age = OasysDateTime.dateDiffString(dbAssessment.dateOfBirth, dbAssessment.initiationDate, 'year')
 
-        if (age >= 18) { // Rule 1
+        // Rule 1
+        if (age < 18) {
+            this.saraRiskLevelToPartner = 1
+            this.saraRiskLevelToOther = 1
+        } else {
             const associatedSaras = offenderData.assessments.filter((ass) =>
                 ass.assessmentType == 'SARA' &&
                 (ass as dbClasses.DbAssessment).parentAssessmentPk == dbAssessment.assessmentPk
@@ -152,7 +154,8 @@ class PniCalc {
             const associatedSaraRiskToPartner = associatedSara?.qaData.getRiskAsNumber('SR76.1.1')
             const associatedSaraRiskToOther = associatedSara?.qaData.getRiskAsNumber('SR77.1.1')
 
-            if (associatedSara?.status == 'COMPLETE') { // Rule 2
+            // Rule 2
+            if (associatedSara?.status == 'COMPLETE') {
                 this.saraRiskLevelToPartner = associatedSaraRiskToPartner
                 this.saraRiskLevelToOther = associatedSaraRiskToOther
 
@@ -161,28 +164,39 @@ class PniCalc {
                 const after6_30 = OasysDateTime.checkIfAfterReleaseNode('6.30', dbAssessment.initiationDate)
                 const q6_7 = da(dbAssessment.qaData, after6_30)
 
-                if (dbAssessment.noSaraDate == null || q2_3 || q6_7) {  // Rule 3 - allow to drop through and retain the 1s
+                // Rule 3
+                if (associatedSara == null && dbAssessment.noSaraDate != null && !q2_3 && !q6_7) {
 
-                    if (associatedSara?.status == 'LOCKED_INCOMPLETE') { // Rule 4 - 
-                        if ((associatedSaraRiskToPartner != null && associatedSaraRiskToOther != null) || associatedSaraRiskToPartner > 1 || associatedSaraRiskToOther > 1) {
-                            this.saraRiskLevelToPartner = associatedSaraRiskToPartner
-                            this.saraRiskLevelToOther = associatedSaraRiskToOther
-                        } else {
-                            for (let i = saraAssessments.length - 1; i > 0; i++) {  // Step backwards through the other SARAs, use the values and drop out if applicable
-                                if (saraAssessments[i].parentAssessmentPk != dbAssessment.assessmentPk) {
-                                    const riskToPartner = saraAssessments[i].qaData.getRiskAsNumber('SR76.1.1')
-                                    const riskToOther = saraAssessments[i].qaData.getRiskAsNumber('SR77.1.1')
-                                    if ((riskToPartner != null && riskToOther != null) || riskToPartner > 1 || riskToOther > 1) {
-                                        this.saraRiskLevelToPartner = riskToPartner
-                                        this.saraRiskLevelToOther = riskToOther
-                                        break
-                                    }
+                    this.saraRiskLevelToPartner = 1
+                    this.saraRiskLevelToOther = 1
+
+                    // Rule 4
+                } else if (associatedSara?.status == 'LOCKED_INCOMPLETE' || dbAssessment.noSaraDate != null) {  // SARA was part complete or rejected
+                    if ((associatedSaraRiskToPartner != null && associatedSaraRiskToOther != null) || associatedSaraRiskToPartner > 1 || associatedSaraRiskToOther > 1) {
+                        this.saraRiskLevelToPartner = associatedSaraRiskToPartner
+                        this.saraRiskLevelToOther = associatedSaraRiskToOther
+                    } else {
+                        for (let i = saraAssessments.length - 1; i > 0; i--) {  // Step backwards through the other SARAs, use the values and drop out if applicable
+                            if (saraAssessments[i].parentAssessmentPk != dbAssessment.assessmentPk) {
+                                const riskToPartner = saraAssessments[i].qaData.getRiskAsNumber('SR76.1.1')
+                                const riskToOther = saraAssessments[i].qaData.getRiskAsNumber('SR77.1.1')
+                                if ((riskToPartner != null && riskToOther != null) || riskToPartner > 1 || riskToOther > 1) {
+                                    this.saraRiskLevelToPartner = riskToPartner
+                                    this.saraRiskLevelToOther = riskToOther
+                                    break
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+        // Rule 5
+        if (this.saraRiskLevelToPartner == null) {
+            this.saraRiskLevelToPartner = 1
+        }
+        if (this.saraRiskLevelToOther == null) {
+            this.saraRiskLevelToOther = 1
         }
 
         const pniCalcResult = pniCalc(dbAssessment, true, this.saraRiskLevelToPartner, this.saraRiskLevelToOther)
@@ -295,12 +309,11 @@ function pniCalc(dbAssessment: dbClasses.DbAssessment, community: boolean, saraR
     // The domain levels have to be repoorted
 
     // Calculate the SEX DOMAIN SCORE
-    const s1_30 = dbAssessment.qaData.getString('1.30')              // Sexual motivation
-    let s6_11 = dbAssessment.qaData.getString('6.11')              // Open Sex Questions
-    if (s6_11 == null) s6_11 = 'No'
+    const s1_30 = dbAssessment.qaData.getString('1.30')          // Sexual motivation
+    let s6_11 = dbAssessment.qaData.getString('6.11') ?? 'No'    // Open Sex Questions, default to No
     const s11_11 = dbAssessment.qaData.getOasysScore('11.11')    // Sexual pre-occupation
     const s11_12 = dbAssessment.qaData.getOasysScore('11.12')    // Offence related sexual interest
-    const s6_12 = dbAssessment.qaData.getOasysScore('6.12')       // Emotional congruence with children
+    const s6_12 = dbAssessment.qaData.getOasysScore('6.12')      // Emotional congruence with children
 
     let sexDomainScore = 0
     let sexDomainProject = 0
