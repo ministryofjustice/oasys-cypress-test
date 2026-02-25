@@ -24,7 +24,7 @@ describe('Create a probation offender and a layer 3 assessment plus SARA', () =>
             oasys.Nav.clickButton('Next')
             oasys.Nav.clickButton('Create')
 
-            oasys.Populate.Sara.sara()
+            oasys.Populate.Sara.sara('Low','Low')
             oasys.Nav.clickButton('Save')
             oasys.Nav.clickButton('Sign & lock')
             oasys.Nav.clickButton('Confirm Sign & Lock')

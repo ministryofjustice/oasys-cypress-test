@@ -42,7 +42,7 @@ describe('SAN integration - test ref 29/30', () => {
             oasys.Nav.clickButton('Next')
             oasys.Nav.clickButton('Create')
 
-            oasys.Populate.Sara.sara()
+            oasys.Populate.Sara.sara('Low','Low')
             const sara = new oasys.Pages.Sara.Sara()
             sara.signAndLock.click()
             sara.confirmSignAndLock.click()
