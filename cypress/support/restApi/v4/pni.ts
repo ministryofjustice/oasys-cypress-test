@@ -25,7 +25,12 @@ export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssess
                 && ass.completedDate.substring(0, 10) >= saraDateLimit && ass.completedDate <= assessment.completedDate
         )
 
-        result.pniCalc.push(new PniCalc(offenderData, assessment as dbClasses.DbAssessment, saraAssessments as dbClasses.DbAssessment[]))
+        result.pniCalc.push(new PniCalc(
+            offenderData,
+            assessment as dbClasses.DbAssessment,
+            saraAssessments as dbClasses.DbAssessment[],
+            parameters.additionalParameter == 'Y'
+        ))
         return result
     }
 }
@@ -122,7 +127,10 @@ class PniCalc {
     saraRiskLevelToPartner: number
     saraRiskLevelToOther: number
 
-    constructor(offenderData: dbClasses.DbOffenderWithAssessments, dbAssessment: dbClasses.DbAssessment, saraAssessments: dbClasses.DbAssessment[]) {
+    constructor(offenderData: dbClasses.DbOffenderWithAssessments,
+        dbAssessment: dbClasses.DbAssessment,
+        saraAssessments: dbClasses.DbAssessment[],
+        community: boolean) {
 
         /*
             2.3 means physical violence against partner = YES
@@ -199,7 +207,7 @@ class PniCalc {
             this.saraRiskLevelToOther = 1
         }
 
-        const pniCalcResult = pniCalc(dbAssessment, true, this.saraRiskLevelToPartner, this.saraRiskLevelToOther)
+        const pniCalcResult = pniCalc(dbAssessment, community, this.saraRiskLevelToPartner, this.saraRiskLevelToOther)
 
         this.offenderPk = offenderData.offenderPk
         this.pniCalculation = pniCalcResult.pniCalculation

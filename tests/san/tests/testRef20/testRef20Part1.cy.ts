@@ -126,7 +126,7 @@ describe('SAN integration - test ref 20', () => {
                             indicates evidence of current or previous domestic abuse'
                             Complete entry of the SARA questions and then S&L it.`)
 
-                oasys.Populate.Sara.sara()
+                oasys.Populate.Sara.sara('Low','Low')
 
                 const sara = new oasys.Pages.Sara.Sara()
                 sara.s5Hints.checkValue('4.2 Is the person unemployed, or will be unemployed on release - YES', true)
