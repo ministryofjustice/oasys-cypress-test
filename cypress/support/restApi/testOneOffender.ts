@@ -135,7 +135,7 @@ export async function testOneOffender(parameters: { crn: string, crnSource: Prov
 
         // Add PNI - only if initiated after 2020 to avoid incompatible data
         const pniRelevantAssessments = offenderData.assessments.filter(rest.V4Common.pni.pniFilter).filter((ass) => ass.initiationDate > '2021')
-        if (pniRelevantAssessments.length > 1) {
+        if (pniRelevantAssessments.length > 0) {
             const v4PniParams: EndpointParams = {
                 endpoint: 'pni',
                 crnSource: parameters.crnSource,
@@ -144,6 +144,9 @@ export async function testOneOffender(parameters: { crn: string, crnSource: Prov
                 laoPrivilege: 'ALLOW'
             }
             apiParams.push(v4PniParams)
+            const custodyParams = JSON.parse(JSON.stringify(v4PniParams)) as EndpointParams
+            custodyParams.additionalParameter = 'N'
+            apiParams.push(custodyParams)
         }
 
         ///////////////////////////////////////////////////////////
