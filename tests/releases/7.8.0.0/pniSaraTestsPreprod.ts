@@ -12,10 +12,10 @@ describe('Pre-prod tests for PNI SARA parameters', () => {
         ['E496953', null],
         ['E050428', null],
         ['E506857', null],
+        ['E599091', null],
+        ['E716844', null],
+        ['E679100', null],
         [null, 'A9029EY'],          //  (case raised by John for NOD-1196)
-        ['E599091', null],          //  - expected 2, received 1
-        ['E716844', null],          //  - expected 1, received 2
-        ['E679100', null],          //  - expected 2, received 1
         ['E591983', null],          //  - 1.30 not reported missing
         ['S016052', null],          //  - 1.30 not reported missing
         [null, 'A2144FH'],          //  - 1.30 not reported missing
