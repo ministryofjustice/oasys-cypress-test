@@ -1,14 +1,16 @@
 import { defineConfig } from 'cypress'
-import { populateAutoData } from './cypress/support/autoData'
-import * as oasysDb from './cypress/support/oasysDb'
+import { populateAutoData } from './cypress/support/data/autoData'
+import * as oasysDb from './cypress/support/data/oasysDb'
 import * as restApi from './cypress/support/restApi'
 import * as fs from 'fs-extra'
 import * as pdf from './cypress/support/pdf'
-import { getLatestElogAndUnprocEventTime, getAppConfig } from './cypress/support/oasysDb'
 import { noDatabaseConnection } from './localSettings'
 import { ogrsTest } from './cypress/support/ogrs/orgsTest'
-import { OgrsTestParameters, OgrsTestScriptResult, RescoringResult, RescoringTestParameters } from './cypress/support/ogrs/types'
+import { OgrsTestParameters, OgrsTestScriptResult, RescoringResult, RescoringTestParameters, TieringTestParameters, TieringTestResult } from './oasys/ogrs/types'
 import { rescoringTest } from './cypress/support/ogrs/rescoring/rescoringTest'
+import { tieringTest } from './cypress/support/ogrs/tiering/tieringTest'
+import { getOneAssessment } from './cypress/support/ogrs/getTestData/getTestData'
+import { OgrsAssessment } from './cypress/support/ogrs/getTestData/dbClasses'
 
 const reportFolder = 'report'
 const persistedData = {}
@@ -54,7 +56,7 @@ module.exports = defineConfig({
         },
 
         /**
-         * Get the application version and config details from the database; returns an AppConfig object
+         * Get the application and config details from the database; returns an AppConfig object
          */
         getAppConfig(): Promise<AppConfig> {
 
@@ -140,7 +142,7 @@ module.exports = defineConfig({
         /**
          * Call all RestApi endpoints for a single offender.
          */
-        testApisForOffender(parameters: { crn: string, crnSource: Provider, skipPkOnlyCalls: boolean, stats: EndpointStat[] }): Promise<OffenderApisResult> {
+        testApisForOffender(parameters: { crn: string, crnSource: Provider, skipPkOnlyCalls: boolean, reportPasses: boolean, stats: EndpointStat[] }): Promise<OffenderApisResult> {
 
           return new Promise((resolve) => {
             restApi.testOneOffender(parameters).then((response) => {
@@ -209,20 +211,36 @@ module.exports = defineConfig({
               resolve(response)
             })
           })
-        }
+        },
+
+        tieringTest(parameters: TieringTestParameters): Promise<TieringTestResult> {
+          return new Promise((resolve) => {
+            tieringTest(parameters).then((response) => {
+              resolve(response)
+            })
+          })
+        },
+
+        getOgrsAssessment(assessmentPk: number): Promise<OgrsAssessment> {
+          return new Promise((resolve) => {
+            getOneAssessment(assessmentPk).then((response) => {
+              resolve(response)
+            })
+          })
+        },
 
       })
 
       on('before:run', (details) => {
         if (!noDatabaseConnection) {
-          getLatestElogAndUnprocEventTime('store')
+          oasysDb.getLatestElogAndUnprocEventTime('store')
         }
         fs.remove(reportFolder)
       })
 
       on('after:run', (results) => {
         if (!noDatabaseConnection) {
-          getLatestElogAndUnprocEventTime('check').then(() => {
+          oasysDb.getLatestElogAndUnprocEventTime('check').then(() => {
             oasysDb.closeConnection()
           })
         }

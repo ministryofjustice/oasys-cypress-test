@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -110,7 +109,7 @@ export class CrimNeedsAssessment extends v4Common.V4AssessmentCommon {
         attLowScoreNeedsAttention?: string
         attOtherWeightedScore?: number
     } = {}
-
+    sanCrimNeedScore: SanCrimNeedScore
 
     addDetails(dbAssessment: dbClasses.DbAssessment) {
 
@@ -127,14 +126,37 @@ export class CrimNeedsAssessment extends v4Common.V4AssessmentCommon {
         addSectionDetails(this.think, dbAssessment, 'think', '11', '11.98', '11.99')
         addSectionDetails(this.att, dbAssessment, 'att', '12', '12.98', '12.99')
 
+        this.sanCrimNeedScore = new SanCrimNeedScore(dbAssessment)
     }
 }
 
 function addSectionDetails(result: object, dbAssessment: dbClasses.DbAssessment, prefix: string, sectionCode: string, harm: string, reoffending: string) {
 
     result[`${prefix}Threshold`] = dbAssessment.sections.find((s) => s.sectionCode == sectionCode)?.crimNeedScoreThreshold
-    result[`${prefix}LinkedToHarm`] = common.getSingleAnswer(dbAssessment.qaData, sectionCode, harm)
-    result[`${prefix}LinkedToReoffending`] = common.getSingleAnswer(dbAssessment.qaData, sectionCode, reoffending)
+    result[`${prefix}LinkedToHarm`] = dbAssessment.qaData.getString(harm)
+    result[`${prefix}LinkedToReoffending`] = dbAssessment.qaData.getString(reoffending)
     result[`${prefix}LowScoreNeedsAttention`] = dbAssessment.sections.find((s) => s.sectionCode == sectionCode)?.lowScoreNeedsAttn
     result[`${prefix}OtherWeightedScore`] = dbAssessment.sections.find((s) => s.sectionCode == sectionCode)?.otherWeightedScore
 }
+
+class SanCrimNeedScore {
+
+    accomSanScore: number
+    empAndEduSanScore: number
+    persRelAndCommSanScore: number
+    lifeAndAssocSanScore: number
+    drugUseSanScore: number
+    alcoUseSanScore: number
+    thinkBehavAndAttiSanScore: number
+
+    constructor(dbAssessment: dbClasses.DbAssessment) {
+        this.accomSanScore = dbAssessment.sections.find((s) => s.sectionCode == '3')?.sanCrimNeedScore
+        this.empAndEduSanScore = dbAssessment.sections.find((s) => s.sectionCode == '4')?.sanCrimNeedScore
+        this.persRelAndCommSanScore = dbAssessment.sections.find((s) => s.sectionCode == '6')?.sanCrimNeedScore
+        this.lifeAndAssocSanScore = dbAssessment.sections.find((s) => s.sectionCode == '7')?.sanCrimNeedScore
+        this.drugUseSanScore = dbAssessment.sections.find((s) => s.sectionCode == '8')?.sanCrimNeedScore
+        this.alcoUseSanScore = dbAssessment.sections.find((s) => s.sectionCode == '9')?.sanCrimNeedScore
+        this.thinkBehavAndAttiSanScore = dbAssessment.sections.find((s) => s.sectionCode == 'SAN')?.sanCrimNeedScore
+    }
+}
+

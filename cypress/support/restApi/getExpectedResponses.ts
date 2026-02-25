@@ -65,6 +65,7 @@ async function getSingleResponse(offenderData: dbClasses.DbOffenderWithAssessmen
         v4RiskScoresAss: v4.riskScoresAss.getExpectedResponse,
         v4RiskScoresRsr: v4.riskScoresRsr.getExpectedResponse,
         crimNeeds: v4.crimNeeds.getExpectedResponse,
+        pni: v4.pni.getExpectedResponse,
     }
 
     const f: Function = functions[parameters.endpoint]

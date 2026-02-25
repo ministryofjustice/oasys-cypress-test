@@ -1,4 +1,3 @@
-import * as dayjs from 'dayjs'
 import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 38 part 2', () => {
@@ -49,15 +48,8 @@ describe('SAN integration - test ref 38 part 2', () => {
 
 
                 // Check OASYS_SET and API calls
-                oasys.San.getSanApiTime(pks[1], 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                cy.get<dayjs.Dayjs>('@getSanDataTime').then((sanDataTime) => {
-                    oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pks[1]}`, {
-                        SAN_ASSESSMENT_LINKED_IND: 'Y',
-                        CLONED_FROM_PREV_OASYS_SAN_PK: null,
-                        SAN_ASSESSMENT_VERSION_NO: null,
-                        LASTUPD_FROM_SAN: sanDataTime
-                    })
-                })
+                oasys.San.getSanApiTimeAndCheckDbValues(pks[1], 'Y', null, null)
+
                 oasys.San.checkSanRollbackCall(pks[1], oasys.Users.admin, 0, 1)
                 oasys.logout()
 

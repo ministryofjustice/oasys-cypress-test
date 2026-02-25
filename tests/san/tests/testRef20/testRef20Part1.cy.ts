@@ -1,4 +1,3 @@
-import * as dayjs from 'dayjs'
 import * as oasys from 'oasys'
 import * as testData from '../../data/testRef20'
 
@@ -28,15 +27,8 @@ describe('SAN integration - test ref 20', () => {
 
             cy.get<number>('@result').then((pk) => {
                 // Check values in OASYS_SET
-                oasys.San.getSanApiTime(pk, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                cy.get<dayjs.Dayjs>('@getSanDataTime').then((sanDataTime) => {
-                    oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
-                        SAN_ASSESSMENT_LINKED_IND: 'Y',
-                        CLONED_FROM_PREV_OASYS_SAN_PK: null,
-                        SAN_ASSESSMENT_VERSION_NO: null,
-                        LASTUPD_FROM_SAN: sanDataTime
-                    })
-                })
+                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', null, null)
+
                 // Check Create call
                 oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.probSanPo, oasys.Users.probationSanCode, 'INITIAL', 0, 0)
                 oasys.San.checkSanGetAssessmentCall(pk, 0)
@@ -134,7 +126,7 @@ describe('SAN integration - test ref 20', () => {
                             indicates evidence of current or previous domestic abuse'
                             Complete entry of the SARA questions and then S&L it.`)
 
-                oasys.Populate.Sara.sara()
+                oasys.Populate.Sara.sara('Low','Low')
 
                 const sara = new oasys.Pages.Sara.Sara()
                 sara.s5Hints.checkValue('4.2 Is the person unemployed, or will be unemployed on release - YES', true)

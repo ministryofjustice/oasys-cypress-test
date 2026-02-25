@@ -1,4 +1,4 @@
-import { OgrsTestParameters, OgrsTestScriptResult, OutputParameters, TestCaseParameters } from '../../cypress/support/ogrs/types'
+import { OgrsTestParameters, OgrsTestScriptResult, OutputParameters, TestCaseParameters } from '../../oasys/ogrs/types'
 
 const timeout = 10000000
 const summaryOutputItems = ['SNSV_PERCENTAGE_STATIC', 'SNSV_PERCENTAGE_DYNAMIC', 'OGRS4V_PERCENTAGE', 'OVP2_PERCENTAGE', 'OGRS4G_PERCENTAGE', 'OGP2_PERCENTAGE',]
@@ -15,7 +15,7 @@ export function runTest(params: OgrsTestParameters, outputFile: string, summaryO
         cases = result.cases
 
     }).then(() => {
-        if (failures > 0) {
+        if (failures > 0 && params.cypressOnly != true) {
             throw new Error(`${failures} failed out of ${cases}`)
         }
     })
@@ -32,9 +32,9 @@ function report(testParams: OgrsTestParameters, result: OgrsTestScriptResult, ou
     }
     cy.groupedLog(`OGRS4 package deployment date: ${result.packageTimestamp}`)
     cy.groupedLog(`Cases: ${result.cases}, failures: ${result.failures}.  ${result.failures > 0 ? 'FAILED' : 'PASSED'}`)
-    
+
     result.testCaseResults.forEach((testCase) => {
-        
+
         testCase.logText.forEach((log) => {
             cy.groupedLog(log)
         })

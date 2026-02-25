@@ -3,7 +3,7 @@ import { Decimal } from 'decimal.js'
 import { OgrsCoefficients } from '../types'
 
 export const coefficients: { [keys: string]: OgrsCoefficients } = {
-    general_brief: { 
+    general_brief: {
         in_year_two_constant: new Decimal(5.01702292499072),
         aai_male: new Decimal(-0.142428460338541),
         aai_quadratic_male: new Decimal(0.0011000413899151),
@@ -92,7 +92,7 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         r1q2_damage_with_intent_prev: null,
         r1q2_arson_prev: null,
     },
-    violence_brief: { 
+    violence_brief: {
         in_year_two_constant: new Decimal(3.12324433235579),
         aai_male: new Decimal(-0.104477239763612),
         aai_quadratic_male: new Decimal(0.0008606154365776),
@@ -181,7 +181,7 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         r1q2_damage_with_intent_prev: null,
         r1q2_arson_prev: null,
     },
-    serious_violence_brief: { 
+    serious_violence_brief: {
         in_year_two_constant: new Decimal(-0.970734555223987),
         aai_male: new Decimal(-0.035211251525685),
         aai_quadratic_male: new Decimal(-0.0002101460036267),
@@ -270,7 +270,7 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         r1q2_damage_with_intent_prev: null,
         r1q2_arson_prev: null,
     },
-    general_extended: { 
+    general_extended: {
         in_year_two_constant: new Decimal(3.83654148692014),
         aai_male: new Decimal(-0.110202179628585),
         aai_quadratic_male: new Decimal(0.0006726723443858),
@@ -359,7 +359,7 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         r1q2_damage_with_intent_prev: null,
         r1q2_arson_prev: null,
     },
-    violence_extended: { 
+    violence_extended: {
         in_year_two_constant: new Decimal(1.81687448362791),
         aai_male: new Decimal(-0.0645236564493287),
         aai_quadratic_male: new Decimal(0.0004644696772777),
@@ -448,7 +448,7 @@ export const coefficients: { [keys: string]: OgrsCoefficients } = {
         r1q2_damage_with_intent_prev: null,
         r1q2_arson_prev: null,
     },
-    serious_violence_extended: { 
+    serious_violence_extended: {
         in_year_two_constant: new Decimal(-1.70588696906607),
         aai_male: new Decimal(-0.0343861125060411),
         aai_quadratic_male: new Decimal(-0.0002060693939063),

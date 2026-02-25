@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as apCommon from './apCommon'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -77,47 +76,47 @@ export class APNeedsAssessment extends apCommon.APAssessmentCommon {
 
     addOffencesDetails(assessment: dbClasses.DbAssessment) {
 
-        this.offenceAnalysisDetails = common.getTextAnswer(assessment.textData, '2', '2.98')
-        this.offenceLinkedToHarm = common.getSingleAnswer(assessment.qaData, '2', '2.99')
+        this.offenceAnalysisDetails = assessment.qaData.getString('2.98')
+        this.offenceLinkedToHarm = assessment.qaData.getString('2.99')
 
-        this.accIssuesDetails = common.getTextAnswer(assessment.textData, '3', '3.97')
-        this.accLinkedToHarm = common.getSingleAnswer(assessment.qaData, '3', '3.98')
-        this.accLinkedToReoffending = common.getSingleAnswer(assessment.qaData, '3', '3.99')
+        this.accIssuesDetails = assessment.qaData.getString('3.97')
+        this.accLinkedToHarm = assessment.qaData.getString('3.98')
+        this.accLinkedToReoffending = assessment.qaData.getString('3.99')
 
-        this.eTEIssuesDetails = common.getTextAnswer(assessment.textData, '4', '4.94')
-        this.eTELinkedToHarm = common.getSingleAnswer(assessment.qaData, '4', '4.96')
-        this.eTELinkedToReoffending = common.getSingleAnswer(assessment.qaData, '4', '4.98')
+        this.eTEIssuesDetails = assessment.qaData.getString('4.94')
+        this.eTELinkedToHarm = assessment.qaData.getString('4.96')
+        this.eTELinkedToReoffending = assessment.qaData.getString('4.98')
 
-        this.financeIssuesDetails = common.getTextAnswer(assessment.textData, '5', '5.97')
-        this.financeLinkedToHarm = common.getSingleAnswer(assessment.qaData, '5', '5.98')
-        this.financeLinkedToReoffending = common.getSingleAnswer(assessment.qaData, '5', '5.99')
+        this.financeIssuesDetails = assessment.qaData.getString('5.97')
+        this.financeLinkedToHarm = assessment.qaData.getString('5.98')
+        this.financeLinkedToReoffending = assessment.qaData.getString('5.99')
 
-        this.relIssuesDetails = common.getTextAnswer(assessment.textData, '6', '6.97')
-        this.relLinkedToHarm = common.getSingleAnswer(assessment.qaData, '6', '6.98')
-        this.relLinkedToReoffending = common.getSingleAnswer(assessment.qaData, '6', '6.99')
+        this.relIssuesDetails = assessment.qaData.getString('6.97')
+        this.relLinkedToHarm = assessment.qaData.getString('6.98')
+        this.relLinkedToReoffending = assessment.qaData.getString('6.99')
 
-        this.lifestyleIssuesDetails = common.getTextAnswer(assessment.textData, '7', '7.97')
-        this.lifestyleLinkedToHarm = common.getSingleAnswer(assessment.qaData, '7', '7.98')
-        this.lifestyleLinkedToReoffending = common.getSingleAnswer(assessment.qaData, '7', '7.99')
+        this.lifestyleIssuesDetails = assessment.qaData.getString('7.97')
+        this.lifestyleLinkedToHarm = assessment.qaData.getString('7.98')
+        this.lifestyleLinkedToReoffending = assessment.qaData.getString('7.99')
 
-        this.drugIssuesDetails = common.getTextAnswer(assessment.textData, '8', '8.97')
-        this.drugLinkedToHarm = common.getSingleAnswer(assessment.qaData, '8', '8.98')
-        this.drugLinkedToReoffending = common.getSingleAnswer(assessment.qaData, '8', '8.99')
+        this.drugIssuesDetails = assessment.qaData.getString('8.97')
+        this.drugLinkedToHarm = assessment.qaData.getString('8.98')
+        this.drugLinkedToReoffending = assessment.qaData.getString('8.99')
 
-        this.alcoholIssuesDetails = common.getTextAnswer(assessment.textData, '9', '9.97')
-        this.alcoholLinkedToHarm = common.getSingleAnswer(assessment.qaData, '9', '9.98')
-        this.alcoholLinkedToReoffending = common.getSingleAnswer(assessment.qaData, '9', '9.99')
+        this.alcoholIssuesDetails = assessment.qaData.getString('9.97')
+        this.alcoholLinkedToHarm = assessment.qaData.getString('9.98')
+        this.alcoholLinkedToReoffending = assessment.qaData.getString('9.99')
 
-        this.emoIssuesDetails = common.getTextAnswer(assessment.textData, '10', '10.97')
-        this.emoLinkedToHarm = common.getSingleAnswer(assessment.qaData, '10', '10.98')
-        this.emoLinkedToReoffending = common.getSingleAnswer(assessment.qaData, '10', '10.99')
+        this.emoIssuesDetails = assessment.qaData.getString('10.97')
+        this.emoLinkedToHarm = assessment.qaData.getString('10.98')
+        this.emoLinkedToReoffending = assessment.qaData.getString('10.99')
 
-        this.thinkIssuesDetails = common.getTextAnswer(assessment.textData, '11', '11.97')
-        this.thinkLinkedToHarm = common.getSingleAnswer(assessment.qaData, '11', '11.98')
-        this.thinkLinkedToReoffending = common.getSingleAnswer(assessment.qaData, '11', '11.99')
+        this.thinkIssuesDetails = assessment.qaData.getString('11.97')
+        this.thinkLinkedToHarm = assessment.qaData.getString('11.98')
+        this.thinkLinkedToReoffending = assessment.qaData.getString('11.99')
 
-        this.attIssuesDetails = common.getTextAnswer(assessment.textData, '12', '12.97')
-        this.attLinkedToHarm = common.getSingleAnswer(assessment.qaData, '12', '12.98')
-        this.attLinkedToReoffending = common.getSingleAnswer(assessment.qaData, '12', '12.99')
+        this.attIssuesDetails = assessment.qaData.getString('12.97')
+        this.attLinkedToHarm = assessment.qaData.getString('12.98')
+        this.attLinkedToReoffending = assessment.qaData.getString('12.99')
     }
 }

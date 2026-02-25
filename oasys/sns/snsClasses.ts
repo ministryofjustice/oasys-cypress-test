@@ -59,7 +59,6 @@ export class AssSummMessageData extends SnsMessageData {
         super(crn)
         this.eventType = 'assessment.summary.produced'
         this.description = 'Assessment Summary has been produced'
-        cy.log(JSON.stringify(assessment))
         const endPoint = assessment.sanIndicator == 'Y' ? 'asssummsan' : 'asssumm'
         this.detailUrl = `${baseUrl}/${endPoint}/${crn}/ALLOW/${assessment.pk}/${assessment.status}`
     }
@@ -76,10 +75,15 @@ export class OgrsMessageData extends SnsMessageData {
         this.additionalInformation = {
             OGRS3Yr1: assessment.ogrs1yr,
             OGRS3Yr2: assessment.ogrs2yr,
+            OGRS3Yr2Band: assessment.ogrs2yrBand,
             OGRS4GYr2: assessment.ogrs4gYr2,
+            OGRS4GYr2Band: assessment.ogrs4gBand,
             OGP2Yr2: assessment.ogp2Yr2,
+            OGP2Yr2Band: assessment.ogp2Band,
             OGRS4VYr2: assessment.ogrs4vYr2,
+            OGRS4VYr2Band: assessment.ogrs4vBand,
             OVP2Yr2: assessment.ovp2Yr2,
+            OVP2Yr2Band: assessment.ovp2Band,
             RSRAlgorithmVersion: assessment.rsrAlgorithmVersion,
             EventNumber: assessment.eventNumber,
             AssessmentDate: assessment.assessmentDate

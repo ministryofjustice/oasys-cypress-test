@@ -7,14 +7,19 @@ import { testEnvironment } from '../../../localSettings'
  */
 describe('RestAPI regression tests', () => {
 
-    const startTime = Cypress.dayjs().format('YYYY-MM-DD HH:mm:ss')
+    oasys.OasysDateTime.startTimer('apiTest')
 
     let stats: EndpointStat[] = []
     let offendersTested = 0
 
     // Number of offenders for each date range
-    const offenderCountEarly = 20  // Used for pre-2023, not many offenders available
-    const offenderCount = 60  // 2023 and later
+    const offenderCountEarly = 25     // Used for pre-2023
+    const offenderCount = 75          // 2023 and later
+
+    // Response time thresholds
+    const slow = 100
+    const verySlow = 500
+    const failure = 1000
 
     // Define date parameters for sets of offender data
     const dateConditions = [
@@ -24,19 +29,20 @@ describe('RestAPI regression tests', () => {
         { date: `2018-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
         { date: `2019-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
         { date: `2020-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-        { date: `2021-${randomMonth()}-${randomDay()}`, count: offenderCount },
-        { date: `2022-${randomMonth()}-${randomDay()}`, count: offenderCount },
+        { date: `2021-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
+        { date: `2022-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
         { date: `2023-${randomMonth()}-${randomDay()}`, count: offenderCount },
         { date: `2024-${randomMonth()}-${randomDay()}`, count: offenderCount },
+        { date: `2025-${randomMonth()}-${randomDay()}`, count: offenderCount },
         { date: 'today', count: offenderCount },
     ]
 
-    const offendersToSkip = `('D011517', 'X083869', 'X334486')` // Duff test data in T2.  ; 2: , 3: 
+    // Hide details from the report for passes
+    const reportPasses = false
+
     const testDataIssues = [
         `'D011517'`,  // duplicate oasys_set created in 2012
-        `'X083869'`,  // return/linefeed mismatching
         `'X334486'`,  // 888 offence code issue
-        `'X552026'`,  // no assessments / no matching assessments confusion
     ]
 
     for (let i = 0; i < dateConditions.length; i++) {
@@ -118,7 +124,7 @@ describe('RestAPI regression tests', () => {
             offendersTested++
 
             if (offender[0] != null) {  // call with probation CRN
-                oasys.Api.testOneOffender(offender[0], 'prob', 'probationFailedAlias', false, stats)
+                oasys.Api.testOneOffender(offender[0], 'prob', 'probationFailedAlias', false, reportPasses, stats)
                 cy.get<boolean>('@probationFailedAlias').then((offenderFailed) => {
                     if (offenderFailed) {
                         cy.task('consoleLog', 'Failed')
@@ -127,7 +133,7 @@ describe('RestAPI regression tests', () => {
                 })
             }
             if (offender[1] != null) {  // call with NomisId
-                oasys.Api.testOneOffender(offender[1], 'pris', 'prisonFailedAlias', offender[0] != null, stats)  // skipPrisSubsequents if already done for prob crn
+                oasys.Api.testOneOffender(offender[1], 'pris', 'prisonFailedAlias', offender[0] != null, reportPasses, stats)  // skipPrisSubsequents if already done for prob crn
                 cy.get<boolean>('@prisonFailedAlias').then((offenderFailed) => {
                     if (offenderFailed) {
                         cy.task('consoleLog', 'Failed')
@@ -157,10 +163,10 @@ describe('RestAPI regression tests', () => {
 
         cy.groupedLogStart('Timing stats')
 
-        reportStats()
+        const failed = reportStats()
         cy.groupedLogEnd()
 
-        let elapsedTimeS = Math.round(Cypress.dayjs().diff(startTime) / 1000)
+        let elapsedTimeS = Math.round(oasys.OasysDateTime.elapsedTime('apiTest') / 1000)
         cy.groupedLogStart('Totals')
         cy.groupedLog(`Offenders: ${offendersTested}`)
         cy.groupedLog(`API calls: ${totalApiCount}`)
@@ -170,11 +176,14 @@ describe('RestAPI regression tests', () => {
         cy.groupedLog(`Average call rate: ${Math.round(totalApiCount / elapsedTimeS)} calls per second`)
         cy.groupedLog(`Average response time: ${Math.round(totalApiTimeMs / totalApiCount)}ms`)
 
-        cy.groupedLogEnd()
+        cy.groupedLogEnd().then(() => {
+            expect(failed).to.be.false
+        })
     })
 
-    function reportStats() {
+    function reportStats(): boolean {
 
+        let failed = false
         const endpoints = stats.map((stat) => stat.endpoint).filter(onlyUnique)
         endpoints.forEach((endpoint) => {
             const responseTimes = stats.filter((stat) => stat.endpoint == endpoint).map((stat) => stat.responseTime)
@@ -185,31 +194,43 @@ describe('RestAPI regression tests', () => {
             } else {
                 totalApiCount += result.count
                 totalApiTimeMs += result.totalTime
+                failed ||= result.failed
             }
         })
+        return failed
     }
 
-    function reportStat(endpoint: string, responseTimes: number[]): { count: number, totalTime: number } {
+    function reportStat(endpoint: string, responseTimes: number[]): { count: number, totalTime: number, failed: boolean } {
 
         let count = responseTimes.length
         let total = 0
+        let failed = false
 
         let reportString = `${endpoint}: count ${count}`
         if (count > 0) {
             total = responseTimes.reduce((a, b) => a + b, 0)
             let max = Math.max(...responseTimes)
-            let maxHighlight = max > 99 && endpoint != 'database' ? ' **** ' : ''
+            let maxHighlight = getHighlightText(endpoint, max)
             let average = Math.round(total / count)
-            let averageHighlight = average > 99 && endpoint != 'database' ? ' **** ' : ''
+            let averageHighlight = getHighlightText(endpoint, average)
+            failed = average >= failure
             reportString = `${reportString}, min ${Math.min(...responseTimes)}ms, ${maxHighlight}max ${max}ms${maxHighlight}, ${averageHighlight}average ${average}ms${averageHighlight}`
             cy.groupedLog(reportString)
         }
 
-        return { count: count, totalTime: total }
+        return { count: count, totalTime: total, failed: failed }
     }
 
     function onlyUnique(value, index, array) {
         return array.indexOf(value) === index;
+    }
+
+    function getHighlightText(endpoint: string, time: number): string {
+
+        if (endpoint == 'database') {
+            return ''
+        }
+        return time > failure ? ' ***** ' : time > verySlow ? ' *** ' : time > slow ? ' * ' : ''
     }
 
 })

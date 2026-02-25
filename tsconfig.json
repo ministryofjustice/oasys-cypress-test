@@ -8,8 +8,7 @@
         "types": [
             "cypress",
             "node",
-            "./cypress/support/index.d.ts",
-            "./cypress/global.d.ts"
+            "./cypress/support/index.d.ts"
         ],
         "rootDir": ".",
         "baseUrl": "oasys",

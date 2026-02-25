@@ -9,9 +9,9 @@ export class Section6 extends BaseAssessmentPage {
     menu: Menu = { type: 'Floating', level1: 'Section 2 to 13', level2: '6 - Relationships' }
 
     noIssues = new Element.Button('No Issues')
-    o6_1 = new Element.Select<ProblemsAnswer>('#itm_6_1')
+    o6_1 = new Element.Select<ProblemsMissingAnswer>('#itm_6_1')
     o6_3 = new Element.Select<ProblemsAnswer>('#itm_6_3')
-    o6_8 = new Element.Select<'In a relationship living together' | 'In a relationship not living together' | 'Not in a relationship'>('#itm_6_8')
+    o6_8 = new Element.Select<Q6_8Answer>('#itm_6_8')
     o6_4 = new Element.Select<ProblemsAnswer>('#itm_6_4')
     o6_6 = new Element.Select<ProblemsAnswer>('#itm_6_6')
     o6_7 = new Element.Select<YesNoAnswer>('#itm_6_7da')

@@ -76,20 +76,22 @@ offender and assessment data.
  *  - stats - optional array of EndpointStat objects to collect timing stats
  */
 
-export function testOneOffender(crn: string, crnSource: Provider, resultAlias: string, skipPkOnlyCalls: boolean, stats: EndpointStat[] = null) {
+export function testOneOffender(crn: string, crnSource: Provider, resultAlias: string, skipPkOnlyCalls: boolean,
+  reportPasses: boolean, stats: EndpointStat[] = null) {
 
-  cy.task('testApisForOffender', { crn: crn, crnSource: crnSource, skipPkOnlyCalls: skipPkOnlyCalls, stats: stats }).then((result: OffenderApisResult) => {
+  cy.task('testApisForOffender', { crn: crn, crnSource: crnSource, skipPkOnlyCalls: skipPkOnlyCalls, stats: stats, reportPasses: reportPasses })
+    .then((result: OffenderApisResult) => {
 
-    cy.groupedLogStart(result.report[0])
-    result.report.slice(1).forEach((reportLine) => {
-      cy.groupedLog(reportLine)
+      cy.groupedLogStart(result.report[0])
+      result.report.slice(1).forEach((reportLine) => {
+        cy.groupedLog(reportLine)
+      })
+      cy.groupedLogEnd()
+
+      if (stats) result.stats.forEach((stat) => { stats.push(stat) })
+
+      cy.wrap(result.failed).as(resultAlias)
     })
-    cy.groupedLogEnd()
-
-    if (stats) result.stats.forEach((stat) => { stats.push(stat) })
-      
-    cy.wrap(result.failed).as(resultAlias)
-  })
 
 }
 
@@ -105,29 +107,29 @@ export function testOneOffender(crn: string, crnSource: Provider, resultAlias: s
  */
 export function checkAPIError(parameters: EndpointParams, expectedResult: RestErrorResult, resultAlias: string = '') {
 
-    cy.task('getRestData', parameters).then((response: RestResponse) => {
+  cy.task('getRestData', parameters).then((response: RestResponse) => {
 
-        let failed = false
-        cy.groupedLogStart(`Checking RestAPI response for: ${response.url}, expecting ${expectedResult.statusCode}`)
-        cy.groupedLog(`result: ${JSON.stringify(response.result)}`)
+    let failed = false
+    cy.groupedLogStart(`Checking RestAPI response for: ${response.url}, expecting ${expectedResult.statusCode}`)
+    cy.groupedLog(`result: ${JSON.stringify(response.result)}`)
 
-        if (response.statusCode != expectedResult.statusCode) {
-            cy.groupedLog(`Error checking API ${response.url}: expected status ${expectedResult.statusCode}, got ${response.statusCode}`)
-            failed = true
+    if (response.statusCode != expectedResult.statusCode) {
+      cy.groupedLog(`Error checking API ${response.url}: expected status ${expectedResult.statusCode}, got ${response.statusCode}`)
+      failed = true
+    }
+
+    if (response.message != expectedResult.message) {
+      cy.groupedLog(`Error checking API ${response.url}: expected '${expectedResult.message}', got '${response.message}'`)
+      failed = true
+    }
+    cy.groupedLogEnd().then(() => {
+      if (resultAlias == '') {
+        if (failed) {
+          throw new Error('Failed checking RestAPI response')
         }
-
-        if (response.message != expectedResult.message) {
-            cy.groupedLog(`Error checking API ${response.url}: expected '${expectedResult.message}', got '${response.message}'`)
-            failed = true
-        }
-        cy.groupedLogEnd().then(() => {
-            if (resultAlias == '') {
-                if (failed) {
-                    throw new Error('Failed checking RestAPI response')
-                }
-            } else {
-                return failed
-            }
-        })
+      } else {
+        return failed
+      }
     })
+  })
 }

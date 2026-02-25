@@ -9,6 +9,7 @@ declare type EndpointParams = {
     endpoint: Endpoint,
     crnSource?: Provider
     crn?: string,
+    additionalParameter?: 'Y' | 'N',
     laoPrivilege: 'ALLOW' | 'LIMIT' | 'rubbish',
     assessmentPk?: number,
     expectedStatus?: string
@@ -55,7 +56,8 @@ declare type Endpoint =
     'v4RiskIndividual' |
     'v4RiskScoresAss' |
     'v4RiskScoresRsr' |
-    'crimNeeds'
+    'crimNeeds' |
+    'pni'
 
 declare type CheckAPIResult = {
     failed: boolean,
@@ -92,3 +94,9 @@ declare type OasysAnswer = { section: string, q: string, a: string }
 declare type AnswerType = 'refAnswer' | 'freeFormat' | 'additionalNote' | 'multipleRefAnswer'
 declare type Victim = { age: string, gender: string, ethnicCat: string, relationship: string }
 declare type CheckDbSectionResponse = { failed: boolean, report: string[] }
+
+declare type Table = 'oasys_set' | 'oasys_assessment_group' | 'oasys_set_change' | 'offender' | 'offender_rsr_scores' | 'ref_element' |
+    'ssp_intervention_in_set' | 'ssp_obj_intervene_pivot' | 'ssp_intervention_measure'
+declare type ColumnType = 'date' | 'integer' | 'float' | 'string' | 'ynToBool'
+declare type ColumnDef = { table?: Table; name: string; type: ColumnType }
+declare type Columns = { [keys: string]: ColumnDef }

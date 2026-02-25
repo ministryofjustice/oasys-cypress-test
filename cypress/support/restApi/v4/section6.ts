@@ -1,7 +1,7 @@
-import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
+import { OasysDateTime } from 'oasys'
 
 export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssessments, parameters: EndpointParams) {
 
@@ -77,29 +77,29 @@ export class Section6Assessment extends v4Common.V4AssessmentCommon {
 
     addDetails(dbAssessment: dbClasses.DbAssessment) {
 
-        this.relCloseFamily = common.getSingleAnswer(dbAssessment.qaData, '6', '6.1')
-        this.experienceOfChildhood = common.getSingleAnswer(dbAssessment.qaData, '6', '6.3')
-        this.relCurrRelationshipStatus = common.getSingleAnswer(dbAssessment.qaData, '6', '6.8')
-        this.relationshipWithPartner = common.getSingleAnswer(dbAssessment.qaData, '6', '6.4')
-        this.prevCloseRelationships = common.getSingleAnswer(dbAssessment.qaData, '6', '6.6')
-        this.relParentalResponsibilities = common.getSingleAnswer(dbAssessment.qaData, '6', '6.9')
-        this.parentalRespProblem = common.getSingleAnswer(dbAssessment.qaData, '6', '6.10')
-        this.openSexualOffendingQuestions = common.getSingleAnswer(dbAssessment.qaData, '6', '6.11')
-        this.emotionalCongruence = common.getSingleAnswer(dbAssessment.qaData, '6', '6.12')
-        this.relIssuesDetails = common.getTextAnswer(dbAssessment.textData, '6', '6.97')
-        this.relLinkedToHarm = common.getSingleAnswer(dbAssessment.qaData, '6', '6.98')
-        this.relLinkedToReoffending = common.getSingleAnswer(dbAssessment.qaData, '6', '6.99')
+        this.relCloseFamily = dbAssessment.qaData.getString('6.1')
+        this.experienceOfChildhood = dbAssessment.qaData.getString('6.3')
+        this.relCurrRelationshipStatus = dbAssessment.qaData.getString('6.8')
+        this.relationshipWithPartner = dbAssessment.qaData.getString('6.4')
+        this.prevCloseRelationships = dbAssessment.qaData.getString('6.6')
+        this.relParentalResponsibilities = dbAssessment.qaData.getString('6.9')
+        this.parentalRespProblem = dbAssessment.qaData.getString('6.10')
+        this.openSexualOffendingQuestions = dbAssessment.qaData.getString('6.11')
+        this.emotionalCongruence = dbAssessment.qaData.getString('6.12')
+        this.relIssuesDetails = dbAssessment.qaData.getString('6.97')
+        this.relLinkedToHarm = dbAssessment.qaData.getString('6.98')
+        this.relLinkedToReoffending = dbAssessment.qaData.getString('6.99')
 
-        if (dbAssessment.initiationDate > common.releaseDate6_30) {
-            this.prevOrCurrentDomesticAbuse = common.getSingleAnswer(dbAssessment.qaData, '6', '6.7da')
-            this.victimOfPartner = common.getSingleAnswer(dbAssessment.qaData, '6', '6.7.1.1da')
-            this.victimOfFamily = common.getSingleAnswer(dbAssessment.qaData, '6', '6.7.1.2da')
-            this.perpAgainstPartner = common.getSingleAnswer(dbAssessment.qaData, '6', '6.7.2.1da')
-            this.perpAgainstFamily = common.getSingleAnswer(dbAssessment.qaData, '6', '6.7.2.2da')
+        if (OasysDateTime.checkIfAfterReleaseNode('6.30', dbAssessment.initiationDate)) {
+            this.prevOrCurrentDomesticAbuse = dbAssessment.qaData.getString('6.7da')
+            this.victimOfPartner = dbAssessment.qaData.getString('6.7.1.1da')
+            this.victimOfFamily = dbAssessment.qaData.getString('6.7.1.2da')
+            this.perpAgainstPartner = dbAssessment.qaData.getString('6.7.2.1da')
+            this.perpAgainstFamily = dbAssessment.qaData.getString('6.7.2.2da')
         } else {
-            this.prevOrCurrentDomesticAbuse = common.getSingleAnswer(dbAssessment.qaData, '6', '6.7')
+            this.prevOrCurrentDomesticAbuse = dbAssessment.qaData.getString('6.7')
 
-            const da = common.getMultipleAnswers(dbAssessment.qaData, '6', ['6.7.1'], 2)
+            const da = dbAssessment.qaData.getStringArray('6.7.1')
             if (da != null && da != undefined) {
                 this.perpAgainstPartner = da.includes('Perpetrator') ? 'Yes' : null
                 this.victimOfPartner = da.includes('Victim') ? 'Yes' : null
@@ -122,8 +122,8 @@ export class Sara {
     constructor(saraAssessment: dbClasses.DbAssessment) {
 
         if (saraAssessment != null) {
-            this.imminentRiskOfViolenceTowardsPartner = common.getSingleAnswer(saraAssessment.qaData, 'SARA', 'SR76.1.1')
-            this.imminentRiskOfViolenceTowardsOthers = common.getSingleAnswer(saraAssessment.qaData, 'SARA', 'SR77.1.1')
+            this.imminentRiskOfViolenceTowardsPartner = saraAssessment.qaData.getString('SR76.1.1')
+            this.imminentRiskOfViolenceTowardsOthers = saraAssessment.qaData.getString('SR77.1.1')
         }
     }
 }

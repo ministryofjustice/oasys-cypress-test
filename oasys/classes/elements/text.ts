@@ -10,14 +10,14 @@ export class Text {
     /**
      * Check if the element contains the specified text.  The optional second parameter can be set to true to indicate a partial match (i.e. contains rather than equals).
      */
-    checkValue(value: string, partial: boolean = false) {
+        checkValue(value: string, partial: boolean = false) {
 
         cy.get(this.selector).should(partial ? 'contain' : 'have.text', value)
     }
 
     getValue(alias: string) {
 
-        cy.get(this.selector).invoke('val').as(alias)
+        cy.get(this.selector).invoke('text').as(alias)
     }
 
     checkStatus(status: ElementStatus) {
@@ -27,6 +27,14 @@ export class Text {
             if (status != result.status) {
                 throw new Error(`Incorrect status for ${this.selector}: expected ${status}, found ${result.status}`)
             }
+        })
+    }
+
+    logValue(desc: string = null) {
+
+        cy.get(this.selector).invoke('text').then((text) => {
+
+            cy.log(`${desc || this.selector}: ${text}`)
         })
     }
 
@@ -48,6 +56,7 @@ export class Text {
                 if (element.is(':visible')) {
                     result.status = 'visible'
                 }
+                result.value = element.text()
             }
 
         })

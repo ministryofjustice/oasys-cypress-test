@@ -49,7 +49,7 @@ describe('Mapping test for question 6.8', () => {
             cy.get<number>('@assessmentPk').then((assessmentPk) => {
                 const testCases: { accommodation: AccommodationOptions[], relationship: RelationshipOptions[], mapping: number }[] =
                     [
-                        { accommodation: [], relationship: [], mapping: null },
+                        { accommodation: [], relationship: [], mapping: 3 },
                         { accommodation: ['alone'], relationship: [], mapping: 3 },
                         { accommodation: [], relationship: ['other'], mapping: 3 },
                         { accommodation: [], relationship: ['partner'], mapping: 2 },

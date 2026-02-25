@@ -1,3 +1,5 @@
+import { OasysDateTime } from 'oasys'
+
 /**
  * This module contains the classes used to extract data from the OASys database.
  * 
@@ -20,6 +22,7 @@ export class DbAssessmentOrRsr {
 
     ogrs1yr: number                         // ogrs1yr == null is used to determine whether there should be an OGRS message
     ogrs2yr: number
+    ogrs2yrBand: string
     rsrScore: number                        // rsrScore == null is used to determine whether there should be an RSR message
     rsrBand: string
     rsrStaticDynamic: string
@@ -56,7 +59,7 @@ export class DbAssessmentOrRsr {
 
     constructor(assessmentData: string[], type: AssessmentOrRsr) {
 
-        const tzOffset = Cypress.dayjs().utcOffset() == 60 ? '+01:00' : '+00:00'
+        const tzOffset = OasysDateTime.timeZoneOffset()
 
         this.type = type
         this.pk = Number.parseInt(assessmentData[0])
@@ -116,6 +119,7 @@ export class DbAssessmentOrRsr {
             this.snsvDynamicYr2 = fixDp(assessmentData[35])
             this.snsvDynamicYr2Band = assessmentData[36]
             this.rsrAlgorithmVersion = Number.parseInt(assessmentData[37])
+            this.ogrs2yrBand = assessmentData[38]
         } else {
             this.assessmentDate = this.completedDate
         }
@@ -124,14 +128,14 @@ export class DbAssessmentOrRsr {
     static assessmentQuery(crn: string): string {
 
         return `select s.oasys_set_pk, s.assessment_status_elm, o.cms_event_number, 
-                    to_char(s.initiation_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'), to_char(s.date_completed, 'YYYY-MM-DD\"T\"HH24:MI:SS'), 
+                    to_char(s.initiation_date, '${OasysDateTime.oracleTimestampFormat}'), to_char(s.date_completed, '${OasysDateTime.oracleTimestampFormat}'), 
                     s.ogrs3_1year, s.ogrs3_2year, 
                     s.rsr_percentage_score, s.rsr_risk_recon_elm, s.rsr_static_or_dynamic, 
                     s.osp_i_percentage_score, s.osp_c_percentage_score, s.osp_i_risk_recon_elm, s.osp_c_risk_recon_elm,
                     s.osp_iic_percentage_score, s.osp_iic_risk_recon_elm, s.osp_dc_percentage_score, s.osp_dc_risk_recon_elm , 
                     s.opd_result, s.opd_screen_out_override, 
-                    to_char(s.assessor_signed_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'), s.ref_ass_version_code, r.ref_element_desc,
-                    to_char(s.countersigner_signed_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'), s.san_assessment_linked_ind, 
+                    to_char(s.assessor_signed_date, '${OasysDateTime.oracleTimestampFormat}'), s.ref_ass_version_code, r.ref_element_desc,
+                    to_char(s.countersigner_signed_date, '${OasysDateTime.oracleTimestampFormat}'), s.san_assessment_linked_ind, 
 
                     s.ogrs4g_percentage_2yr, s.ogrs4g_band_risk_recon_elm, 
                     s.ogrs4v_percentage_2yr, s.ogrs4v_band_risk_recon_elm,
@@ -139,7 +143,7 @@ export class DbAssessmentOrRsr {
                     s.ovp2_percentage_2yr, s.ovp2_band_risk_recon_elm, 
                     s.snsv_percentage_2yr_static, s.snsv_stat_band_risk_recon_elm, 
                     s.snsv_percentage_2yr_dynamic, s.snsv_dyn_band_risk_recon_elm,
-                    s.rsr_algorithm_version
+                    s.rsr_algorithm_version, s.ogrs3_risk_recon_elm
                     from eor.offender o, eor.oasys_assessment_group g, eor.oasys_set s, eor.ref_element r 
                     where o.cms_prob_number = '${crn}'
                     and o.offender_pk = g.offender_PK and g.oasys_assessment_group_PK = s.oasys_assessment_group_PK 
@@ -158,7 +162,7 @@ export class DbAssessmentOrRsr {
     static rsrQuery(crn: string): string {
 
         return `select r.offender_rsr_scores_pk, r.rsr_status, o.cms_event_number, 
-                    to_char(r.initiation_date, 'YYYY-MM-DD\"T\"HH24:MI:SS'), to_char(r.date_completed, 'YYYY-MM-DD\"T\"HH24:MI:SS'), 
+                    to_char(r.initiation_date, '${OasysDateTime.oracleTimestampFormat}'), to_char(r.date_completed, '${OasysDateTime.oracleTimestampFormat}'), 
                     r.ogrs3_1year, r.ogrs3_2year,
                     r.rsr_percentage_score, r.rsr_risk_recon_elm, r.rsr_static_or_dynamic, 
                     r.osp_i_percentage_score, r.osp_c_percentage_score, r.osp_i_risk_recon_elm, r.osp_c_risk_recon_elm, 

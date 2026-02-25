@@ -1,70 +1,6 @@
-import { dateFormat } from "../orgsTest"
-
-export class OgrsAssessment {
-
-    pk: number
-    type: 'LAYER1' | 'LAYER3'
-    version: number
-    status: string
-    dob: string
-    gender: string
-    offence: string
-    prisonInd: string
-    initiationDate: string
-    qaData: string[][]
-    textData: string[][]
-
-    constructor(assessmentData: string[]) {
-
-        this.pk = Number.parseInt(assessmentData[0])
-        this.type = assessmentData[1] as 'LAYER1' | 'LAYER3'
-        this.version = Number.parseInt(assessmentData[2])
-        this.status = assessmentData[3]
-        this.dob = assessmentData[4]
-        this.gender = assessmentData[5]
-        this.prisonInd = assessmentData[6]
-        this.initiationDate = assessmentData[7]
-    }
-
-    static query(rows: number, whereClause: string): string {
-        return `select oasys_set_pk, ref_ass_version_code, version_number, assessment_status_elm,
-                    to_char(date_of_birth, '${dateFormat}'), gender_elm, prison_ind, to_char(initiation_date, '${dateFormat}')
-                    from eor.oasys_set 
-                    where ${whereClause} 
-                    order by initiation_date desc fetch first ${rows} rows only`
-    }
-
-    static offenceQuery(assessmentPk: number): string {
-
-        return `select p.offence_group_code || p.sub_code 
-                    from eor.offence_block o, eor.ct_offence_pivot p
-                    where o.oasys_set_pk = ${assessmentPk} and o.offence_block_type_elm = 'CURRENT'
-                    and p.offence_block_pk = o.offence_block_pk and p.additional_offence_ind = 'N'`
-    }
-
-    static qaQuery(assessmentPk: number): string {
-
-        return `select q.ref_section_code, q.ref_question_code, ra.ref_answer_code
-                    from eor.oasys_question q, eor.oasys_answer a, eor.ref_answer ra
-                    where q.oasys_section_pk in (select oasys_section_pk from eor.oasys_Section where oasys_set_pk = ${assessmentPk} and currently_hidden_ind <> 'Y')
-                    and q.oasys_question_pk = a.oasys_question_pk
-                    and ra.ref_ass_version_code = a.ref_ass_version_code
-                    and ra.version_number = a.version_number
-                    and ra.ref_section_code = a.ref_section_code
-                    and ra.ref_question_code = a.ref_question_code
-                    and ra.ref_answer_code = a.ref_answer_code 
-                    and q.currently_hidden_ind <> 'Y'
-                    order by q.ref_section_code, q.ref_question_code`
-    }
-
-    static textAnswerQuery(assessmentPk: number): string {
-
-        return `select ref_section_code, ref_question_code, free_format_answer, additional_note, currently_hidden_ind  
-                    from eor.oasys_question
-                    where oasys_section_pk in (select oasys_section_pk from eor.oasys_Section where oasys_set_pk = ${assessmentPk} and currently_hidden_ind <> 'Y')
-                    and (free_format_answer is not null or additional_note is not null)`
-    }
-}
+import { Temporal } from '@js-temporal/polyfill'
+import { OasysDateTime } from 'lib/dateTime'
+import { stringToInt, stringToFloat } from 'lib/utils'
 
 export class OgrsRsr {
 
@@ -218,13 +154,13 @@ export class OgrsRsr {
         //             order by initiation_date desc fetch first ${rows} rows only`
 
         return `select offender_rsr_scores_pk, rsr_status,
-                    to_char(date_of_birth, '${dateFormat}'), gender_elm, offence_code || offence_subcode,
+                    to_char(date_of_birth, '${OasysDateTime.dateFormat}'), gender_elm, offence_code || offence_subcode,
                     s1_32_total_sanctions, s1_40_violent_sanctions, 
                     s1_34_contact_adult_score, s1_45_dc_child_score, s1_46_iic_child_score, s1_37_non_contact_score,
 
-                    s1_44_dc_stranger_victim, s1_8_age_at_first_sanction, to_char(s1_29_date_current_conviction, '${dateFormat}'), 
-                    to_char(s1_33_date_recent_sex_offence, '${dateFormat}'), s1_41_current_sexual_mot, 
-                    to_char(s1_43_last_offence_date, '${dateFormat}'), to_char(s1_38_community_date, '${dateFormat}'), s1_30_sexual_element, 
+                    s1_44_dc_stranger_victim, s1_8_age_at_first_sanction, to_char(s1_29_date_current_conviction, '${OasysDateTime.dateFormat}'), 
+                    to_char(s1_33_date_recent_sex_offence, '${OasysDateTime.dateFormat}'), s1_41_current_sexual_mot, 
+                    to_char(s1_43_last_offence_date, '${OasysDateTime.dateFormat}'), to_char(s1_38_community_date, '${OasysDateTime.dateFormat}'), s1_30_sexual_element, 
                     s2_2_weapon, s3_q4_suitable_accom, s4_q2_unemployed, s6_q4_partner_relationship, 
                     s6_q7_dom_abuse, s6_q7_perpetrator_partner,  
                     s9_q1_alcohol, s9_q2_binge_drink, s11_q2_impulsivity, s11_q4_temper_control, 
@@ -234,5 +170,129 @@ export class OgrsRsr {
                     from eor.offender_rsr_scores
                     where ${whereClause}
                     order by initiation_date desc fetch first ${rows} rows only`
+    }
+}
+
+export class OgrsAssessment {
+
+    pk: number
+    type: string
+    version: number
+    status: string
+    initiationDate: Temporal.PlainDateTime
+    signedDate: Temporal.PlainDate
+    dob: Temporal.PlainDate
+    gender: string
+    prisonInd: string
+
+    ogrs4gYr2: number
+    ogrs4gBand: string
+    ogrs4gCalculated: string
+    ogrs4vYr2: number
+    ogrs4vBand: string
+    ogrs4vCalculated: string
+    ogp2Yr2: number
+    ogp2Band: string
+    ogp2Calculated: string
+    ovp2Yr2: number
+    ovp2Band: string
+    ovp2Calculated: string
+    snsvStaticYr2: number
+    snsvStaticYr2Band: string
+    snsvStaticCalculated: string
+    snsvDynamicYr2: number
+    snsvDynamicYr2Band: string
+    snsvDynamicCalculated: string
+
+    offence: string
+    qaData: {}
+
+    constructor(assessmentData: string[]) {
+
+        let i = 0
+        this.pk = stringToInt(assessmentData[i++])
+        this.type = assessmentData[i++]
+        this.version = stringToInt(assessmentData[i++])
+        this.status = assessmentData[i++]
+        this.initiationDate = OasysDateTime.stringToTimestamp(assessmentData[i++])
+        this.signedDate = OasysDateTime.stringToDate(assessmentData[i++])
+        this.dob = OasysDateTime.stringToDate(assessmentData[i++])
+        this.gender = assessmentData[i++]
+        this.prisonInd = assessmentData[i++]
+
+        this.ogrs4gYr2 = stringToFloat(assessmentData[i++])
+        this.ogrs4gBand = assessmentData[i++]
+        this.ogrs4gCalculated = assessmentData[i++]
+        this.ogrs4vYr2 = stringToFloat(assessmentData[i++])
+        this.ogrs4vBand = assessmentData[i++]
+        this.ogrs4vCalculated = assessmentData[i++]
+        this.ogp2Yr2 = stringToFloat(assessmentData[i++])
+        this.ogp2Band = assessmentData[i++]
+        this.ogp2Calculated = assessmentData[i++]
+        this.ovp2Yr2 = stringToFloat(assessmentData[i++])
+        this.ovp2Band = assessmentData[i++]
+        this.ovp2Calculated = assessmentData[i++]
+        this.snsvStaticYr2 = stringToFloat(assessmentData[i++])
+        this.snsvStaticYr2Band = assessmentData[i++]
+        this.snsvStaticCalculated = assessmentData[i++]
+        this.snsvDynamicYr2 = stringToFloat(assessmentData[i++])
+        this.snsvDynamicYr2Band = assessmentData[i++]
+        this.snsvDynamicCalculated = assessmentData[i++]
+    }
+
+    static query(rows: number, whereClause: string): string {
+
+        return `select oasys_set_pk, assessment_type_elm, version_number, assessment_status_elm, 
+                        to_char(initiation_date, '${OasysDateTime.oracleTimestampFormat}'), to_char(assessor_signed_date, '${OasysDateTime.dateFormat}'),
+                        to_char(date_of_birth, '${OasysDateTime.dateFormat}'), gender_elm, prison_ind,
+                        ogrs4g_percentage_2yr, ogrs4g_band_risk_recon_elm, ogrs4g_calculated, 
+                        ogrs4v_percentage_2yr, ogrs4v_band_risk_recon_elm, ogrs4v_calculated, 
+                        ogp2_percentage_2yr, ogp2_band_risk_recon_elm, ogp2_calculated, 
+                        ovp2_percentage_2yr, ovp2_band_risk_recon_elm, ovp2_calculated, 
+                        snsv_percentage_2yr_static, snsv_stat_band_risk_recon_elm, snsv_calculated_static, 
+                        snsv_percentage_2yr_dynamic, snsv_dyn_band_risk_recon_elm, snsv_calculated_dynamic
+                    from eor.oasys_set 
+                    where ${whereClause}
+                    order by create_date desc fetch first ${rows} rows only`
+    }
+
+    static offenceQuery(assessmentPk: number | string): string {
+
+        return `select p.offence_group_code || p.sub_code 
+                    from eor.offence_block o, eor.ct_offence_pivot p
+                    where o.oasys_set_pk = ${assessmentPk} and o.offence_block_type_elm = 'CURRENT'
+                    and p.offence_block_pk = o.offence_block_pk and p.additional_offence_ind = 'N'`
+    }
+
+    static qaQuery(assessmentPk: number | string): string {
+
+        return `SELECT REF_QUESTION_CODE, ANSWER
+                    FROM
+                    (
+                    SELECT OQ.REF_QUESTION_CODE, DECODE(OQ.FREE_FORMAT_ANSWER,null,OA.REF_ANSWER_CODE,OQ.FREE_FORMAT_ANSWER) ANSWER
+                    FROM EOR.OASYS_SET OS
+                    LEFT OUTER JOIN EOR.OASYS_SECTION OSEC
+                    ON OSEC.OASYS_SET_PK = OS.OASYS_SET_PK
+                    LEFT OUTER JOIN EOR.OASYS_QUESTION OQ
+                    ON OQ.OASYS_SECTION_PK = OSEC.OASYS_SECTION_PK
+                    LEFT OUTER JOIN EOR.OASYS_ANSWER OA
+                    ON OA.OASYS_QUESTION_PK = OQ.OASYS_QUESTION_PK
+                    WHERE OS.OASYS_SET_PK = ${assessmentPk}
+                    AND OQ.CURRENTLY_HIDDEN_IND = 'N'
+                    AND OQ.REF_QUESTION_CODE IN ('1.39','1.32','1.40','1.34','1.45','1.46','1.37','1.44','1.8','1.29','1.33','1.38','1.41','1.43','1.30',
+                                                '2.2_V2_WEAPON', '2.2',
+                                                '3.4',
+                                                '4.2',
+                                                '6.4','6.7da','6.7.2.1da','6.7','6.7.1','6.8',
+                                                '7.2',
+                                                '8.1','8.2.8.1','8.2.7.1','8.2.11.1','8.2.4.1','8.2.10.1','8.2.9.1','8.2.1.1','8.2.16.1','8.2.2.1',
+                                                '8.2.6.1','8.2.3.1','8.2.5.1','8.2.12.1','8.2.15.1','8.2.13.1','8.2.14.1',
+                                                '8.8',
+                                                '9.1','9.2',
+                                                '11.2','11.4',
+                                                '12.1',
+                                                'R1.2.6.2_V2','R1.2.7.2_V2','R1.2.8.2_V2','R1.2.10.2_V2','R1.2.2.2_V2','R1.2.1.2_V2','R1.2.9.2_V2',
+                                                'R1.2.12.2_V2','R1.2.13.2_V2' )
+                    ) `
     }
 }

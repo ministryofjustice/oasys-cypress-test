@@ -1,4 +1,3 @@
-import * as dayjs from 'dayjs'
 import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 49', () => {
@@ -135,16 +134,7 @@ describe('SAN integration - test ref 49', () => {
                         Check other OASYS_SET record fields; SAN_ASSESSMENT_LINKED_IND is N, LASTUPD_FROM_SAN is populated,  retrieved the data but SAN_ASSESSMENT_VERSION_NO
                             AND SSP_PLAN_VERSION_NO are NULL.`)
 
-                    oasys.San.getSanApiTime(pk1, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                    cy.get<dayjs.Dayjs>('@getSanDataTime').then((sanDataTime) => {
-                        oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk2}`, {
-                            SAN_ASSESSMENT_LINKED_IND: 'N',
-                            CLONED_FROM_PREV_OASYS_SAN_PK: pk1.toString(),
-                            SAN_ASSESSMENT_VERSION_NO: null,
-                            SSP_PLAN_VERSION_NO: null,
-                            LASTUPD_FROM_SAN: sanDataTime,
-                        })
-                    })
+                    oasys.San.getSanApiTimeAndCheckDbValues(pk2, 'Y', pk1, null, null)
 
                     cy.log(`Check that there are NO OASYS_SECTION records for 'SAN' or 'SSP'
                         Check that on any cloned through OASYS_SECTION records the fields 'SAN_CRIM_NEED_SCORE' have been nulled out

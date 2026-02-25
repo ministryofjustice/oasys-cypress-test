@@ -1,4 +1,4 @@
-import { OgrsTestParameters } from '../../cypress/support/ogrs/types'
+import { OgrsTestParameters } from '../../oasys/ogrs/types'
 import { runTest } from './testLib'
 
 describe('OGRS calculator test - data science test cases', () => {
@@ -8,6 +8,7 @@ describe('OGRS calculator test - data science test cases', () => {
 
     it('Data science test cases - static flag = N', () => {
 
+
         const csvTestParams: OgrsTestParameters = {
             testType: 'csv',
             csvDetails: {
@@ -15,7 +16,7 @@ describe('OGRS calculator test - data science test cases', () => {
             },
             staticFlag: 'N',
             reportMode: 'normal',
-            includeObjects: false
+            includeObjects: false,
         }
 
         csvTestParams.csvDetails.start = start
@@ -32,7 +33,7 @@ describe('OGRS calculator test - data science test cases', () => {
             },
             staticFlag: 'Y',
             reportMode: 'normal',
-            includeObjects: false
+            includeObjects: false,
         }
 
         csvTestParams.csvDetails.start = start

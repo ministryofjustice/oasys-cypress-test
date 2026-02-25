@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as v1Common from './v1Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -8,9 +7,7 @@ export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssess
     const relevantAssessments = offenderData.assessments.filter((ass) => !(['SARA', 'RM2000', 'BCS', 'TR_BCS', 'STANDALONE'].includes(ass.assessmentType)))
 
     if (relevantAssessments.filter((ass) => ass.status == 'COMPLETE').length == 0) {
-        return offenderData.assessments.filter((ass) => !(['SARA', 'RM2000', 'STANDALONE'].includes(ass.assessmentType))).length == 0
-            ? env.restErrorResults.noAssessments : env.restErrorResults.noMatchingAssessments
-
+        return env.restErrorResults.noAssessments
     } else {
         const result = new OffencesEndpointResponse(offenderData, parameters)
 
@@ -76,28 +73,28 @@ class OffencesAssessment extends v1Common.V1AssessmentCommon {
 
     addOffencesDetails(assessment: dbClasses.DbAssessment) {
 
-        this.offence = common.getTextAnswer(assessment.textData, '2', '2.1')
-        this.disinhibitors = common.getMultipleAnswers(assessment.qaData, '2', ['2.10'], 2, dictionary)
-        this.patternOfOffending = common.getTextAnswer(assessment.textData, '2', '2.12')
+        this.offence = assessment.qaData.getString('2.1')
+        this.disinhibitors = assessment.qaData.getStringArray('2.10')
+        this.patternOfOffending = assessment.qaData.getString('2.12')
 
-        this.offenceInvolved = common.getMultipleAnswers(assessment.qaData, '2',
-            ['2.2_V2_WEAPON', '2.2_V2_ANYVIOL', '2.2_V2_EXCESSIVE', '2.2_V2_ARSON', '2.2_V2_PHYSICALDAM', '2.2_V2_SEXUAL', '2.2_V2_DOM_ABUSE'], 1, dictionary)
+        this.offenceInvolved = assessment.qaData.getMultipleAsArray(
+            ['2.2_V2_WEAPON', '2.2_V2_ANYVIOL', '2.2_V2_EXCESSIVE', '2.2_V2_ARSON', '2.2_V2_PHYSICALDAM', '2.2_V2_SEXUAL', '2.2_V2_DOM_ABUSE'], dictionary)
         if (this.offenceInvolved == null) {  // Check for pre-6.35 style answers
-            this.offenceInvolved = common.getMultipleAnswers(assessment.qaData, '2', ['2.2'], 2, dictionary)
+            this.offenceInvolved = assessment.qaData.getStringArray('2.2')
         }
-        this.specificWeapon = common.getTextAnswer(assessment.textData, '2', '2.2.t_V2')
+        this.specificWeapon = assessment.qaData.getString('2.2.t_V2')
         if (this.specificWeapon == null) {
-            this.specificWeapon = common.getTextAnswer(assessment.textData, '2', '2.2.t')
+            this.specificWeapon = assessment.qaData.getString('2.2.t')
         }
-        this.victimPerpetratorRelationship = common.getTextAnswer(assessment.textData, '2', '2.4.2')
-        this.victimOtherInfo = common.getTextAnswer(assessment.textData, '2', '2.4.1')
+        this.victimPerpetratorRelationship = assessment.qaData.getString('2.4.2')
+        this.victimOtherInfo = assessment.qaData.getString('2.4.1')
 
-        this.evidencedMotivations = common.getMultipleAnswers(assessment.qaData, '2',
-            ['2.9_V2_SEXUAL', '2.9_V2_FINANCIAL', '2.9_V2_ADDICTION', '2.9_V2_EMOTIONAL', '2.9_V2_RACIAL', '2.9_V2_THRILL', '2.9_V2_OTHER'], 1, dictionary)
-        this.otherMotivation = common.getTextAnswer(assessment.textData, '2', '2.9.t_V2')
+        this.evidencedMotivations = assessment.qaData.getMultipleAsArray(
+            ['2.9_V2_SEXUAL', '2.9_V2_FINANCIAL', '2.9_V2_ADDICTION', '2.9_V2_EMOTIONAL', '2.9_V2_RACIAL', '2.9_V2_THRILL', '2.9_V2_OTHER'], dictionary)
+        this.otherMotivation = assessment.qaData.getString('2.9.t_V2')
         if (this.evidencedMotivations == null) {  // Check for pre-6.35 style answers
-            this.evidencedMotivations = common.getMultipleAnswers(assessment.qaData, '2', ['2.9'], 2, dictionary2_9)
-            this.otherMotivation = common.getTextAnswer(assessment.textData, '2', '2.9.t')
+            this.evidencedMotivations = assessment.qaData.getStringArray('2.9')
+            this.otherMotivation = assessment.qaData.getString('2.9.t')
 
         }
     }

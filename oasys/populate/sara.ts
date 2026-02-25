@@ -3,7 +3,7 @@ import * as oasys from 'oasys'
 /**
  * Fully populates a SARA assessment
  */
-export function sara() {
+export function sara(riskToPartner: 'Low' | 'Medium' | 'High', riskToOther: 'Low' | 'Medium' | 'High') {
 
     cy.log('Populating SARA')
 
@@ -71,8 +71,8 @@ export function sara() {
     sara.s20Comments.setValue('Comment')
     sara.otherConsideration1.setValue('Other consideration 1')
     sara.otherConsideration1Rating.setValue('P')
-    sara.riskOfViolencePartner.setValue('Low')
-    sara.riskOfViolenceOthers.setValue('Low')
+    sara.riskOfViolencePartner.setValue(riskToPartner)
+    sara.riskOfViolenceOthers.setValue(riskToOther)
     sara.interviewWithOffender.setValue('Yes')
     sara.interviewWithVictims.setValue('Yes')
     sara.interviewWithOthers.setValue('Yes')

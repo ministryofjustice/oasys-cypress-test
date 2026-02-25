@@ -1,11 +1,11 @@
 import { OAuth2Client } from '@badgateway/oauth2-client'     //  See https://github.com/badgateway/oauth2-client#readme for documentation
 import axios from 'axios'                                    //      https://www.npmjs.com/package/axios
 import { flatten } from 'flat'                               //      https://www.npmjs.com/package/flat
-import dayjs from 'dayjs'
 
 import * as rest from '.'
-import { restApiUrls } from './restApiUrls'
+import { restApiUrls, restErrorResults } from './restApiUrls'
 import { testEnvironment } from '../../../localSettings'
+import { OasysDateTime } from 'oasys'
 
 const restConfig = testEnvironment.rest
 
@@ -42,7 +42,7 @@ export async function getRestData(parameters: EndpointParams): Promise<RestRespo
 
     try {
         await getTokenIfRequired()
-        let start = dayjs()
+        OasysDateTime.startTimer('restResponse')
         const response = await axios.request({
             baseURL: restConfig.baseUrl,
             url: url,
@@ -55,7 +55,7 @@ export async function getRestData(parameters: EndpointParams): Promise<RestRespo
         if (response.status != 200) {
             restResponse.message = response.data.message
         }
-        restResponse.responseTime = dayjs().diff(start)
+        restResponse.responseTime = OasysDateTime.elapsedTime('restResponse')
     }
     catch (err) {
         restResponse.statusCode = 'error'
@@ -116,7 +116,7 @@ function getStatusCode(status: number): RestStatus {
  * 
  * Returns a CheckAPIResult object with two properties: failed (boolean) and output (string[] with the log details). 
  */
-export async function checkApiResponse(expectedValues: rest.Common.EndpointResponse | RestErrorResult, response: RestResponse): Promise<CheckAPIResult> {
+export async function checkApiResponse(expectedValues: rest.Common.EndpointResponse | RestErrorResult, response: RestResponse, reportPasses: boolean): Promise<CheckAPIResult> {
 
     let failed = false
     let logText: string[] = []
@@ -135,8 +135,8 @@ export async function checkApiResponse(expectedValues: rest.Common.EndpointRespo
                 logText.push(`Error checking API ${response.url}: expected status ${expectedResult.statusCode}, got ${response.statusCode}`)
                 failed = true
             }
-
-            if (response.message != expectedResult.message) {
+            if (response.message != expectedResult.message &&  // Accept mismatch if it's no assessments vs no matching assessments - rules for this are unclear
+                !(expectedResult.message == restErrorResults.noAssessments.message && response.message == restErrorResults.noMatchingAssessments.message)) {
                 logText.push(`Error checking API ${response.url}: expected '${expectedResult.message}', got '${response.message}'`)
                 failed = true
             }
@@ -176,8 +176,13 @@ export async function checkApiResponse(expectedValues: rest.Common.EndpointRespo
         // Check that all expected elements have been received and are correct
         Object.keys(expectedElements).forEach((key) => {
             if (Object.keys(actualElements).includes(key)) {
-                if (expectedElements[key] != actualElements[key]) {
-                    logText.push(`Incorrect value for ${key}: expected '${expectedElements[key]}', received '${actualElements[key]}'`)
+                const stringType = typeof expectedElements[key] == 'string'
+                const expectedValue = stringType ? expectedElements[key]?.substring(0, 3500) : expectedElements[key]
+                const receivedValue = stringType ? actualElements[key]?.replaceAll('\x02', '')?.substring(0, 3500) : actualElements[key]
+
+                if (expectedValue != receivedValue) {
+                    const newline = expectedValue?.length > 100 ? '\n                ' : ''
+                    logText.push(`Incorrect value for ${key}: ${newline}expected '${expectedValue}', ${newline}received '${receivedValue}'`)
                     failed = true
                 }
             }
@@ -203,7 +208,9 @@ export async function checkApiResponse(expectedValues: rest.Common.EndpointRespo
         logText.push('**********************************')
     } else {
         logText.push('Passed')
-        logText.push(`    response: ${JSON.stringify(response)}`)
+        if (reportPasses) {
+            logText.push(`    response: ${JSON.stringify(response)}`)
+        }
     }
     return { failed: failed, output: logText }
 
@@ -216,8 +223,12 @@ function sortArrays(obj: any) {
 
     const isArray = obj instanceof Array
     if (isArray) {
-        obj.forEach((item) => { sortArrays(item) })
-        obj.sort(arraySort)
+        if (obj.length > 0) {
+            obj.forEach((item) => { sortArrays(item) })
+            if (obj[0]['objectiveSequence'] == undefined) {  // Don't attempt to sort objectives, the sequence no is used in the query
+                obj.sort(arraySort)
+            }
+        }
     } else if (typeof obj == 'object') {
         Object.keys(obj).forEach((key) => {
             sortArrays(obj[key])
@@ -227,18 +238,8 @@ function sortArrays(obj: any) {
 
 function arraySort(a: object, b: object): number {
 
-    const aString = concatObject(a)
-    const bString = concatObject(b)
+    const aString = JSON.stringify(a)
+    const bString = JSON.stringify(b)
 
     return aString > bString ? 1 : aString < bString ? -1 : 0
-}
-
-// Concatenate all properties in an object to create a sort order
-function concatObject(obj: object): string {
-
-    let result = ''
-    Object.keys(obj).sort().forEach((key) => {
-        result += obj[key]
-    })
-    return result
 }

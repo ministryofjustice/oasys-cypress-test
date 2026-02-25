@@ -3,43 +3,45 @@
  * @module Offender type
  */
 
+declare type Gender = 'Male' | 'Female' | 'Not specified' | 'Not known' | 'Other'
+
 declare type OffenderDef = {
 
     // Omit these values to get auto-generated unique identifiers
-    probationCrn?: string;
-    pnc?: string | null;
-    nomisId?: string;
-    surname?: string;
-    //
-    cro?: string;
-    forename1: string;
-    forename2?: string;
-    forename3?: string;
-    gender: 'Male' | 'Female' | 'Not specified' | 'Not known' | 'Other';
-    ethnicity?: string;
-    dateOfBirth: OasysDate;
-    limitedAccessOffender?: boolean;
-    language?: string;
-    phoneNumber?: string;
-    religion?: string;
-    addressLine1?: string;
-    addressLine2?: string;
-    addressLine3?: string;
-    addressLine4?: string;
-    addressLine5?: string;
-    addressLine6?: string;
-    postcode?: string;
-    receptionCode?: string;
-    dischargeCode?: string;
-    dischargeAddressLine1?: string;
-    dischargeAddressLine2?: string;
-    dischargeAddressLine3?: string;
-    dischargeAddressLine4?: string;
-    dischargeAddressLine5?: string;
-    dischargePostcode?: string;
-    dischargeTelephoneNumber?: string;
-    event?: CmsEvent;
-    aliases?: Alias | Alias[];
+    probationCrn?: string,
+    pnc?: string | null,
+    nomisId?: string,
+    surname?: string,
+
+    cro?: string,
+    forename1: string,
+    forename2?: string,
+    forename3?: string,
+    gender: 'Male' | 'Female' | 'Not specified' | 'Not known' | 'Other',
+    ethnicity?: string,
+    dateOfBirth: OasysDate,
+    limitedAccessOffender?: boolean,
+    language?: string,
+    phoneNumber?: string,
+    religion?: string,
+    addressLine1?: string,
+    addressLine2?: string,
+    addressLine3?: string,
+    addressLine4?: string,
+    addressLine5?: string,
+    addressLine6?: string,
+    postcode?: string,
+    receptionCode?: string,
+    dischargeCode?: string,
+    dischargeAddressLine1?: string,
+    dischargeAddressLine2?: string,
+    dischargeAddressLine3?: string,
+    dischargeAddressLine4?: string,
+    dischargeAddressLine5?: string,
+    dischargePostcode?: string,
+    dischargeTelephoneNumber?: string,
+    event?: CmsEvent,
+    aliases?: Alias | Alias[],
 }
 
 declare type CmsEvent = {

@@ -1,7 +1,8 @@
-import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
+import { OasysDateTime } from 'oasys'
+import { jsonString } from 'lib/utils'
 
 export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssessments, parameters: EndpointParams) {
 
@@ -81,37 +82,37 @@ export class Section2Assessment extends v4Common.V4AssessmentCommon {
 
     addDetails(dbAssessment: dbClasses.DbAssessment) {
 
-        this.victimPerpetratorRel = common.getTextAnswer(dbAssessment.textData, '2', '2.4.2')
-        this.offenceAnalysis = common.getTextAnswer(dbAssessment.textData, '2', '2.1')
-        this.victimInfo = common.getTextAnswer(dbAssessment.textData, '2', '2.4.1')
-        this.acceptsResponsibility = common.getTextAnswer(dbAssessment.textData, '2', '2.11.t')
-        this.whatOccurred = common.getMultipleAnswers(dbAssessment.qaData, '2', ['2.3'], 2)
-        this.victimImpact = common.getTextAnswer(dbAssessment.textData, '2', '2.5')
-        this.recognisesImpact = common.getSingleAnswer(dbAssessment.qaData, '2', '2.6')
-        this.otherInvolved = common.getSingleAnswer(dbAssessment.qaData, '2', '2.7')
-        this.numberOfOthersInvolved = common.getSingleAnswer(dbAssessment.qaData, '2', '2.7.1')
-        this.peerGroupInfluences = common.getSingleAnswer(dbAssessment.qaData, '2', '2.7.2')
-        this.othersInvolved = common.getTextAnswer(dbAssessment.textData, '2', '2.7.3')
-        this.offenceMotivation = common.getTextAnswer(dbAssessment.textData, '2', '2.8')
-        this.disinhibitors = common.getMultipleAnswers(dbAssessment.qaData, '2', ['2.10'], 2)
-        this.acceptsResponsibilityYesNo = common.getSingleAnswer(dbAssessment.qaData, '2', '2.11')
-        this.patternOffending = common.getTextAnswer(dbAssessment.textData, '2', '2.12')
-        this.escalationOfSeriousness = common.getSingleAnswer(dbAssessment.qaData, '2', '2.13')
-        this.partOfEstablishedPattern = common.getSingleAnswer(dbAssessment.qaData, '2', '2.14')
-        this.offenceLinkedToReoffending = common.getTextAnswer(dbAssessment.textData, '2', '2.98')
-        this.offenceLinkedToHarm = common.getSingleAnswer(dbAssessment.qaData, '2', '2.99')
+        this.victimPerpetratorRel = dbAssessment.qaData.getString('2.4.2')
+        this.offenceAnalysis = jsonString(dbAssessment.qaData.getString('2.1'), {remove002: true})
+        this.victimInfo = dbAssessment.qaData.getString('2.4.1')
+        this.acceptsResponsibility = dbAssessment.qaData.getString('2.11.t')
+        this.whatOccurred = dbAssessment.qaData.getStringArray('2.3')
+        this.victimImpact = dbAssessment.qaData.getString('2.5')
+        this.recognisesImpact = dbAssessment.qaData.getString('2.6')
+        this.otherInvolved = dbAssessment.qaData.getString('2.7')
+        this.numberOfOthersInvolved = dbAssessment.qaData.getString('2.7.1')
+        this.peerGroupInfluences = dbAssessment.qaData.getString('2.7.2')
+        this.othersInvolved = dbAssessment.qaData.getString('2.7.3')
+        this.offenceMotivation = jsonString(dbAssessment.qaData.getString('2.8'), {remove002: true})
+        this.disinhibitors = dbAssessment.qaData.getStringArray('2.10')
+        this.acceptsResponsibilityYesNo = dbAssessment.qaData.getString('2.11')
+        this.patternOffending = dbAssessment.qaData.getString('2.12')
+        this.escalationOfSeriousness = dbAssessment.qaData.getString('2.13')
+        this.partOfEstablishedPattern = dbAssessment.qaData.getString('2.14')
+        this.offenceLinkedToReoffending = dbAssessment.qaData.getString('2.98')
+        this.offenceLinkedToHarm = dbAssessment.qaData.getString('2.99')
 
-        if (dbAssessment.initiationDate > common.releaseDate6_35) {
-            this.involveCarryingWeapon = common.getSingleAnswer(dbAssessment.qaData, '2', '2.2_V2_WEAPON')
-            this.involveViolenceOrThreat = common.getSingleAnswer(dbAssessment.qaData, '2', '2.2_V2_ANYVIOL')
-            this.involveExcessiveViolence = common.getSingleAnswer(dbAssessment.qaData, '2', '2.2_V2_EXCESSIVE')
-            this.involveArson = common.getSingleAnswer(dbAssessment.qaData, '2', '2.2_V2_ARSON')
-            this.involvePhysicalDamage = common.getSingleAnswer(dbAssessment.qaData, '2', '2.2_V2_PHYSICALDAM')
-            this.involveSexualElement = common.getSingleAnswer(dbAssessment.qaData, '2', '2.2_V2_SEXUAL')
-            this.involveDomesticAbuse = common.getSingleAnswer(dbAssessment.qaData, '2', '2.2_V2_DOM_ABUSE')
-            this.whichWeapon = common.getTextAnswer(dbAssessment.textData, '2', '2.2.t_V2')
+        if (OasysDateTime.checkIfAfterReleaseNode('6.35', dbAssessment.initiationDate)) {
+            this.involveCarryingWeapon = dbAssessment.qaData.getString('2.2_V2_WEAPON')
+            this.involveViolenceOrThreat = dbAssessment.qaData.getString('2.2_V2_ANYVIOL')
+            this.involveExcessiveViolence = dbAssessment.qaData.getString('2.2_V2_EXCESSIVE')
+            this.involveArson = dbAssessment.qaData.getString('2.2_V2_ARSON')
+            this.involvePhysicalDamage = dbAssessment.qaData.getString('2.2_V2_PHYSICALDAM')
+            this.involveSexualElement = dbAssessment.qaData.getString('2.2_V2_SEXUAL')
+            this.involveDomesticAbuse = dbAssessment.qaData.getString('2.2_V2_DOM_ABUSE')
+            this.whichWeapon = dbAssessment.qaData.getString('2.2.t_V2')
         } else {
-            const whatWasInvolved = common.getMultipleAnswers(dbAssessment.qaData, '2', ['2.2'], 2)
+            const whatWasInvolved = dbAssessment.qaData.getStringArray('2.2')
             if (whatWasInvolved != null && whatWasInvolved != undefined) {
                 this.involveCarryingWeapon = whatWasInvolved.includes('Carrying or using a weapon') ? 'Yes' : null
                 this.involveViolenceOrThreat = whatWasInvolved.includes('Any violence or threat of violence / coercion') ? 'Yes' : null
@@ -129,20 +130,20 @@ export class Section2Assessment extends v4Common.V4AssessmentCommon {
                 this.involveSexualElement = null
                 this.involveDomesticAbuse = null
             }
-            this.whichWeapon = common.getTextAnswer(dbAssessment.textData, '2', '2.2.t')
+            this.whichWeapon = dbAssessment.qaData.getString('2.2.t')
         }
 
-        if (dbAssessment.initiationDate > common.releaseDate6_35) {
-            this.sexual = common.getSingleAnswer(dbAssessment.qaData, '2', '2.9_V2_SEXUAL')
-            this.financial = common.getSingleAnswer(dbAssessment.qaData, '2', '2.9_V2_FINANCIAL')
-            this.addictions = common.getSingleAnswer(dbAssessment.qaData, '2', '2.9_V2_ADDICTION')
-            this.emotional = common.getSingleAnswer(dbAssessment.qaData, '2', '2.9_V2_EMOTIONAL')
-            this.racial = common.getSingleAnswer(dbAssessment.qaData, '2', '2.9_V2_RACIAL')
-            this.thrillSeeking = common.getSingleAnswer(dbAssessment.qaData, '2', '2.9_V2_THRILL')
-            this.other = common.getSingleAnswer(dbAssessment.qaData, '2', '2.9_V2_OTHER')
-            this.otherMotivationText = common.getTextAnswer(dbAssessment.textData, '2', '2.9.t_V2')
+        if (OasysDateTime.checkIfAfterReleaseNode('6.35', dbAssessment.initiationDate)) {
+            this.sexual = dbAssessment.qaData.getString('2.9_V2_SEXUAL')
+            this.financial = dbAssessment.qaData.getString('2.9_V2_FINANCIAL')
+            this.addictions = dbAssessment.qaData.getString('2.9_V2_ADDICTION')
+            this.emotional = dbAssessment.qaData.getString('2.9_V2_EMOTIONAL')
+            this.racial = dbAssessment.qaData.getString('2.9_V2_RACIAL')
+            this.thrillSeeking = dbAssessment.qaData.getString('2.9_V2_THRILL')
+            this.other = dbAssessment.qaData.getString('2.9_V2_OTHER')
+            this.otherMotivationText = dbAssessment.qaData.getString('2.9.t_V2')
         } else {
-            const offenceInvolved = common.getMultipleAnswers(dbAssessment.qaData, '2', ['2.9'], 2)
+            const offenceInvolved = dbAssessment.qaData.getString('2.9')
             if (offenceInvolved != null && offenceInvolved != undefined) {
                 this.sexual = offenceInvolved.includes('Sexual motivation') ? 'Yes' : null
                 this.financial = offenceInvolved.includes('Financial motivation') ? 'Yes' : null
@@ -160,7 +161,7 @@ export class Section2Assessment extends v4Common.V4AssessmentCommon {
                 this.thrillSeeking = null
                 this.other = null
             }
-            this.otherMotivationText = common.getTextAnswer(dbAssessment.textData, '2', '2.9.t')
+            this.otherMotivationText = dbAssessment.qaData.getString('2.9.t')
         }
     }
 }

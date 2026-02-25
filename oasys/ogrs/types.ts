@@ -1,5 +1,5 @@
 import { Decimal } from 'decimal.js'
-import * as dayjs from 'dayjs'
+import { Temporal } from '@js-temporal/polyfill'
 
 export type ReportMode = 'verbose' | 'normal' | 'minimal' | 'none'
 
@@ -18,6 +18,7 @@ export type OgrsTestParameters = {
     staticFlag: 'Y' | 'N',
     reportMode: ReportMode,
     includeObjects: boolean,
+    cypressOnly?: boolean,
 }
 
 export type OgrsTestScriptResult = {
@@ -45,8 +46,8 @@ export type RescoringTestParameters = {
     includeLayer1: boolean,
     useCurrentDate: boolean,
     reportMode: ReportMode,
-    significantReleaseDates: SignificantReleaseDates,
     outputFile: string,
+    appConfig: AppConfig,
 }
 
 export type RescoringResult = {
@@ -54,15 +55,30 @@ export type RescoringResult = {
     pk: number,
 }
 
+export type TieringTestParameters = {
+    whereClause: string,
+    count: number,
+    checkOgrs4: boolean,
+    includeStatic: boolean,
+    reportAll: boolean,
+}
+
+export type TieringTestResult = {
+    logText: string[],
+    failed: number,
+    passed: 0,
+}
+
+export type Tier = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'M'
 export type ScoreType = 'serious_violence_brief' | 'serious_violence_extended' | 'general_brief' | 'violence_brief' | 'general_extended' | 'violence_extended' | 'osp_c' | 'osp_i' | 'rsr'
 export type ScoreBand = 'Low' | 'Medium' | 'High' | 'Very High' | 'N/A'
 
 export type OgrsOffenceCat = { cat: string, addVatpFlag: boolean }
 
 export type TestCaseParameters = {
-    ASSESSMENT_DATE: dayjs.Dayjs,
+    ASSESSMENT_DATE: Temporal.PlainDate,
     STATIC_CALC: string,
-    DOB: dayjs.Dayjs,
+    DOB: Temporal.PlainDate,
     GENDER: string,
     OFFENCE_CODE: string,
     TOTAL_SANCTIONS_COUNT: number,
@@ -73,11 +89,11 @@ export type TestCaseParameters = {
     PARAPHILIA_SANCTIONS: number,
     STRANGER_VICTIM: string,
     AGE_AT_FIRST_SANCTION: number,
-    LAST_SANCTION_DATE: dayjs.Dayjs,
-    DATE_RECENT_SEXUAL_OFFENCE: dayjs.Dayjs,
+    LAST_SANCTION_DATE: Temporal.PlainDate,
+    DATE_RECENT_SEXUAL_OFFENCE: Temporal.PlainDate,
     CURR_SEX_OFF_MOTIVATION: string,
-    MOST_RECENT_OFFENCE: dayjs.Dayjs,
-    COMMUNITY_DATE: dayjs.Dayjs,
+    MOST_RECENT_OFFENCE: Temporal.PlainDate,
+    COMMUNITY_DATE: Temporal.PlainDate,
     ONE_POINT_THIRTY: string,
     TWO_POINT_TWO: number,
     THREE_POINT_FOUR: number,
@@ -125,7 +141,7 @@ export type TestCaseParameters = {
     ROBBERY: number,
     WEAPONS_NOT_FIREARMS: number,
     CUSTODY_IND: string,
-    effectiveAssessmentDate?: dayjs.Dayjs,
+    effectiveAssessmentDate?: Temporal.PlainDate,
     age?: number,
     ageAtLastSanction?: number,
     ageAtLastSanctionSexual?: number,

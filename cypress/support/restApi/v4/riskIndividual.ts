@@ -1,4 +1,3 @@
-import * as common from '../common'
 import * as v4Common from './v4Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
@@ -50,6 +49,7 @@ export class RiskIndividualAssessment extends v4Common.V4AssessmentCommon {
 
         // Remove standard stuff not included in this endpoint
         delete this.assessmentPk
+        delete this.assessmentVersion
         delete this.assessmentType
         delete this.dateCompleted
         delete this.assessorSignedDate
@@ -68,10 +68,10 @@ export class RiskIndividualAssessment extends v4Common.V4AssessmentCommon {
         delete this.latestCompleteDate
         delete this.assessor
 
-        this.concernsRiskOfSuicide = common.getSingleAnswer(dbAssessment.qaData, 'ROSH', 'R3.1')
-        this.concernsRiskOfSelfHarm = common.getSingleAnswer(dbAssessment.qaData, 'ROSH', 'R3.2')
-        this.concernsCopingInCustody = common.getSingleAnswer(dbAssessment.qaData, 'ROSH', 'R3.3')
-        this.concernsVulnerability = common.getSingleAnswer(dbAssessment.qaData, 'ROSH', 'R3.4')
+        this.concernsRiskOfSuicide = dbAssessment.qaData.getString('R3.1')
+        this.concernsRiskOfSelfHarm = dbAssessment.qaData.getString('R3.2')
+        this.concernsCopingInCustody = dbAssessment.qaData.getString('R3.3')
+        this.concernsVulnerability = dbAssessment.qaData.getString('R3.4')
     }
 }
 

@@ -36,6 +36,10 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
     if (params.LAST_SANCTION_DATE == null && (required.includes('LAST_SANCTION_DATE') || (scoreType == 'osp_c' && params.COMMUNITY_DATE == null))) {
         missing.push(getErrorText('LAST_SANCTION_DATE'))
     }
+    // Invalid age at first sanction, relevant for all except OSP
+    if (!['osp_c', 'osp_i'].includes(scoreType) && params.AGE_AT_FIRST_SANCTION != null && params.ageAtLastSanction != null && params.AGE_AT_FIRST_SANCTION > params.ageAtLastSanction) {
+        missing.push('Age at first sanction cannot be greater than age at current sanction')
+    }
     standardCheck(params, required, missing, 'AGE_AT_FIRST_SANCTION')
     standardCheck(params, required, missing, 'GENDER')
 
@@ -89,7 +93,7 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
         standardCheck(params, required, missing, 'DATE_RECENT_SEXUAL_OFFENCE')
         standardCheck(params, required, missing, 'CURR_SEX_OFF_MOTIVATION')
     }
-    if (['osp_c', 'rsr'].includes(scoreType) && params.male && ['Y', 'O'].includes(params.CURR_SEX_OFF_MOTIVATION) && params.STRANGER_VICTIM == null) {
+    if (['osp_c', 'rsr'].includes(scoreType) && params.male && ['Y', 'O'].includes(params.CURR_SEX_OFF_MOTIVATION) && params.STRANGER_VICTIM == null && params.ONE_POINT_THIRTY == 'Y') {
         missing.push(getErrorText('STRANGER_VICTIM'))
     }
 
@@ -134,11 +138,7 @@ export const requiredParams = {
         'TWO_POINT_TWO',
         'THREE_POINT_FOUR',
         'FOUR_POINT_TWO',
-        'SIX_POINT_FOUR',
-        'SIX_POINT_SEVEN',
         'NINE_POINT_ONE',
-        'NINE_POINT_TWO',
-        'ELEVEN_POINT_TWO',
         'ELEVEN_POINT_FOUR',
         'TWELVE_POINT_ONE',
         'HOMICIDE',
@@ -213,7 +213,6 @@ export const requiredParams = {
         'NINE_POINT_TWO',
         'ELEVEN_POINT_TWO',
         'ELEVEN_POINT_FOUR',
-        'TWELVE_POINT_ONE',
     ],
     osp_c: [
         'ONE_POINT_THIRTY',
@@ -264,11 +263,7 @@ export const requiredParams = {
         'TWO_POINT_TWO',
         'THREE_POINT_FOUR',
         'FOUR_POINT_TWO',
-        'SIX_POINT_FOUR',
-        'SIX_POINT_SEVEN',
         'NINE_POINT_ONE',
-        'NINE_POINT_TWO',
-        'ELEVEN_POINT_TWO',
         'ELEVEN_POINT_FOUR',
         'TWELVE_POINT_ONE',
         'HOMICIDE',

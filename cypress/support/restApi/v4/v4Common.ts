@@ -1,6 +1,5 @@
 import * as common from '../common'
 import * as dbClasses from '../dbClasses'
-import * as env from '../restApiUrls'
 
 export function assessmentFilter(dbAssessment: dbClasses.DbAssessmentOrRsr): boolean {
 
@@ -12,6 +11,15 @@ export function assessmentWithRsrFilter(dbAssessment: dbClasses.DbAssessmentOrRs
     return ['LAYER1', 'LAYER2', 'LAYER3', 'STANDALONE'].includes(dbAssessment.assessmentType)
 }
 
+export function timelineAssessmentFilter(dbAssessment: dbClasses.DbAssessmentOrRsr): boolean {
+
+    return ['LAYER1', 'LAYER2', 'LAYER3', 'OASYS2'].includes(dbAssessment.assessmentType)
+}
+
+export function timelineAssessmentWithRsrFilter(dbAssessment: dbClasses.DbAssessmentOrRsr): boolean {
+
+    return ['LAYER1', 'LAYER2', 'LAYER3', 'STANDALONE', 'OASYS2'].includes(dbAssessment.assessmentType)
+}
 export class V4EndpointResponse extends common.EndpointResponse {
 
     probNumber: string
@@ -36,7 +44,7 @@ export class V4EndpointResponse extends common.EndpointResponse {
         if (offenderData.nomisId != null) this.prisNumber = offenderData.nomisId
 
         // Remove standard properties in the v1-3 endpoints that are not used in v4
-        if (parameters.endpoint != 'v4AssList') {
+        if (!['v4AssList', 'pni'].includes(parameters.endpoint)) {
             delete this.inputs['crn']
         }
         if (this.probNumber == null) delete this.probNumber
@@ -45,7 +53,7 @@ export class V4EndpointResponse extends common.EndpointResponse {
         delete this.inputs['expectedStatus']
 
         let includeRsr = ['v4AssList', 'v4RiskScoresRsr'].includes(parameters.endpoint)
-        this.processTimeline(offenderData.assessments.filter(includeRsr ? assessmentWithRsrFilter : assessmentFilter))
+        this.processTimeline(offenderData.assessments.filter(includeRsr ? timelineAssessmentWithRsrFilter : timelineAssessmentFilter))
     }
 
     processTimeline(dbAssessments: dbClasses.DbAssessmentOrRsr[], allAssessments: dbClasses.DbAssessmentOrRsr[] = []) {
@@ -115,6 +123,7 @@ export class V4EndpointResponse extends common.EndpointResponse {
 export class V4TimelineAssessment {
 
     assessmentPk: number
+    assessmentVersion: number
     assessmentType: string
     initiationDate: string
     status: string
@@ -125,6 +134,11 @@ export class V4TimelineAssessment {
 
         this.assessmentPk = dbAssessment.assessmentPk
         this.assessmentType = dbAssessment.assessmentType
+        if (this.assessmentType == 'STANDALONE') {
+            delete this.assessmentVersion
+        } else {
+            this.assessmentVersion = dbAssessment.assessmentVersion
+        }
         this.initiationDate = dbAssessment.initiationDate
         this.status = dbAssessment.status
         if (this.status == 'LOCKED_INCOMPLETE') {
@@ -140,6 +154,7 @@ export class V4AssessmentCommon {
 
     assessmentPk: number
     assessmentType: string
+    assessmentVersion: number
     dateCompleted: string
     assessorSignedDate: string
     initiationDate: string
@@ -173,6 +188,11 @@ export class V4AssessmentCommon {
 
         this.assessmentPk = assessment.assessmentPk
         this.assessmentType = assessment.assessmentType
+        if (this.assessmentType == 'STANDALONE') {
+            delete this.assessmentVersion
+        } else {
+            this.assessmentVersion = assessment.assessmentVersion
+        }
         this.dateCompleted = assessment.completedDate
         this.assessorSignedDate = assessment.signedDate
         this.initiationDate = assessment.initiationDate

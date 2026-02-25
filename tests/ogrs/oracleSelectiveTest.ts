@@ -1,33 +1,29 @@
-import { OgrsTestParameters, ReportMode } from '../../cypress/support/ogrs/types'
+import { OgrsTestParameters, ReportMode } from '../../oasys/ogrs/types'
 import { runTest } from './testLib'
 
-const pk = 9559367
-const reportMode: ReportMode = 'normal' 
+// const pk = 4192377  // fully populated
+const pk = 9527359  // old 2.2 weapon
+
+const reportMode: ReportMode = 'verbose'
 
 describe('OGRS calculator test', () => {
 
-    runTests()
-})
-
-
-function runTests() {
-
-    const dbTestParams: OgrsTestParameters = {
-        testType: 'db',
-        dbDetails: {
-            type: 'assessment',
-            whereClause: `oasys_set_pk = ${pk}`,
-            count: 1,
-        },
-        staticFlag: null,
-        reportMode: reportMode,
-        includeObjects: false,
-    }
-
     it(`Assessment pk ${pk}`, () => {
+
+        const dbTestParams: OgrsTestParameters = {
+            testType: 'db',
+            dbDetails: {
+                type: 'assessment',
+                whereClause: `oasys_set_pk = ${pk}`,
+                count: 1,
+            },
+            staticFlag: 'N',
+            reportMode: reportMode,
+            includeObjects: true,
+            // cypressOnly: true,
+        }
 
         runTest(dbTestParams, '', false, false)
     })
+})
 
-
-}

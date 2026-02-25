@@ -1,5 +1,5 @@
 import addContext from 'mochawesome/addContext'
-import dayjs from 'dayjs'
+import { Temporal } from '@js-temporal/polyfill'
 
 var screenshotCount = 0
 var logGroup = ""
@@ -28,7 +28,7 @@ Cypress.on("test:after:run", (test, runnable) => {
     if (test.state === "failed") {
 
         const screenshot = `screenshots/${getSpecPath()}/${runnable.parent.title} -- ${test.title} (failed).png`
-        const timestamp = dayjs().format('HH:mm:ss.SSS')
+        const timestamp = Temporal.Now.plainTimeISO().toString({ fractionalSecondDigits: 3 })
 
         cy.once('test:after:run', (test) => addContext({ test }, `${timestamp}:  TEST FAILED`))
         cy.once('test:after:run', (test) => addContext({ test }, test.err.stack.replaceAll('webpack:///./', '')))
@@ -48,7 +48,7 @@ Cypress.Commands.overwrite('log', (originalFn, message, args) => {
     Cypress.log({ displayName: message, message: `${args}` })
     Cypress.log({ displayName: '🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹', message: '' })
 
-    const timestamp = dayjs().format('HH:mm:ss.SSS')
+    const timestamp = Temporal.Now.plainTimeISO().toString({ fractionalSecondDigits: 3 })
     cy.once('test:after:run', (test) => addContext({ test }, `${timestamp}:  ${message} ${args}`))
 
     return null
@@ -67,10 +67,10 @@ Cypress.Commands.overwrite('screenshot', (originalFn, subject, name, options) =>
     if (!name) {
         screenshotName = `screenshot${screenshotCount++}`
     } else if (name.toUpperCase() == 'TIMESTAMP') {
-        screenshotName = dayjs().format('YYYY-MM-DD_HH-mm-ss')
+        screenshotName = Temporal.Now.plainTimeISO().toString()
     }
 
-    let timestamp = dayjs().format('HH:mm:ss.SSS')
+    let timestamp = Temporal.Now.plainTimeISO().toString({ fractionalSecondDigits: 3 })
     cy.once('test:after:run', (test) => addContext({ test }, `${timestamp}: Screenshot '${screenshotName}.png'`))
     cy.once('test:after:run', (test) => addContext({ test }, `screenshots/${getSpecPath()}/${screenshotName}.png`))
 
@@ -79,7 +79,7 @@ Cypress.Commands.overwrite('screenshot', (originalFn, subject, name, options) =>
 
 Cypress.Commands.add('groupedLogStart', (title) => {
 
-    let timestamp = dayjs().format('HH:mm:ss.SSS')
+    let timestamp = Temporal.Now.plainTimeISO().toString({ fractionalSecondDigits: 3 })
     logGroup = `${timestamp}:  ${title}`
 })
 

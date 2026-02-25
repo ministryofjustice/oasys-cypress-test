@@ -78,8 +78,8 @@ export class RSR {
         this.rsrStaticOrDynamic = dbRiskDetails.rsrStaticOrDynamic
         this.rsrExceptionError = dbRiskDetails.rsrExceptionError
         this.rsrAlgorithmVersion = dbRiskDetails.rsrAlgorithmVersion
-        this.rsrPercentageScore = fixDp(dbRiskDetails.rsrPercentageScore)
-        this.scoreLevel = common.riskLabel(dbRiskDetails.scoreLevel)
+        this.rsrPercentageScore = common.fixDp(dbRiskDetails.rsrPercentageScore)
+        this.scoreLevel = common.riskLabel(dbRiskDetails.rsrRisk)
     }
 }
 
@@ -94,18 +94,21 @@ export class OSP {
     ospIndirectImagesChildrenPercentageScore: number
     ospDirectContactScoreLevel: string
     ospDirectContactPercentageScore: number
+    ospDirectContactRiskReduction: string
+
 
     constructor(dbRiskDetails: dbClasses.DbRiskDetails) {
 
-        this.ospImagePercentageScore = fixDp(dbRiskDetails.ospImagePercentageScore)
-        this.ospContactPercentageScore = fixDp(dbRiskDetails.ospContactPercentageScore)
-        this.ospImageScoreLevel = common.riskLabel(dbRiskDetails.ospImageScoreLevel)
-        this.ospContactScoreLevel = common.riskLabel(dbRiskDetails.ospContactScoreLevel)
+        this.ospImagePercentageScore = common.fixDp(dbRiskDetails.ospImagePercentageScore)
+        this.ospContactPercentageScore = common.fixDp(dbRiskDetails.ospContactPercentageScore)
+        this.ospImageScoreLevel = common.riskLabel(dbRiskDetails.ospIRisk)
+        this.ospContactScoreLevel = common.riskLabel(dbRiskDetails.ospCRisk)
 
-        this.ospIndirectImagesChildrenScoreLevel = common.riskLabel(dbRiskDetails.ospIndirectImagesChildrenScoreLevel)
-        this.ospIndirectImagesChildrenPercentageScore = fixDp(dbRiskDetails.ospIndirectImagesChildrenPercentageScore)
-        this.ospDirectContactScoreLevel = common.riskLabel(dbRiskDetails.ospDirectContactScoreLevel)
-        this.ospDirectContactPercentageScore = fixDp(dbRiskDetails.ospDirectContactPercentageScore)
+        this.ospIndirectImagesChildrenScoreLevel = common.riskLabel(dbRiskDetails.ospIicRisk)
+        this.ospIndirectImagesChildrenPercentageScore = common.fixDp(dbRiskDetails.ospIicPercentageScore)
+        this.ospDirectContactScoreLevel = common.riskLabel(dbRiskDetails.ospDcRisk)
+        this.ospDirectContactPercentageScore = common.fixDp(dbRiskDetails.ospDcPercentageScore)
+        this.ospDirectContactRiskReduction = dbRiskDetails.ospCRiskReduction
     }
 }
 
@@ -133,32 +136,25 @@ export class NewActuarialPredictors {
 
     constructor(dbRiskDetails: dbClasses.DbRiskDetails) {
 
-        this.ogrs4gYr2 = dbRiskDetails.ogrs4gYr2
-        this.ogrs4gBand = common.riskLabel(dbRiskDetails.ogrs4gBand)
+        this.ogrs4gYr2 = dbRiskDetails.ogrs4gPercentageScore
+        this.ogrs4gBand = common.riskLabel(dbRiskDetails.ogrs4gRisk)
         this.ogrs4gCalculated = dbRiskDetails.ogrs4gCalculated
-        this.ogrs4vYr2 = dbRiskDetails.ogrs4vYr2
-        this.ogrs4vBand = common.riskLabel(dbRiskDetails.ogrs4vBand)
+        this.ogrs4vYr2 = dbRiskDetails.ogrs4vPercentageScore
+        this.ogrs4vBand = common.riskLabel(dbRiskDetails.ogrs4vRisk)
         this.ogrs4vCalculated = dbRiskDetails.ogrs4vCalculated
-        this.ogp2Yr2 = dbRiskDetails.ogp2Yr2
-        this.ogp2Band = common.riskLabel(dbRiskDetails.ogp2Band)
+        this.ogp2Yr2 = dbRiskDetails.ogp2PercentageScore
+        this.ogp2Band = common.riskLabel(dbRiskDetails.ogp2Risk)
         this.ogp2Calculated = dbRiskDetails.ogp2Calculated
-        this.ovp2Yr2 = dbRiskDetails.ovp2Yr2
-        this.ovp2Band = common.riskLabel(dbRiskDetails.ovp2Band)
+        this.ovp2Yr2 = dbRiskDetails.ovp2PercentageScore
+        this.ovp2Band = common.riskLabel(dbRiskDetails.ovp2Risk)
         this.ovp2Calculated = dbRiskDetails.ovp2Calculated
 
-        this.snsvStaticYr2 = dbRiskDetails.snsvStaticYr2
-        this.snsvStaticYr2Band = common.riskLabel(dbRiskDetails.snsvStaticYr2Band)
+        this.snsvStaticYr2 = dbRiskDetails.snsvStaticPercentageScore
+        this.snsvStaticYr2Band = common.riskLabel(dbRiskDetails.snsvStaticRisk)
         this.snsvStaticCalculated = dbRiskDetails.snsvStaticCalculated
-        this.snsvDynamicYr2 = dbRiskDetails.snsvDynamicYr2
-        this.snsvDynamicYr2Band = common.riskLabel(dbRiskDetails.snsvDynamicYr2Band)
+        this.snsvDynamicYr2 = dbRiskDetails.snsvDynamicPercentageScore
+        this.snsvDynamicYr2Band = common.riskLabel(dbRiskDetails.snsvDynamicRisk)
         this.snsvDynamicCalculated = dbRiskDetails.snsvDynamicCalculated
     }
 
-}
-
-
-function fixDp(value: number): number {
-
-    if (value == undefined || value == null) return value
-    return Number(value.toFixed(2))
 }

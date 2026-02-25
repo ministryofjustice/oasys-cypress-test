@@ -6,39 +6,6 @@
  * @module Autodata
  */
 
-import * as dayjs from 'dayjs'
-
-const dateFormat = 'DD/MM/YYYY'
-let testStartDate = Cypress.dayjs()
-
-/**
- * Calculate a date based on the test start date (i.e. today unless the test runs over midnight), using an OasysDate object which can contain any of the following (all optional):
- *  - years
- *  - months
- *  - weeks
- *  - days
- * 
- * These should be provided as positive or negative integers which are used as offsets to calculate a date.
- * The return value is a string in the normal OASys date format (dd/mm/yyyy).
- * 
- * If no values are specified (or no parameter at all), returns today's date.  If the parameter is a string, it is returned unchanged.
- */
-export function oasysDate(offset?: OasysDate): string {
-
-    if (typeof offset == 'string') {
-        return offset
-    }
-
-    let date = testStartDate
-
-    if (offset?.days) date = date.add(offset.days, 'day')
-    if (offset?.weeks) date = date.add(offset.weeks, 'week')
-    if (offset?.months) date = date.add(offset.months, 'month')
-    if (offset?.years) date = date.add(offset.years, 'year')
-
-    return date.format(dateFormat)
-}
-
 /** 
  * Returns a string with x characters.  The string includes some spaces and carriage returns, and a counter at regular intervals.
  */
