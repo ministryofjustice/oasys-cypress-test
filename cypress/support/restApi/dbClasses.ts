@@ -94,6 +94,7 @@ const assessmentColumns: Columns = {
     noSaraDate: {name: 'no_sara_date', type: 'string'},
     signedDate: { name: 'assessor_signed_date', type: 'date' },
     sanIndicator: { name: 'san_assessment_linked_ind', type: 'string' },
+    spIndicator: { name: 'arns_sp_only_linked_ind', type: 'string' },
     roshLevel: { name: 'rosh_level_elm', type: 'string' },
     learningToolScore: { name: 'learning_tool_score', type: 'integer' },
     ldcSubTotal: { name: 'ldc_sub_total', type: 'integer' },
@@ -113,6 +114,7 @@ export class DbAssessment extends DbAssessmentOrRsr {
     parentAssessmentPk: number
     noSaraDate: string
     sanIndicator: string
+    spIndicator: string
     dateOfBirth: string
     learningToolScore: number
     ldcSubTotal: number
