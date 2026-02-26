@@ -12,6 +12,12 @@ export class RoshSummary extends BaseAssessmentPage {
     insertNames = new Element.Button("//input[@type='button' and contains(@value,'Insert children')]")
     r10_2 = new Element.Textbox('#textarea_SUM2')
 
+    dcSrpBand = new Element.Text("svg:contains('DC-SRP')>text:first")
+    iicSrpBand = new Element.Text("svg:contains('IIC-SRP')>text:first")
+    csrpBand = new Element.Text("svg:contains('CSRP')>text:first")
+    csrpType = new Element.Text("svg:contains('CSRP')>text:nth-of-type(2):first")
+    csrpScore = new Element.Text("svg:contains('CSRP')>text:nth-of-type(4):first")
+
     riskFactorAnslysis = new Element.Textbox('#textarea_SUM9')
     r10_5 = new Element.Textbox('#textarea_SUM10')
     r10_3 = new Element.Textbox('#textarea_SUM11')
