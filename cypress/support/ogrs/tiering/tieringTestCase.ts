@@ -17,31 +17,20 @@ export function testTieringCase(tieringCase: TieringCase, includeStatic: boolean
         arpScore = tieringCase.arpCsrp.ogrs4gPercentage2yr
     }
 
-    // OSP percentage and band - use DC and IIC if available, otherwise the old C and I versions
-    const oldOsp = tieringCase.srp.ncOspDcPercentageScore == null && tieringCase.srp.ncOspIicPercentageScore == null
+    // OSP percentage and band - use DC if available, otherwise the old C version
+    const oldOsp = tieringCase.srp.ncOspDcPercentageScore == null
     const ospContactRisk = oldOsp ? tieringCase.oldOsp.ospCPercentageScore : tieringCase.srp.ncOspDcPercentageScore
     const ospContactBand = oldOsp ? tieringCase.oldOsp.ospCRiskReconElm : tieringCase.srp.ncOspDcRiskReconElm
-    const ospImageBand = oldOsp ? tieringCase.oldOsp.ospIRiskReconElm : tieringCase.srp.ncOspIicRiskReconElm
 
     // RoSH flag - use Delius flag if available, otherwise take the one from oasys_set
     const rosh = (tieringCase.rosh == null) ? tieringCase.roshLevelElm : tieringCase.rosh
 
     // Initial tier calculations - dynamic ARP, dynamic CSRP
     const arpCsrp = calculateArpCsrp(arpScore, csrpScore)
-    const arp = calculateArpCsrp(arpScore, 0)
     const dc = calculateDc(ospContactRisk, ospContactBand, oldOsp)
-    const iic = calculateIic(ospImageBand)
 
     // Determine the initial result
-    let initialResult = arpCsrp
-
-    let iicTrump = false
-    if (dc != null && (iic == null || dc <= iic)) {         // DC is used if higher or equal to IIC
-        initialResult = getHigherTier(arpCsrp, dc)          // DC overrules ARP-CSRP only if higher (lower alphabetically)
-    } else if (dc != null && iic != null) {
-        initialResult = getHigherTier(arp, iic)             // IIC is used if it's higher than DC, but is compared to ARP only
-        iicTrump = true
-    }
+    let initialResult = getHigherTier(arpCsrp, dc)
 
     // Final result calculations
     const roshMappa = calculateRoshMappa(rosh, tieringCase.mappa)
@@ -53,21 +42,13 @@ export function testTieringCase(tieringCase: TieringCase, includeStatic: boolean
     finalResult = getHigherTier(finalResult, lifer)
     finalResult = getHigherTier(finalResult, daStalkingCp)
 
-    // If no CSRP, only accept the final result if it's A or if IIC was used with ARP
+    // If no CSRP, only accept the final result if it's A
     if (arpCsrp == null && finalResult != 'A') {
-        if (iicTrump) {
-            if (arp == null && finalResult > 'D') {  // Only accept D or higher if ARP was not available (D is the max from ARP only)
-                finalResult = null
-            }
-        } else {
             finalResult = null
-        }
     }
 
     logText.push(`        ARP/CSRP   - ${arpCsrp}`)
-    logText.push(`        ARP        - ${arp}`)
     logText.push(`        DC-SRP     - ${dc}`)
-    logText.push(`        IIC-SRP    - ${iic}`)
     logText.push(`        RoSH/MAPPA - ${roshMappa}`)
     logText.push(`        Lifer      - ${lifer}`)
     logText.push(`        DA, st, CP - ${daStalkingCp}`)
@@ -129,12 +110,6 @@ function calculateDc(ospRisk: number, ospContactBand: string, oldOsp: boolean): 
             return 'E'
     }
     return null
-}
-
-function calculateIic(ospBand: string): Tier {
-
-    const band = ospBand?.substring(0, 1)
-    return band == 'H' ? 'C' : band == 'M' ? 'D' : band == 'L' ? 'E' : null
 }
 
 function calculateRoshMappa(rosh: string, mappa: string): Tier {
