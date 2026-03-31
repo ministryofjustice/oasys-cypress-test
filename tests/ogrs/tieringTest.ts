@@ -11,7 +11,7 @@ describe('Tier calculations test', () => {
         count: count,
         checkOgrs4: false,
         includeStatic: false,
-        reportAll: true,
+        reportAll: false,
     }
 
     it(`Tiering calculation`, () => {
