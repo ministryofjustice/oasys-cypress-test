@@ -1,6 +1,5 @@
 import * as oasys from 'oasys'
 
-
 export function noIssues() {
 
     const page = new oasys.Pages.Assessment.Section4().goto(true)

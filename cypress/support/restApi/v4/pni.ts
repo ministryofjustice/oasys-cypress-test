@@ -184,7 +184,7 @@ class PniCalc {
                         this.saraRiskLevelToPartner = associatedSaraRiskToPartner
                         this.saraRiskLevelToOther = associatedSaraRiskToOther
                     } else {
-                        for (let i = saraAssessments.length - 1; i > 0; i--) {  // Step backwards through the other SARAs, use the values and drop out if applicable
+                        for (let i = saraAssessments.length - 1; i >= 0; i--) {  // Step backwards through the other SARAs, use the values and drop out if applicable
                             if (saraAssessments[i].parentAssessmentPk != dbAssessment.assessmentPk) {
                                 const riskToPartner = saraAssessments[i].qaData.getRiskAsNumber('SR76.1.1')
                                 const riskToOther = saraAssessments[i].qaData.getRiskAsNumber('SR77.1.1')

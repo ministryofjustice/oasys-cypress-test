@@ -107,7 +107,7 @@ export async function testOneOffender(parameters: { crn: string, crnSource: Prov
             if (assSummAssessments.length > 0) {
                 const assessment = assSummAssessments[assSummAssessments.length - 1]
                 apiParams.push({
-                    endpoint: assessment['sanIndicator'] == 'Y' ? 'assSummSan' : 'assSumm', crn: offenderData.probationCrn, laoPrivilege: 'ALLOW',
+                    endpoint: assessment['sanIndicator'] == 'Y' || assessment['spIndicator'] == 'Y' ? 'assSummSan' : 'assSumm', crn: offenderData.probationCrn, laoPrivilege: 'ALLOW',
                     assessmentPk: assessment.assessmentPk, expectedStatus: assessment.status
                 })
             }

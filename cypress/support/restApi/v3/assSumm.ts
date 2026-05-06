@@ -3,10 +3,12 @@ import * as v3Common from './v3Common'
 import * as dbClasses from '../dbClasses'
 import * as env from '../restApiUrls'
 import { NewActuarialPredictors } from '../riskScoreClasses'
+import { SanCrimNeedScore } from '../common'
 
 export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssessments, parameters: EndpointParams) {
 
     // This class handles both AssSumm and AssSummSan (no SP details on the SAN version), using the SAN indicator field to determine which type is required.
+    // Also used for ARNS-SP assessments in the AssSummSan variant
     const timelineAssessments = offenderData.assessments.filter((ass) => !['SARA', 'RM2000', 'BCS', 'TR_BCS', 'STANDALONE'].includes(ass.assessmentType))
     const assessment = offenderData.assessments[offenderData.assessments.map((ass) => ass.assessmentPk).indexOf(parameters.assessmentPk)]
 
@@ -72,6 +74,7 @@ export class AssSummAssessment extends v3Common.V3AssessmentCommon {
     reviewNum: string
 
     weightedScores: WeightedScores
+    sanCrimNeedScore: SanCrimNeedScore
     furtherInformation: FurtherInformation
     offender: Offender
     newActuarialPredictors: NewActuarialPredictors
@@ -84,6 +87,8 @@ export class AssSummAssessment extends v3Common.V3AssessmentCommon {
     offences: Offence[] = []
 
     addAssSummDetails(dbAssessment: dbClasses.DbAssessment) {
+
+        const assSummSan = dbAssessment.sanIndicator == 'Y' || dbAssessment.spIndicator == 'Y'  // Both of these assessment types use asssummsan
 
         this.riskChildrenCommunity = dbAssessment.qaData.getString('SUM6.1.1')
         this.riskChildrenCustody = dbAssessment.qaData.getString('SUM6.1.2')
@@ -109,12 +114,13 @@ export class AssSummAssessment extends v3Common.V3AssessmentCommon {
         this.analysisEscapeAbscond = dbAssessment.qaData.getString('FA65')
         this.analysisControlBehaveTrust = dbAssessment.qaData.getString('FA66')
 
-        if (dbAssessment.sanIndicator == 'Y') { // No SP data for SAN assessments
+        if (assSummSan) { // No SP data for SAN assessments
             delete this.initialSpDate
             delete this.reviewSpDate
             delete this.reviewNum
             delete this.basicSentencePlan
             delete this.sentencePlan
+            this.sanCrimNeedScore = new SanCrimNeedScore(dbAssessment)
         } else {
             this.initialSpDate = dbAssessment.qaData.getString('IP.42')
             this.reviewSpDate = dbAssessment.qaData.getString('RP.54')
@@ -123,6 +129,7 @@ export class AssSummAssessment extends v3Common.V3AssessmentCommon {
             if (this.initialSpDate == undefined) this.initialSpDate = null
             if (this.reviewSpDate == undefined) this.reviewSpDate = null
             if (this.reviewNum == undefined) this.reviewNum = null
+            delete this.sanCrimNeedScore
         }
 
         this.weightedScores = new WeightedScores(dbAssessment)
@@ -130,7 +137,7 @@ export class AssSummAssessment extends v3Common.V3AssessmentCommon {
         this.newActuarialPredictors = new NewActuarialPredictors(dbAssessment.riskDetails)
         this.ogpOvp = new OgpOvp(dbAssessment)
 
-        if (dbAssessment.sanIndicator != 'Y') {
+        if (!assSummSan) {
             if (dbAssessment.basicSentencePlan.length > 0 && dbAssessment.assessmentVersion == 1) {
                 this.basicSentencePlan = []
                 dbAssessment.basicSentencePlan.forEach((objective) => { this.basicSentencePlan.push(new BasicSentencePlanArea(objective)) })
@@ -141,7 +148,7 @@ export class AssSummAssessment extends v3Common.V3AssessmentCommon {
                 this.sentencePlan = new SentencePlan(filteredObjectives)
             }
         }
-        this.indicators = new Indicators(dbAssessment)
+        this.indicators = new Indicators(dbAssessment, assSummSan)
 
         const filteredOffences = dbAssessment.offences.filter((o) => o.type != 'PRINCIPAL_PROPOSAL')
         if (filteredOffences.length == 0) {
@@ -358,10 +365,16 @@ class SentencePlanAction {
 class Indicators {
 
     sanIndicator: string
+    arnsSpOnlyIndicator: string
 
-    constructor(dbAssessment: dbClasses.DbAssessment) {
+    constructor(dbAssessment: dbClasses.DbAssessment, assSumSan: boolean) {
 
         this.sanIndicator = dbAssessment.sanIndicator
+        if (assSumSan) {
+            this.arnsSpOnlyIndicator = dbAssessment.spIndicator
+        } else {
+            delete this.arnsSpOnlyIndicator
+        }
     }
 }
 

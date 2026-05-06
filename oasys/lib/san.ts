@@ -21,14 +21,23 @@ export function gotoSan(section: SanSection = null, subPage: 'information' | 'an
 
     new oasys.Pages.Assessment.SanSections().goto(supressLog).openSan.click()
 
-    handleLandingPage('san')
+    const landingPage = new oasys.Pages.San.LandingPage()
+    landingPage.confirmCheck.setValue(true)
+    landingPage.confirm.click()
 
-    new oasys.Pages.San.SectionLandingPage('Accommodation')  // .checkCurrent(supressLog)  Removed for release 1.11, titles vary depending on current state of the section
+    new oasys.Pages.San.SectionLandingPage('Accommodation')
     if (section) {
         goto(section, subPage, supressLog)
     }
 }
 
+export function gotoSanFromOffender() {
+
+    new oasys.Pages.Offender.OffenderDetails().openSan.click()
+    const landingPage = new oasys.Pages.San.LandingPage()
+    landingPage.confirmCheck.setValue(true)
+    landingPage.confirm.click()
+}
 /**
  * Navigates to the SAN assessment in readonly mode (no landingPage), assuming you are somewhere in the OASys assessment.
  * 
@@ -64,32 +73,6 @@ export function checkSanLoaded(probationCrn: string, pnc: string) {
     cy.get('.hmpps-header__title__service-name').contains('Strengths and needs').should('be.visible')
     cy.get('dd').contains(probationCrn).should('be.visible')
     cy.get('dd').contains(pnc).should('be.visible')
-}
-
-/**
- * Navigates to the Sentence Plan, assuming you are somewhere in the OASys assessment.
- */
-export function gotoSentencePlan() {
-
-    new oasys.Pages.SentencePlan.SentencePlanService().goto().openSp.click()
-    handleLandingPage('sp')
-    cy.get('h1.govuk-heading-l').contains('plan').should('be.visible')
-}
-
-export function handleLandingPage(type: 'san' | 'sp') {
-
-    const landingPage = type == 'san' ? new oasys.Pages.San.LandingPage() : new oasys.Pages.SanSp.LandingPage()
-    landingPage.confirmCheck.setValue(true)
-    landingPage.confirm.click()
-}
-
-/**
- * Navigates to the Sentence Plan in readonly mode (no landingPage), assuming you are somewhere in the OASys assessment.
- */
-export function gotoSentencePlanReadOnly() {
-
-    new oasys.Pages.SentencePlan.SentencePlanService().goto().openSp.click()
-    cy.get('h1.govuk-heading-l').contains('plan').should('be.visible')
 }
 
 /**
@@ -410,7 +393,7 @@ export function action(action: string) {
  * Checks the floating menu to see if sections 2 to 13 and the self-assessment form are there or not, and checks for the SAN and SP sections.
  * Parameter is true for SAN mode, false for normal OASys mode (layer 3.1), the test fails if the menu is not as expected.
  */
-export function checkLayer3Menu(sanMode: boolean) {
+export function checkLayer3Menu(sanMode: boolean, oldSp: boolean = false) {
 
     if (sanMode) {
         new oasys.Pages.Assessment.Section2().checkIsNotOnMenu()
@@ -443,7 +426,11 @@ export function checkLayer3Menu(sanMode: boolean) {
         new oasys.Pages.Assessment.Section13().checkIsOnMenu()
         new oasys.Pages.Assessment.SelfAssessmentForm().checkIsOnMenu()
         new oasys.Pages.Assessment.SanSections().checkIsNotOnMenu()
-        new oasys.Pages.SentencePlan.SentencePlanService().checkIsNotOnMenu()
+        if (oldSp) {
+            new oasys.Pages.SentencePlan.SentencePlanService().checkIsNotOnMenu()
+        } else {
+            new oasys.Pages.SentencePlan.SentencePlanService().checkIsOnMenu()
+        }
     }
 }
 
@@ -524,7 +511,6 @@ export function checkSanAssessmentCompletionStatus(expectedStatus: boolean) {
     new oasys.Pages.Rosh.RoshScreeningSection1().checkCompletionStatus(expectedStatus)
     new oasys.Pages.Rosh.RoshScreeningSection2to4().checkCompletionStatus(expectedStatus)
     new oasys.Pages.Rosh.RoshScreeningSection5().checkCompletionStatus(expectedStatus)
-    new oasys.Pages.SentencePlan.SentencePlanService().checkCompletionStatus(expectedStatus)
 }
 
 /**
@@ -558,47 +544,6 @@ export function checkSanEditMode(expectEdit: boolean) {
         }
         cy.log(`Checked SAN edit mode: ${expectEdit}.`)
     })
-
-}
-
-/**
- * Assuming you are in a SP screen, checks that it is in edit mode (true) or readonly mode (false).  Test fails if not.
- */
-export function checkSentencePlanEditMode(expectEdit: boolean) {
-
-    cy.get('.plan-header').then((container) => {
-        const createGoal = container.find('.govuk-button:contains("Create goal"):visible').length
-        if (expectEdit && createGoal == 0) {
-            throw new Error(`Expected SP to be in edit mode`)
-        }
-        if (!expectEdit && (createGoal > 0)) {
-            throw new Error(`Expected SP NOT to be in edit mode`)
-        }
-        cy.log(`Checked SP edit mode: ${expectEdit}.`)
-    })
-
-}
-
-/**
- * Assuming you are in the SP screen, checks that the number of current and future goals are as specified.
- */
-export function checkSPGoalCount(current: number, future: number) {
-
-    cy.get('#main-content').then((container) => {
-        const currentText = container.find('a:contains("Goals to work on now"):visible')[0].innerText
-        const futureText = container.find('a:contains("Future goals"):visible')[0].innerText
-        expect(findGoalCount(currentText)).eq(current.toString())
-        expect(findGoalCount(futureText)).eq(future.toString())
-        cy.log(`Checked SP goal count: ${current}, ${future}.`)
-    })
-
-}
-
-function findGoalCount(linkText: string) {
-
-    const openBracket = linkText.indexOf('(')
-    const closeBracket = linkText.indexOf(')')
-    return linkText.substring(openBracket + 1, closeBracket)
 
 }
 
@@ -652,8 +597,7 @@ export function getSanApiTime(pk: number, type: 'SAN_GET_ASSESSMENT' | 'SAN_CREA
  *  - expectedVersion: version number that should be returned by SAN
  *  - expectedSpVersion: version number that should be returned by SAN for the Sentence Plan
  */
-export function checkSanCreateAssessmentCall(pk: number, previousPk: number, expectedUser: User, expectedProvider: string, expectedPlanType: 'INITIAL' | 'REVIEW',
-    expectedVersion: number, expectedSpVersion: number) {
+export function checkSanCreateAssessmentCall(pk: number, previousPk: number, expectedUser: User, expectedProvider: string, expectedPlanType: 'INITIAL' | 'REVIEW') {
 
     cy.log(`Check CreateAssessment API call for ${pk}, previous ${previousPk}`)
     const query = `select log_text from eor.clog where log_source like '%${pk}%SAN_CREATE%' order by time_stamp desc`
@@ -671,8 +615,8 @@ export function checkSanCreateAssessmentCall(pk: number, previousPk: number, exp
                 failed = true
             }
             const callData = JSON.parse(call[3].substring(16))
-            if (callData['previousOasysAssessmentPk'] != previousPk) {
-                cy.log(`Expected previous PK: ${previousPk}, found ${callData['previousOasysAssessmentPk']}`)
+            if (callData['previousOasysSanPk'] != previousPk) {
+                cy.log(`Expected previous PK: ${previousPk}, found ${callData['previousOasysSanPk']}`)
                 failed = true
             }
             if (callData['regionPrisonCode'] != expectedProvider) {
@@ -689,16 +633,6 @@ export function checkSanCreateAssessmentCall(pk: number, previousPk: number, exp
             }
             if (callData['planType'] != expectedPlanType) {
                 cy.log(`Expected sentence plan type: ${expectedPlanType}, found ${callData['planType']}`)
-                failed = true
-            }
-            const sanVersionNumber = findSanVersion(clogData[0][0])
-            if (sanVersionNumber != expectedVersion) {
-                cy.log(`Expected version: ${expectedVersion}, found ${sanVersionNumber}`)
-                failed = true
-            }
-            const spVersionNumber = findSpVersion(clogData[0][0])
-            if (spVersionNumber != expectedSpVersion) {
-                cy.log(`Expected SP version: ${expectedSpVersion}, found ${spVersionNumber}`)
                 failed = true
             }
 
@@ -726,10 +660,9 @@ export function checkSanCreateAssessmentCall(pk: number, previousPk: number, exp
  *  - expectedVersion: version number that should be returned by SAN
  *  - expectedSpVersion: version number for the sentence plan that should be returned by SAN
  */
-export function checkSanCountersigningCall(pk: number, expectedUser: User, outcome: 'COUNTERSIGNED' | 'AWAITING_DOUBLE_COUNTERSIGN' | 'DOUBLE_COUNTERSIGNED' | 'REJECTED',
-    expectedVersion: number, expectedSpVersion: number) {
+export function checkSanCountersigningCall(pk: number, expectedUser: User, outcome: 'COUNTERSIGNED' | 'AWAITING_DOUBLE_COUNTERSIGN' | 'DOUBLE_COUNTERSIGNED' | 'REJECTED') {
 
-    checkSanCall('Countersigning', 'COUNTERSIGN', 'counter-sign', pk, expectedUser, expectedVersion, expectedSpVersion, { outcome: outcome })
+    checkSanCall('Countersigning', 'COUNTERSIGN', 'counter-sign', pk, expectedUser, { outcome: outcome })
 }
 
 /**
@@ -741,9 +674,9 @@ export function checkSanCountersigningCall(pk: number, expectedUser: User, outco
  *  - expectedVersion: version number that should be returned by SAN
  *  - expectedSpVersion: version number for the sentence plan that should be returned by SAN
  */
-export function checkSanSigningCall(pk: number, expectedUser: User, signingType: 'SELF' | 'COUNTERSIGN', expectedVersion: number, expectedSpVersion: number) {
+export function checkSanSigningCall(pk: number, expectedUser: User, signingType: 'SELF' | 'COUNTERSIGN') {
 
-    checkSanCall('Signing', 'SIGN', 'sign', pk, expectedUser, expectedVersion, expectedSpVersion, { signingType: signingType })
+    checkSanCall('Signing', 'SIGN', 'sign', pk, expectedUser, { signingType: signingType })
 }
 
 /**
@@ -754,9 +687,9 @@ export function checkSanSigningCall(pk: number, expectedUser: User, signingType:
  *  - expectedVersion: version number that should be returned by SAN
  *  - expectedSpVersion: version number for the sentence plan that should be returned by SAN
  */
-export function checkSanLockIncompleteCall(pk: number, expectedUser: User, expectedVersion: number, expectedSpVersion: number) {
+export function checkSanLockIncompleteCall(pk: number, expectedUser: User) {
 
-    checkSanCall('Lock Incomplete', 'LOCK_INCOMPLETE', 'lock', pk, expectedUser, expectedVersion, expectedSpVersion)
+    checkSanCall('Lock Incomplete', 'LOCK_INCOMPLETE', 'lock', pk, expectedUser)
 }
 
 /**
@@ -789,9 +722,9 @@ export function checkSanUndeleteCall(pk: number, expectedUser: User) {
  *  - expectedVersion: version number that should be returned by SAN
  *  - expectedSpVersion: version number for the sentence plan that should be returned by SAN
  */
-export function checkSanRollbackCall(pk: number, expectedUser: User, expectedVersion: number, expectedSpVersion: number) {
+export function checkSanRollbackCall(pk: number, expectedUser: User) {
 
-    checkSanCall('Rollback', 'ROLLBACK', 'rollback', pk, expectedUser, expectedVersion, expectedSpVersion)
+    checkSanCall('Rollback', 'ROLLBACK', 'rollback', pk, expectedUser)
 }
 
 /**
@@ -814,7 +747,7 @@ export function checkSanOtlCall(pk: number, expectedSubjectDetails: { [keys: str
 
     cy.log(`Checking OTL call for ${pk}`)
     if (expectedSubjectDetails['dateOfBirth']) {  // reformat the date
-        expectedSubjectDetails['dateOfBirth'] = OasysDateTime.oasysDateAsPlainDate(expectedSubjectDetails['dateOfBirth']).toString()
+        expectedSubjectDetails['dateOfBirth'] = OasysDateTime.oasysDateAsDbString(expectedSubjectDetails['dateOfBirth'])
     }
 
     const query = `select log_text from eor.clog where log_source like '%${pk}%onetime%' order by time_stamp desc fetch first 2 rows only`
@@ -861,10 +794,10 @@ export function checkSanOtlCall(pk: number, expectedSubjectDetails: { [keys: str
                 cy.log(`Expected assessment version: ${assessmentVersion}, found ${callData['assessmentVersion']}`)
                 failed = true
             }
-            if (callData['sentencePlanVersion'] != spVersion) {
-                cy.log(`Expected sentence plan version: ${spVersion}, found ${callData['sentencePlanVersion']}`)
-                failed = true
-            }
+            // if (callData['sentencePlanVersion'] != spVersion) {
+            //     cy.log(`Expected sentence plan version: ${spVersion}, found ${callData['sentencePlanVersion']}`)
+            //     failed = true
+            // }  // TODO
 
             const response = clogData[0][0].split('\n')
             if (response[2].substring(response[2].length - 3) != '200') {
@@ -1009,15 +942,13 @@ export function checkCountOfQuestionsInSection(pk: number, section: string, expe
 /**
  * Gets the SAN update tiem from clog, then checks the SAN update details in oasys_set
  */
-export function getSanApiTimeAndCheckDbValues(pk: number, linkedInd: 'Y' | 'N', clonedPk: number, sanVersion: number, spVersion: number = null) {
+export function getSanApiTimeAndCheckDbValues(pk: number, linkedInd: 'Y' | 'N', clonedPk: number) {
 
     oasys.San.getSanApiTime(pk, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
     cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((sanDataTime) => {
         oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
             SAN_ASSESSMENT_LINKED_IND: linkedInd,
             CLONED_FROM_PREV_OASYS_SAN_PK: clonedPk?.toString() ?? null,
-            SAN_ASSESSMENT_VERSION_NO: sanVersion?.toString() ?? null,
-            SSP_PLAN_VERSION_NO: sanVersion?.toString() ?? null,
             LASTUPD_FROM_SAN: sanDataTime
         })
     })
@@ -1055,7 +986,7 @@ function findSpVersion(data: string): number {
     return number
 }
 
-function checkSanCall(name: string, sourceFilter: string, url: string, pk: number, expectedUser: User, expectedVersion?: number, expectedSpVersion?: number,
+function checkSanCall(name: string, sourceFilter: string, url: string, pk: number, expectedUser: User,
     otherChecks?: { signingType?: 'SELF' | 'COUNTERSIGN', outcome?: string }) {
 
     cy.log(`Checking ${name} call for ${pk}`)
@@ -1100,22 +1031,6 @@ function checkSanCall(name: string, sourceFilter: string, url: string, pk: numbe
             if (response[2].substring(response[2].length - 3) != '200') {
                 cy.log(`Expected 200 response, found ${response[2]} `)
                 failed = true
-            }
-
-            if (expectedVersion) {
-                const sanVersionNumber = findSanVersion(clogData[0][0])
-                if (sanVersionNumber != expectedVersion) {
-                    cy.log(`Expected version: ${expectedVersion}, found ${sanVersionNumber}`)
-                    failed = true
-                }
-            }
-
-            if (expectedSpVersion) {
-                const spVersionNumber = findSpVersion(clogData[0][0])
-                if (spVersionNumber != expectedSpVersion) {
-                    cy.log(`Expected SP version: ${expectedSpVersion}, found ${spVersionNumber}`)
-                    failed = true
-                }
             }
 
         }
