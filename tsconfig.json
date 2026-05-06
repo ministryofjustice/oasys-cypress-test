@@ -14,7 +14,8 @@
         "baseUrl": "oasys",
         "moduleResolution": "node",
         "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "strict": false
     },
     "include": [
         "**/*.ts",
